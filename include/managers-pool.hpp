@@ -10,11 +10,15 @@
 
 #include "dynamic-memory.hpp"
 
-template <class ManagerType, int ManagersCount, typename DeviceControlStructType, typename... ManagerConstructorArgumentTypes>
+template <class ManagerType,
+    class ManagersPoolType,
+    int ManagersCount,
+    typename DeviceControlStructType,
+    typename... ManagerConstructorArgumentTypes>
 class ManagersPoolBase
 {
 public:
-    static ManagersPoolBase& getInstance()
+    static ManagersPoolType& getInstance()
     {
         if (m_self == nullptr) {
             createInstance(m_self);
@@ -26,7 +30,9 @@ public:
     {
         int index = deviceToIndex(device);
         if (m_pManagers[index] == nullptr)
-            createInstance(m_pManagers[index], args...);
+        {
+            createInstance<ManagerType, DeviceControlStructType, ManagerConstructorArgumentTypes...>(m_pManagers[index], device, args...);
+        }
     }
 
     inline ManagerType& get(DeviceControlStructType device)
@@ -34,21 +40,18 @@ public:
         return *m_pManagers[deviceToIndex(device)];
     }
 
-protected:
-    virtual int deviceToIndex(DeviceControlStructType device) = 0;
-
-private:
     ManagersPoolBase()
     {
         for (int i=0; i<ManagersCount; i++)
             m_pManagers[i] = nullptr;
     }
+    virtual ~ManagersPoolBase() {}
+protected:
+    virtual int deviceToIndex(DeviceControlStructType device) = 0;
+    static ManagersPoolType* m_self;
 
+private:
     ManagerType* m_pManagers[ManagersCount];
-
-    static ManagersPoolBase* m_self;
 };
-
-
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_MANAGERS_POOL_HPP_ */

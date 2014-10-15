@@ -32,9 +32,10 @@ int main()
     // at high speed.
     __enable_irq();
     AliveIndicator alive;
-    USARTManagersPool::getInstance().createUsart(USART1, 9600);
+    uint32_t boudrate = 9600;
+    USARTManagersPool::getInstance().create(USART1, boudrate);
     printf("Initialization done\n");
-    Console::InitConsole(USARTManagersPool::getInstance().getUsart(USART1));
+    Console::InitConsole(USARTManagersPool::getInstance().get(USART1));
     Console::getInstance().prompt();
     while (1)
     {

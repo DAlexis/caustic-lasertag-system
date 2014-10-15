@@ -16,7 +16,8 @@
 #define USART_IO_STATUS_RECEIVING       (uint8_t) 1
 #define USART_IO_STATUS_TRANSMITTIMG    (uint8_t) 2
 
-USARTManagersPool* USARTManagersPool::m_self = nullptr;
+template<>
+USARTManagersPool* USARTManagersPoolBase::m_self = nullptr;
 
 USARTManager::USARTioContext::USARTioContext()
 {
@@ -147,7 +148,7 @@ extern "C" {
         if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
         {
             USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-            static USARTManager& usart = USARTManagersPool::getInstance().getUsart(USART1);
+            static USARTManager& usart = USARTManagersPool::getInstance().get(USART1);
             usart.rxIRQHandler();
         }
     }
@@ -155,50 +156,22 @@ extern "C" {
 
 /////////////////////////////////////////////////////////////////////
 // USARTManagersPool
-USARTManagersPool::USARTManagersPool()
-{
-    for (int i=0; i<USARTS_COUNT; i++)
-    {
-        m_pUsarts[i] = nullptr;
-    }
-}
 
-USARTManagersPool& USARTManagersPool::getInstance()
+int USARTManagersPool::deviceToIndex(USART_TypeDef* device)
 {
-    if (m_self == nullptr) {
-        createInstance(m_self);
-    }
-    return *m_self;
-}
-
-int USARTManagersPool::getUsartIndex(USART_TypeDef* usart)
-{
-    if (usart == USART1)
+    if (device == USART1)
         return 0;
-    if (usart == USART2)
+    if (device == USART2)
         return 1;
-    if (usart == USART3)
+    if (device == USART3)
         return 2;
     return 0;
-}
-
-USARTManager& USARTManagersPool::getUsart(USART_TypeDef* usart)
-{
-    return *(m_pUsarts[getUsartIndex(usart)]);
-}
-
-void USARTManagersPool::createUsart(USART_TypeDef* usart, uint32_t baudrate)
-{
-    int index = getUsartIndex(usart);
-    if (m_pUsarts[index] == nullptr) {
-        createInstance(m_pUsarts[index], usart, baudrate);
-    }
 }
 
 /////////////////////////////////////////////////////////////////////
 // write adaptor
 void usart1Write(char* ptr, int len)
 {
-    static USARTManager& usart = USARTManagersPool::getInstance().getUsart(USART1);
+    static USARTManager& usart = USARTManagersPool::getInstance().get(USART1);
     usart.write(ptr, len);
 }

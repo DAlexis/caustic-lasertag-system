@@ -56,18 +56,13 @@ private:
     uint32_t m_baudrate;
 };
 
-class USARTManagersPool
-{
-public:
-    static USARTManagersPool& getInstance();
-    void createUsart(USART_TypeDef* usart, uint32_t baudrate);
-    USARTManager& getUsart(USART_TypeDef* usart);
-    USARTManagersPool();
+class USARTManagersPool;
+typedef ManagersPoolBase<USARTManager, USARTManagersPool, USARTS_COUNT, USART_TypeDef*, uint32_t> USARTManagersPoolBase;
 
+class USARTManagersPool : public ManagersPoolBase<USARTManager, USARTManagersPool, USARTS_COUNT, USART_TypeDef*, uint32_t>
+{
 private:
-    int getUsartIndex(USART_TypeDef* usart);
-    USARTManager* m_pUsarts[USARTS_COUNT];
-    static USARTManagersPool* m_self;
+    int deviceToIndex(USART_TypeDef* device);
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_USART_MANAGER_HPP_ */
