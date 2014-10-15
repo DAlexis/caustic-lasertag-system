@@ -18,9 +18,15 @@ void runTestsd(const char*)
     tester.testSDCard();
 }
 
+void runSoundTestWav(const char* filename)
+{
+    tester.testSoundWav(filename);
+}
+
 void registerTests()
 {
     Console::getInstance().registerCommand("testsd", "test microSD card reading from file 1.txt", runTestsd);
+    Console::getInstance().registerCommand("wav", "play sound from file", runSoundTestWav);
 }
 
 void Tester::testSDCard()
@@ -53,4 +59,8 @@ void Tester::testSDCard()
     f_puts(buffer, &fil);
     f_close(&fil); // close the file
     f_mount(NULL, "", 1);
+}
+
+void Tester::testSoundWav(const char* filename)
+{
 }
