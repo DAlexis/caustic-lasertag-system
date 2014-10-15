@@ -8,7 +8,9 @@
 #include "stm32f10x.h"
 #include "alive-indicator.hpp"
 #include "usart.hpp"
+#include "spi.hpp"
 #include "console.hpp"
+#include "tester.hpp"
 
 #include <stdio.h>
 #include "diag/Trace.h"
@@ -30,12 +32,15 @@ int main()
 {
     // At this stage the system clock should have already been configured
     // at high speed.
-    __enable_irq();
+    //__enable_irq();
     AliveIndicator alive;
     uint32_t boudrate = 9600;
     USARTManagersPool::getInstance().create(USART1, boudrate);
-    printf("Initialization done\n");
+    SPIManagersPool::getInstance().create(SPI1);
+
     Console::InitConsole(USARTManagersPool::getInstance().get(USART1));
+    registerTests();
+    printf("Initialization done\n");
     Console::getInstance().prompt();
     while (1)
     {

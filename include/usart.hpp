@@ -56,10 +56,9 @@ private:
     uint32_t m_baudrate;
 };
 
-class USARTManagersPool;
 typedef ManagersPoolBase<USARTManager, USARTManagersPool, USARTS_COUNT, USART_TypeDef*, uint32_t> USARTManagersPoolBase;
 
-class USARTManagersPool : public ManagersPoolBase<USARTManager, USARTManagersPool, USARTS_COUNT, USART_TypeDef*, uint32_t>
+class USARTManagersPool : public USARTManagersPoolBase
 {
 private:
     int deviceToIndex(USART_TypeDef* device);
