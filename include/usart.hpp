@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_USART_MANAGER_HPP_
 
 #include "stm32f10x.h"
+#include "managers-pool.hpp"
 
 #define USARTS_COUNT        4
 
@@ -46,6 +47,7 @@ private:
         uint8_t need_echo;
     };
 
+    USARTManager(const USARTManager&) = delete;
     void waitForTransmitionEnd();
 
     USARTioContext m_ioContext;
@@ -61,8 +63,8 @@ public:
     void createUsart(USART_TypeDef* usart, uint32_t baudrate);
     USARTManager& getUsart(USART_TypeDef* usart);
     USARTManagersPool();
-private:
 
+private:
     int getUsartIndex(USART_TypeDef* usart);
     USARTManager* m_pUsarts[USARTS_COUNT];
     static USARTManagersPool* m_self;

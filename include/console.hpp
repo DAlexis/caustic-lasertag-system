@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_CONSOLE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_CONSOLE_HPP_
 
-#include "usart-manager.hpp"
+#include "usart.hpp"
 #include <functional>
 
 #define BUFFER_SIZE     100
@@ -23,6 +23,7 @@ public:
     static Console& getInstance();
     void registerCommand(const char* command, const char* help, Cmdline_command_cb callback);
     void prompt();
+    Console(USARTManager& usart);
 
 private:
     struct CommandDescr {
@@ -33,7 +34,7 @@ private:
         const char* help;
     };
 
-    Console(USARTManager& usart);
+
     static void printHelp(const char* buffer);
     static int receiveStringCb(char* buffer, int bytesCount);
     void clearBuffer();

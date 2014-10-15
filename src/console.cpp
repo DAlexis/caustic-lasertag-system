@@ -6,7 +6,7 @@
  */
 
 #include "console.hpp"
-
+#include "dynamic-memory.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <new>
@@ -17,8 +17,7 @@ Console* Console::m_self = nullptr;
 void Console::InitConsole(USARTManager& usart)
 {
     if (m_self == nullptr) {
-        m_self = (Console*) malloc(sizeof(Console));
-        new (m_self) Console(usart);
+        createInstance<Console, USARTManager&>(m_self, usart);
     }
 }
 
@@ -42,8 +41,7 @@ void Console::registerCommand(const char* command, const char* help, Cmdline_com
     CommandDescr** pplast_command = &m_pFisrtCommand;
     while (*pplast_command != 0)
         pplast_command = &( (*pplast_command)->pnext);
-    (*pplast_command) = (Console::CommandDescr*) malloc(sizeof(Console::CommandDescr));
-    new ((*pplast_command)) Console::CommandDescr;
+    createInstance((*pplast_command));
     (*pplast_command)->command = command;
     (*pplast_command)->callback = callback;
     (*pplast_command)->help = help;

@@ -5,8 +5,9 @@
  *      Author: alexey
  */
 
-#include "usart-manager.hpp"
+#include "usart.hpp"
 #include "write-adaptor.h"
+#include "dynamic-memory.hpp"
 #include <string.h>
 #include <new>
 #include <stdio.h>
@@ -165,9 +166,7 @@ USARTManagersPool::USARTManagersPool()
 USARTManagersPool& USARTManagersPool::getInstance()
 {
     if (m_self == nullptr) {
-        m_self = (USARTManagersPool*) malloc(sizeof(USARTManagersPool));
-        new (m_self) USARTManagersPool;
-
+        createInstance(m_self);
     }
     return *m_self;
 }
@@ -192,8 +191,7 @@ void USARTManagersPool::createUsart(USART_TypeDef* usart, uint32_t baudrate)
 {
     int index = getUsartIndex(usart);
     if (m_pUsarts[index] == nullptr) {
-        m_pUsarts[index] = (USARTManager*) malloc(sizeof(USARTManager));
-        new (m_pUsarts[index]) USARTManager(usart, baudrate);
+        createInstance(m_pUsarts[index], usart, baudrate);
     }
 }
 

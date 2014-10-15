@@ -7,7 +7,7 @@
 
 #include "stm32f10x.h"
 #include "alive-indicator.hpp"
-#include "usart-manager.hpp"
+#include "usart.hpp"
 #include "console.hpp"
 
 #include <stdio.h>
