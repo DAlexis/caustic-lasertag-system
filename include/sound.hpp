@@ -16,9 +16,11 @@
 class SoundPlayer
 {
 public:
+    static SoundPlayer& getInstance();
     void init();
     void playWav(const char* filename);
     void stop();
+    void setVerbose(bool flag);
 
 private:
     struct WavHeader {
@@ -46,6 +48,9 @@ private:
 
     FATFS FatFs;
     FIL fil;
+
+    bool m_verbose;
+    static SoundPlayer* m_self;
 };
 
 

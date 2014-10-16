@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_MANAGERS_POOL_HPP_
 
 #include "dynamic-memory.hpp"
+#include <stdio.h>
 
 template <class ManagerType,
     class ManagersPoolType,
@@ -22,6 +23,8 @@ public:
     {
         if (m_self == nullptr) {
             createInstance(m_self);
+            if (!m_self)
+                printf("Manager failed to instanciate!\n");
         }
         return *m_self;
     }

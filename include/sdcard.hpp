@@ -8,15 +8,20 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_SDCARD_MANAGER_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_SDCARD_MANAGER_HPP_
 
+#include "ff.h"
 
 class SDCardManager
 {
 public:
-    static void init();
     static SDCardManager& getInstance();
 
-private:
+    bool mount();
+    bool isReady();
     SDCardManager();
+
+private:
+    bool m_ready;
+    FATFS m_fatfs;
     static SDCardManager* m_self;
 };
 

@@ -13,6 +13,7 @@ class Tester
 {
 public:
     void testSDCard();
+    void testFreeMem();
     void testSoundWav(const char* filename);
 };
 

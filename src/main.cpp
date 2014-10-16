@@ -36,9 +36,9 @@ int main()
     AliveIndicator alive;
     uint32_t boudrate = 9600;
     USARTManagersPool::getInstance().create(USART1, boudrate);
-    SPIManagersPool::getInstance().create(SPI1);
-
     Console::InitConsole(USARTManagersPool::getInstance().get(USART1));
+
+    //SPIManagersPool::getInstance().create(SPI1);
     registerTests();
     printf("Initialization done\n");
     Console::getInstance().prompt();
