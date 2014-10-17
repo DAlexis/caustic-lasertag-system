@@ -10,7 +10,12 @@
 #include <stdio.h>
 #include <string.h>
 
+SoundPlayer sound;
 
+SoundPlayer::SoundPlayer() :
+    m_verbose(true)
+{
+}
 
 void SoundPlayer::setVerbose(bool flag)
 {
@@ -18,6 +23,7 @@ void SoundPlayer::setVerbose(bool flag)
 
 void SoundPlayer::init()
 {
+    printf("Sound system initialization...\n");
 }
 
 void SoundPlayer::playWav(const char* filename)
@@ -29,7 +35,8 @@ void SoundPlayer::playWav(const char* filename)
         if (m_verbose) printf("Cannot open file!\n");
         return;
     }
-
+    if (!readHeader())
+        return;
 }
 
 void SoundPlayer::stop()

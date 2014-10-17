@@ -16,6 +16,7 @@
 class SoundPlayer
 {
 public:
+    SoundPlayer();
     void init();
     void playWav(const char* filename);
     void stop();
@@ -52,6 +53,6 @@ private:
     static SoundPlayer* m_self;
 };
 
-
+extern SoundPlayer sound;
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_SOUND_HPP_ */

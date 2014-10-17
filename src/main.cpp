@@ -11,6 +11,7 @@
 #include "spi.hpp"
 #include "console.hpp"
 #include "tester.hpp"
+#include "sound.hpp"
 #include <stdio.h>
 #include "diag/Trace.h"
 #include <stdlib.h>
@@ -83,6 +84,8 @@ int main()
 
 */
     printf("Heap begin: %p, heap limit: %p, size=%d\n", (void*) &_Heap_Begin, (void*) &_Heap_Limit, &_Heap_Limit-&_Heap_Begin );
+    sound.init();
+
     printf("Initialization done\n");
 
     //mesureStack(0);

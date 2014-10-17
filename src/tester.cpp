@@ -68,5 +68,7 @@ void Tester::testFreeMem(const char*)
 
 void Tester::testSoundWav(const char* filename)
 {
-    //SoundPlayer::getInstance().playWav(filename);
+    SDCard.mount();
+    sound.playWav("piknik.wav");
+    SDCard.umount();
 }
