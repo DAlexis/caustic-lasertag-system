@@ -7,7 +7,6 @@
 #if !defined(OS_USE_SEMIHOSTING) && !(__STDC_HOSTED__ == 0)
 
 // ----------------------------------------------------------------------------
-#include "write-adaptor.h"
 #include <errno.h>
 #include "diag/Trace.h"
 
@@ -30,10 +29,7 @@ ssize_t
 _write (int fd __attribute__((unused)), const char* buf __attribute__((unused)),
 	size_t nbyte __attribute__((unused)))
 {
-#ifdef TRACE_THROUGH_USART1
-    usart1Write(buf, nbyte);
-    return nbyte;
-#elif defined(TRACE)
+#if defined(TRACE)
   // STDOUT and STDERR are routed to the trace device
   if (fd == 1 || fd == 2)
     {

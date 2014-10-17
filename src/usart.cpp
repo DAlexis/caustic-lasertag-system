@@ -165,7 +165,7 @@ extern "C" {
 
 /////////////////////////////////////////////////////////////////////
 // write adaptor
-void usart1Write(char* ptr, int len)
+void usart1Write(const char* ptr, int len)
 {
     USART1Manager.write(ptr, len);
 }

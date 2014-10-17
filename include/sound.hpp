@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_SOUND_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_SOUND_HPP_
 
-#define SOUND_BUFFER_SIZE   128
+#define SOUND_BUFFER_SIZE   256
 
 #include <stdint.h>
 #include "ff.h"
@@ -22,6 +22,7 @@ public:
     void stop();
     void setVerbose(bool flag);
 
+    void fragmentTimerIRQ();
 private:
     struct WavHeader {
         char riff[4];
@@ -40,17 +41,37 @@ private:
         uint32_t subchunk2_size;
     };
 
+    struct AudioBuffer {
+        uint16_t buffer[SOUND_BUFFER_SIZE];
+        uint16_t size;
+    };
+
+    void initPWMTimer();
+    void initSamplerTimer();
+    void initFragmentTimer();
+    void initDMA(AudioBuffer* source);
+
     bool readHeader();
     void printInfo();
+    bool loadFragment(AudioBuffer* buffer);
+    void swapBuffers();
+    void normalizeBuffer(AudioBuffer* buffer);
+
+    void playCurrentBuffer();
+
+    void fragmentTimerEnable();
+    void PWMTimerEnable();
 
     WavHeader m_header;
     const char* m_filename;
 
     FATFS FatFs;
-    FIL fil;
+    FIL m_fil;
 
     bool m_verbose;
-    static SoundPlayer* m_self;
+    bool m_needStop;
+    AudioBuffer m_buffer1, m_buffer2;
+    AudioBuffer *m_pCurrentBuffer, *m_pNextBuffer;
 };
 
 extern SoundPlayer sound;

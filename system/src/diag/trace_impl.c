@@ -9,6 +9,7 @@
 
 #include "cmsis_device.h"
 #include "diag/Trace.h"
+#include "write-adaptor.h"
 
 // ----------------------------------------------------------------------------
 
@@ -155,6 +156,11 @@ _trace_write_itm (const char* buf, size_t nbyte)
 static ssize_t
 _trace_write_semihosting_stdout (const char* buf, size_t nbyte)
 {
+#ifdef TRACE_THROUGH_USART1
+    usart1Write(buf, nbyte);
+    return nbyte;
+#endif
+    // Code below is not used now
 #if defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
   // Check if the debugger is enabled. CoreDebug is available only on CM3/CM4.
   // [Contributed by SourceForge user diabolo38]

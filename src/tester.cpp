@@ -66,7 +66,7 @@ void Tester::testFreeMem(const char*)
     printf("Allocated %d bytes\n", counter*10);
 }
 
-void Tester::testSoundWav(const char* filename)
+void Tester::testSoundWav(const char*)
 {
     SDCard.mount();
     sound.playWav("piknik.wav");

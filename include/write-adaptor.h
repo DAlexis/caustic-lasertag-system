@@ -13,7 +13,7 @@
  extern "C" {
 #endif
 
-void usart1Write(char* ptr, int len);
+void usart1Write(const char* ptr, int len);
 
 #ifdef __cplusplus
  }
