@@ -11,7 +11,6 @@
 #include "spi.hpp"
 #include "console.hpp"
 #include "tester.hpp"
-
 #include <stdio.h>
 #include "diag/Trace.h"
 #include <stdlib.h>
@@ -28,20 +27,67 @@
 // (currently OS_USE_TRACE_ITM, OS_USE_TRACE_SEMIHOSTING_DEBUG/_STDOUT).
 //
 
+//volatile char array[7000] = "dasdasdasdads";
+
+void mesureStack(unsigned int currentSize)
+{
+    volatile char q[100]= "q";
+    printf("%u, %s\n", currentSize, q);
+
+    mesureStack(currentSize+100);
+}
+
+void mesureHeap()
+{
+    void* pointer = 0;
+    void* prelast = 0;
+    int counter=0;
+    int step=10;
+    do
+    {
+        prelast = pointer;
+        pointer = malloc(step);
+        if (pointer) counter++;
+    } while (pointer != 0);
+    printf("Allocated %d bytes, end at %p\n", counter*step, prelast);
+}
+
+
 int main()
 {
     // At this stage the system clock should have already been configured
     // at high speed.
     //__enable_irq();
     AliveIndicator alive;
-    uint32_t boudrate = 9600;
-    USARTManagersPool::getInstance().create(USART1, boudrate);
-    Console::InitConsole(USARTManagersPool::getInstance().get(USART1));
+    USART1Manager.init(9600);
+
+    console.init(USART1Manager);
+
 
     //SPIManagersPool::getInstance().create(SPI1);
-    registerTests();
+    tester.registerCommands();
+
+
+    extern char _Heap_Begin; // Defined by the linker.
+    extern char _Heap_Limit;
+/*
+    char* pb0 = (char*) malloc(1);
+    char* pb1 = (char*) malloc(1);
+    char* pb2 = (char*) malloc(1);
+    mesureHeap();
+    printf("0: %p, 1: %p, 2: %p\n", (void*) pb0, (void*) pb1, (void*) pb2);
+    printf("hb-0: %d, 0-1: %d, 1-2: %d\n",
+            pb0-&_Heap_Begin,
+            pb1-pb0,
+            pb2-pb1);
+
+*/
+    printf("Heap begin: %p, heap limit: %p, size=%d\n", (void*) &_Heap_Begin, (void*) &_Heap_Limit, &_Heap_Limit-&_Heap_Begin );
     printf("Initialization done\n");
-    Console::getInstance().prompt();
+
+    //mesureStack(0);
+
+    console.prompt();
     while (1)
     {
         alive.blink();

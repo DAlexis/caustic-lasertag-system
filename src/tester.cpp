@@ -12,53 +12,26 @@
 #include "sound.hpp"
 #include "sdcard.hpp"
 #include <stdio.h>
+#include <malloc.h>
 
 Tester tester;
 
-void runTestsd(const char*)
+void Tester::registerCommands()
 {
-    tester.testSDCard();
+    console.registerCommand("testsd", "test microSD card reading from file 1.txt", testSDCard);
+    console.registerCommand("wav", "play sound from file", testSoundWav);
+    console.registerCommand("testmem", "test free mem amount", testFreeMem);
 }
 
-void runSoundTestWav(const char* filename)
-{
-    tester.testSoundWav(filename);
-}
-
-void runTestFreeMem(const char*)
-{
-    tester.testFreeMem();
-}
-
-void registerTests()
-{
-    Console::getInstance().registerCommand("testsd", "test microSD card reading from file 1.txt", runTestsd);
-    Console::getInstance().registerCommand("wav", "play sound from file", runSoundTestWav);
-    Console::getInstance().registerCommand("testmem", "test free mem amount", runTestFreeMem);
-}
-
-void Tester::testSDCard()
+void Tester::testSDCard(const char*)
 {
 
     FIL fil;
     FRESULT res;
     char buffer[6];
-    printf("SD-card initialization...\n");
+    //extern SDCardManager SDCard;
 
-/*
-    FATFS FatFs;
-    printf("Mounting volume...\n");
-    res = f_mount(&FatFs, "", 1); // mount the drive
-    if (res)
-    {
-        printf("error occured!\n");
-        return;
-    }
-    printf("success!\n");
-*/
-
-
-    if (!SDCardManager::getInstance().mount())
+    if (!SDCard.mount())
     {
         printf("Failed");
         return;
@@ -76,22 +49,24 @@ void Tester::testSDCard()
     printf("I read: \"%s\"\n", buffer);
     f_puts(buffer, &fil);
     f_close(&fil); // close the file
-    f_mount(NULL, "", 1);
+    SDCard.umount();
 }
 
-void Tester::testFreeMem()
+void Tester::testFreeMem(const char*)
 {
-    printf("Testing memory\n");
-    void* pointer;
+    //printf("Testing memory\n");
+    void* pointer = 0;
     int counter=0;
     do
     {
         pointer = malloc(10);
+        if (pointer) counter++;
     } while (pointer != 0);
+
     printf("Allocated %d bytes\n", counter*10);
 }
 
 void Tester::testSoundWav(const char* filename)
 {
-    SoundPlayer::getInstance().playWav(filename);
+    //SoundPlayer::getInstance().playWav(filename);
 }

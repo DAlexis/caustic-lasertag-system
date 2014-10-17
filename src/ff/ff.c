@@ -2118,12 +2118,12 @@ FRESULT find_volume (	/* FR_OK(0): successful, !=0: any error occurred */
 	DWORD bsect, fasize, tsect, sysect, nclst, szbfat;
 	WORD nrsv;
 	FATFS *fs;
-	printf("get_ldnumber\n");
+	//printf("get_ldnumber\n");
 
 	/* Get logical drive number from the path name */
 	*rfs = 0;
 	vol = get_ldnumber(path);
-	printf("get_ldnumber done\n");
+	//printf("get_ldnumber done\n");
 	if (vol < 0) return FR_INVALID_DRIVE;
 
 	/* Check if the file system object is valid or not */
@@ -2145,9 +2145,9 @@ FRESULT find_volume (	/* FR_OK(0): successful, !=0: any error occurred */
 
 	fs->fs_type = 0;					/* Clear the file system object */
 	fs->drv = LD2PD(vol);				/* Bind the logical drive and a physical drive */
-	printf("disk_initialize(fs->drv);\n");
+	//printf("disk_initialize(fs->drv);\n");
 	stat = disk_initialize(fs->drv);	/* Initialize the physical drive */
-	printf("done\n");
+	//printf("done\n");
 
 
 	if (stat & STA_NOINIT)				/* Check if the initialization succeeded */
@@ -2323,7 +2323,7 @@ FRESULT f_mount (
 	vol = get_ldnumber(&path);
 	if (vol < 0) return FR_INVALID_DRIVE;
 	cfs = FatFs[vol];					/* Pointer to fs object */
-	printf("get_ldnumber(&path); done\n");
+	//printf("get_ldnumber(&path); done\n");
 	if (cfs) {
 #if _FS_LOCK
 		clear_lock(cfs);
@@ -2335,16 +2335,16 @@ FRESULT f_mount (
 	}
 
 	if (fs) {
-	    printf("fs not null\n");
+	    //printf("fs not null\n");
 		fs->fs_type = 0;				/* Clear new fs object */
-		printf("fs->fs_type = 0 done\n");
+		//printf("fs->fs_type = 0 done\n");
 #if _FS_REENTRANT						/* Create sync object for the new volume */
 		if (!ff_cre_syncobj(vol, &fs->sobj)) return FR_INT_ERR;
 #endif
 	}
-	printf("FatFs[vol] = fs...\n");
+	//printf("FatFs[vol] = fs...\n");
 	FatFs[vol] = fs;					/* Register new fs object */
-	printf("ok\n");
+	//printf("ok\n");
 
 	if (!fs || opt != 1) return FR_OK;	/* Do not mount now, it will be mounted later */
 

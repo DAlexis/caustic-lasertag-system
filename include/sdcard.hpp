@@ -13,16 +13,17 @@
 class SDCardManager
 {
 public:
-    static SDCardManager& getInstance();
-
-    bool mount();
-    bool isReady();
     SDCardManager();
+    bool mount();
+    void umount();
+    bool isReady();
+
 
 private:
     bool m_ready;
     FATFS m_fatfs;
-    static SDCardManager* m_self;
 };
+
+extern SDCardManager SDCard;
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_SDCARD_MANAGER_HPP_ */

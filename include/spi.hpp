@@ -9,11 +9,6 @@
 #define LAZERTAG_RIFLE_INCLUDE_SPI_HPP_
 
 #include "stm32f10x.h"
-#include "managers-pool.hpp"
-
-#define SPI_COUNT   2
-
-class SPIManagersPool;
 
 class SPIManager
 {
@@ -29,13 +24,6 @@ private:
     SPI_TypeDef* m_SPI;
 };
 
-typedef ManagersPoolBase<SPIManager, SPIManagersPool, SPI_COUNT, SPI_TypeDef*> SPIManagersPoolBase;
-
-class SPIManagersPool : public SPIManagersPoolBase
-{
-private:
-    int deviceToIndex(SPI_TypeDef* device);
-};
-
+extern SPIManager SPI1Manager;
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_SPI_HPP_ */

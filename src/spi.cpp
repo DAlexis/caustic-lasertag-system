@@ -7,8 +7,7 @@
 
 #include "spi.hpp"
 
-template<>
-SPIManagersPool* SPIManagersPoolBase::m_self = nullptr;
+SPIManager SPI1Manager(SPI1);
 
 SPIManager::SPIManager(SPI_TypeDef* SPIx) :
     m_SPI(SPIx)
@@ -112,13 +111,4 @@ void SPIManager::transmit(unsigned char* txbuf, unsigned char* rxbuf, unsigned i
         txbuf++;
         rxbuf++;
     }
-}
-
-int SPIManagersPool::deviceToIndex(SPI_TypeDef* device)
-{
-    if (device == SPI1)
-        return 0;
-    if (device == SPI2)
-        return 1;
-    return 0;
 }

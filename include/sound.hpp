@@ -16,7 +16,6 @@
 class SoundPlayer
 {
 public:
-    static SoundPlayer& getInstance();
     void init();
     void playWav(const char* filename);
     void stop();

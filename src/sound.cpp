@@ -7,19 +7,10 @@
 
 #include "sound.hpp"
 #include "ff.h"
-#include "dynamic-memory.hpp"
 #include <stdio.h>
 #include <string.h>
 
-SoundPlayer* SoundPlayer::m_self = nullptr;
 
-SoundPlayer& SoundPlayer::getInstance()
-{
-    if (m_self == nullptr) {
-        createInstance(m_self);
-    }
-    return *m_self;
-}
 
 void SoundPlayer::setVerbose(bool flag)
 {

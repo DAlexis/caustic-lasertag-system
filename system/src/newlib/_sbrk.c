@@ -7,7 +7,7 @@
 
 #include <sys/types.h>
 #include <errno.h>
-
+#include <stdio.h>
 // ----------------------------------------------------------------------------
 
 caddr_t
@@ -39,6 +39,7 @@ _sbrk(int incr)
   incr = (incr + 3) & (~3); // align value to 4
   if (current_heap_end + incr > &_Heap_Limit)
     {
+      //printf("Heap limit! che:%p, hlim: %p\n", (void*)current_heap_end, (void*) &_Heap_Limit);
       // Some of the libstdc++-v3 tests rely upon detecting
       // out of memory errors, so do not abort here.
 #if 0

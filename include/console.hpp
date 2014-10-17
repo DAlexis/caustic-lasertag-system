@@ -12,23 +12,22 @@
 #include <functional>
 
 #define BUFFER_SIZE     100
+#define COMMAND_DESCR_COUNT_MAX     10
 
 typedef void (*Cmdline_command_cb)(const char* buffer);
-//typedef std::function<void (char*)> Cmdline_command_cb;
 
 class Console
 {
 public:
-    static void InitConsole(USARTManager& usart);
-    static Console& getInstance();
+    Console();
+    void init(USARTManager& usart);
     void registerCommand(const char* command, const char* help, Cmdline_command_cb callback);
     void prompt();
-    Console(USARTManager& usart);
+
 
 private:
     struct CommandDescr {
         CommandDescr();
-        CommandDescr* pnext;
         Cmdline_command_cb callback;
         const char* command;
         const char* help;
@@ -42,10 +41,11 @@ private:
     bool checkEmpty();
 
 
-    CommandDescr *m_pFisrtCommand;
+    CommandDescr m_commands[COMMAND_DESCR_COUNT_MAX];
     char m_buffer[BUFFER_SIZE];
-    USARTManager& m_usart;
-    static Console* m_self;
+    USARTManager* m_pUsart;
+    unsigned int m_commandsCount;
 };
 
+extern Console console;
 #endif /* LAZERTAG_RIFLE_INCLUDE_CONSOLE_HPP_ */

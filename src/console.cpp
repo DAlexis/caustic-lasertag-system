@@ -6,31 +6,21 @@
  */
 
 #include "console.hpp"
-#include "dynamic-memory.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <new>
 #include <string.h>
 
-Console* Console::m_self = nullptr;
+Console console;
 
-void Console::InitConsole(USARTManager& usart)
+Console::Console() :
+    m_commandsCount(0)
 {
-    if (m_self == nullptr) {
-        createInstance<Console, USARTManager&>(m_self, usart);
-    }
 }
 
-Console& Console::getInstance()
+void Console::init(USARTManager& usart)
 {
-
-    return *m_self;
-}
-
-Console::Console(USARTManager& usart) :
-    m_pFisrtCommand(nullptr),
-    m_usart(usart)
-{
+    m_pUsart = &usart;
     // We suppose that usart is already initialized
     clearBuffer();
     registerCommand("help", "Print this help message", &Console::printHelp);
@@ -38,17 +28,13 @@ Console::Console(USARTManager& usart) :
 
 void Console::registerCommand(const char* command, const char* help, Cmdline_command_cb callback)
 {
-    CommandDescr** pplast_command = &m_pFisrtCommand;
-    while (*pplast_command != 0)
-        pplast_command = &( (*pplast_command)->pnext);
-    createInstance((*pplast_command));
-    (*pplast_command)->command = command;
-    (*pplast_command)->callback = callback;
-    (*pplast_command)->help = help;
+    m_commands[m_commandsCount].command = command;
+    m_commands[m_commandsCount].callback = callback;
+    m_commands[m_commandsCount].help = help;
+    ++m_commandsCount;
 }
 
 Console::CommandDescr::CommandDescr() :
-    pnext(nullptr),
     callback(nullptr),
     command(nullptr),
     help(nullptr)
@@ -59,11 +45,9 @@ Console::CommandDescr::CommandDescr() :
 void Console::printHelp(const char*)
 {
     printf("Commands list:\n");
-    CommandDescr** pplast_command = &(m_self->m_pFisrtCommand);
-    while (*pplast_command != 0) {
-        printf("    %s - %s\n", (*pplast_command)->command, (*pplast_command)->help);
-        pplast_command = &( (*pplast_command)->pnext);
-    }
+    for (unsigned int i=0; i<console.m_commandsCount; i++)
+        printf("    %s - %s\n", console.m_commands[i].command, console.m_commands[i].help);
+
 }
 
 void Console::clearBuffer()
@@ -93,16 +77,16 @@ bool Console::checkEmpty()
 
 void Console::prompt()
 {
-    m_usart.write("> ", 2);
-    m_usart.async_read(m_buffer, '\r', 100, &Console::receiveStringCb, 1);
+    m_pUsart->write("> ", 2);
+    m_pUsart->async_read(m_buffer, '\r', 100, &Console::receiveStringCb, 1);
 }
 
 int Console::receiveStringCb(char* buffer, int)
 {
     buffer[BUFFER_SIZE-1] = '\0';
-    m_self->fixBackspaces();
-    if (m_self->checkEmpty()) {
-        m_self->prompt();
+    console.fixBackspaces();
+    if (console.checkEmpty()) {
+        console.prompt();
         return 0;
     }
     printf(">>> %s\n", buffer);
@@ -116,18 +100,19 @@ int Console::receiveStringCb(char* buffer, int)
         *first_space = '\0';
         argument = first_space+1;
     }
-    CommandDescr** pplast_command = &(m_self->m_pFisrtCommand);
-    while (*pplast_command != 0) {
-        if (strcmp(buffer, (*pplast_command)->command) == 0) {
-            (* (*pplast_command)->callback) (argument);
+    unsigned int i=0;
+    for (; i<console.m_commandsCount; i++)
+    {
+        if (strcmp(buffer, console.m_commands[i].command) == 0) {
+            (* console.m_commands[i].callback) (argument);
             break;
         }
-        pplast_command = &( (*pplast_command)->pnext);
     }
-    if (*pplast_command == 0)
+
+    if (i == console.m_commandsCount)
         printf("Unknown command\n");
 
-    m_self->clearBuffer();
-    m_self->prompt();
+    console.clearBuffer();
+    console.prompt();
     return 0;
 }

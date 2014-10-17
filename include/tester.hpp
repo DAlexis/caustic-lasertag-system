@@ -12,11 +12,12 @@
 class Tester
 {
 public:
-    void testSDCard();
-    void testFreeMem();
-    void testSoundWav(const char* filename);
+    static void testSDCard(const char*);
+    static void testFreeMem(const char*);
+    static void testSoundWav(const char* filename);
+    static void registerCommands();
 };
 
-void registerTests();
+extern Tester tester;
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_TESTER_H_ */

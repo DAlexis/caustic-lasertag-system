@@ -13,7 +13,7 @@
 
 unsigned char sdcCommand[6];
 
-static SPIManager* spi = nullptr;
+
 
 void sdc_assert(void)
 {
@@ -23,7 +23,7 @@ void sdc_assert(void)
 void sdc_deassert(void)
 {
 	GPIOA->ODR |= GPIO_Pin_4;
-	spi->send_single(0xFF); // send 8 clocks for SDC to set SDO tristate
+	SPI1Manager.send_single(0xFF); // send 8 clocks for SDC to set SDO tristate
 }
 
 uint8_t sdc_isConn(void)
@@ -54,14 +54,14 @@ void sdc_sendCommand(uint8_t command, uint8_t par1, uint8_t par2, uint8_t par3, 
 	{
 		sdcCommand[5] = 0xFF;
 	}
-	spi->send(sdcCommand, 6);
+	SPI1Manager.send(sdcCommand, 6);
 }
 
 uint8_t sdc_getResponse(uint8_t response)
 {
 	for(uint8_t n = 0; n < 8; n++)
 	{
-	    uint8_t res = spi->receive_single();
+	    uint8_t res = SPI1Manager.receive_single();
 	    //printf("res=%d\n", res);
 		if (res == response)
 		{
@@ -98,10 +98,8 @@ DSTATUS disk_initialize (
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	//printf("SPI init...\n");
-	if (spi == nullptr)
-	    spi = &SPIManagersPool::getInstance().get(SPI1);
 
-	spi->init(SPI_BaudRatePrescaler_256);
+	SPI1Manager.init(SPI_BaudRatePrescaler_256);
 	GPIOA->ODR |= GPIO_Pin_4;
 	//printf("Connection test...\n");
 	// check wether SDC is inserted into socket
@@ -115,7 +113,7 @@ DSTATUS disk_initialize (
 	//printf("Sending 10 0xFF's\n");
 	for (uint8_t i = 0; i < 10; i++)
 	{
-		spi->send_single(0xFF);
+		SPI1Manager.send_single(0xFF);
 	}
 
 	// assert SDC
@@ -145,7 +143,7 @@ DSTATUS disk_initialize (
 	// deassert the SDC
 	sdc_deassert();
 
-	spi->init(SPI_BaudRatePrescaler_8);
+	SPI1Manager.init(SPI_BaudRatePrescaler_8);
 
 	return 0;
 }
@@ -169,7 +167,7 @@ DSTATUS disk_status (
 	/*
 	sdc_assert();
 	sdc_sendCommand(SDC_SEND_STATUS, 0, 0, 0, 0);
-	spi->receive(result, 2);
+	SPI1Manager.receive(result, 2);
 	sdc_deassert();
 	
 	if (result[0] & 0x01)
@@ -220,8 +218,8 @@ DRESULT disk_read (
 		while(count)
 		{
 			while(sdc_getResponse(0xFE)); // wait for data token 0xFE
-			spi->receive(buff, 512); // read 512 bytes
-			spi->receive(buf, 2); // receive two byte CRC
+			SPI1Manager.receive(buff, 512); // read 512 bytes
+			SPI1Manager.receive(buf, 2); // receive two byte CRC
 			count--;
 			buff += 512;
 		}
@@ -234,11 +232,11 @@ DRESULT disk_read (
 		sdc_sendCommand(SDC_READ_SINGLE_BLOCK, ((sector>>24)&0xFF), ((sector>>16)&0xFF), ((sector>>8)&0xFF), (sector&0xFF));
 		while(sdc_getResponse(0x00)); // wait for command acknowledgement
 		while(sdc_getResponse(0xFE)); // wait for data token 0xFE
-		spi->receive(buff, 512); // receive data
-		spi->receive(buf, 2); // receive two byte CRC
+		SPI1Manager.receive(buff, 512); // receive data
+		SPI1Manager.receive(buf, 2); // receive two byte CRC
 	}
 	
-	while(!spi->receive_single()); // wait until card is not busy anymore
+	while(!SPI1Manager.receive_single()); // wait until card is not busy anymore
 	
 	sdc_deassert(); // deassert SDC 
 	
@@ -279,45 +277,45 @@ DRESULT disk_write (
 		// start multiple sector write
 		sdc_sendCommand(SDC_WRITE_MULTIPLE_BLOCK, ((sector>>24)&0xFF), ((sector>>16)&0xFF), ((sector>>8)&0xFF), (sector&0xFF));
 		while(sdc_getResponse(0x00)); // wait for R1 response
-		spi->send_single(0xFF);  // send one byte gap
+		SPI1Manager.send_single(0xFF);  // send one byte gap
 		
 		while(count)
 		{
-			spi->send_single(0xFC); // send multi byte data token 0xFC
-			spi->send((unsigned char*)buff, 512); // send 512 bytes
-			spi->send(buf, 2); // send two byte CRC
+			SPI1Manager.send_single(0xFC); // send multi byte data token 0xFC
+			SPI1Manager.send((unsigned char*)buff, 512); // send 512 bytes
+			SPI1Manager.send(buf, 2); // send two byte CRC
 			
 			// check if card has accepted data
-			result = spi->receive_single();
+			result = SPI1Manager.receive_single();
 			if( (result & 0x1F) != 0x05)
 			{
 				return RES_ERROR;
 			}
 			count--;
 			buff += 512;
-			while(!spi->receive_single()); // wait until SD card is ready
+			while(!SPI1Manager.receive_single()); // wait until SD card is ready
 		}
 		
-		spi->send_single(0xFD); // send stop transmission data token 0xFD
-		spi->send_single(0xFF);  // send one byte gap
+		SPI1Manager.send_single(0xFD); // send stop transmission data token 0xFD
+		SPI1Manager.send_single(0xFF);  // send one byte gap
 	}
 	else // if single sector is to be written
 	{
 		sdc_sendCommand(SDC_WRITE_BLOCK, ((sector>>24)&0xFF), ((sector>>16)&0xFF), ((sector>>8)&0xFF), (sector&0xFF));
 		while(sdc_getResponse(0x00)); // wait for R1 response
-		spi->send_single(0xFF);  // send one byte gap
-		spi->send_single(0xFE); // send data token 0xFE
-		spi->send((unsigned char*)buff, 512); // send data
-		spi->send(buf, 2); // send two byte CRC
+		SPI1Manager.send_single(0xFF);  // send one byte gap
+		SPI1Manager.send_single(0xFE); // send data token 0xFE
+		SPI1Manager.send((unsigned char*)buff, 512); // send data
+		SPI1Manager.send(buf, 2); // send two byte CRC
 		// check if card has accepted data
-		result = spi->receive_single();
+		result = SPI1Manager.receive_single();
 		if( (result & 0x1F) != 0x05)
 		{
 			return RES_ERROR;
 		}
 	}
 	
-	while(!spi->receive_single()); // wait until card is not busy anymore
+	while(!SPI1Manager.receive_single()); // wait until card is not busy anymore
 	
 	sdc_deassert(); // deassert SDC 
 	
