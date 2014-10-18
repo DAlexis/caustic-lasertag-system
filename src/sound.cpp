@@ -11,14 +11,22 @@
 #include <stdio.h>
 #include <string.h>
 
-#define CLOCK_FREQ          4000000/*2*13439475*/ //2*13434400
+#define CLOCK_FREQ          24000000//12000000/*2*13439475*/ //2*13434400
 #define SAMPLE_RATE         44100
 
+/*
 #define SAMPLE_TIMER_PRESCALER      (CLOCK_FREQ / 2 / SAMPLE_RATE)
 #define FRAGMENT_TIMER_PERIOD         (2*SOUND_BUFFER_SIZE)-1
 
 #define PWM_PRESCALER       0
 #define PWM_PERIOD          ((2*CLOCK_FREQ) / (PWM_PRESCALER + 1) / SAMPLE_RATE)
+*/
+
+#define PWM_PRESCALER       0
+#define PWM_PERIOD          ( (CLOCK_FREQ) / (PWM_PRESCALER+1) / (SAMPLE_RATE) )
+
+#define FRAGMENT_TIMER_RPESCALER    (PWM_PRESCALER+1)*100-1
+#define FRAGMENT_TIMER_PERIOD       (PWM_PERIOD*SOUND_BUFFER_SIZE/100)-1
 
 SoundPlayer sound;
 
@@ -37,9 +45,15 @@ void SoundPlayer::setVerbose(bool flag)
     m_verbose = flag;
 }
 
+void SoundPlayer::printParameters()
+{
+    printf("FRAGMENT_TIMER_RPESCALER: %d, PWM_PERIOD: %d\n", FRAGMENT_TIMER_RPESCALER, PWM_PERIOD);
+}
+
 void SoundPlayer::init()
 {
     printf("Sound system initialization...\n");
+    printParameters();
     initPWMTimer();
     initSamplerTimer();
     initFragmentTimer();
@@ -56,7 +70,7 @@ void SoundPlayer::playWav(const char* filename)
     }
     if (!readHeader())
         return;
-
+    m_needStop = false;
     loadFragment(m_pCurrentBuffer);
     loadFragment(m_pNextBuffer);
     playCurrentBuffer();
@@ -65,6 +79,7 @@ void SoundPlayer::playWav(const char* filename)
 
 void SoundPlayer::stop()
 {
+    m_needStop = true;
 }
 
 bool SoundPlayer::readHeader()
@@ -133,14 +148,22 @@ void SoundPlayer::swapBuffers()
 }
 
 void SoundPlayer::normalizeBuffer(AudioBuffer* buffer)
-{
+{/*
+    unsigned int div = 32767 / (PWM_PERIOD/2);
+    int16_t* source = reinterpret_cast<int16_t*>(buffer->buffer);*/
     for (int i=0; i<buffer->size; i++)
-    {/*
-        int16_t* source = (int16_t*) &(buffer->buffer[i]);
-        buffer->buffer[i] = *source + 32767;
+    {
+        buffer->buffer[i] = m_tmpBuffer[i] + 32767;
+        //to[i] = to[i] >> 4;
+        buffer->buffer[i] = ((unsigned int) buffer->buffer[i] * (PWM_PERIOD/2)) / (32767);
+        /*
+        buffer->buffer[i] = ( ( (int) source[i] ) + 32767) / div;
+        */
+/*
+        buffer->buffer[i] = source[i] + 32767;
         buffer->buffer[i] = ((unsigned int) buffer->buffer[i] * (PWM_PERIOD/2)) / (32767);*/
-        buffer->buffer[i] = i*PWM_PERIOD/buffer->size;
-        //printf("new: %u\n", buffer->buffer[i]);
+        //buffer->buffer[i] = ((int)i*PWM_PERIOD)/buffer->size;
+        //printf("new: %u, source: %d\n", buffer->buffer[i], m_tmpBuffer[i]    );
     }
 }
 
@@ -148,12 +171,13 @@ bool SoundPlayer::loadFragment(AudioBuffer* buffer)
 {
     FRESULT res;
     if (m_needStop) {
-        m_needStop = false;
+        //m_needStop = false;
         return true;
     }
 
     UINT readed = 0;
-    res = f_read(&m_fil, buffer->buffer, SOUND_BUFFER_SIZE*sizeof(uint16_t), &readed);
+    res = f_read(&m_fil, /*buffer->buffer*/ m_tmpBuffer, SOUND_BUFFER_SIZE*sizeof(int16_t), &readed);
+    //printf("r\n");
     if (res != FR_OK)
     {
         //stop_playing();
@@ -189,7 +213,7 @@ void SoundPlayer::initPWMTimer()
 
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1; //Control with dead zone.
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;  //Counter direction
-    TIM_TimeBaseInitStructure.TIM_Prescaler = PWM_PRESCALER;   //Timer clock = sysclock /(TIM_Prescaler+1) = 168M
+    TIM_TimeBaseInitStructure.TIM_Prescaler = PWM_PRESCALER;   //Timer clock = sysclock /(TIM_Prescaler+1) = 168M - ????
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
     TIM_TimeBaseInitStructure.TIM_Period = PWM_PERIOD; //Period = (TIM counter clock / TIM output clock) - 1
     TIM_TimeBaseInit(TIM16,&TIM_TimeBaseInitStructure);
@@ -251,10 +275,13 @@ void SoundPlayer::initFragmentTimer()
 
     TIM_TimeBaseInitTypeDef TIM_InitStructure;
     TIM_TimeBaseStructInit(&TIM_InitStructure);
-    TIM_InitStructure.TIM_Prescaler = SAMPLE_TIMER_PRESCALER;
+    TIM_InitStructure.TIM_Prescaler = FRAGMENT_TIMER_RPESCALER;
     TIM_InitStructure.TIM_Period = FRAGMENT_TIMER_PERIOD;
     TIM_TimeBaseInit(TIM6, &TIM_InitStructure);
 
+
+    // To prevent interruption after initialization
+    TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
     NVIC_EnableIRQ(TIM6_DAC_IRQn);
     TIM_ITConfig(TIM6, TIM_DIER_UIE, ENABLE);
 }
@@ -286,8 +313,10 @@ void SoundPlayer::initDMA(AudioBuffer* source)
 
 void SoundPlayer::playCurrentBuffer()
 {
-    if (m_pCurrentBuffer->size == 0)
+    if (m_needStop || m_pCurrentBuffer->size == 0) {
+        m_needStop = true;
         return;
+    }
 
 
     //DAC_Cmd(DAC_CHANNEL, ENABLE);
@@ -299,13 +328,21 @@ void SoundPlayer::playCurrentBuffer()
     initDMA(m_pCurrentBuffer);
     PWMTimerEnable();
     fragmentTimerEnable();
-
 }
 
 void SoundPlayer::fragmentTimerEnable()
 {
     TIM_Cmd(TIM6, ENABLE);
+    NVIC_EnableIRQ(TIM6_DAC_IRQn);
 }
+
+
+void SoundPlayer::fragmentTimerDisable()
+{
+    TIM_Cmd(TIM6, DISABLE);
+    NVIC_DisableIRQ(TIM6_DAC_IRQn);
+}
+
 
 void SoundPlayer::PWMTimerEnable()
 {
@@ -315,23 +352,38 @@ void SoundPlayer::PWMTimerEnable()
     TIM_DMACmd(TIM16, TIM_DMA_CC1, ENABLE);
 }
 
+void SoundPlayer::PWMTimerDisable()
+{
+    TIM_Cmd(TIM16, DISABLE);
+    //TIM_CtrlPWMOutputs(TIM16, DISABLE);
+    DMA_Cmd(DMA1_Channel6, DISABLE);
+    TIM_DMACmd(TIM16, TIM_DMA_CC1, DISABLE);
+}
+
+void SoundPlayer::stopTimers()
+{
+    PWMTimerDisable();
+    fragmentTimerDisable();
+    printf("sound end\n");
+}
+
 void SoundPlayer::fragmentTimerIRQ()
 {
-    if (m_pCurrentBuffer->size != SOUND_BUFFER_SIZE)
-    {
-        printf("sound end\n");
-        TIM_Cmd(TIM6, DISABLE);
+    //PWMTimerDisable();
 
-        TIM_Cmd(TIM16, DISABLE);
-            TIM_CtrlPWMOutputs(TIM16, DISABLE);
-            DMA_Cmd(DMA1_Channel6, DISABLE);
-            TIM_DMACmd(TIM16, TIM_DMA_CC1, DISABLE);
+    if (m_needStop)
+    {
+        stopTimers();
         return;
     }
+
     swapBuffers();
     playCurrentBuffer();
-    if (!loadFragment(m_pNextBuffer))
+    if (!loadFragment(m_pNextBuffer)) {
+
         m_needStop = true;
+        stopTimers();
+    }
 }
 
 extern "C" {

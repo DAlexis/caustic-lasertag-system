@@ -20,6 +20,7 @@ void Tester::registerCommands()
 {
     console.registerCommand("testsd", "test microSD card reading from file 1.txt", testSDCard);
     console.registerCommand("wav", "play sound from file", testSoundWav);
+    console.registerCommand("stop", "stop sound plaing", stopSound);
     console.registerCommand("testmem", "test free mem amount", testFreeMem);
 }
 
@@ -70,5 +71,11 @@ void Tester::testSoundWav(const char*)
 {
     SDCard.mount();
     sound.playWav("piknik.wav");
-    SDCard.umount();
+    //sound.playWav("sine.wav");
+    //SDCard.umount();
+}
+
+void Tester::stopSound(const char*)
+{
+    sound.stop();
 }

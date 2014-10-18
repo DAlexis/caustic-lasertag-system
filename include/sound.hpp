@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_SOUND_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_SOUND_HPP_
 
-#define SOUND_BUFFER_SIZE   256
+#define SOUND_BUFFER_SIZE   512
 
 #include <stdint.h>
 #include "ff.h"
@@ -53,6 +53,7 @@ private:
 
     bool readHeader();
     void printInfo();
+    void printParameters();
     bool loadFragment(AudioBuffer* buffer);
     void swapBuffers();
     void normalizeBuffer(AudioBuffer* buffer);
@@ -61,6 +62,10 @@ private:
 
     void fragmentTimerEnable();
     void PWMTimerEnable();
+    void fragmentTimerDisable();
+    void PWMTimerDisable();
+
+    void stopTimers();
 
     WavHeader m_header;
     const char* m_filename;
@@ -71,6 +76,7 @@ private:
     bool m_verbose;
     bool m_needStop;
     AudioBuffer m_buffer1, m_buffer2;
+    int16_t m_tmpBuffer[SOUND_BUFFER_SIZE];
     AudioBuffer *m_pCurrentBuffer, *m_pNextBuffer;
 };
 

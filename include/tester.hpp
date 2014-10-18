@@ -15,7 +15,9 @@ public:
     static void testSDCard(const char*);
     static void testFreeMem(const char*);
     static void testSoundWav(const char* filename);
+    static void stopSound(const char*);
     static void registerCommands();
+
 };
 
 extern Tester tester;
