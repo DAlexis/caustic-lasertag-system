@@ -143,7 +143,7 @@ DSTATUS disk_initialize (
 	// deassert the SDC
 	sdc_deassert();
 
-	SPI1Manager.init(SPI_BaudRatePrescaler_8);
+	SPI1Manager.init(SPI_BaudRatePrescaler_2);
 
 	return 0;
 }

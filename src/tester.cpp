@@ -49,11 +49,13 @@ void Tester::testSDCard(const char*)
         return;
     }
     printf("success!\n");
-    f_gets(buffer, 6, &fil);
+    //f_gets(buffer, 6, &fil);
+    UINT readed=0;
+    f_read(&fil, buffer, 6, &readed);
     printf("I read: \"%s\"\n", buffer);
-    f_puts(buffer, &fil);
+    //f_puts(buffer, &fil);
     f_close(&fil); // close the file
-    SDCard.umount();
+    //SDCard.umount();
 }
 
 void Tester::testFreeMem(const char*)

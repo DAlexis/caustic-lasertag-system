@@ -148,7 +148,7 @@ void RadioManager::init()
 {
     printf("Radio module initialization...\n");
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    SPI2Manager.init(SPI_BaudRatePrescaler_8);
+    SPI2Manager.init(SPI_BaudRatePrescaler_256);//SPI_BaudRatePrescaler_8);
 
     //////////////////////
     // Chip enable line init
@@ -195,7 +195,7 @@ void RadioManager::chipDeselect()
 void RadioManager::readTXAdress()
 {
     chipSelect();
-    unsigned char status = SPI2Manager.send_single(NRF_REG_TX_ADDR);
+    unsigned char status = SPI2Manager.send_single(NRF_REG_EN_RXADDR);
 
     unsigned char result[5];
     SPI2Manager.receive(result, 5);
@@ -207,9 +207,9 @@ void RadioManager::readTXAdress()
 void RadioManager::writeTXAdress()
 {
     chipSelect();
-    unsigned char status = SPI2Manager.send_single(W_REGISTER(NRF_REG_TX_ADDR));
+    unsigned char status = SPI2Manager.send_single(W_REGISTER(NRF_REG_EN_RXADDR));
 
-    unsigned char adress[5]={0xFF, 0x00, 0xFF, 0x00, 0xFF};
+    unsigned char adress[5]={63, 63, 63, 63, 63};
     SPI2Manager.send(adress, 5);
     chipDeselect();
     printf("status: %d\n", (int) status);

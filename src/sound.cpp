@@ -58,6 +58,7 @@ void SoundPlayer::init()
     initPWMTimer();
     initSamplerTimer();
     initFragmentTimer();
+    printf("tmp_buff=%p, buff1=%p, buff2=%p", (void*)m_tmpBuffer, (void*)m_buffer1.buffer, (void*)m_buffer2.buffer);
 }
 
 void SoundPlayer::playWav(const char* filename)

@@ -83,13 +83,13 @@ void SPIManager::init(uint32_t prescaler)
         GPIO_InitStruct.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_15;
         GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
         GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIOA, &GPIO_InitStruct);
+        GPIO_Init(GPIOB, &GPIO_InitStruct);
 
         // So input
         GPIO_InitStruct.GPIO_Pin = GPIO_Pin_14;
         GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
         GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIOA, &GPIO_InitStruct);
+        GPIO_Init(GPIOB, &GPIO_InitStruct);
 
         // enable peripheral clock
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
@@ -104,10 +104,10 @@ void SPIManager::init(uint32_t prescaler)
         SPI_InitStruct.SPI_Mode = SPI_Mode_Master;     // transmit in master mode, NSS pin has to be always high
         SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b; // one packet of data is 8 bits wide
         SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;        // clock is low when idle
-        SPI_InitStruct.SPI_CPHA = SPI_CPHA_2Edge;      // data sampled at second edge
+        SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;      // data sampled at second edge
         // For some reason (I dont know!) SPI_NSSInternalSoft_Set cause MC freeze
         SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;// | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
-        SPI_InitStruct.SPI_BaudRatePrescaler = prescaler; // SPI frequency is APB2 frequency / 4
+        SPI_InitStruct.SPI_BaudRatePrescaler = prescaler; // SPI frequency is APB1 frequency / prescaler
         SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;// data is transmitted MSB first
         SPI_Init(m_SPI, &SPI_InitStruct);
 

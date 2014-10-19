@@ -88,7 +88,8 @@ int main()
     printf("Heap begin: %p, heap limit: %p, size=%d\n", (void*) &_Heap_Begin, (void*) &_Heap_Limit, &_Heap_Limit-&_Heap_Begin );
     sound.init();
     radio.init();
-
+    printf("sizeof(uint16_t)=%d, sizeof(int16_t)=%d\n", sizeof(uint16_t), sizeof(int16_t));
+    //Tester::testSDCard("qqq");
     printf("Initialization done\n");
 
     //mesureStack(0);

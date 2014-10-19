@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_SOUND_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_SOUND_HPP_
 
-#define SOUND_BUFFER_SIZE   512
+#define SOUND_BUFFER_SIZE   200
 
 #include <stdint.h>
 #include "ff.h"
