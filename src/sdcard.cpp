@@ -48,3 +48,8 @@ bool SDCardManager::isReady()
 {
     return m_ready;
 }
+
+FIL* SDCardManager::getDefaultFIL()
+{
+    return &m_fil;
+}

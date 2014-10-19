@@ -6,8 +6,12 @@
  */
 
 #include "sound.hpp"
+#include "sdcard.hpp"
 #include "ff.h"
 #include "stm32f10x.h"
+#include "memtest.h"
+
+
 #include <stdio.h>
 #include <string.h>
 
@@ -63,8 +67,9 @@ void SoundPlayer::init()
 
 void SoundPlayer::playWav(const char* filename)
 {
+    WHERE_AM_I;
     FRESULT res;
-    res = f_open(&m_fil, filename, FA_OPEN_EXISTING | FA_READ); // open existing file in read and write mode
+    res = f_open(SDCard.getDefaultFIL(), filename, FA_OPEN_EXISTING | FA_READ); // open existing file in read and write mode
     if (res)
     {
         if (m_verbose) printf("Cannot open file!\n");
@@ -88,7 +93,7 @@ bool SoundPlayer::readHeader()
 {
     FRESULT res;
     UINT readed = 0;
-    res = f_read (&m_fil, &m_header, sizeof(m_header), &readed);
+    res = f_read (SDCard.getDefaultFIL(), &m_header, sizeof(m_header), &readed);
     if (readed != sizeof(m_header))
     {
         if (m_verbose) printf("Incomplete wav file.\n");
@@ -178,7 +183,7 @@ bool SoundPlayer::loadFragment(AudioBuffer* buffer)
     }
 
     UINT readed = 0;
-    res = f_read(&m_fil, /*buffer->buffer*/ m_tmpBuffer, SOUND_BUFFER_SIZE*sizeof(int16_t), &readed);
+    res = f_read(SDCard.getDefaultFIL(), /*buffer->buffer*/ m_tmpBuffer, SOUND_BUFFER_SIZE*sizeof(int16_t), &readed);
     //printf("r\n");
     if (res != FR_OK)
     {

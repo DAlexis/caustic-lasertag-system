@@ -5,6 +5,9 @@
  *      Author: alexey
  */
 
+
+#include "memtest.h"
+
 #include "console.hpp"
 #include <stdio.h>
 #include <stdlib.h>
@@ -83,6 +86,7 @@ void Console::prompt()
 
 int Console::receiveStringCb(char* buffer, int)
 {
+    WHERE_AM_I;
     buffer[BUFFER_SIZE-1] = '\0';
     console.fixBackspaces();
     if (console.checkEmpty()) {

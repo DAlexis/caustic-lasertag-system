@@ -12,6 +12,7 @@
 #include "sound.hpp"
 #include "sdcard.hpp"
 #include "radio.hpp"
+#include "memtest.h"
 #include <stdio.h>
 #include <malloc.h>
 
@@ -29,8 +30,7 @@ void Tester::registerCommands()
 
 void Tester::testSDCard(const char*)
 {
-
-    FIL fil;
+    //WHERE_AM_I;
     FRESULT res;
     char buffer[6];
     //extern SDCardManager SDCard;
@@ -42,7 +42,7 @@ void Tester::testSDCard(const char*)
     }
 
     printf("Opening file: \"1.txt\"...\n");
-    res = f_open(&fil, "1.txt", FA_OPEN_EXISTING | FA_WRITE | FA_READ); // open existing file in read and write mode
+    res = f_open(SDCard.getDefaultFIL(), "1.txt", FA_OPEN_EXISTING | FA_WRITE | FA_READ); // open existing file in read and write mode
     if (res)
     {
         printf("error %d occured!\n", res);
@@ -51,10 +51,10 @@ void Tester::testSDCard(const char*)
     printf("success!\n");
     //f_gets(buffer, 6, &fil);
     UINT readed=0;
-    f_read(&fil, buffer, 6, &readed);
+    f_read(SDCard.getDefaultFIL(), buffer, 6, &readed);
     printf("I read: \"%s\"\n", buffer);
     //f_puts(buffer, &fil);
-    f_close(&fil); // close the file
+    f_close(SDCard.getDefaultFIL()); // close the file
     //SDCard.umount();
 }
 

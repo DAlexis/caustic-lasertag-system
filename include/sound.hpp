@@ -23,6 +23,7 @@ public:
     void setVerbose(bool flag);
 
     void fragmentTimerIRQ();
+    //FIL m_fil;
 private:
     struct WavHeader {
         char riff[4];
@@ -66,17 +67,17 @@ private:
     void PWMTimerDisable();
 
     void stopTimers();
-
+    int16_t m_tmpBuffer[SOUND_BUFFER_SIZE];
     WavHeader m_header;
     const char* m_filename;
 
     FATFS FatFs;
-    FIL m_fil;
+
 
     bool m_verbose;
     bool m_needStop;
     AudioBuffer m_buffer1, m_buffer2;
-    int16_t m_tmpBuffer[SOUND_BUFFER_SIZE];
+
     AudioBuffer *m_pCurrentBuffer, *m_pNextBuffer;
 };
 

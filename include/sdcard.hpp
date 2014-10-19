@@ -18,10 +18,11 @@ public:
     void umount();
     bool isReady();
 
-
+    FIL* getDefaultFIL();
 private:
     bool m_ready;
     FATFS m_fatfs;
+    FIL m_fil;
 };
 
 extern SDCardManager SDCard;

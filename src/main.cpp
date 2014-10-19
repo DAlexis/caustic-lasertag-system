@@ -13,6 +13,7 @@
 #include "tester.hpp"
 #include "sound.hpp"
 #include "radio.hpp"
+#include "memtest.h"
 
 #include <stdio.h>
 #include "diag/Trace.h"
@@ -55,6 +56,17 @@ void mesureHeap()
     printf("Allocated %d bytes, end at %p\n", counter*step, prelast);
 }
 
+void printMemInfo()
+{
+
+    WHERE_AM_I;
+    extern char _Heap_Begin; // Defined by the linker.
+    extern char _Heap_Limit;
+    extern char  __stack;
+    extern char _Main_Stack_Limit;
+    printf("_end_noinit=_Heap_Begin: %p, __stack -__Main_Stack_Size=heap limit: %p, size=%d\n", (void*) &_Heap_Begin, (void*) &_Heap_Limit, &_Heap_Limit-&_Heap_Begin );
+    printf("__stack=%p, _Main_Stack_Limit=%p\n", (void*) &__stack, (void*)&_Main_Stack_Limit);
+}
 
 int main()
 {
@@ -71,8 +83,7 @@ int main()
     tester.registerCommands();
 
 
-    extern char _Heap_Begin; // Defined by the linker.
-    extern char _Heap_Limit;
+
 /*
     char* pb0 = (char*) malloc(1);
     char* pb1 = (char*) malloc(1);
@@ -85,10 +96,13 @@ int main()
             pb2-pb1);
 
 */
-    printf("Heap begin: %p, heap limit: %p, size=%d\n", (void*) &_Heap_Begin, (void*) &_Heap_Limit, &_Heap_Limit-&_Heap_Begin );
+
     sound.init();
     radio.init();
-    printf("sizeof(uint16_t)=%d, sizeof(int16_t)=%d\n", sizeof(uint16_t), sizeof(int16_t));
+
+    printMemInfo();
+    //printf("sizeof(uint16_t)=%d, sizeof(int16_t)=%d\n", sizeof(uint16_t), sizeof(int16_t));
+
     //Tester::testSDCard("qqq");
     printf("Initialization done\n");
 
