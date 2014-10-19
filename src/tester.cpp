@@ -11,6 +11,7 @@
 #include "console.hpp"
 #include "sound.hpp"
 #include "sdcard.hpp"
+#include "radio.hpp"
 #include <stdio.h>
 #include <malloc.h>
 
@@ -22,6 +23,8 @@ void Tester::registerCommands()
     console.registerCommand("wav", "play sound from file", testSoundWav);
     console.registerCommand("stop", "stop sound plaing", stopSound);
     console.registerCommand("testmem", "test free mem amount", testFreeMem);
+    console.registerCommand("txa", "read tx adress", readTXAdr);
+    console.registerCommand("txw", "write tx adress", writeTXAdr);
 }
 
 void Tester::testSDCard(const char*)
@@ -79,3 +82,14 @@ void Tester::stopSound(const char*)
 {
     sound.stop();
 }
+
+void Tester::readTXAdr(const char*)
+{
+    radio.readTXAdress();
+}
+
+void Tester::writeTXAdr(const char*)
+{
+    radio.writeTXAdress();
+}
+

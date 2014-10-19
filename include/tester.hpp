@@ -16,6 +16,9 @@ public:
     static void testFreeMem(const char*);
     static void testSoundWav(const char* filename);
     static void stopSound(const char*);
+    static void readTXAdr(const char*);
+    static void writeTXAdr(const char*);
+
     static void registerCommands();
 
 };

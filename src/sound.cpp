@@ -22,11 +22,12 @@
 #define PWM_PERIOD          ((2*CLOCK_FREQ) / (PWM_PRESCALER + 1) / SAMPLE_RATE)
 */
 
-#define PWM_PRESCALER       0
-#define PWM_PERIOD          ( (CLOCK_FREQ) / (PWM_PRESCALER+1) / (SAMPLE_RATE) )
+#define PWM_PRESCALER           (1-1)
+#define PWM_REPETITIONS_COUNTER (1-1)
+#define PWM_PERIOD              ( (CLOCK_FREQ) / (PWM_PRESCALER+1) / (PWM_REPETITIONS_COUNTER+1) / (SAMPLE_RATE) )
 
-#define FRAGMENT_TIMER_RPESCALER    (PWM_PRESCALER+1)*100-1
-#define FRAGMENT_TIMER_PERIOD       (PWM_PERIOD*SOUND_BUFFER_SIZE/100)-1
+#define FRAGMENT_TIMER_RPESCALER    ( (PWM_PRESCALER+1)*100-1 )
+#define FRAGMENT_TIMER_PERIOD       (PWM_PERIOD*(PWM_REPETITIONS_COUNTER+1)*SOUND_BUFFER_SIZE/100-1)
 
 SoundPlayer sound;
 
@@ -214,7 +215,7 @@ void SoundPlayer::initPWMTimer()
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1; //Control with dead zone.
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;  //Counter direction
     TIM_TimeBaseInitStructure.TIM_Prescaler = PWM_PRESCALER;   //Timer clock = sysclock /(TIM_Prescaler+1) = 168M - ????
-    TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
+    TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;//PWM_REPETITIONS_COUNTER;
     TIM_TimeBaseInitStructure.TIM_Period = PWM_PERIOD; //Period = (TIM counter clock / TIM output clock) - 1
     TIM_TimeBaseInit(TIM16,&TIM_TimeBaseInitStructure);
 
@@ -240,7 +241,7 @@ void SoundPlayer::initPWMTimer()
     TIM_BDTRInitStructure.TIM_OSSRState = TIM_OSSRState_Enable;
     TIM_BDTRInitStructure.TIM_OSSIState = TIM_OSSIState_Enable;
     TIM_BDTRInitStructure.TIM_LOCKLevel = TIM_LOCKLevel_1;
-    TIM_BDTRInitStructure.TIM_DeadTime = 11;
+    TIM_BDTRInitStructure.TIM_DeadTime = 39;
     TIM_BDTRInitStructure.TIM_Break = TIM_Break_Enable;
     TIM_BDTRInitStructure.TIM_BreakPolarity = TIM_BreakPolarity_High;
     TIM_BDTRInitStructure.TIM_AutomaticOutput = TIM_AutomaticOutput_Enable;

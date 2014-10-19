@@ -15,7 +15,7 @@ class SPIManager
 public:
     SPIManager(SPI_TypeDef* SPIx);
     void init(uint32_t prescaler);
-    void send_single(unsigned char data);
+    unsigned char send_single(unsigned char data);
     unsigned char receive_single();
     void send(unsigned char* data, unsigned int length);
     void receive(unsigned char* data, unsigned int length);
@@ -25,5 +25,6 @@ private:
 };
 
 extern SPIManager SPI1Manager;
+extern SPIManager SPI2Manager;
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_SPI_HPP_ */
