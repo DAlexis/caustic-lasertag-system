@@ -194,23 +194,33 @@ void RadioManager::chipDeselect()
 
 void RadioManager::readTXAdress()
 {
-    chipSelect();
-    unsigned char status = SPI2Manager.send_single(NRF_REG_EN_RXADDR);
-
     unsigned char result[5];
-    SPI2Manager.receive(result, 5);
-    chipDeselect();
+    unsigned char status = readReg(NRF_REG_EN_RXADDR, 5, result);
     printf("status: %d, result: %d %d %d %d %d\n", (int) status,
             (int) result[0], (int) result[1], (int) result[2], (int) result[3], (int) result[4]);
 }
 
 void RadioManager::writeTXAdress()
 {
-    chipSelect();
-    unsigned char status = SPI2Manager.send_single(W_REGISTER(NRF_REG_EN_RXADDR));
-
     unsigned char adress[5]={63, 63, 63, 63, 63};
-    SPI2Manager.send(adress, 5);
-    chipDeselect();
+    unsigned char status = writeReg(NRF_REG_EN_RXADDR, 5, adress);
     printf("status: %d\n", (int) status);
+}
+
+unsigned char RadioManager::writeReg(unsigned char reg, unsigned char size, unsigned char *data)
+{
+    chipSelect();
+    unsigned char status = SPI2Manager.send_single(W_REGISTER(reg));
+    SPI2Manager.send(data, size);
+    chipDeselect();
+    return status;
+}
+
+unsigned char RadioManager::readReg(unsigned char reg, unsigned char size, unsigned char *data)
+{
+    chipSelect();
+    unsigned char status = SPI2Manager.send_single(R_REGISTER(reg));
+    SPI2Manager.receive(data, size);
+    chipDeselect();
+    return status;
 }

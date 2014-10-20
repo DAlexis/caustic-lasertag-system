@@ -17,6 +17,8 @@ public:
     void readTXAdress();
     void writeTXAdress();
 private:
+    unsigned char writeReg(unsigned char reg, unsigned char size, unsigned char *data);
+    unsigned char readReg(unsigned char reg, unsigned char size, unsigned char *data);
     void chipEnableOn();
     void chipEnableOff();
     void chipSelect();
