@@ -26,6 +26,8 @@ void Tester::registerCommands()
     console.registerCommand("testmem", "test free mem amount", testFreeMem);
     console.registerCommand("txa", "read tx adress", readTXAdr);
     console.registerCommand("txw", "write tx adress", writeTXAdr);
+    console.registerCommand("tx", "test transmission", testTX);
+    console.registerCommand("rs", "radio module status", radioStatus);
 }
 
 void Tester::testSDCard(const char*)
@@ -95,3 +97,17 @@ void Tester::writeTXAdr(const char*)
     radio.writeTXAdress();
 }
 
+void Tester::testTX(const char*)
+{
+
+    radio.testTX();
+    while (!radio.isTXEmpty())
+    {
+        printf("Transmission!\n");
+    }
+}
+
+void Tester::radioStatus(const char*)
+{
+    radio.printStatus();
+}

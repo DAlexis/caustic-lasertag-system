@@ -19,6 +19,9 @@ public:
     static void readTXAdr(const char*);
     static void writeTXAdr(const char*);
 
+    static void testTX(const char*);
+    static void radioStatus(const char*);
+
     static void registerCommands();
 
 };

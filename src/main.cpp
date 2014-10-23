@@ -98,6 +98,7 @@ int main()
 */
 
     sound.init();
+    for (volatile int i=0; i<1000000; i++) { }
     radio.init();
 
     printMemInfo();
