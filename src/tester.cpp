@@ -101,10 +101,6 @@ void Tester::testTX(const char*)
 {
 
     radio.testTX();
-    while (!radio.isTXEmpty())
-    {
-        printf("Transmission!\n");
-    }
 }
 
 void Tester::radioStatus(const char*)

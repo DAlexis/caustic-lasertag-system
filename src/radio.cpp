@@ -231,6 +231,13 @@ void RadioManager::chipDeselect()
     GPIO_SetBits(GPIOB, GPIO_Pin_12);
 }
 
+void RadioManager::CEImpulse()
+{
+    chipEnableOn();
+    for (volatile int i=0; i<3000; i++) { }
+    chipEnableOff();
+}
+
 void RadioManager::readTXAdress()
 {
     unsigned char result[5];
@@ -545,10 +552,7 @@ void RadioManager::sendData(unsigned char size, unsigned char* data)
     m_status = SPI2Manager.send_single(W_TX_PAYLOAD);
     SPI2Manager.send(data, size);
     chipDeselect();
-
-    chipEnableOn();
-    for (volatile int i=0; i<3000; i++) { }
-    chipEnableOff();
+    CEImpulse();
 
 }
 

@@ -104,6 +104,7 @@ public:
     void chipEnableOff();
     void chipSelect();
     void chipDeselect();
+    void CEImpulse();
     unsigned char m_status;
 
     unsigned char m_config;
