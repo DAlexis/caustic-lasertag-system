@@ -28,6 +28,8 @@ void Tester::registerCommands()
     console.registerCommand("txw", "write tx adress", writeTXAdr);
     console.registerCommand("tx", "test transmission", testTX);
     console.registerCommand("rs", "radio module status", radioStatus);
+    console.registerCommand("ftx", "flush TX", flushTX);
+    console.registerCommand("frx", "flush RX", flushRX);
 }
 
 void Tester::testSDCard(const char*)
@@ -106,4 +108,14 @@ void Tester::testTX(const char*)
 void Tester::radioStatus(const char*)
 {
     radio.printStatus();
+}
+
+void Tester::flushRX(const char*)
+{
+    radio.flushRX();
+}
+
+void Tester::flushTX(const char*)
+{
+    radio.flushTX();
 }

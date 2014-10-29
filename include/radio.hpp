@@ -10,18 +10,24 @@
 
 #include "spi.hpp"
 
+#define RADIO_ADDRESS_SIZE  5
+
 class RadioManager
 {
 public:
     RadioManager();
     void init();
-    void readTXAdress();
     void writeTXAdress();
     void printStatus();
     void testTX();
     void sendData(unsigned char size, unsigned char* data);
     void receiveData(unsigned char size, unsigned char* data);
     void resetAllIRQ();
+    void flushTX();
+    void flushRX();
+
+    void initReceiver();
+    void initTransmitter();
 //private:
     enum AdressWidth
     {
@@ -85,9 +91,11 @@ public:
 
     // RX_ADDR_Pn
     void setRXAddress(unsigned char channel, unsigned char* address);
+    void readRXAdresses();
 
     // TX_ADDR
     void setTXAddress(unsigned char* address);
+    void readTXAdress();
 
     // RX_PW_Pn
     void setRXPayloadLength(unsigned char channel, unsigned char payloadLength);
@@ -109,6 +117,13 @@ public:
 
     unsigned char m_config;
     unsigned char m_RFChannel;
+    unsigned char m_TXAdress[RADIO_ADDRESS_SIZE];
+    unsigned char m_RXAdressP0[RADIO_ADDRESS_SIZE];
+    unsigned char m_RXAdressP1[RADIO_ADDRESS_SIZE];
+    unsigned char m_RXAdressP2;
+    unsigned char m_RXAdressP3;
+    unsigned char m_RXAdressP4;
+    unsigned char m_RXAdressP5;
 };
 
 extern RadioManager radio;

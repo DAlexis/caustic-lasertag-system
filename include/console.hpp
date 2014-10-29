@@ -12,7 +12,7 @@
 #include <functional>
 
 #define BUFFER_SIZE     100
-#define COMMAND_DESCR_COUNT_MAX     10
+#define COMMAND_DESCR_COUNT_MAX     20
 
 typedef void (*Cmdline_command_cb)(const char* buffer);
 

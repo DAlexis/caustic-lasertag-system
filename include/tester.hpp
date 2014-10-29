@@ -22,6 +22,9 @@ public:
     static void testTX(const char*);
     static void radioStatus(const char*);
 
+    static void flushRX(const char*);
+    static void flushTX(const char*);
+
     static void registerCommands();
 
 };

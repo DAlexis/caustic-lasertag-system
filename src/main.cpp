@@ -14,11 +14,12 @@
 #include "sound.hpp"
 #include "radio.hpp"
 #include "memtest.h"
+#include "utils.hpp"
 
 #include <stdio.h>
 #include "diag/Trace.h"
 #include <stdlib.h>
-
+#include <functional>
 
 // ----------------------------------------------------------------------------
 //
@@ -68,13 +69,19 @@ void printMemInfo()
     printf("__stack=%p, _Main_Stack_Limit=%p\n", (void*) &__stack, (void*)&_Main_Stack_Limit);
 }
 
+void test(const char* w)
+{
+    printf("Hlo, %s\n", w);
+}
+
 int main()
 {
     // At this stage the system clock should have already been configured
     // at high speed.
     //__enable_irq();
     AliveIndicator alive;
-    USART1Manager.init(9600);
+    //USART1Manager.init(9600);
+    USART1Manager.init(921600);
 
     console.init(USART1Manager);
 
@@ -98,13 +105,15 @@ int main()
 */
 
     sound.init();
-    for (volatile int i=0; i<1000000; i++) { }
+    systemTimer.delay(200);
     radio.init();
 
     printMemInfo();
-    //printf("sizeof(uint16_t)=%d, sizeof(int16_t)=%d\n", sizeof(uint16_t), sizeof(int16_t));
 
-    //Tester::testSDCard("qqq");
+/*    std::function<void(void)> func1(test);
+    func1();*/
+    systemTimer.delay_async(1000, test, "tester");
+    //printf("sizeof(uint16_t)=%d, sizeof(int16_t)=%d\n", sizeof(uint16_t), sizeof(int16_t));
     printf("Initialization done\n");
 
     //mesureStack(0);
@@ -113,7 +122,7 @@ int main()
     while (1)
     {
         alive.blink();
-
+        //radio.testTX();
         //    printf("test\n");
     }
 }

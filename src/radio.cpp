@@ -7,7 +7,9 @@
 
 
 #include "radio.hpp"
+#include "utils.hpp"
 #include <stdio.h>
+#include <string.h>
 
 /**
  * Maximum number of bytes needed to store register information (largest
@@ -34,7 +36,7 @@
 #define NRF_REG_RX_ADDR_P2      0x0C
 #define NRF_REG_RX_ADDR_P3      0x0D
 #define NRF_REG_RX_ADDR_P4      0x0E
-#define NRF_REG_RX_ADDR_P5      0x1F
+#define NRF_REG_RX_ADDR_P5      0x0F
 #define NRF_REG_TX_ADDR         0x10
 #define NRF_REG_RX_PW_P0        0x11
 #define NRF_REG_RX_PW_P1        0x12
@@ -191,7 +193,35 @@ void RadioManager::init()
     //////////////////////
     // Configuring nrf24l01
 
-    setAutoACK(0, 1);
+    initReceiver();
+
+}
+
+void RadioManager::initReceiver()
+{
+    setAutoACK(0, 0);
+    enablePipe(0, 1);
+    setAdressWidth(AW_5BYTES);
+    setRFChannel(1);
+    setRXPayloadLength(0, 5);
+    /*setAutoACK(1, 0);
+    setAutoACK(2, 0);
+    setAutoACK(3, 0);
+    setAutoACK(4, 0);
+    setAutoACK(5, 0);
+    setupRetransmission(0, 0);*/
+    setRFSettings(0, 3, 1);
+    setRXPayloadLength(0, 5);
+    setupRetransmission(2, 15);
+    setConfig(0, 0, 1, 1, 1, 1, 1);
+    readRXAdresses();
+    readTXAdress();
+    chipEnableOn();
+}
+
+void RadioManager::initTransmitter()
+{
+    setAutoACK(0, 0);
     enablePipe(0, 1);
     setAdressWidth(AW_5BYTES);
     setRFChannel(1);
@@ -206,8 +236,8 @@ void RadioManager::init()
     setRXPayloadLength(0, 5);
     setupRetransmission(2, 15);
     setConfig(0, 0, 1, 1, 1, 1, 0);
-    //resetAllIRQ();
-
+    readRXAdresses();
+    readTXAdress();
 }
 
 void RadioManager::chipEnableOn()
@@ -217,7 +247,7 @@ void RadioManager::chipEnableOn()
 
 void RadioManager::chipEnableOff()
 {
-    for (volatile int i=0; i<300; i++) { }
+    //for (volatile int i=0; i<300; i++) { }
     GPIO_ResetBits(GPIOB, GPIO_Pin_11);
 }
 
@@ -234,16 +264,8 @@ void RadioManager::chipDeselect()
 void RadioManager::CEImpulse()
 {
     chipEnableOn();
-    for (volatile int i=0; i<3000; i++) { }
+    systemTimer.delay(20);
     chipEnableOff();
-}
-
-void RadioManager::readTXAdress()
-{
-    unsigned char result[5];
-    readReg(NRF_REG_TX_ADDR, 5, result);
-    printf("status: %d, result: %d %d %d %d %d\n", (int) m_status,
-            (int) result[0], (int) result[1], (int) result[2], (int) result[3], (int) result[4]);
 }
 
 void RadioManager::writeTXAdress()
@@ -469,27 +491,62 @@ unsigned char RadioManager::getResentPackagesCount()
 // RX_ADDR_Pn
 void RadioManager::setRXAddress(unsigned char channel, unsigned char* address)
 {
+
     switch(channel)
     {
     default:
-    case 0: writeReg(NRF_REG_RX_ADDR_P0, 5, address); break;
-    case 1: writeReg(NRF_REG_RX_ADDR_P1, 5, address); break;
-    case 2: writeReg(NRF_REG_RX_ADDR_P2, 1, address); break;
-    case 3: writeReg(NRF_REG_RX_ADDR_P3, 1, address); break;
-    case 4: writeReg(NRF_REG_RX_ADDR_P4, 1, address); break;
-    case 5: writeReg(NRF_REG_RX_ADDR_P5, 1, address); break;
+    case 0:
+        memcpy(m_RXAdressP0, address, RADIO_ADDRESS_SIZE*sizeof(unsigned char));
+        writeReg(NRF_REG_RX_ADDR_P0, RADIO_ADDRESS_SIZE, address);
+        break;
+    case 1:
+        memcpy(m_RXAdressP1, address, RADIO_ADDRESS_SIZE*sizeof(unsigned char));
+        writeReg(NRF_REG_RX_ADDR_P1, RADIO_ADDRESS_SIZE, address);
+        break;
+    case 2:
+        m_RXAdressP2 = *address;
+        writeReg(NRF_REG_RX_ADDR_P2, 1, address);
+        break;
+    case 3:
+        m_RXAdressP3 = *address;
+        writeReg(NRF_REG_RX_ADDR_P3, 1, address);
+        break;
+    case 4:
+        m_RXAdressP4 = *address;
+        writeReg(NRF_REG_RX_ADDR_P4, 1, address);
+        break;
+    case 5:
+        m_RXAdressP5 = *address;
+        writeReg(NRF_REG_RX_ADDR_P5, 1, address);
+        break;
     }
+}
+
+void RadioManager::readRXAdresses()
+{
+    readReg(NRF_REG_RX_ADDR_P0, 5, m_RXAdressP0);
+    readReg(NRF_REG_RX_ADDR_P1, 5, m_RXAdressP1);
+    readReg(NRF_REG_RX_ADDR_P2, 1, &m_RXAdressP2);
+    readReg(NRF_REG_RX_ADDR_P3, 1, &m_RXAdressP3);
+    readReg(NRF_REG_RX_ADDR_P4, 1, &m_RXAdressP4);
+    readReg(NRF_REG_RX_ADDR_P5, 1, &m_RXAdressP5);
 }
 
 /////////////////////
 // TX_ADDR
 void RadioManager::setTXAddress(unsigned char* address)
 {
-    writeReg(NRF_REG_TX_ADDR, 5, address);
+    memcpy(m_TXAdress, address, RADIO_ADDRESS_SIZE*sizeof(unsigned char));
+    writeReg(NRF_REG_TX_ADDR, RADIO_ADDRESS_SIZE, m_TXAdress);
+}
+
+void RadioManager::readTXAdress()
+{
+    readReg(NRF_REG_TX_ADDR, RADIO_ADDRESS_SIZE, m_TXAdress);
 }
 
 /////////////////////
-// TX_ADDR
+// RX_PW_Pn
 void RadioManager::setRXPayloadLength(unsigned char channel, unsigned char payloadLength)
 {
     payloadLength &= 0b00111111;
@@ -498,11 +555,11 @@ void RadioManager::setRXPayloadLength(unsigned char channel, unsigned char paylo
     {
     default:
     case 0: writeReg(NRF_REG_RX_PW_P0, 1, &payloadLength); break;
-    case 1: writeReg(NRF_REG_RX_PW_P0, 1, &payloadLength); break;
-    case 2: writeReg(NRF_REG_RX_PW_P0, 1, &payloadLength); break;
-    case 3: writeReg(NRF_REG_RX_PW_P0, 1, &payloadLength); break;
-    case 4: writeReg(NRF_REG_RX_PW_P0, 1, &payloadLength); break;
-    case 5: writeReg(NRF_REG_RX_PW_P0, 1, &payloadLength); break;
+    case 1: writeReg(NRF_REG_RX_PW_P1, 1, &payloadLength); break;
+    case 2: writeReg(NRF_REG_RX_PW_P2, 1, &payloadLength); break;
+    case 3: writeReg(NRF_REG_RX_PW_P3, 1, &payloadLength); break;
+    case 4: writeReg(NRF_REG_RX_PW_P4, 1, &payloadLength); break;
+    case 5: writeReg(NRF_REG_RX_PW_P5, 1, &payloadLength); break;
     }
 }
 
@@ -565,6 +622,20 @@ void RadioManager::receiveData(unsigned char size, unsigned char* data)
     chipDeselect();
 }
 
+void RadioManager::flushTX()
+{
+    chipSelect();
+    m_status = SPI2Manager.send_single(FLUSH_TX);
+    chipDeselect();
+}
+
+void RadioManager::flushRX()
+{
+    chipSelect();
+    m_status = SPI2Manager.send_single(FLUSH_RX);
+    chipDeselect();
+}
+
 void RadioManager::printStatus()
 {
     updateStatus();
@@ -580,6 +651,15 @@ void RadioManager::printStatus()
     if (isRXFull()) printf("RX full\n");
     if (isRXEmpty()) printf ("RX empty\n");
     printf("Lost: %u, resent: %u\n", getLostPackagesCount(), getResentPackagesCount());
+
+    printf("Adresses:\n");
+    printf("   TX: %x %x %x %x %x\n", m_TXAdress[0], m_TXAdress[1], m_TXAdress[2], m_TXAdress[3], m_TXAdress[4]);
+    printf("RX P0: %x %x %x %x %x\n", m_RXAdressP0[0], m_RXAdressP0[1], m_RXAdressP0[2], m_RXAdressP0[3], m_RXAdressP0[4]);
+    printf("RX P1: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP1[4]);
+    printf("RX P2: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP2);
+    printf("RX P3: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP3);
+    printf("RX P4: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP4);
+    printf("RX P5: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP5);
 }
 
 void RadioManager::testTX()

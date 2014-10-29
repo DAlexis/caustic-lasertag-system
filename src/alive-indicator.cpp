@@ -6,6 +6,7 @@
  */
 
 #include "alive-indicator.hpp"
+#include "utils.hpp"
 #include "stm32f10x.h"
 
 AliveIndicator::AliveIndicator()
