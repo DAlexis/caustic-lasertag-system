@@ -11,38 +11,103 @@
 #include "spi.hpp"
 
 #define RADIO_ADDRESS_SIZE  5
+#define PAYLOAD_SIZE 5
 
 class RadioManager
 {
 public:
+    enum EnableDisable
+    {
+        DISABLE_OPTION = 0,
+        ENABLE_OPTION = 1,
+    };
+
     RadioManager();
     void init();
-    void writeTXAdress();
     void printStatus();
-    void testTX();
     void sendData(unsigned char size, unsigned char* data);
     void receiveData(unsigned char size, unsigned char* data);
     void resetAllIRQ();
+    void setRXAddress(unsigned char channel, unsigned char* address);
+    void setTXAddress(unsigned char* address);
+
+    void interruptHandler();
+
+    // EN_RXARRD
+    void enablePipe(unsigned char pipe, unsigned char value);
+
     void flushTX();
     void flushRX();
 
-    void initReceiver();
-    void initTransmitter();
-//private:
+    void switchToTX();
+    void switchToRX();
+
+private:
+    enum Power
+    {
+        POWER_OFF = 0,
+        POWER_ON = 1
+    };
+
+    enum InterruptionsMasks
+    {
+        IM_MASK_MAX_RETRIES = 1,
+        IM_MASK_TX_DATA_READY  = 2,
+        IM_MASK_RX_DATA_READY  = 4
+    };
+
+    enum CRCEnableDisable
+    {
+        CRC_DISABLE = 0,
+        CRC_ENABLE = 1
+    };
+
+    enum CRCLen
+    {
+        CRC1BYTE = 0,
+        CRC2BYTES = 1,
+    };
+
     enum AdressWidth
     {
         AW_3BYTES,
         AW_4BYTES,
         AW_5BYTES,
     };
+
+    enum Baudrate
+    {
+        BR_1MBIT = 0,
+        BR_2MBIT = 1,
+    };
+
+    enum TXPower
+    {
+        PW_m18DB = 0,
+        PW_m12DB = 1,
+        PW_m6DB = 2,
+        PW_0DB = 3,
+    };
+
+    enum LNAGain
+    {
+        LNA_DISABLE = 0,
+        LNA_ENABLE = 1,
+    };
+
+    enum RXTXMODE
+    {
+        MODE_TRANSMITTER = 0,
+        MODE_RECEIVER = 1,
+    };
+
+    void initInterrupts();
     void writeReg(unsigned char reg, unsigned char size, unsigned char *data);
     void readReg(unsigned char reg, unsigned char size, unsigned char *data);
 
 
     // CONFIG register
-    void setConfig(unsigned char maskRXDataReady,
-            unsigned char maskTXDataSent,
-            unsigned char maskMaxRetriesReached,
+    void setConfig(unsigned char interruptionsMask,
             unsigned char enableCRC,
             unsigned char CRC2bytes,
             unsigned char powerUP,
@@ -69,9 +134,6 @@ public:
     // EN_AA register
     void setAutoACK(unsigned char channel, bool value);
 
-    // EN_RXARRD
-    void enablePipe(unsigned char pipe, unsigned char value);
-
     // SETUP_AW
     void setAdressWidth(AdressWidth width);
 
@@ -90,11 +152,9 @@ public:
     unsigned char getResentPackagesCount();
 
     // RX_ADDR_Pn
-    void setRXAddress(unsigned char channel, unsigned char* address);
     void readRXAdresses();
 
     // TX_ADDR
-    void setTXAddress(unsigned char* address);
     void readTXAdress();
 
     // RX_PW_Pn

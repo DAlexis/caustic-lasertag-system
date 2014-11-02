@@ -24,8 +24,6 @@ void Tester::registerCommands()
     console.registerCommand("wav", "play sound from file", testSoundWav);
     console.registerCommand("stop", "stop sound plaing", stopSound);
     console.registerCommand("testmem", "test free mem amount", testFreeMem);
-    console.registerCommand("txa", "read tx adress", readTXAdr);
-    console.registerCommand("txw", "write tx adress", writeTXAdr);
     console.registerCommand("tx", "test transmission", testTX);
     console.registerCommand("rs", "radio module status", radioStatus);
     console.registerCommand("ftx", "flush TX", flushTX);
@@ -89,20 +87,13 @@ void Tester::stopSound(const char*)
     sound.stop();
 }
 
-void Tester::readTXAdr(const char*)
-{
-    radio.readTXAdress();
-}
-
-void Tester::writeTXAdr(const char*)
-{
-    radio.writeTXAdress();
-}
-
 void Tester::testTX(const char*)
 {
+    unsigned char data[32];
+    for (unsigned int i=0; i<32; i++)
+        data[i] = i;
 
-    radio.testTX();
+    radio.sendData(32, data);
 }
 
 void Tester::radioStatus(const char*)

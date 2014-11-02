@@ -11,11 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/**
- * Maximum number of bytes needed to store register information (largest
- * block of data to be read from nNRF is the address register with 5 bytes).
- */
-#define NRF_MAX_REG_BUF         5
 
 /*
  * NRF2041 Registers
@@ -160,7 +155,7 @@ RadioManager radio;
 RadioManager::RadioManager() :
     m_status(0),
     m_config(0),
-    m_RFChannel(2)
+    m_RFChannel(1)
 {
 }
 
@@ -168,7 +163,7 @@ void RadioManager::init()
 {
     printf("Radio module initialization...\n");
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    SPI2Manager.init(SPI_BaudRatePrescaler_256);//SPI_BaudRatePrescaler_8);
+    SPI2Manager.init(SPI_BaudRatePrescaler_8);
 
     //////////////////////
     // Chip enable line init
@@ -178,7 +173,6 @@ void RadioManager::init()
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
-    //chipEnableOn();
     chipEnableOff();
 
     //////////////////////
@@ -192,53 +186,39 @@ void RadioManager::init()
 
     //////////////////////
     // Configuring nrf24l01
-
-    initReceiver();
-
-}
-
-void RadioManager::initReceiver()
-{
-    setAutoACK(0, 0);
-    enablePipe(0, 1);
+    readRXAdresses();
+    readTXAdress();
+    setAutoACK(0, DISABLE_OPTION);
+    enablePipe(0, ENABLE_OPTION);
     setAdressWidth(AW_5BYTES);
-    setRFChannel(1);
-    setRXPayloadLength(0, 5);
+    setRFChannel(m_RFChannel);
+    setRXPayloadLength(0, PAYLOAD_SIZE);
+    //setRXPayloadLength(1, PAYLOAD_SIZE);
     /*setAutoACK(1, 0);
     setAutoACK(2, 0);
     setAutoACK(3, 0);
     setAutoACK(4, 0);
     setAutoACK(5, 0);
     setupRetransmission(0, 0);*/
-    setRFSettings(0, 3, 1);
+    setRFSettings(BR_1MBIT, PW_0DB, LNA_ENABLE);
     setRXPayloadLength(0, 5);
     setupRetransmission(2, 15);
-    setConfig(0, 0, 1, 1, 1, 1, 1);
-    readRXAdresses();
-    readTXAdress();
+    switchToRX();
+    initInterrupts();
+}
+
+void RadioManager::switchToTX()
+{
+    chipEnableOff();
+    setConfig(IM_MASK_MAX_RETRIES, CRC_ENABLE, CRC2BYTES, POWER_ON, MODE_TRANSMITTER);
+}
+
+void RadioManager::switchToRX()
+{
+    setConfig(IM_MASK_MAX_RETRIES, CRC_ENABLE, CRC2BYTES, POWER_ON, MODE_RECEIVER);
     chipEnableOn();
 }
 
-void RadioManager::initTransmitter()
-{
-    setAutoACK(0, 0);
-    enablePipe(0, 1);
-    setAdressWidth(AW_5BYTES);
-    setRFChannel(1);
-    setRXPayloadLength(0, 5);
-    /*setAutoACK(1, 0);
-    setAutoACK(2, 0);
-    setAutoACK(3, 0);
-    setAutoACK(4, 0);
-    setAutoACK(5, 0);
-    setupRetransmission(0, 0);*/
-    setRFSettings(0, 3, 1);
-    setRXPayloadLength(0, 5);
-    setupRetransmission(2, 15);
-    setConfig(0, 0, 1, 1, 1, 1, 0);
-    readRXAdresses();
-    readTXAdress();
-}
 
 void RadioManager::chipEnableOn()
 {
@@ -266,13 +246,6 @@ void RadioManager::CEImpulse()
     chipEnableOn();
     systemTimer.delay(20);
     chipEnableOff();
-}
-
-void RadioManager::writeTXAdress()
-{
-    unsigned char adress[5]={63, 63, 63, 63, 63};
-    writeReg(NRF_REG_TX_ADDR, 5, adress);
-    printf("status: %d\n", (int) m_status);
 }
 
 void RadioManager::writeReg(unsigned char reg, unsigned char size, unsigned char *data)
@@ -355,17 +328,15 @@ void RadioManager::resetMaxRetriesReached()
 
 /////////////////////
 // CONFIG
-void RadioManager::setConfig(unsigned char maskRXDataReady,
-            unsigned char maskTXDataSent,
-            unsigned char maskMaxRetriesReached,
+void RadioManager::setConfig(unsigned char interruptionsMask,
             unsigned char enableCRC,
             unsigned char CRC2bytes,
             unsigned char powerUP,
             unsigned char isRecieving)
 {
-    m_config = (maskRXDataReady << NRF_REGF_MASK_RX_DR)
-            | (maskTXDataSent << NRF_REGF_MASK_TX_DS)
-            | (maskMaxRetriesReached << NRF_REGF_MASK_MAX_RT)
+    m_config = /*(maskRXDataReady << NRF_REGF_MASK_RX_DR)
+            | (maskTXDataSent << NRF_REGF_MASK_TX_DS) |*/
+            (interruptionsMask << NRF_REGF_MASK_MAX_RT)
             | (enableCRC << NRF_REGF_EN_CRC)
             | (CRC2bytes << NRF_REGF_CRCO)
             | (powerUP << NRF_REGF_PWR_UP)
@@ -410,7 +381,7 @@ void RadioManager::setAutoACK(unsigned char channel, bool value)
     } else {
         regValue &= ~(1 << channel);
     }
-    printf("to EN_AA: %u\n", regValue);
+    //printf("to EN_AA: %u\n", regValue);
     writeReg(NRF_REG_EN_AA, 1, &regValue);
 }
 
@@ -424,7 +395,7 @@ void RadioManager::enablePipe(unsigned char pipe, unsigned char value)
         regValue |= (1 << pipe);
     else
         regValue &= ~(1 << pipe);
-    printf("to NRF_REG_EN_RXADDR: %u\n", regValue);
+    //printf("to NRF_REG_EN_RXADDR: %u\n", regValue);
     writeReg(NRF_REG_EN_RXADDR, 1, &regValue);
 }
 
@@ -662,15 +633,81 @@ void RadioManager::printStatus()
     printf("RX P5: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP5);
 }
 
-void RadioManager::testTX()
-{
-    unsigned char testData[5] = {0,1,2,3,4};
-    sendData(5, testData);
-}
-
 void RadioManager::resetAllIRQ()
 {
     resetRXDataReady();
     resetTXDataSent();
     resetMaxRetriesReached();
+}
+
+
+////////////////////
+// Interrupts handling
+void RadioManager::initInterrupts()
+{
+    EXTI_InitTypeDef   EXTI_InitStructure;
+    GPIO_InitTypeDef   GPIO_InitStructure;
+    NVIC_InitTypeDef   NVIC_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+
+
+    GPIO_StructInit(&GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource10);
+
+    // Configure EXTI10 line
+    EXTI_InitStructure.EXTI_Line = EXTI_Line10;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
+
+    // Enable and set EXTI10 Interrupt to the lowest priority
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+}
+
+void RadioManager::interruptHandler()
+{
+    updateStatus();
+    if (isRXDataReady())
+    {
+        int pipe = getPipeNumberAvaliableForRXFIFO();
+        printf("RX data from pipe %d: ", pipe);
+        unsigned char data[PAYLOAD_SIZE];
+        receiveData(PAYLOAD_SIZE, data);
+        printf("%x %x %x %x %x\n", data[0], data[1], data[2], data[3], data[4]);
+        chipEnableOn();
+        resetRXDataReady();
+    }
+    if (isTXDataSent())
+    {
+        //switchToReceiver();
+        resetTXDataSent();
+    }
+    if (isMaxRetriesReached())
+    {
+        resetMaxRetriesReached();
+    }
+    //resetAllIRQ();
+}
+
+extern "C" {
+    void EXTI15_10_IRQHandler()
+    {
+        if(EXTI_GetITStatus(EXTI_Line10) != RESET)
+        {
+            radio.interruptHandler();
+            EXTI_ClearITPendingBit(EXTI_Line10);
+        }
+    }
 }
