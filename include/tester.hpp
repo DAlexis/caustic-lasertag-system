@@ -12,6 +12,10 @@
 class Tester
 {
 public:
+    Tester();
+    void registerCommands();
+    void init();
+
     static void testSDCard(const char*);
     static void testFreeMem(const char*);
     static void testSoundWav(const char* filename);
@@ -23,12 +27,14 @@ public:
     static void flushRX(const char*);
     static void flushTX(const char*);
 
-    static void registerCommands();
-
     static void RXCallback(void* object, unsigned char channel, unsigned char* data);
     static void TXDoneCallback(void* object);
     static void TXMaxRTCallback(void* object);
-    static void init();
+
+    static void simpleFireTest(const char*);
+    static void fireLEDCallback(void* object);
+private:
+    bool m_lastLEDStateIsOn;
 };
 
 extern Tester tester;

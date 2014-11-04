@@ -13,6 +13,7 @@
 #include "tester.hpp"
 #include "sound.hpp"
 #include "radio.hpp"
+#include "fire-led.hpp"
 #include "memtest.h"
 #include "utils.hpp"
 
@@ -101,7 +102,7 @@ int main()
     sound.init();
     systemTimer.delay(200);
     radio.init();
-
+    fireLED.init();
     printMemInfo();
 
 /*    std::function<void(void)> func1(test);

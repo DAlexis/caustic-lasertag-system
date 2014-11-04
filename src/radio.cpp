@@ -214,7 +214,6 @@ void RadioManager::init()
     setRXPayloadLength(1, PAYLOAD_SIZE);
 
     setRFSettings(BR_1MBIT, PW_0DB, LNA_ENABLE);
-    setRXPayloadLength(0, 5);
     setupRetransmission(2, 15);
     switchToRX();
     initInterrupts();
@@ -552,7 +551,7 @@ void RadioManager::readTXAdress()
 void RadioManager::setRXPayloadLength(unsigned char channel, unsigned char payloadLength)
 {
     payloadLength &= 0b00111111;
-    printf("Payload len: %u\n", payloadLength);
+    //printf("Payload len: %u\n", payloadLength);
     switch(channel)
     {
     default:

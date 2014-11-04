@@ -12,11 +12,19 @@
 #include "sound.hpp"
 #include "sdcard.hpp"
 #include "radio.hpp"
+#include "fire-led.hpp"
+
 #include "memtest.h"
+
 #include <stdio.h>
 #include <malloc.h>
 
 Tester tester;
+
+Tester::Tester() :
+    m_lastLEDStateIsOn(false)
+{
+}
 
 void Tester::init()
 {
@@ -36,6 +44,7 @@ void Tester::registerCommands()
     console.registerCommand("rs", "radio module status", radioStatus);
     console.registerCommand("ftx", "flush TX", flushTX);
     console.registerCommand("frx", "flush RX", flushRX);
+    console.registerCommand("sf", "simple test for fire LED", simpleFireTest);
 }
 
 void Tester::testSDCard(const char*)
@@ -136,4 +145,18 @@ void Tester::TXMaxRTCallback(void*)
 {
     printf("Max RT achieved!\n");
     radio.printStatus();
+}
+
+void Tester::simpleFireTest(const char*)
+{
+    fireLED.setCallback(fireLEDCallback, &tester);
+    tester.m_lastLEDStateIsOn = true;
+    fireLED.startImpulsePack(FireLEDManager::BS_ON, 100);
+}
+
+void Tester::fireLEDCallback(void* object)
+{
+    Tester* pTester = reinterpret_cast<Tester*>(object);
+    pTester->m_lastLEDStateIsOn = !pTester->m_lastLEDStateIsOn;
+    fireLED.startImpulsePack(pTester->m_lastLEDStateIsOn ? FireLEDManager::BS_ON : FireLEDManager::BS_OFF, 100);
 }
