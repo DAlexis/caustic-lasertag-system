@@ -18,6 +18,14 @@
 
 Tester tester;
 
+void Tester::init()
+{
+    registerCommands();
+    radio.setDataReceiveCallback(RXCallback, 0);
+    radio.setTXDoneCallback(TXDoneCallback, 0);
+    radio.setTXMaxRetriesCallback(TXMaxRTCallback, 0);
+}
+
 void Tester::registerCommands()
 {
     console.registerCommand("testsd", "test microSD card reading from file 1.txt", testSDCard);
@@ -109,4 +117,23 @@ void Tester::flushRX(const char*)
 void Tester::flushTX(const char*)
 {
     radio.flushTX();
+}
+
+void Tester::RXCallback(void*, unsigned char channel, unsigned char* data)
+{
+    printf("Message on pipe %u: ", channel);
+    for (int i=0; i<PAYLOAD_SIZE; i++)
+        printf("%x ", data[i]);
+    printf("\n");
+}
+
+void Tester::TXDoneCallback(void*)
+{
+    printf("TX done\n");
+}
+
+void Tester::TXMaxRTCallback(void*)
+{
+    printf("Max RT achieved!\n");
+    radio.printStatus();
 }

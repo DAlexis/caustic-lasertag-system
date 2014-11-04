@@ -25,6 +25,10 @@ public:
 
     static void registerCommands();
 
+    static void RXCallback(void* object, unsigned char channel, unsigned char* data);
+    static void TXDoneCallback(void* object);
+    static void TXMaxRTCallback(void* object);
+    static void init();
 };
 
 extern Tester tester;

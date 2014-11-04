@@ -155,7 +155,13 @@ RadioManager radio;
 RadioManager::RadioManager() :
     m_status(0),
     m_config(0),
-    m_RFChannel(1)
+    m_RFChannel(RADIO_CHANNEL),
+    m_RXcallback(nullptr),
+    m_RXcallbackObject(nullptr),
+    m_TXMaxRTcallback(nullptr),
+    m_TXMaxRTcallbackObject(nullptr),
+    m_TXDoneCallback(nullptr),
+    m_TXDoneCallbackObject(nullptr)
 {
 }
 
@@ -186,25 +192,50 @@ void RadioManager::init()
 
     //////////////////////
     // Configuring nrf24l01
-    readRXAdresses();
-    readTXAdress();
-    setAutoACK(0, DISABLE_OPTION);
-    enablePipe(0, ENABLE_OPTION);
+
+    // Global settings
     setAdressWidth(AW_5BYTES);
     setRFChannel(m_RFChannel);
+    //setupRetransmission(0, 0);
+
+    // Reading addresses to local variables
+    readRXAdresses();
+    readTXAdress();
+
+    // Setting up pipe 0
+    setAutoACK(0, DISABLE_OPTION);
+    enablePipe(0, ENABLE_OPTION);
     setRXPayloadLength(0, PAYLOAD_SIZE);
-    //setRXPayloadLength(1, PAYLOAD_SIZE);
-    /*setAutoACK(1, 0);
-    setAutoACK(2, 0);
-    setAutoACK(3, 0);
-    setAutoACK(4, 0);
-    setAutoACK(5, 0);
-    setupRetransmission(0, 0);*/
+
+
+    // Setting up pipe 1
+    setAutoACK(1, DISABLE_OPTION);
+    enablePipe(1, ENABLE_OPTION);
+    setRXPayloadLength(1, PAYLOAD_SIZE);
+
     setRFSettings(BR_1MBIT, PW_0DB, LNA_ENABLE);
     setRXPayloadLength(0, 5);
     setupRetransmission(2, 15);
     switchToRX();
     initInterrupts();
+}
+
+void RadioManager::setDataReceiveCallback(DataReceiveCallback callback, void* object)
+{
+    m_RXcallback = callback;
+    m_RXcallbackObject = object;
+}
+
+void RadioManager::setTXMaxRetriesCallback(TXMaxRetriesCallback callback, void* object)
+{
+    m_TXMaxRTcallback = callback;
+    m_TXMaxRTcallbackObject = object;
+}
+
+void RadioManager::setTXDoneCallback(TXDoneCallback callback, void* object)
+{
+    m_TXDoneCallback = callback;
+    m_TXDoneCallbackObject = object;
 }
 
 void RadioManager::switchToTX()
@@ -575,13 +606,12 @@ bool RadioManager::isRXEmpty()
 // Send and receive
 void RadioManager::sendData(unsigned char size, unsigned char* data)
 {
-    chipEnableOff();
+    switchToTX();
     chipSelect();
     m_status = SPI2Manager.send_single(W_TX_PAYLOAD);
     SPI2Manager.send(data, size);
     chipDeselect();
     CEImpulse();
-
 }
 
 void RadioManager::receiveData(unsigned char size, unsigned char* data)
@@ -681,21 +711,41 @@ void RadioManager::interruptHandler()
     updateStatus();
     if (isRXDataReady())
     {
-        int pipe = getPipeNumberAvaliableForRXFIFO();
-        printf("RX data from pipe %d: ", pipe);
+        unsigned char pipe = getPipeNumberAvaliableForRXFIFO();
         unsigned char data[PAYLOAD_SIZE];
-        receiveData(PAYLOAD_SIZE, data);
-        printf("%x %x %x %x %x\n", data[0], data[1], data[2], data[3], data[4]);
+        while (!isRXEmpty())
+        {
+            receiveData(PAYLOAD_SIZE, data);
+            if (m_RXcallback == nullptr) {
+                printf("Warning: Callback is not set! RX data from pipe %d: ", pipe);
+                printf("%x %x %x %x %x\n", data[0], data[1], data[2], data[3], data[4]);
+            } else {
+                m_RXcallback(m_RXcallbackObject, pipe, data);
+            }
+        }
         chipEnableOn();
         resetRXDataReady();
     }
     if (isTXDataSent())
     {
-        //switchToReceiver();
+        // Returning to default state: receiver
+        switchToReceiver();
         resetTXDataSent();
+        if (m_TXDoneCallback == nullptr) {
+            printf("TX done; no cb\n");
+        } else
+            m_TXDoneCallback(m_TXDoneCallbackObject);
     }
     if (isMaxRetriesReached())
     {
+        if (m_TXMaxRTcallback == nullptr) {
+            printf("Warning: Callback is not set! Max retransmissions count achieved\n");
+        } else {
+            m_TXMaxRTcallback(m_TXMaxRTcallbackObject);
+        }
+        // Clearing PLOS_CNT
+        setRFChannel(RADIO_CHANNEL);
+
         resetMaxRetriesReached();
     }
     //resetAllIRQ();

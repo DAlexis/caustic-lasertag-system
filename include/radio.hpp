@@ -11,7 +11,12 @@
 #include "spi.hpp"
 
 #define RADIO_ADDRESS_SIZE  5
-#define PAYLOAD_SIZE 5
+#define PAYLOAD_SIZE        5
+#define RADIO_CHANNEL       1
+
+using DataReceiveCallback = void (*) (void* object, unsigned char channel, unsigned char* data);
+using TXMaxRetriesCallback = void (*) (void* object);
+using TXDoneCallback = void (*) (void* object);
 
 class RadioManager
 {
@@ -25,8 +30,11 @@ public:
     RadioManager();
     void init();
     void printStatus();
+    void setDataReceiveCallback(DataReceiveCallback callback, void* object);
+    void setTXMaxRetriesCallback(TXMaxRetriesCallback callback, void* object);
+    void setTXDoneCallback(TXDoneCallback callback, void* object);
     void sendData(unsigned char size, unsigned char* data);
-    void receiveData(unsigned char size, unsigned char* data);
+
     void resetAllIRQ();
     void setRXAddress(unsigned char channel, unsigned char* address);
     void setTXAddress(unsigned char* address);
@@ -38,9 +46,6 @@ public:
 
     void flushTX();
     void flushRX();
-
-    void switchToTX();
-    void switchToRX();
 
 private:
     enum Power
@@ -100,6 +105,11 @@ private:
         MODE_TRANSMITTER = 0,
         MODE_RECEIVER = 1,
     };
+
+    void switchToTX();
+    void switchToRX();
+
+    void receiveData(unsigned char size, unsigned char* data);
 
     void initInterrupts();
     void writeReg(unsigned char reg, unsigned char size, unsigned char *data);
@@ -184,6 +194,13 @@ private:
     unsigned char m_RXAdressP3;
     unsigned char m_RXAdressP4;
     unsigned char m_RXAdressP5;
+
+    DataReceiveCallback m_RXcallback;
+    void* m_RXcallbackObject;
+    TXMaxRetriesCallback m_TXMaxRTcallback;
+    void* m_TXMaxRTcallbackObject;
+    TXDoneCallback m_TXDoneCallback;
+    void* m_TXDoneCallbackObject;
 };
 
 extern RadioManager radio;

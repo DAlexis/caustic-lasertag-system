@@ -85,12 +85,6 @@ int main()
 
     console.init(USART1Manager);
 
-
-    //SPIManagersPool::getInstance().create(SPI1);
-    tester.registerCommands();
-
-
-
 /*
     char* pb0 = (char*) malloc(1);
     char* pb1 = (char*) malloc(1);
@@ -112,8 +106,11 @@ int main()
 
 /*    std::function<void(void)> func1(test);
     func1();*/
-    systemTimer.delay_async(1000, test, "tester");
+    //systemTimer.delay_async(1000, test, "tester");
     //printf("sizeof(uint16_t)=%d, sizeof(int16_t)=%d\n", sizeof(uint16_t), sizeof(int16_t));
+    tester.init();
+    radio.setDataReceiveCallback(tester.RXCallback, 0);
+
     printf("Initialization done\n");
 
     //mesureStack(0);
