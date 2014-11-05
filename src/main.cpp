@@ -16,6 +16,7 @@
 #include "fire-led.hpp"
 #include "memtest.h"
 #include "utils.hpp"
+#include "miles-tag-2.hpp"
 
 #include <stdio.h>
 #include "diag/Trace.h"
@@ -102,7 +103,10 @@ int main()
     sound.init();
     systemTimer.delay(200);
     radio.init();
-    fireLED.init();
+    fireLED.init();/*
+    milesTag2.init();
+    milesTag2.setPlayerId(15);
+    milesTag2.setTeamId(1);*/
     printMemInfo();
 
 /*    std::function<void(void)> func1(test);

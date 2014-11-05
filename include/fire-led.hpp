@@ -8,23 +8,17 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_FIRE_LED_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_FIRE_LED_HPP_
 
-using FireLEDMgrCallback = void (*) (void* object);
+using FireLEDMgrCallback = void (*) (void* object, bool wasOnState);
 
 class FireLEDManager
 {
 public:
-    enum BlinkingState
-    {
-        BS_OFF = 0,
-        BS_ON = 1
-    };
-
     FireLEDManager();
     void init();
     void IRQHandler();
 
     void setCallback(FireLEDMgrCallback callback, void* object);
-    void startImpulsePack(BlinkingState state, unsigned int delayMs);
+    void startImpulsePack(bool isLedOn, unsigned int delayMs);
 
 private:
     void modulationOn();
@@ -34,6 +28,7 @@ private:
 
     FireLEDMgrCallback m_callback;
     void* m_callbackObject;
+    bool m_isOn;
 };
 
 extern FireLEDManager fireLED;

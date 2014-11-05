@@ -13,6 +13,7 @@
 #include "sdcard.hpp"
 #include "radio.hpp"
 #include "fire-led.hpp"
+#include "miles-tag-2.hpp"
 
 #include "memtest.h"
 
@@ -21,8 +22,7 @@
 
 Tester tester;
 
-Tester::Tester() :
-    m_lastLEDStateIsOn(false)
+Tester::Tester()
 {
 }
 
@@ -45,6 +45,7 @@ void Tester::registerCommands()
     console.registerCommand("ftx", "flush TX", flushTX);
     console.registerCommand("frx", "flush RX", flushRX);
     console.registerCommand("sf", "simple test for fire LED", simpleFireTest);
+    console.registerCommand("ts", "make test shot", testShot);
 }
 
 void Tester::testSDCard(const char*)
@@ -150,13 +151,19 @@ void Tester::TXMaxRTCallback(void*)
 void Tester::simpleFireTest(const char*)
 {
     fireLED.setCallback(fireLEDCallback, &tester);
-    tester.m_lastLEDStateIsOn = true;
-    fireLED.startImpulsePack(FireLEDManager::BS_ON, 100);
+    fireLED.startImpulsePack(true, 10000);
 }
 
-void Tester::fireLEDCallback(void* object)
+void Tester::fireLEDCallback(void*, bool wasOnState)
 {
-    Tester* pTester = reinterpret_cast<Tester*>(object);
-    pTester->m_lastLEDStateIsOn = !pTester->m_lastLEDStateIsOn;
-    fireLED.startImpulsePack(pTester->m_lastLEDStateIsOn ? FireLEDManager::BS_ON : FireLEDManager::BS_OFF, 100);
+    printf("Alive\n");
+    if (wasOnState) printf("true\n");
+    else printf("false\n");
+    //fireLED.startImpulsePack(!wasOnState, 1000);
+}
+
+void Tester::testShot(const char*)
+{
+    milesTag2.init();
+    milesTag2.shot(1);
 }

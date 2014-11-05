@@ -32,9 +32,10 @@ public:
     static void TXMaxRTCallback(void* object);
 
     static void simpleFireTest(const char*);
-    static void fireLEDCallback(void* object);
+    static void fireLEDCallback(void* object, bool wasOnState);
+
+    static void testShot(const char*);
 private:
-    bool m_lastLEDStateIsOn;
 };
 
 extern Tester tester;

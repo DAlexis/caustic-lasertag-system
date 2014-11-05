@@ -16,7 +16,8 @@ FireLEDManager fireLED;
 FireLEDManager::FireLEDManager() :
         m_videoPrescaler(1000),
         m_callback(nullptr),
-        m_callbackObject(nullptr)
+        m_callbackObject(nullptr),
+        m_isOn(false)
 {
 }
 
@@ -70,7 +71,7 @@ void FireLEDManager::init()
     TIM_OC1Init(TIM17,&TIM_OCInitStructure);
     TIM_OC1PreloadConfig(TIM17, TIM_OCPreload_Enable);
 
-    modulationOff();
+    modulationOn();
 
     //////////////////////
     // TIM15 initialization "video impulse" former
@@ -88,7 +89,7 @@ void FireLEDManager::setCallback(FireLEDMgrCallback callback, void* object)
     m_callbackObject = object;
 }
 
-void FireLEDManager::startImpulsePack(BlinkingState state, unsigned int delayMs)
+void FireLEDManager::startImpulsePack(bool isLedOn, unsigned int delayMs)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
     TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
@@ -100,7 +101,8 @@ void FireLEDManager::startImpulsePack(BlinkingState state, unsigned int delayMs)
     TIM_TimeBaseInitStructure.TIM_Period = delayMs-1;
     TIM_TimeBaseInit(TIM15,&TIM_TimeBaseInitStructure);
 
-    if (state == BS_ON)
+    m_isOn = isLedOn;
+    if (isLedOn)
         modulationOn();
     else
         modulationOff();
@@ -122,10 +124,10 @@ void FireLEDManager::modulationOff()
 
 void FireLEDManager::IRQHandler()
 {
-    TIM_Cmd(TIM15, DISABLE);
     modulationOff();
+    TIM_Cmd(TIM15, DISABLE);
     if (m_callback)
-        m_callback(m_callbackObject);
+        m_callback(m_callbackObject, m_isOn);
     else
         printf("Fire LED callback not set!\n");
 }
