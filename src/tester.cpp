@@ -151,15 +151,15 @@ void Tester::TXMaxRTCallback(void*)
 void Tester::simpleFireTest(const char*)
 {
     fireLED.setCallback(fireLEDCallback, &tester);
-    fireLED.startImpulsePack(true, 10000);
+    fireLED.startImpulsePack(true, 1000);
 }
 
 void Tester::fireLEDCallback(void*, bool wasOnState)
 {
-    printf("Alive\n");
-    if (wasOnState) printf("true\n");
-    else printf("false\n");
-    //fireLED.startImpulsePack(!wasOnState, 1000);
+    //printf("Alive\n");
+    //if (wasOnState) printf("true\n");
+    //else printf("false\n");
+    fireLED.startImpulsePack(!wasOnState, 1000);
 }
 
 void Tester::testShot(const char*)

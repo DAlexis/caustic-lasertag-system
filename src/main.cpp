@@ -106,7 +106,7 @@ int main()
     fireLED.init();/*
     milesTag2.init();
     milesTag2.setPlayerId(15);
-    milesTag2.setTeamId(1);*/
+    milesTag2.setTeamId(0);*/
     printMemInfo();
 
 /*    std::function<void(void)> func1(test);

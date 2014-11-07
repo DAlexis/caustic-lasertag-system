@@ -101,6 +101,8 @@ void FireLEDManager::startImpulsePack(bool isLedOn, unsigned int delayMs)
     TIM_TimeBaseInitStructure.TIM_Period = delayMs-1;
     TIM_TimeBaseInit(TIM15,&TIM_TimeBaseInitStructure);
 
+    TIM_ClearITPendingBit(TIM15, TIM_IT_Update);
+
     m_isOn = isLedOn;
     if (isLedOn)
         modulationOn();
