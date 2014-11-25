@@ -35,6 +35,8 @@ public:
     static void fireLEDCallback(void* object, bool wasOnState);
 
     static void testShot(const char*);
+
+    static void buttonCallback(void*, bool state);
 private:
 };
 

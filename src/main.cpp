@@ -17,6 +17,7 @@
 #include "memtest.h"
 #include "utils.hpp"
 #include "miles-tag-2.hpp"
+#include "buttons-manager.hpp"
 
 #include <stdio.h>
 #include "diag/Trace.h"
@@ -103,10 +104,7 @@ int main()
     sound.init();
     systemTimer.delay(200);
     radio.init();
-    fireLED.init();/*
-    milesTag2.init();
-    milesTag2.setPlayerId(15);
-    milesTag2.setTeamId(0);*/
+    fireLED.init();
     printMemInfo();
 
 /*    std::function<void(void)> func1(test);
@@ -116,6 +114,8 @@ int main()
     tester.init();
     radio.setDataReceiveCallback(tester.RXCallback, 0);
 
+    buttons.setButtonCallback(0, Tester::buttonCallback, nullptr);
+    buttons.configButton(0, ButtonsManager::BCC_BOTH, ButtonsManager::BUTTON_AUTO_REPEAT_DISABLE, 1000);
     printf("Initialization done\n");
 
     //mesureStack(0);

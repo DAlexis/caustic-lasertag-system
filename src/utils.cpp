@@ -10,25 +10,29 @@
 
 SysTicTimer systemTimer;
 
-SysTicTimer::SysTicTimer()
+SysTicTimer::SysTicTimer() :
+    time(0)
 {
     RCC_ClocksTypeDef RCC_Clocks;
     RCC_GetClocksFreq(&RCC_Clocks);
     SysTick_Config(RCC_Clocks.HCLK_Frequency / SYSTICK_FREQUENCY_HZ);
 }
 
-void SysTicTimer::delay(__IO uint32_t time)
+void SysTicTimer::delay(__IO uint32_t timeToWait)
 {
-    m_counter = time;
-
-    while (m_counter != 0) ;
+    __IO uint32_t beginTime = time;
+    while (beginTime + timeToWait > time) ;
 
 }
 
-void SysTicTimer::decrement()
+void SysTicTimer::interrupt()
 {
-    if (m_counter != 0)
-        m_counter--;
+    time++;
+}
+
+uint32_t SysTicTimer::getTime()
+{
+    return time;
 }
 
 extern "C"
@@ -36,7 +40,7 @@ extern "C"
 
     void SysTick_Handler(void)
     {
-        systemTimer.decrement();
+        systemTimer.interrupt();
     }
 
 }

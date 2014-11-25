@@ -167,3 +167,12 @@ void Tester::testShot(const char*)
     milesTag2.init();
     milesTag2.shot(1);
 }
+
+void Tester::buttonCallback(void*, bool state)
+{
+    printf("Button callback! ");
+    if (state)
+        printf("state=true\n");
+    else
+        printf("state=false\n");
+}

@@ -71,7 +71,7 @@ void FireLEDManager::init()
     TIM_OC1Init(TIM17,&TIM_OCInitStructure);
     TIM_OC1PreloadConfig(TIM17, TIM_OCPreload_Enable);
 
-    modulationOn();
+    modulationOff();
 
     //////////////////////
     // TIM15 initialization "video impulse" former

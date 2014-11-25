@@ -37,6 +37,44 @@ private:
     bool m_sendingHeader;
 };
 
+
+
+class MilesTag2Receiver
+{
+public:
+    enum MilesTag2Action
+    {
+        MT2_DAMAGE,
+        MT2_ADD_HEALTH,
+        MT2_ADD_ROUNDS,
+        /// @todo to be filled
+    };
+
+    using MilesTag2ShortMessageCallback = void (*) (void* object, MilesTag2Action, unsigned int value);
+    void setShortMessageCallback(MilesTag2ShortMessageCallback callback);
+    MilesTag2Receiver();
+    void init();
+
+private:/*
+    static void fireCallback(void* object, bool wasOnState);
+    bool nextBit();
+    uint8_t *m_pCurrentByte;
+    uint8_t m_currentBit;
+
+    uint8_t m_data[MILESTAG2_MAX_MESSAGE_LENGTH];
+    uint8_t m_playerId;
+    uint8_t m_teamId;
+
+    unsigned int m_length;
+    unsigned int m_currentLength;
+
+    bool m_sendingHeader;*/
+
+    MilesTag2ShortMessageCallback m_shortMessageCallback;
+    void* m_shortMessageObject;
+};
+
+
 extern MilesTag2Transmitter milesTag2;
 
 

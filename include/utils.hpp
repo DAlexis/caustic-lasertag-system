@@ -13,11 +13,12 @@
 
 #define SYSTICK_FREQUENCY_HZ       1000
 
+
 class SysTicTimer
 {
 public:
     SysTicTimer();
-    void delay(__IO uint32_t time);
+    void delay(__IO uint32_t timeToWait);
 
     template<typename FunctionType, typename... Args>
     void delay_async(__IO uint32_t time, FunctionType func, Args... args)
@@ -26,9 +27,14 @@ public:
     }
     //void waitAndRun
 
-    void decrement();
+    void interrupt();
+
+    // Returns time in milliseconds from MCU start
+    uint32_t getTime();
+
 private:
-    __IO uint32_t m_counter;
+    __IO uint32_t time;
+
 
 };
 
