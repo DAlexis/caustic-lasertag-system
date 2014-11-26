@@ -14,6 +14,9 @@ class AliveIndicator
 public:
     AliveIndicator();
     void blink();
+private:
+    unsigned int m_lastTime;
+    bool m_isOn;
 };
 
 

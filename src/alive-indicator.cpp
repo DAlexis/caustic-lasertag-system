@@ -9,7 +9,9 @@
 #include "utils.hpp"
 #include "stm32f10x.h"
 
-AliveIndicator::AliveIndicator()
+AliveIndicator::AliveIndicator() :
+    m_lastTime(0),
+    m_isOn(true)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
@@ -23,8 +25,15 @@ AliveIndicator::AliveIndicator()
 
 void AliveIndicator::blink()
 {
-    GPIO_ResetBits(GPIOA, GPIO_Pin_0);
-    for (volatile int i=0; i<100000; i++) { }
-    GPIO_SetBits(GPIOA, GPIO_Pin_0);
-    for (volatile int i=0; i<100000; i++) { }
+    unsigned int time = systemTimer.getTime();
+    if (time - m_lastTime > 100) {
+        m_lastTime = time;
+        if (m_isOn) {
+            m_isOn = false;
+            GPIO_ResetBits(GPIOA, GPIO_Pin_0);
+        } else {
+            m_isOn = true;
+            GPIO_SetBits(GPIOA, GPIO_Pin_0);
+        }
+    }
 }

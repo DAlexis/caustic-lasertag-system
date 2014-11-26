@@ -115,7 +115,7 @@ int main()
     radio.setDataReceiveCallback(tester.RXCallback, 0);
 
     buttons.setButtonCallback(0, Tester::buttonCallback, nullptr);
-    buttons.configButton(0, ButtonsManager::BCC_BOTH, ButtonsManager::BUTTON_AUTO_REPEAT_DISABLE, 1000);
+    buttons.configButton(0, ButtonsManager::BCC_HIGH, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 200);
     printf("Initialization done\n");
 
     //mesureStack(0);
@@ -123,6 +123,7 @@ int main()
     console.prompt();
     while (1)
     {
+        buttons.interrogateAllButtons();
         alive.blink();
         //radio.testTX();
         //    printf("test\n");

@@ -34,13 +34,16 @@ public:
 
     void setButtonCallback(unsigned int button, ButtonCallback callback, void* callbackObject);
     void interrogateAllButtons();
-    void interrogateButton(unsigned int button);
     void interruptionHandler(unsigned int button);
 
 private:
+    void doAction(unsigned int button);
+    void interrogateButton(unsigned int button);
+
     ButtonCallback m_callbacks[BUTTONS_COUNT];
     void* m_callbackObjects[BUTTONS_COUNT];
     ButtonCallbackCase m_callbackCase[BUTTONS_COUNT];
+    ButtonAutoRepeat m_autoRepeat[BUTTONS_COUNT];
     uint8_t m_buttonLastState[BUTTONS_COUNT];
 
     unsigned int m_buttonPeriod[BUTTONS_COUNT];
