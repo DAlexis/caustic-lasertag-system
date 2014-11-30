@@ -8,6 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_TESTER_H_
 #define LAZERTAG_RIFLE_INCLUDE_TESTER_H_
 
+#include <stdint.h>
 
 class Tester
 {
@@ -37,6 +38,8 @@ public:
     static void testShot(const char*);
 
     static void buttonCallback(void*, bool state);
+    static void mt2receiverCallback(void*, uint8_t* data);
+
 private:
 };
 

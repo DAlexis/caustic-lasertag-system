@@ -12,17 +12,11 @@
 
 #define BUTTONS_COUNT       4
 
-using ButtonCallback = void (*) (void* object, bool state);
+using ButtonCallback = void (*) (void* object, bool isFirst);
 
 class ButtonsManager
 {
 public:
-    enum ButtonCallbackCase {
-        BCC_DISABLED = 1,
-        BCC_HIGH = 2,
-        BCC_LOW = 4,
-        BCC_BOTH = 6
-    };
 
     enum ButtonAutoRepeat {
         BUTTON_AUTO_REPEAT_DISABLE = 0,
@@ -30,7 +24,7 @@ public:
     };
 
     ButtonsManager();
-    void configButton(unsigned int button, ButtonCallbackCase callbackCase, ButtonAutoRepeat autoRepeat, unsigned int minRepeatPeriod);
+    void configButton(unsigned int button, ButtonAutoRepeat autoRepeat, unsigned int minRepeatPeriod);
 
     void setButtonCallback(unsigned int button, ButtonCallback callback, void* callbackObject);
     void interrogateAllButtons();
@@ -42,7 +36,6 @@ private:
 
     ButtonCallback m_callbacks[BUTTONS_COUNT];
     void* m_callbackObjects[BUTTONS_COUNT];
-    ButtonCallbackCase m_callbackCase[BUTTONS_COUNT];
     ButtonAutoRepeat m_autoRepeat[BUTTONS_COUNT];
     uint8_t m_buttonLastState[BUTTONS_COUNT];
 

@@ -105,6 +105,10 @@ int main()
     systemTimer.delay(200);
     radio.init();
     fireLED.init();
+    milesTag2.init();
+    milesTag2Receiver.init(4);
+    milesTag2Receiver.setShortMessageCallback(Tester::mt2receiverCallback, nullptr);
+
     printMemInfo();
 
 /*    std::function<void(void)> func1(test);
@@ -115,7 +119,7 @@ int main()
     radio.setDataReceiveCallback(tester.RXCallback, 0);
 
     buttons.setButtonCallback(0, Tester::buttonCallback, nullptr);
-    buttons.configButton(0, ButtonsManager::BCC_HIGH, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 200);
+    buttons.configButton(0, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 500);
     printf("Initialization done\n");
 
     //mesureStack(0);
@@ -123,6 +127,7 @@ int main()
     console.prompt();
     while (1)
     {
+        milesTag2Receiver.interrogate();
         buttons.interrogateAllButtons();
         alive.blink();
         //radio.testTX();

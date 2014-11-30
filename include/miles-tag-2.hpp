@@ -12,6 +12,16 @@
 
 #define MILESTAG2_MAX_MESSAGE_LENGTH    40
 
+enum MilesTag2Action
+{
+    MT2_DAMAGE,
+    MT2_ADD_HEALTH,
+    MT2_ADD_ROUNDS,
+    /// @todo to be filled
+};
+
+using MilesTag2ShortMessageCallback = void (*) (void* object,/* MilesTag2Action, unsigned int value*/ uint8_t* data);
+
 class MilesTag2Transmitter
 {
 public:
@@ -42,26 +52,42 @@ private:
 class MilesTag2Receiver
 {
 public:
-    enum MilesTag2Action
+    MilesTag2Receiver();
+    void setShortMessageCallback(MilesTag2ShortMessageCallback callback, void* object);
+    void interrogate();
+    void init(unsigned int channel);
+    void interruptionHandler();
+
+
+private:
+    enum ReceivingState
     {
-        MT2_DAMAGE,
-        MT2_ADD_HEALTH,
-        MT2_ADD_ROUNDS,
-        /// @todo to be filled
+        RS_WAITING_HEADER = 0,
+        RS_HEADER_BEGINNED = 1,
+        RS_SPACE = 2,
+        RS_BIT = 3
     };
 
-    using MilesTag2ShortMessageCallback = void (*) (void* object, MilesTag2Action, unsigned int value);
-    void setShortMessageCallback(MilesTag2ShortMessageCallback callback);
-    MilesTag2Receiver();
-    void init();
+    void saveBit(bool value);
+    void resetReceiverBuffer();
+    bool isCorrect(unsigned int value, unsigned int min, unsigned int max);
+    unsigned int m_channel;
+    ReceivingState m_state;
+    unsigned int m_lastTime;
 
-private:/*
+    MilesTag2ShortMessageCallback m_shortMessageCallback;
+    void* m_shortMessageObject;
+
+    uint8_t m_data[MILESTAG2_MAX_MESSAGE_LENGTH];
+    uint8_t *m_pCurrentByte;
+    uint8_t m_currentBit;
+    /*
     static void fireCallback(void* object, bool wasOnState);
     bool nextBit();
     uint8_t *m_pCurrentByte;
     uint8_t m_currentBit;
 
-    uint8_t m_data[MILESTAG2_MAX_MESSAGE_LENGTH];
+
     uint8_t m_playerId;
     uint8_t m_teamId;
 
@@ -70,13 +96,12 @@ private:/*
 
     bool m_sendingHeader;*/
 
-    MilesTag2ShortMessageCallback m_shortMessageCallback;
-    void* m_shortMessageObject;
+
 };
 
 
 extern MilesTag2Transmitter milesTag2;
-
+extern MilesTag2Receiver milesTag2Receiver;
 
 
 

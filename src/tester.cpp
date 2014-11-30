@@ -168,11 +168,18 @@ void Tester::testShot(const char*)
     milesTag2.shot(1);
 }
 
-void Tester::buttonCallback(void*, bool state)
+void Tester::buttonCallback(void*, bool first)
 {
-    printf("Button callback! ");
-    if (state)
-        printf("state=true\n");
+    printf("Piu! ");
+    if (first)
+        printf("first=true\n");
     else
-        printf("state=false\n");
+        printf("first=false\n");
+    milesTag2.shot(1);
+}
+
+
+void Tester::mt2receiverCallback(void*, uint8_t* data)
+{
+    printf("Shot: %x %x %x ", data[0], data[1], data[2]);
 }
