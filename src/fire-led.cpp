@@ -99,9 +99,13 @@ void FireLEDManager::startImpulsePack(bool isLedOn, unsigned int delayMs)
     TIM_TimeBaseInitStructure.TIM_Prescaler = m_videoPrescaler-1;
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
     TIM_TimeBaseInitStructure.TIM_Period = delayMs-1;
-    TIM_TimeBaseInit(TIM15,&TIM_TimeBaseInitStructure);
+    TIM_TimeBaseInit(TIM15, &TIM_TimeBaseInitStructure);
+
+    //TIM15->CNT = 0;
 
     TIM_ClearITPendingBit(TIM15, TIM_IT_Update);
+
+    TIM_ITConfig(TIM15, TIM_DIER_UIE, ENABLE);
 
     m_isOn = isLedOn;
     if (isLedOn)
@@ -128,6 +132,7 @@ void FireLEDManager::IRQHandler()
 {
     modulationOff();
     TIM_Cmd(TIM15, DISABLE);
+    TIM_ITConfig(TIM15, TIM_DIER_UIE, DISABLE);
     if (m_callback)
         m_callback(m_callbackObject, m_isOn);
     else

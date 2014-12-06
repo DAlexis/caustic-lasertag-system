@@ -36,9 +36,10 @@ public:
     static void fireLEDCallback(void* object, bool wasOnState);
 
     static void testShot(const char*);
+    static void debugMT2Receiver(const char * arg);
 
     static void buttonCallback(void*, bool state);
-    static void mt2receiverCallback(void*, uint8_t* data);
+    static void mt2receiverCallback(void*, unsigned int teamId, unsigned int playerId, unsigned int damage);
 
 private:
 };

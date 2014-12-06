@@ -46,6 +46,7 @@ void Tester::registerCommands()
     console.registerCommand("frx", "flush RX", flushRX);
     console.registerCommand("sf", "simple test for fire LED", simpleFireTest);
     console.registerCommand("ts", "make test shot", testShot);
+    console.registerCommand("mtd", "y/n - enable/disable MT2 receiver debug", debugMT2Receiver);
 }
 
 void Tester::testSDCard(const char*)
@@ -154,6 +155,14 @@ void Tester::simpleFireTest(const char*)
     fireLED.startImpulsePack(true, 1000);
 }
 
+void Tester::debugMT2Receiver(const char *arg)
+{
+    if (arg[0] == 'y')
+        milesTag2Receiver.enableDebug(true);
+    else
+        milesTag2Receiver.enableDebug(false);
+}
+
 void Tester::fireLEDCallback(void*, bool wasOnState)
 {
     //printf("Alive\n");
@@ -179,7 +188,7 @@ void Tester::buttonCallback(void*, bool first)
 }
 
 
-void Tester::mt2receiverCallback(void*, uint8_t* data)
+void Tester::mt2receiverCallback(void*, unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
-    printf("Shot: %x %x %x ", data[0], data[1], data[2]);
+    printf("Shot - teamId: %u, playerId: %u, damageId: %u\n", teamId, playerId, damage);
 }

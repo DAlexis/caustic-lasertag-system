@@ -20,7 +20,8 @@ enum MilesTag2Action
     /// @todo to be filled
 };
 
-using MilesTag2ShortMessageCallback = void (*) (void* object,/* MilesTag2Action, unsigned int value*/ uint8_t* data);
+using MilesTag2ShotCallback = void (*) (void* object, unsigned int teamId, unsigned int playerId, unsigned int damage);
+
 
 class MilesTag2Transmitter
 {
@@ -53,11 +54,12 @@ class MilesTag2Receiver
 {
 public:
     MilesTag2Receiver();
-    void setShortMessageCallback(MilesTag2ShortMessageCallback callback, void* object);
+    void setShortMessageCallback(MilesTag2ShotCallback callback, void* object);
     void interrogate();
     void init(unsigned int channel);
     void interruptionHandler();
 
+    void enableDebug(bool debug);
 
 private:
     enum ReceivingState
@@ -72,14 +74,18 @@ private:
     void resetReceiverBuffer();
     bool isCorrect(unsigned int value, unsigned int min, unsigned int max);
     int getCurrentLength();
+
+    bool getBit(unsigned int n);
+    void parseAndCallShot();
     unsigned int m_channel;
     ReceivingState m_state;
     unsigned int m_lastTime;
     bool m_falseImpulse;
     bool m_dataReady;
+    bool m_debug;
 
-    MilesTag2ShortMessageCallback m_shortMessageCallback;
-    void* m_shortMessageObject;
+    MilesTag2ShotCallback m_shotCallback;
+    void* m_shotObject;
 
     uint8_t m_data[MILESTAG2_MAX_MESSAGE_LENGTH];
     uint8_t *m_pCurrentByte;

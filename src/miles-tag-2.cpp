@@ -133,8 +133,9 @@ bool MilesTag2Transmitter::nextBit()
 /////////////////////
 // Receiver
 MilesTag2Receiver::MilesTag2Receiver() :
-    m_shortMessageCallback(nullptr),
-    m_shortMessageObject(nullptr),
+    m_debug(false),
+    m_shotCallback(nullptr),
+    m_shotObject(nullptr),
     m_pCurrentByte(m_data),
     m_currentBit(7)
 {
@@ -178,10 +179,10 @@ void MilesTag2Receiver::init(unsigned int channel)
     NVIC_Init(&NVIC_InitStructure);
 }
 
-void MilesTag2Receiver::setShortMessageCallback(MilesTag2ShortMessageCallback callback, void* object)
+void MilesTag2Receiver::setShortMessageCallback(MilesTag2ShotCallback callback, void* object)
 {
-    m_shortMessageCallback = callback;
-    m_shortMessageObject = object;
+    m_shotCallback = callback;
+    m_shotObject = object;
 }
 
 inline bool MilesTag2Receiver::isCorrect(unsigned int value, unsigned int min, unsigned int max)
@@ -194,21 +195,19 @@ void MilesTag2Receiver::interruptionHandler()
     uint8_t status = GPIO_ReadInputDataBit(inputDescription[m_channel].GPIOx, inputDescription[m_channel].GPIO_Pin_x);
     unsigned int time = systemTimer.getTime();
     unsigned int dtime = time - m_lastTime;
-    printf("\ni %d %d %d ", (int) status, (int) dtime, (int)m_state);
-   // m_lastTime = time;
+    if (m_debug) printf("\ni %d %d %d ", (int) status, (int) dtime, (int)m_state);
     if (dtime < 15) {
-        printf ("short");
+        if (m_debug) printf ("short");
         m_falseImpulse = true;
         return;
     }
 
     if (m_falseImpulse) {
-        printf ("short back");
+        if (m_debug) printf ("short back");
         m_falseImpulse = false;
         return;
     }
     m_lastTime = time;
-    //return;
 
     switch(m_state) {
     case RS_WAITING_HEADER:
@@ -218,7 +217,7 @@ void MilesTag2Receiver::interruptionHandler()
             return;
         }
 
-        printf ("hb ");
+        if (m_debug) printf ("hb ");
         // Header beginned
         m_state = RS_HEADER_BEGINNED;
         break;
@@ -231,9 +230,9 @@ void MilesTag2Receiver::interruptionHandler()
                 return;
             }
 
-            printf ("he ");
+            if (m_debug) printf ("he ");
             if (isCorrect(dtime, HEADER_PERIOD_MIN, HEADER_PERIOD_MAX)) {
-                printf("ac \n");
+                if (m_debug) printf("ac \n");
                 m_state = RS_SPACE;
 
             } else {
@@ -250,9 +249,9 @@ void MilesTag2Receiver::interruptionHandler()
                 return;
             }
 
-            printf ("sp ");
+            if (m_debug) printf ("sp ");
             if (isCorrect(dtime, BIT_WAIT_PERIOD_MIN, BIT_WAIT_PERIOD_MAX)) {
-                printf("ac \n");
+                if (m_debug) printf("ac \n");
                 m_state = RS_BIT;
             } else {
                 resetReceiverBuffer();
@@ -266,16 +265,15 @@ void MilesTag2Receiver::interruptionHandler()
                 resetReceiverBuffer();
                 return;
             }
-
-            printf ("b ");
+            if (m_debug) printf ("b ");
             if (isCorrect(dtime, BIT_ONE_PERIOD_MIN, BIT_ONE_PERIOD_MAX)) {
-                printf("a1 \n");
+                if (m_debug) printf("ac 1 \n");
                 saveBit(true);
                 m_state = RS_SPACE;
                 if (getCurrentLength() == 14)
                     m_dataReady = true;
             } else if (isCorrect(dtime, BIT_ZERO_PERIOD_MIN, BIT_ZERO_PERIOD_MAX)) {
-                printf("a0 \n");
+                if (m_debug) printf("ac 0 \n");
                 saveBit(false);
                 m_state = RS_SPACE;
                 if (getCurrentLength() == 14)
@@ -290,7 +288,14 @@ void MilesTag2Receiver::interruptionHandler()
 
 void MilesTag2Receiver::interrogate()
 {
+    if (getCurrentLength() == 14 && getBit(0) == false) {
+        parseAndCallShot();
+        resetReceiverBuffer();
+        // We have shot mesage
+    }
+
     /// @todo determine message type
+    /*
     if (!m_dataReady)
         return;
 
@@ -298,7 +303,20 @@ void MilesTag2Receiver::interrogate()
     m_shortMessageCallback(m_shortMessageObject, m_data);
 
     resetReceiverBuffer();
+    */
+}
 
+void MilesTag2Receiver::parseAndCallShot()
+{
+    unsigned int playerId   = m_data[0] & ~(1 << 7);
+    unsigned int teamId     = m_data[1] >> 6;
+    unsigned int damageCode = (m_data[1] & 0b00111100) >> 2;
+    m_shotCallback(m_shotObject, teamId, playerId, damageCode);
+}
+
+bool MilesTag2Receiver::getBit(unsigned int n)
+{
+    return m_data[n / 8] & (1 << (7 - n%8));
 }
 
 void MilesTag2Receiver::saveBit(bool value)
@@ -329,6 +347,11 @@ void MilesTag2Receiver::resetReceiverBuffer()
 int MilesTag2Receiver::getCurrentLength()
 {
     return (m_pCurrentByte - m_data)*8 + 7-m_currentBit;
+}
+
+void MilesTag2Receiver::enableDebug(bool debug)
+{
+    m_debug = debug;
 }
 
 extern "C" void EXTI4_IRQHandler()
