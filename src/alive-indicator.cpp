@@ -9,6 +9,8 @@
 #include "utils.hpp"
 #include "stm32f10x.h"
 
+#include <stdio.h>
+
 AliveIndicator::AliveIndicator() :
     m_lastTime(0),
     m_isOn(true)
@@ -26,7 +28,7 @@ AliveIndicator::AliveIndicator() :
 void AliveIndicator::blink()
 {
     unsigned int time = systemTimer.getTime();
-    if (time - m_lastTime > 100) {
+    if (time - m_lastTime > 100000) {
         m_lastTime = time;
         if (m_isOn) {
             m_isOn = false;
@@ -35,5 +37,6 @@ void AliveIndicator::blink()
             m_isOn = true;
             GPIO_SetBits(GPIOA, GPIO_Pin_0);
         }
+        //printf ("time=%u\n", time);
     }
 }

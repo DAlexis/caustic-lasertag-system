@@ -102,7 +102,7 @@ int main()
 */
 
     sound.init();
-    systemTimer.delay(200);
+    systemTimer.delay(200000);
     radio.init();
     fireLED.init();
     milesTag2.init();
@@ -119,9 +119,15 @@ int main()
     radio.setDataReceiveCallback(tester.RXCallback, 0);
 
     buttons.setButtonCallback(0, Tester::buttonCallback, nullptr);
-    buttons.configButton(0, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 500);
+    buttons.configButton(0, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 100000);
     printf("Initialization done\n");
 
+    printf("3...\n");
+    systemTimer.delay(1000000);
+    printf("2...\n");
+    systemTimer.delay(1000000);
+    printf("1...\n");
+    systemTimer.delay(1000000);
     //mesureStack(0);
 
     console.prompt();

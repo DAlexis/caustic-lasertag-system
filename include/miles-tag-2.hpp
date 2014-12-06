@@ -74,6 +74,7 @@ private:
     unsigned int m_channel;
     ReceivingState m_state;
     unsigned int m_lastTime;
+    bool m_falseImpulse;
 
     MilesTag2ShortMessageCallback m_shortMessageCallback;
     void* m_shortMessageObject;

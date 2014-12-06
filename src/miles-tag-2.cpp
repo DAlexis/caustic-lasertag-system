@@ -18,20 +18,36 @@
 #define BIT_ONE_PERIOD          1200
 #define BIT_ZERO_PERIOD         600
 #define BIT_WAIT_PERIOD         600
+/*
+#define HEADER_PERIOD_MIN       200
+#define HEADER_PERIOD_MAX       260
 
-#define HEADER_PERIOD_MIN       2000
-#define HEADER_PERIOD_MAX       2600
+#define BIT_ONE_PERIOD_MIN      100
+#define BIT_ONE_PERIOD_MAX      140
 
-#define BIT_ONE_PERIOD_MIN      1000
-#define BIT_ONE_PERIOD_MAX      1400
+#define BIT_ZERO_PERIOD_MIN     50
+#define BIT_ZERO_PERIOD_MAX     70
 
-#define BIT_ZERO_PERIOD_MIN     500
-#define BIT_ZERO_PERIOD_MAX     700
+#define BIT_WAIT_PERIOD_MIN     50
+#define BIT_WAIT_PERIOD_MAX     70
 
-#define BIT_WAIT_PERIOD_MIN     500
-#define BIT_WAIT_PERIOD_MAX     700
+#define WAIT_AFTER_END          200
+*/
 
-#define WAIT_AFTER_END          2000
+
+#define HEADER_PERIOD_MIN       190
+#define HEADER_PERIOD_MAX       260
+
+#define BIT_ONE_PERIOD_MIN      75
+#define BIT_ONE_PERIOD_MAX      110
+
+#define BIT_ZERO_PERIOD_MIN     35
+#define BIT_ZERO_PERIOD_MAX     45
+
+#define BIT_WAIT_PERIOD_MIN     40
+#define BIT_WAIT_PERIOD_MAX     55
+
+#define WAIT_AFTER_END          200
 
 MilesTag2Transmitter milesTag2;
 MilesTag2Receiver milesTag2Receiver;
@@ -122,6 +138,7 @@ MilesTag2Receiver::MilesTag2Receiver() :
     m_pCurrentByte(m_data),
     m_currentBit(7)
 {
+    resetReceiverBuffer();
 }
 
 void MilesTag2Receiver::init(unsigned int channel)
@@ -138,7 +155,7 @@ void MilesTag2Receiver::init(unsigned int channel)
 
     GPIO_StructInit(&GPIO_InitStructure);
     GPIO_InitStructure.GPIO_Pin = inputDescription[channel].GPIO_Pin_x;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(inputDescription[channel].GPIOx, &GPIO_InitStructure);
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
@@ -174,16 +191,36 @@ inline bool MilesTag2Receiver::isCorrect(unsigned int value, unsigned int min, u
 
 void MilesTag2Receiver::interruptionHandler()
 {
-    printf("i ");
     uint8_t status = GPIO_ReadInputDataBit(inputDescription[m_channel].GPIOx, inputDescription[m_channel].GPIO_Pin_x);
+    unsigned int time = systemTimer.getTime();
+    unsigned int dtime = time - m_lastTime;
+    printf("\ni %d %d %d ", (int) status, (int) dtime, (int)m_state);
+   // m_lastTime = time;
+    if (dtime < 15) {
+        printf ("short");
+        m_falseImpulse = true;
+        return;
+    }
+
+    if (m_falseImpulse) {
+        printf ("short back");
+        m_falseImpulse = false;
+        return;
+    }
+    m_lastTime = time;
+    //return;
+
     switch(m_state) {
     case RS_WAITING_HEADER:
         // We should have 1
-        if (status == 0)
+        if (status == 0) {
+            resetReceiverBuffer();
             return;
+        }
+
+        printf ("hb ");
         // Header beginned
         m_state = RS_HEADER_BEGINNED;
-        m_lastTime = systemTimer.getTime();
         break;
 
     case RS_HEADER_BEGINNED: {
@@ -193,13 +230,15 @@ void MilesTag2Receiver::interruptionHandler()
                 resetReceiverBuffer();
                 return;
             }
-            unsigned int time = systemTimer.getTime();
-            printf ("he %d\n", (int) time - m_lastTime);
-            if (isCorrect(time - m_lastTime, HEADER_PERIOD_MIN, HEADER_PERIOD_MAX)) {
-                status = RS_SPACE;
-                m_lastTime = time;
+
+            printf ("he ");
+            if (isCorrect(dtime, HEADER_PERIOD_MIN, HEADER_PERIOD_MAX)) {
+                printf("ac \n");
+                m_state = RS_SPACE;
+
             } else {
                 resetReceiverBuffer();
+                return;
             }
         } break;
 
@@ -211,13 +250,13 @@ void MilesTag2Receiver::interruptionHandler()
                 return;
             }
 
-            unsigned int time = systemTimer.getTime();
-            printf ("sp %d\n", (int) time - m_lastTime);
-            if (isCorrect(time - m_lastTime, BIT_WAIT_PERIOD_MIN, BIT_WAIT_PERIOD_MAX)) {
-                status = RS_BIT;
-                m_lastTime = time;
+            printf ("sp ");
+            if (isCorrect(dtime, BIT_WAIT_PERIOD_MIN, BIT_WAIT_PERIOD_MAX)) {
+                printf("ac \n");
+                m_state = RS_BIT;
             } else {
                 resetReceiverBuffer();
+                return;
             }
         } break;
 
@@ -228,14 +267,15 @@ void MilesTag2Receiver::interruptionHandler()
                 return;
             }
 
-            unsigned int time = systemTimer.getTime();
-            printf ("b %d\n", (int) time - m_lastTime);
-            if (isCorrect(time - m_lastTime, BIT_ONE_PERIOD_MIN, BIT_ONE_PERIOD_MAX)) {
+            printf ("b ");
+            if (isCorrect(dtime, BIT_ONE_PERIOD_MIN, BIT_ONE_PERIOD_MAX)) {
+                printf("a1 \n");
                 saveBit(true);
-                status = RS_SPACE;
-            } else if (isCorrect(time - m_lastTime, BIT_ZERO_PERIOD_MIN, BIT_ZERO_PERIOD_MAX)) {
+                m_state = RS_SPACE;
+            } else if (isCorrect(dtime, BIT_ZERO_PERIOD_MIN, BIT_ZERO_PERIOD_MAX)) {
+                printf("a0 \n");
                 saveBit(false);
-                status = RS_SPACE;
+                m_state = RS_SPACE;
             } else {
                 resetReceiverBuffer();
                 return;
@@ -248,13 +288,13 @@ void MilesTag2Receiver::interrogate()
 {
     /** Checking if enough time passed after last pulse and running callback
      */
-
-    if (m_state != RS_SPACE)
-        return;
-
     if (systemTimer.getTime() - m_lastTime > WAIT_AFTER_END) {
+        if (m_state == RS_SPACE)
+            m_shortMessageCallback(m_shortMessageObject, m_data);
         /// @todo determine message type
-        m_shortMessageCallback(m_shortMessageObject, m_data);
+
+        // It is another state, so bad sygnal
+        resetReceiverBuffer();
     }
 
 }
@@ -280,6 +320,7 @@ void MilesTag2Receiver::resetReceiverBuffer()
     m_pCurrentByte = m_data;
     m_currentBit = 7;
     m_state = RS_WAITING_HEADER;
+    m_falseImpulse = false;
 }
 
 
@@ -287,7 +328,7 @@ extern "C" void EXTI4_IRQHandler()
 {
     if(EXTI_GetITStatus(EXTI_Line4) != RESET)
     {
-        EXTI_ClearITPendingBit(EXTI_Line4);
         milesTag2Receiver.interruptionHandler();
+        EXTI_ClearITPendingBit(EXTI_Line4);
     }
 }
