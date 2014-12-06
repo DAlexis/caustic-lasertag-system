@@ -12,16 +12,7 @@
 
 #define MILESTAG2_MAX_MESSAGE_LENGTH    40
 
-enum MilesTag2Action
-{
-    MT2_DAMAGE,
-    MT2_ADD_HEALTH,
-    MT2_ADD_ROUNDS,
-    /// @todo to be filled
-};
-
 using MilesTag2ShotCallback = void (*) (void* object, unsigned int teamId, unsigned int playerId, unsigned int damage);
-
 
 class MilesTag2Transmitter
 {
@@ -30,9 +21,38 @@ public:
     void init();
     void setPlayerId(uint8_t playerId);
     void setTeamId(uint8_t teamId);
+
+    // Standard commands
     void shot(uint8_t damage);
+    void addHealth(uint8_t value);
+    void addRounds(uint8_t value);
+    void adminKill();
+    void pauseOrUnpause();
+    void startGame();
+    void restoreDefaults();
+    void respawn();
+    void newGameImmediate();
+    void fullAmmo();
+    void endGame();
+    void resetClock();
+    void initializePlayer();
+    void explodePlayer();
+    void newGameReady();
+    void fullHealth();
+    void fullArmor();
+    void clearScores();
+    void testSensors();
+    void stunPlayer();
+    void disarmPlayer();
+
+    void ammoPickup(uint8_t ammoBoxId);     // 0x00-0x0F
+    void healthPickup(uint8_t healthBoxId); // 0x00-0x0F
+    void flagPickup(uint8_t flagBoxId);     // 0x00-0x0F
 
 private:
+    void sendCommand(uint8_t commandCode);
+    void beginTransmission();
+    uint8_t encodeDamage(uint8_t damage);
     static void fireCallback(void* object, bool wasOnState);
     bool nextBit();
     uint8_t *m_pCurrentByte;
@@ -69,7 +89,7 @@ private:
         RS_SPACE = 2,
         RS_BIT = 3
     };
-
+    uint8_t decodeDamage(uint8_t damage);
     void saveBit(bool value);
     void resetReceiverBuffer();
     bool isCorrect(unsigned int value, unsigned int min, unsigned int max);
