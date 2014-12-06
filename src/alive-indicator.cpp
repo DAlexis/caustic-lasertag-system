@@ -27,7 +27,7 @@ AliveIndicator::AliveIndicator() :
 
 void AliveIndicator::blink()
 {
-    unsigned int time = systemTimer.getTime();
+    uint32_t time = systemTimer.getTime();
     if (time - m_lastTime > 100000) {
         m_lastTime = time;
         if (m_isOn) {

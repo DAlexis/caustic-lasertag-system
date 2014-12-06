@@ -93,7 +93,7 @@ DSTATUS disk_initialize (
 	// initialize card detect line
 	// card detect is PA8
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_8;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 

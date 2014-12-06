@@ -119,20 +119,23 @@ int main()
     radio.setDataReceiveCallback(tester.RXCallback, 0);
 
     buttons.setButtonCallback(0, Tester::buttonCallback, nullptr);
-    buttons.configButton(0, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 100000);
+    buttons.configButton(0, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 500000);
     printf("Initialization done\n");
-
+/*
     printf("3...\n");
     systemTimer.delay(1000000);
     printf("2...\n");
     systemTimer.delay(1000000);
     printf("1...\n");
     systemTimer.delay(1000000);
+    */
     //mesureStack(0);
 
     console.prompt();
+    uint32_t lastTime=0, time=0;
     while (1)
     {
+        systemTimer.testTimeSmoothness();
         milesTag2Receiver.interrogate();
         buttons.interrogateAllButtons();
         alive.blink();

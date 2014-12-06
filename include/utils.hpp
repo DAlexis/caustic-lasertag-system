@@ -10,6 +10,7 @@
 
 #include "stm32f10x.h"
 #include <stdint.h>
+#include <stdio.h>
 
 //#define SYSTICK_FREQUENCY_HZ       100000
 
@@ -37,8 +38,12 @@ public:
     uint32_t getMs();
     uint32_t getSlave();
 
+    void testTimeSmoothness();
+
 private:
     __IO uint32_t time;
+    uint32_t m_testLastTime;
+    uint32_t m_testTime;
 
 
 };

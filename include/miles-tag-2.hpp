@@ -71,10 +71,12 @@ private:
     void saveBit(bool value);
     void resetReceiverBuffer();
     bool isCorrect(unsigned int value, unsigned int min, unsigned int max);
+    int getCurrentLength();
     unsigned int m_channel;
     ReceivingState m_state;
     unsigned int m_lastTime;
     bool m_falseImpulse;
+    bool m_dataReady;
 
     MilesTag2ShortMessageCallback m_shortMessageCallback;
     void* m_shortMessageObject;

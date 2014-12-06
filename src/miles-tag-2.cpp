@@ -35,19 +35,19 @@
 */
 
 
-#define HEADER_PERIOD_MIN       190
-#define HEADER_PERIOD_MAX       260
+#define HEADER_PERIOD_MIN       2300
+#define HEADER_PERIOD_MAX       2600
 
-#define BIT_ONE_PERIOD_MIN      75
-#define BIT_ONE_PERIOD_MAX      110
+#define BIT_ONE_PERIOD_MIN      1100
+#define BIT_ONE_PERIOD_MAX      1350
 
-#define BIT_ZERO_PERIOD_MIN     35
-#define BIT_ZERO_PERIOD_MAX     45
+#define BIT_ZERO_PERIOD_MIN     500
+#define BIT_ZERO_PERIOD_MAX     750
 
-#define BIT_WAIT_PERIOD_MIN     40
-#define BIT_WAIT_PERIOD_MAX     55
+#define BIT_WAIT_PERIOD_MIN     500
+#define BIT_WAIT_PERIOD_MAX     750
 
-#define WAIT_AFTER_END          200
+#define WAIT_AFTER_END          600000
 
 MilesTag2Transmitter milesTag2;
 MilesTag2Receiver milesTag2Receiver;
@@ -172,8 +172,8 @@ void MilesTag2Receiver::init(unsigned int channel)
 
     // Enable and set EXTIx Interrupt to the lowest priority
     NVIC_InitStructure.NVIC_IRQChannel = inputDescription[channel].NVIC_IRQChannel;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x03;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x03;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 }
@@ -272,10 +272,14 @@ void MilesTag2Receiver::interruptionHandler()
                 printf("a1 \n");
                 saveBit(true);
                 m_state = RS_SPACE;
+                if (getCurrentLength() == 14)
+                    m_dataReady = true;
             } else if (isCorrect(dtime, BIT_ZERO_PERIOD_MIN, BIT_ZERO_PERIOD_MAX)) {
                 printf("a0 \n");
                 saveBit(false);
                 m_state = RS_SPACE;
+                if (getCurrentLength() == 14)
+                    m_dataReady = true;
             } else {
                 resetReceiverBuffer();
                 return;
@@ -286,16 +290,14 @@ void MilesTag2Receiver::interruptionHandler()
 
 void MilesTag2Receiver::interrogate()
 {
-    /** Checking if enough time passed after last pulse and running callback
-     */
-    if (systemTimer.getTime() - m_lastTime > WAIT_AFTER_END) {
-        if (m_state == RS_SPACE)
-            m_shortMessageCallback(m_shortMessageObject, m_data);
-        /// @todo determine message type
+    /// @todo determine message type
+    if (!m_dataReady)
+        return;
 
-        // It is another state, so bad sygnal
-        resetReceiverBuffer();
-    }
+    m_dataReady = false;
+    m_shortMessageCallback(m_shortMessageObject, m_data);
+
+    resetReceiverBuffer();
 
 }
 
@@ -321,8 +323,13 @@ void MilesTag2Receiver::resetReceiverBuffer()
     m_currentBit = 7;
     m_state = RS_WAITING_HEADER;
     m_falseImpulse = false;
+    m_dataReady = false;
 }
 
+int MilesTag2Receiver::getCurrentLength()
+{
+    return (m_pCurrentByte - m_data)*8 + 7-m_currentBit;
+}
 
 extern "C" void EXTI4_IRQHandler()
 {

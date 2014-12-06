@@ -21,7 +21,7 @@ constexpr uint32_t msTimerClockSource = 24000000;
 SysTicTimer systemTimer;
 
 SysTicTimer::SysTicTimer() :
-    time(0)
+    m_testTime(0)
 {
     RCC_ClocksTypeDef RCC_Clocks;
     RCC_GetClocksFreq(&RCC_Clocks);
@@ -36,7 +36,7 @@ SysTicTimer::SysTicTimer() :
 
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM_TimeBaseInitStructure.TIM_Prescaler = msTimerClockSource / msInSec -1;
+    TIM_TimeBaseInitStructure.TIM_Prescaler = msTimerClockSource / msInSec - 1;
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
     TIM_TimeBaseInitStructure.TIM_Period = msTimerPeriod;
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
@@ -53,16 +53,15 @@ SysTicTimer::SysTicTimer() :
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInitStructure.TIM_Prescaler = 0;
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
-    TIM_TimeBaseInitStructure.TIM_Period = 10000;
+    TIM_TimeBaseInitStructure.TIM_Period = slaveTimerPeriod;
     TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);
 
     TIM_SelectSlaveMode(TIM3, TIM_SlaveMode_Gated);
     TIM_SelectInputTrigger(TIM3, TIM_TS_ITR1);
-    TIM_SelectMasterSlaveMode(TIM3, TIM_MasterSlaveMode_Enable);
-    TIM_SelectOutputTrigger(TIM3, TIM_TRGOSource_Update);
 
-    TIM_Cmd(TIM3, ENABLE);
+
     TIM_Cmd(TIM2, ENABLE);
+    TIM_Cmd(TIM3, ENABLE);
 }
 
 void SysTicTimer::delay(__IO uint32_t timeToWait)
@@ -83,9 +82,29 @@ uint32_t SysTicTimer::getTime()
 }
 
 uint32_t SysTicTimer::getTime2()
-{
-    uint32_t result = TIM3->CNT * msTimerPeriod;
-    result += TIM2->CNT;
+{/*
+    uint16_t us=TIM2->CNT;
+    uint16_t slave = TIM3->CNT;
+
+    uint16_t us2=TIM2->CNT;
+    uint16_t slave2 = TIM3->CNT;
+
+    if (us2 != us || slave != slave2)
+    {
+        us=TIM2->CNT;
+        slave = TIM3->CNT;
+    }
+*/
+    uint16_t slave = TIM3->CNT;
+    uint16_t us = TIM2->CNT;
+
+    if (us < 3) {
+        us = TIM2->CNT;
+        slave = TIM3->CNT;
+    }
+
+    uint32_t result = slave * msTimerPeriod + us;
+
     return result;
 }
 
@@ -97,6 +116,17 @@ uint32_t SysTicTimer::getMs()
 uint32_t SysTicTimer::getSlave()
 {
     return TIM3->CNT;
+}
+
+void SysTicTimer::testTimeSmoothness()
+{
+    m_testLastTime = m_testTime;
+    m_testTime = systemTimer.getTime();
+    if (m_testTime < m_testLastTime)
+        printf("jump backward - last: %u current: %u, diff: %d ms: %u, slave: %u\n", m_testLastTime, m_testTime, (int)m_testLastTime-m_testTime, getMs(), getSlave());
+    else if (m_testTime - m_testLastTime > 65000)
+        printf("jump forward - last: %u current: %u, diff: %d ms: %u, slave: %u\n", m_testLastTime, m_testTime, (int)m_testTime -m_testLastTime, getMs(), getSlave());
+
 }
 
 /*
