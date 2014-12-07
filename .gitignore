@@ -1,4 +1,5 @@
-/Debug
-/Release
-/log
-/orb.db
+*Debug
+*Release
+*log
+*orb.db
+.metadata
