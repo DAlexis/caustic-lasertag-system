@@ -24,17 +24,6 @@
 #include <stdlib.h>
 #include <functional>
 
-// ----------------------------------------------------------------------------
-//
-// STM32F1 empty sample (trace via STDOUT).
-//
-// Trace support is enabled by adding the TRACE macro definition.
-// By default the trace messages are forwarded to the STDOUT output,
-// but can be rerouted to any device or completely suppressed, by
-// changing the definitions required in system/src/diag/trace_impl.c
-// (currently OS_USE_TRACE_ITM, OS_USE_TRACE_SEMIHOSTING_DEBUG/_STDOUT).
-//
-
 //volatile char array[7000] = "dasdasdasdads";
 
 void mesureStack(unsigned int currentSize)
