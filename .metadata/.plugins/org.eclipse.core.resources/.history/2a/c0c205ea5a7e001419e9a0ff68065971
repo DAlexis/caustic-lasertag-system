@@ -1,0 +1,33 @@
+/*
+ * devices-connectors.hpp
+ *
+ *  Created on: 08 дек. 2014 г.
+ *      Author: alexey
+ */
+
+#ifndef LAZERTAG_DEVICE_INCLUDE_DEVICES_CONNECTORS_HPP_
+#define LAZERTAG_DEVICE_INCLUDE_DEVICES_CONNECTORS_HPP_
+
+class IRifleToMainSensorConnector
+{
+public:
+	virtual void interrogate() = 0;
+};
+
+class IMainSensorToRifleConnector
+{
+public:
+
+};
+
+class IAdditionalSensorToMainSensorConnector
+{
+public:
+
+};
+
+
+
+
+
+#endif /* LAZERTAG_DEVICE_INCLUDE_DEVICES_CONNECTORS_HPP_ */
