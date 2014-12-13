@@ -1,0 +1,8 @@
+/*
+ * miles-tag-2-receiver-base.cpp
+ *
+ *  Created on: 14 дек. 2014 г.
+ *      Author: alexey
+ */
+
+IMilesTag2Receiver* milesTag2Receiver;

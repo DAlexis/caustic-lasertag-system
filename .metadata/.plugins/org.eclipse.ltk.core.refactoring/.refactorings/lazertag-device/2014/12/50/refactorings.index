@@ -1,0 +1,6 @@
+1418505434767	Rename resource 'miles-tag-2-hal.hpp'
+1418505824647	Move 'miles-tag-2.hpp' to 'hardware-dependent'
+1418505946086	Move 'miles-tag-2.hpp' to 'hal'
+1418505955664	Rename resource 'miles-tag-2.hpp'
+1418508868023	Rename resource 'miles-tag-2-transmitter.cpp'
+1418510816263	Rename resource 'radio.cpp'

@@ -1,0 +1,25 @@
+/*
+ * miles-tag-2-hal.hpp
+ *
+ *  Created on: 14 дек. 2014 г.
+ *      Author: alexey
+ */
+
+#ifndef LAZERTAG_DEVICE_INCLUDE_HAL_MILES_TAG_2_HAL_HPP_
+#define LAZERTAG_DEVICE_INCLUDE_HAL_MILES_TAG_2_HAL_HPP_
+
+#include "miles-tag-2.hpp"
+
+class MilesTag2Transmitter : public MilesTag2TransmitterBase
+{
+public:
+    MilesTag2Transmitter();
+    ~MilesTag2Transmitter() {}
+
+private:
+    void fireCallback(bool wasOnState);
+    static void fireCallbackStaticWrapper(void* object, bool wasOnState);
+    void beginTransmission();
+};
+
+#endif /* LAZERTAG_DEVICE_INCLUDE_HAL_MILES_TAG_2_HAL_HPP_ */

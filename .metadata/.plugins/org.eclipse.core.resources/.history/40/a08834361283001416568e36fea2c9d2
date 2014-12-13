@@ -1,0 +1,13 @@
+/*
+ * hw-selector.cpp
+ *
+ *  Created on: 14 дек. 2014 г.
+ *      Author: alexey
+ */
+
+#include "hardware-dependent/hw-selector.hpp"
+
+void HardwareSelector::selectHardware()
+{
+	MilesTag2Transmitter::select();
+}

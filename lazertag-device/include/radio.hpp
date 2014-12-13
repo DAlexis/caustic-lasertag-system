@@ -18,7 +18,7 @@ using DataReceiveCallback = void (*) (void* object, unsigned char channel, unsig
 using TXMaxRetriesCallback = void (*) (void* object);
 using TXDoneCallback = void (*) (void* object);
 
-class RadioManager
+class NRF24L01Manager
 {
 public:
     enum EnableDisable
@@ -27,7 +27,7 @@ public:
         ENABLE_OPTION = 1,
     };
 
-    RadioManager();
+    NRF24L01Manager();
     void init();
     void printStatus();
     void setDataReceiveCallback(DataReceiveCallback callback, void* object);
@@ -203,7 +203,7 @@ private:
     void* m_TXDoneCallbackObject;
 };
 
-extern RadioManager radio;
+extern NRF24L01Manager nrf24l01;
 
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_RADIO_HPP_ */

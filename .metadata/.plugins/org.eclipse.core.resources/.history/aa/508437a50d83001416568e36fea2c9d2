@@ -1,0 +1,42 @@
+/*
+ * miles-tag-2-transmitter-hw.cpp
+ *
+ *  Created on: 14 дек. 2014 г.
+ *      Author: alexey
+ */
+
+#include "miles-tag-2.hpp"
+
+////////////////////////
+// MilesTag2Transmitter
+MilesTag2Transmitter::MilesTag2Transmitter()
+{
+	fireLED.setCallback(fireCallbackStaticWrapper, this);
+}
+
+void MilesTag2Transmitter::fireCallback(bool wasOnState)
+{
+	if (m_sendingHeader)
+	{
+		m_sendingHeader = false;
+		fireLED.startImpulsePack(false, BIT_WAIT_PERIOD);
+		return;
+	}
+
+	if (wasOnState)
+	{
+		if (m_currentLength == m_length)
+			return;
+		fireLED.startImpulsePack(false, BIT_WAIT_PERIOD);
+	} else {
+		if (nextBit())
+			fireLED.startImpulsePack(true, BIT_ONE_PERIOD);
+		else
+			fireLED.startImpulsePack(true, BIT_ZERO_PERIOD);
+	}
+}
+
+void MilesTag2Transmitter::fireCallbackStaticWrapper(void* object, bool wasOnState)
+{
+	reinterpret_cast<MilesTag2Transmitter*>(object)->fireCallback(wasOnState);
+}

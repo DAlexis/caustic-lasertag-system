@@ -3,21 +3,32 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="267" key="DIALOG_WIDTH"/>
 		<item value="269" key="DIALOG_Y_ORIGIN"/>
-		<item value="388" key="DIALOG_HEIGHT"/>
 		<item value="828" key="DIALOG_X_ORIGIN"/>
+		<item value="394" key="DIALOG_HEIGHT"/>
 		<item value="1|Sans|9.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="    " key="selection"/>
+		<item value="MilesTag2ReceiverBase::" key="selection"/>
 		<list key="findhistory">
-			<item value="&#x09;"/>
+			<item value="MilesTag2Receiver::"/>
+			<item value="void MilesTag2Receiver::enableDebug(bool debug)&#x0A;{&#x0A;    m_debug = debug;&#x0A;}"/>
+			<item value="resetReceiverBuffer"/>
+			<item value="setSh"/>
+			<item value="firecall"/>
+			<item value="MilesTag2Transmitter"/>
+			<item value="radio"/>
+			<item value="RadioManager"/>
 		</list>
 		<list key="replacehistory">
+			<item value="resetReceiver"/>
+			<item value="MilesTag2TransmitterBase"/>
+			<item value="nrf25l01"/>
+			<item value="NRF24L01Manager"/>
 			<item value="    "/>
 		</list>
 	</section>

@@ -16,8 +16,10 @@
 #include "fire-led.hpp"
 #include "memtest.h"
 #include "utils.hpp"
-#include "miles-tag-2.hpp"
+#include "hal/miles-tag-2.hpp"
+#include "hardware-dependent/hw-selector.hpp"
 #include "buttons-manager.hpp"
+#include "devices-connectors.hpp"
 
 #include <stdio.h>
 #include "diag/Trace.h"
@@ -71,6 +73,7 @@ int main()
     // At this stage the system clock should have already been configured
     // at high speed.
     //__enable_irq();
+	HardwareSelector::selectHardware();
     AliveIndicator alive;
     //USART1Manager.init(9600);
     USART1Manager.init(921600);
@@ -92,11 +95,13 @@ int main()
 
     sound.init();
     systemTimer.delay(200000);
-    radio.init();
+
+    nrf24l01.init();
     fireLED.init();
-    milesTag2.init();
-    milesTag2Receiver.init(4);
-    milesTag2Receiver.setShortMessageCallback(Tester::mt2receiverCallback, nullptr);
+
+    milesTag2->init();
+    milesTag2Receiver->init(4);
+    milesTag2Receiver->setShortMessageCallback(Tester::mt2receiverCallback, nullptr);
 
     printMemInfo();
 
@@ -105,10 +110,12 @@ int main()
     //systemTimer.delay_async(1000, test, "tester");
     //printf("sizeof(uint16_t)=%d, sizeof(int16_t)=%d\n", sizeof(uint16_t), sizeof(int16_t));
     tester.init();
-    radio.setDataReceiveCallback(tester.RXCallback, 0);
+    nrf24l01.setDataReceiveCallback(tester.RXCallback, 0);
 
     buttons.setButtonCallback(0, Tester::buttonCallback, nullptr);
     buttons.configButton(0, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 500000);
+    //NRF24L01Connector<4, 20> connector(nrf24l01);
+    //connector.sendData();
     printf("Initialization done\n");
 /*
     printf("3...\n");
@@ -121,11 +128,10 @@ int main()
     //mesureStack(0);
 
     console.prompt();
-    uint32_t lastTime=0, time=0;
     while (1)
     {
         systemTimer.testTimeSmoothness();
-        milesTag2Receiver.interrogate();
+        milesTag2Receiver->interrogate();
         buttons.interrogateAllButtons();
         alive.blink();
         //radio.testTX();

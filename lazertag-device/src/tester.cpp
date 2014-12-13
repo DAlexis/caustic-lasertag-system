@@ -13,7 +13,7 @@
 #include "sdcard.hpp"
 #include "radio.hpp"
 #include "fire-led.hpp"
-#include "miles-tag-2.hpp"
+#include "hal/miles-tag-2.hpp"
 
 #include "memtest.h"
 
@@ -29,9 +29,9 @@ Tester::Tester()
 void Tester::init()
 {
     registerCommands();
-    radio.setDataReceiveCallback(RXCallback, 0);
-    radio.setTXDoneCallback(TXDoneCallback, 0);
-    radio.setTXMaxRetriesCallback(TXMaxRTCallback, 0);
+    nrf24l01.setDataReceiveCallback(RXCallback, 0);
+    nrf24l01.setTXDoneCallback(TXDoneCallback, 0);
+    nrf24l01.setTXMaxRetriesCallback(TXMaxRTCallback, 0);
 }
 
 void Tester::registerCommands()
@@ -112,22 +112,22 @@ void Tester::testTX(const char*)
     for (unsigned int i=0; i<32; i++)
         data[i] = i;
 
-    radio.sendData(32, data);
+    nrf24l01.sendData(32, data);
 }
 
 void Tester::radioStatus(const char*)
 {
-    radio.printStatus();
+	nrf24l01.printStatus();
 }
 
 void Tester::flushRX(const char*)
 {
-    radio.flushRX();
+	nrf24l01.flushRX();
 }
 
 void Tester::flushTX(const char*)
 {
-    radio.flushTX();
+	nrf24l01.flushTX();
 }
 
 void Tester::RXCallback(void*, unsigned char channel, unsigned char* data)
@@ -146,7 +146,7 @@ void Tester::TXDoneCallback(void*)
 void Tester::TXMaxRTCallback(void*)
 {
     printf("Max RT achieved!\n");
-    radio.printStatus();
+    nrf24l01.printStatus();
 }
 
 void Tester::simpleFireTest(const char*)
@@ -158,9 +158,9 @@ void Tester::simpleFireTest(const char*)
 void Tester::debugMT2Receiver(const char *arg)
 {
     if (arg[0] == 'y')
-        milesTag2Receiver.enableDebug(true);
+        milesTag2Receiver->enableDebug(true);
     else
-        milesTag2Receiver.enableDebug(false);
+        milesTag2Receiver->enableDebug(false);
 }
 
 void Tester::fireLEDCallback(void*, bool wasOnState)
@@ -173,8 +173,8 @@ void Tester::fireLEDCallback(void*, bool wasOnState)
 
 void Tester::testShot(const char*)
 {
-    milesTag2.init();
-    milesTag2.shot(1);
+    milesTag2->init();
+    milesTag2->shot(1);
 }
 
 void Tester::buttonCallback(void*, bool first)
@@ -184,7 +184,7 @@ void Tester::buttonCallback(void*, bool first)
         printf("first=true\n");
     else
         printf("first=false\n");
-    milesTag2.shot(1);
+    milesTag2->shot(1);
 }
 
 
