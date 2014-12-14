@@ -73,6 +73,8 @@ int main()
     // At this stage the system clock should have already been configured
     // at high speed.
     //__enable_irq();
+
+	// Selecting hardware for interfaces
 	HardwareSelector::selectHardware();
     AliveIndicator alive;
     //USART1Manager.init(9600);
@@ -97,10 +99,15 @@ int main()
     systemTimer.delay(200000);
 
     nrf24l01.init();
+
+    printf("Fire led init\n");
     fireLED.init();
 
+    printf("MT2 transmitter init\n");
     milesTag2->init();
+    printf("MT2 receiver init\n");
     milesTag2Receiver->init(4);
+    printf("MT2 set cb\n");
     milesTag2Receiver->setShortMessageCallback(Tester::mt2receiverCallback, nullptr);
 
     printMemInfo();
@@ -109,6 +116,7 @@ int main()
     func1();*/
     //systemTimer.delay_async(1000, test, "tester");
     //printf("sizeof(uint16_t)=%d, sizeof(int16_t)=%d\n", sizeof(uint16_t), sizeof(int16_t));
+    printf("Tester init\n");
     tester.init();
     nrf24l01.setDataReceiveCallback(tester.RXCallback, 0);
 

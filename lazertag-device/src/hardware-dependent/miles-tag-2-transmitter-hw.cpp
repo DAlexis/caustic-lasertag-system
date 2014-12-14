@@ -13,9 +13,15 @@ MilesTag2Transmitter MT2Transmitter;
 
 ////////////////////////
 // MilesTag2Transmitter
-MilesTag2Transmitter::MilesTag2Transmitter()
+
+void MilesTag2Transmitter::init()
 {
 	fireLED.setCallback(fireCallbackStaticWrapper, this);
+}
+
+
+MilesTag2Transmitter::MilesTag2Transmitter()
+{
 }
 
 void MilesTag2Transmitter::beginTransmission()
@@ -49,6 +55,7 @@ void MilesTag2Transmitter::fireCallback(bool wasOnState)
 
 void MilesTag2Transmitter::fireCallbackStaticWrapper(void* object, bool wasOnState)
 {
+
 	reinterpret_cast<MilesTag2Transmitter*>(object)->fireCallback(wasOnState);
 }
 

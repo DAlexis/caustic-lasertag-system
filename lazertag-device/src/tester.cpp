@@ -157,10 +157,13 @@ void Tester::simpleFireTest(const char*)
 
 void Tester::debugMT2Receiver(const char *arg)
 {
-    if (arg[0] == 'y')
+    if (arg[0] == 'y') {
+    	printf("Miles tag 2 receiver debug enabled\n");
         milesTag2Receiver->enableDebug(true);
-    else
+    } else {
+    	printf("Miles tag 2 receiver debug disabled\n");
         milesTag2Receiver->enableDebug(false);
+    }
 }
 
 void Tester::fireLEDCallback(void*, bool wasOnState)

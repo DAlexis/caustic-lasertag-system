@@ -13,7 +13,7 @@
 
 
 /*
- * NRF2041 Registers
+ * NRF24l01 Registers
  */
 
 #define NRF_REG_CONFIG          0x00

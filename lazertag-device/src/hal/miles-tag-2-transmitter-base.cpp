@@ -41,10 +41,6 @@ void MilesTag2TransmitterBase::setTeamId(uint8_t teamId)
     m_teamId = teamId;
 }
 
-void MilesTag2TransmitterBase::init()
-{
-}
-
 void MilesTag2TransmitterBase::shot(uint8_t damage)
 {
     // Forming data package

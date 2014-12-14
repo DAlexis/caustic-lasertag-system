@@ -15,7 +15,9 @@ class MilesTag2Transmitter : public MilesTag2TransmitterBase
 public:
     MilesTag2Transmitter();
     ~MilesTag2Transmitter() {}
+    void init();
     static void select();
+
 private:
     void fireCallback(bool wasOnState);
     static void fireCallbackStaticWrapper(void* object, bool wasOnState);

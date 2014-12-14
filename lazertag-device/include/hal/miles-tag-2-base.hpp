@@ -18,7 +18,6 @@ public:
     MilesTag2TransmitterBase();
     virtual ~MilesTag2TransmitterBase() {}
 
-    void init();
     void setPlayerId(uint8_t playerId);
     void setTeamId(uint8_t teamId);
 
@@ -77,7 +76,7 @@ public:
     void interrogate();
     virtual void init(unsigned int channel)  = 0;
 
-    virtual void enableDebug(bool debug);
+    void enableDebug(bool debug);
 
 protected:
     uint8_t decodeDamage(uint8_t damage);
