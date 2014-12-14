@@ -5,23 +5,19 @@
  *      Author: alexey
  */
 
-#include "buttons-manager.hpp"
+#include "hardware-dependent/buttons-manager.hpp"
 #include "utils.hpp"
 #include "exti-initialization-options.h"
 #include "stm32f10x.h"
 
-
-
-
-ButtonsManager buttons;
+ButtonsManager *pButtons;
 
 ButtonsManager::ButtonsManager()
 {
     for (unsigned int i=0; i<BUTTONS_COUNT; i++)
-    {
-        m_callbacks[i] = nullptr;
         m_buttonLastPressed[i] = 0;
-    }
+
+    pButtons = this;
 }
 
 void ButtonsManager::configButton(unsigned int button, ButtonAutoRepeat autoRepeat, unsigned int minRepeatPeriod)
@@ -62,12 +58,6 @@ void ButtonsManager::configButton(unsigned int button, ButtonAutoRepeat autoRepe
     NVIC_Init(&NVIC_InitStructure);
 }
 
-void ButtonsManager::setButtonCallback(unsigned int button, ButtonCallback callback, void* callbackObject)
-{
-    m_callbackObjects[button] = callbackObject;
-    m_callbacks[button] = callback;
-}
-
 void ButtonsManager::interruptionHandler(unsigned int button)
 {
     unsigned int time = systemTimer.getTime();
@@ -77,10 +67,6 @@ void ButtonsManager::interruptionHandler(unsigned int button)
         m_buttonLastPressed[button] = time;
         m_callbacks[button] (m_callbackObjects[button], true);
     }
-}
-
-void ButtonsManager::doAction(unsigned int button)
-{
 }
 
 void ButtonsManager::interrogateButton(unsigned int button)
@@ -98,23 +84,12 @@ void ButtonsManager::interrogateButton(unsigned int button)
     }
 }
 
-void ButtonsManager::interrogateAllButtons()
-{
-    for (unsigned int i=0; i<BUTTONS_COUNT; i++)
-    {
-        if (m_callbacks[i])
-            interrogateButton(i);
-    }
-}
-
-
-
 extern "C" void EXTI0_IRQHandler()
 {
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
         EXTI_ClearITPendingBit(EXTI_Line0);
-        buttons.interruptionHandler(0);
+        pButtons->interruptionHandler(0);
     }
 }
 

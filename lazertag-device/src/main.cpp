@@ -22,8 +22,6 @@
 
 #include "hal/miles-tag-2.hpp"
 #include "hardware-dependent/hw-selector.hpp"
-
-#include "buttons-manager.hpp"
 #include "devices-connectors.hpp"
 
 #include <stdio.h>
@@ -129,8 +127,8 @@ int main()
     tester.init();
     nrf24l01.setDataReceiveCallback(tester.RXCallback, 0);
 
-    buttons.setButtonCallback(0, Tester::buttonCallback, nullptr);
-    buttons.configButton(0, ButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 500000);
+    devicesPool->buttonsManager()->setButtonCallback(0, Tester::buttonCallback, nullptr);
+    devicesPool->buttonsManager()->configButton(0, IButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 500000);
     //NRF24L01Connector<4, 20> connector(nrf24l01);
     //connector.sendData();
     printf("Initialization done\n");
@@ -149,7 +147,7 @@ int main()
     {
         systemTimer.testTimeSmoothness();
         milesTag2Receiver->interrogate();
-        buttons.interrogateAllButtons();
+        devicesPool->buttonsManager()->interrogateAllButtons();
         alive.blink();
         //radio.testTX();
         //    printf("test\n");

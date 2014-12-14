@@ -26,3 +26,15 @@ void Rifle::Configuration::setFallback()
 	magazinesCount = 10;
 	bulletsPerMagazine = 30;
 }
+
+Rifle::Rifle()
+{
+}
+
+void Rifle::init()
+{
+}
+
+void Rifle::mainLoopBody()
+{
+}

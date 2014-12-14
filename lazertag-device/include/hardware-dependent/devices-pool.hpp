@@ -16,6 +16,7 @@ public:
 	DevicesPool();
 	IMilesTag2Transmitter* getMilesTagTransmitter();
 	IMilesTag2Receiver* getMilesTagReceiver();
+	IButtonsManager* buttonsManager();
 
 private:
 };

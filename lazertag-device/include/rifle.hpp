@@ -64,7 +64,11 @@ public:
 
 	Rifle();
 	void init();
+	void mainLoopBody();
+
+	Configuration config;
 private:
+
 };
 
 

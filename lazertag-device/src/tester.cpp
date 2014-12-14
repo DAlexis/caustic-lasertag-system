@@ -194,5 +194,5 @@ void Tester::buttonCallback(void*, bool first)
 
 void Tester::mt2receiverCallback(void*, unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
-    printf("Shot - teamId: %u, playerId: %u, damageId: %u\n", teamId, playerId, damage);
+    printf("Shot - teamId: %u, playerId: %u, damage: %u hp\n", teamId, playerId, damage);
 }
