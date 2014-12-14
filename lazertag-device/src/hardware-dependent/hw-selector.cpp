@@ -11,6 +11,6 @@
 
 void HardwareSelector::selectHardware()
 {
-	MilesTag2Transmitter::select();
+//	/MilesTag2Transmitter::select();
 	//MilesTag2Receiver::select();
 }

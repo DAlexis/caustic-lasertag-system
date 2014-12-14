@@ -8,6 +8,7 @@
 #ifndef LAZERTAG_DEVICE_INCLUDE_RIFLE_HPP_
 #define LAZERTAG_DEVICE_INCLUDE_RIFLE_HPP_
 
+#include "hal/abstract-devices-pool.hpp"
 #include <stdint.h>
 
 /*
@@ -37,6 +38,12 @@ enum RifleMagazineType
 	RMT_INTELLECTUAL,       // Magazines contains MCU and interface
 };
 
+enum FireMode
+{
+	FM_SINGLE = 0,        // Disort the shutter after every shot
+	FM_SEMI_AUTOMATIC = 1,    // One press - one shot and no more
+	FM_AUTOMATIC = 2
+};
 
 class Rifle
 {
@@ -49,17 +56,22 @@ public:
 		void setFallback();
 		//void readFromFile(const char* filename);
 
-		uint8_t slot;
-		uint8_t weightInSlot;
+		uint32_t slot;
+		uint32_t weightInSlot;
 
-		uint8_t damage;
+		uint32_t damage;
 		uint32_t firePeriod; // Time between shots in us
+		bool semiAutomaticAllowed;
+		bool automaticAllowed;
 
 		RifleMagazineType magazineType;
 		RifleReloadMode magazinesReloadMode;
 		RifleAutoReload autoReload;
 		uint32_t magazinesCount;
+		uint32_t bulletsInMagazineAtStart;
 		uint32_t bulletsPerMagazine;
+		uint32_t reloadingTime;
+
 	};
 
 	Rifle();
@@ -67,8 +79,25 @@ public:
 	void mainLoopBody();
 
 	Configuration config;
-private:
 
+private:
+	void makeShot(bool isFirst);
+	void reload();
+	bool isReloading();
+
+	void initState();
+	void configureButtons();
+
+
+	static void makeShotWrapper(void* object, bool isFirst);
+	static void reloadWrapper(void* object, bool isFirst);
+
+	uint32_t bulletsLeft;
+	uint32_t magazinesLeft;
+	IButtonsManager* buttons;
+
+	uint32_t m_lastReloadTime;
+	//IMilesTag2Transmitter* mt2;
 };
 
 

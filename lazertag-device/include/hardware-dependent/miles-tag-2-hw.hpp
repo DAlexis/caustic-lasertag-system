@@ -16,7 +16,6 @@ public:
     MilesTag2Transmitter();
     ~MilesTag2Transmitter() {}
     void init();
-    static void select();
 
 private:
     void fireCallback(bool wasOnState);
@@ -33,7 +32,6 @@ public:
     void init(unsigned int channel);
     void interruptionHandler();
 
-    static void select();
 private:
     void resetReceiver();
     enum ReceivingState

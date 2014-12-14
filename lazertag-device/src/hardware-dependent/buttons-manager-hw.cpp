@@ -93,3 +93,11 @@ extern "C" void EXTI0_IRQHandler()
     }
 }
 
+extern "C" void EXTI1_IRQHandler()
+{
+    if(EXTI_GetITStatus(EXTI_Line1) != RESET)
+    {
+        EXTI_ClearITPendingBit(EXTI_Line1);
+        pButtons->interruptionHandler(1);
+    }
+}

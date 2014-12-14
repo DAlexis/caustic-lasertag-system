@@ -15,6 +15,7 @@
 
 class ButtonsManager : public ButtonsManagerBase
 {
+	/// @todo implement "slow buttons" that do not need interruptions
 public:
     ButtonsManager();
     void configButton(unsigned int button, ButtonAutoRepeat autoRepeat, unsigned int minRepeatPeriod);

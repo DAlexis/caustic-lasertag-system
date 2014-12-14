@@ -164,11 +164,6 @@ void MilesTag2Receiver::resetReceiver()
     m_dataReady = false;
 }
 
-void MilesTag2Receiver::select()
-{
-	//milesTag2Receiver = &MT2Receiver;
-}
-
 extern "C" void EXTI4_IRQHandler()
 {
     if(EXTI_GetITStatus(EXTI_Line4) != RESET)

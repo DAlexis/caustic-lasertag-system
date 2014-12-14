@@ -56,8 +56,3 @@ void MilesTag2Transmitter::fireCallbackStaticWrapper(void* object, bool wasOnSta
 
 	reinterpret_cast<MilesTag2Transmitter*>(object)->fireCallback(wasOnState);
 }
-
-void MilesTag2Transmitter::select()
-{
-	//milesTag2 = &MT2Transmitter;
-}

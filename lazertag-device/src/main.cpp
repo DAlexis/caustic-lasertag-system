@@ -13,6 +13,7 @@
 #include "tester.hpp"
 #include "sound.hpp"
 #include "radio.hpp"
+#include "rifle.hpp"
 
 #include "hardware-dependent/fire-led.hpp"
 #include "hal/abstract-devices-pool.hpp"
@@ -71,15 +72,15 @@ void test(const char* w)
     printf("Hlo, %s\n", w);
 }
 
+AliveIndicator alive;
+Rifle rifle;
 int main()
 {
     // At this stage the system clock should have already been configured
     // at high speed.
     //__enable_irq();
 
-	// Selecting hardware for interfaces
-	HardwareSelector::selectHardware();
-    AliveIndicator alive;
+
     //USART1Manager.init(9600);
     USART1Manager.init(921600);
 
@@ -112,11 +113,11 @@ int main()
     milesTag2Transmitter->init();
 
     printf("MT2 receiver init\n");
-
     milesTag2Receiver->init(4);
-    printf("MT2 set cb\n");
     milesTag2Receiver->setShortMessageCallback(Tester::mt2receiverCallback, nullptr);
 
+    printf("Rifle init\n");
+    rifle.init();
     printMemInfo();
 
 /*    std::function<void(void)> func1(test);
@@ -127,8 +128,8 @@ int main()
     tester.init();
     nrf24l01.setDataReceiveCallback(tester.RXCallback, 0);
 
-    devicesPool->buttonsManager()->setButtonCallback(0, Tester::buttonCallback, nullptr);
-    devicesPool->buttonsManager()->configButton(0, IButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 500000);
+    //devicesPool->buttonsManager()->setButtonCallback(0, Tester::buttonCallback, nullptr);
+    //devicesPool->buttonsManager()->configButton(0, IButtonsManager::BUTTON_AUTO_REPEAT_ENABLE, 500000);
     //NRF24L01Connector<4, 20> connector(nrf24l01);
     //connector.sendData();
     printf("Initialization done\n");
@@ -145,9 +146,11 @@ int main()
     console.prompt();
     while (1)
     {
-        systemTimer.testTimeSmoothness();
+        //systemTimer.testTimeSmoothness();
         milesTag2Receiver->interrogate();
-        devicesPool->buttonsManager()->interrogateAllButtons();
+        //devicesPool->buttonsManager()->interrogateAllButtons();
+
+        rifle.mainLoopBody();
         alive.blink();
         //radio.testTX();
         //    printf("test\n");
