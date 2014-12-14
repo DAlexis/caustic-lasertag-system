@@ -6,7 +6,7 @@
  */
 
 
-#include "fire-led.hpp"
+#include "hardware-dependent/fire-led.hpp"
 #include "stm32f10x.h"
 
 #include <stdio.h>

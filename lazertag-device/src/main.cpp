@@ -13,11 +13,16 @@
 #include "tester.hpp"
 #include "sound.hpp"
 #include "radio.hpp"
-#include "fire-led.hpp"
+
+#include "hardware-dependent/fire-led.hpp"
+#include "hal/abstract-devices-pool.hpp"
+
 #include "memtest.h"
 #include "utils.hpp"
+
 #include "hal/miles-tag-2.hpp"
 #include "hardware-dependent/hw-selector.hpp"
+
 #include "buttons-manager.hpp"
 #include "devices-connectors.hpp"
 
@@ -100,12 +105,16 @@ int main()
 
     nrf24l01.init();
 
+    IMilesTag2Receiver* milesTag2Receiver = devicesPool->getMilesTagReceiver();
+    IMilesTag2Transmitter* milesTag2Transmitter = devicesPool->getMilesTagTransmitter();
     printf("Fire led init\n");
     fireLED.init();
 
     printf("MT2 transmitter init\n");
-    milesTag2->init();
+    milesTag2Transmitter->init();
+
     printf("MT2 receiver init\n");
+
     milesTag2Receiver->init(4);
     printf("MT2 set cb\n");
     milesTag2Receiver->setShortMessageCallback(Tester::mt2receiverCallback, nullptr);

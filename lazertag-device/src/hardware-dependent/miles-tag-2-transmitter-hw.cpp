@@ -6,10 +6,8 @@
  */
 
 #include "hardware-dependent/miles-tag-2-hw.hpp"
-#include "fire-led.hpp"
+#include "hardware-dependent/fire-led.hpp"
 #include "miles-tag-2-timings.h"
-
-MilesTag2Transmitter MT2Transmitter;
 
 ////////////////////////
 // MilesTag2Transmitter
@@ -61,5 +59,5 @@ void MilesTag2Transmitter::fireCallbackStaticWrapper(void* object, bool wasOnSta
 
 void MilesTag2Transmitter::select()
 {
-	milesTag2 = &MT2Transmitter;
+	//milesTag2 = &MT2Transmitter;
 }

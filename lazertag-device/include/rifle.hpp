@@ -62,7 +62,8 @@ public:
 		uint32_t bulletsPerMagazine;
 	};
 
-
+	Rifle();
+	void init();
 private:
 };
 

@@ -12,8 +12,9 @@
 #include "sound.hpp"
 #include "sdcard.hpp"
 #include "radio.hpp"
-#include "fire-led.hpp"
+#include "hardware-dependent/fire-led.hpp"
 #include "hal/miles-tag-2.hpp"
+#include "hal/abstract-devices-pool.hpp"
 
 #include "memtest.h"
 
@@ -159,10 +160,10 @@ void Tester::debugMT2Receiver(const char *arg)
 {
     if (arg[0] == 'y') {
     	printf("Miles tag 2 receiver debug enabled\n");
-        milesTag2Receiver->enableDebug(true);
+    	devicesPool->getMilesTagReceiver()->enableDebug(true);
     } else {
     	printf("Miles tag 2 receiver debug disabled\n");
-        milesTag2Receiver->enableDebug(false);
+    	devicesPool->getMilesTagReceiver()->enableDebug(false);
     }
 }
 
@@ -176,8 +177,8 @@ void Tester::fireLEDCallback(void*, bool wasOnState)
 
 void Tester::testShot(const char*)
 {
-    milesTag2->init();
-    milesTag2->shot(1);
+	devicesPool->getMilesTagTransmitter()->init();
+	devicesPool->getMilesTagTransmitter()->shot(1);
 }
 
 void Tester::buttonCallback(void*, bool first)
@@ -187,7 +188,7 @@ void Tester::buttonCallback(void*, bool first)
         printf("first=true\n");
     else
         printf("first=false\n");
-    milesTag2->shot(1);
+    devicesPool->getMilesTagTransmitter()->shot(1);
 }
 
 

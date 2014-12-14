@@ -6,17 +6,18 @@
  */
 
 #include "hardware-dependent/miles-tag-2-hw.hpp"
-#include "fire-led.hpp"
 #include "miles-tag-2-timings.h"
 #include "exti-initialization-options.h"
 #include "utils.hpp"
+
 #include "stm32f10x.h"
 #include <stdio.h>
 
-MilesTag2Receiver MT2Receiver;
+MilesTag2Receiver* pMT2ReceiverForCallback;
 
 MilesTag2Receiver::MilesTag2Receiver()
 {
+	pMT2ReceiverForCallback = this;
     resetReceiver();
 }
 
@@ -165,14 +166,14 @@ void MilesTag2Receiver::resetReceiver()
 
 void MilesTag2Receiver::select()
 {
-	milesTag2Receiver = &MT2Receiver;
+	//milesTag2Receiver = &MT2Receiver;
 }
 
 extern "C" void EXTI4_IRQHandler()
 {
     if(EXTI_GetITStatus(EXTI_Line4) != RESET)
     {
-    	MT2Receiver.interruptionHandler();
+    	pMT2ReceiverForCallback->interruptionHandler();
         EXTI_ClearITPendingBit(EXTI_Line4);
     }
 }

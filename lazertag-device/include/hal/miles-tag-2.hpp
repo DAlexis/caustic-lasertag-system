@@ -61,8 +61,5 @@ public:
     virtual void enableDebug(bool debug) = 0;
 };
 
-extern IMilesTag2Transmitter* milesTag2;
-extern IMilesTag2Receiver* milesTag2Receiver;
-
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_MILES_TAG_2_HPP_ */
