@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Чт 18 дек 2014 13:39:48
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пт 19 дек 2014 00:08:20
 
 BeginCmp
 TimeStamp = /548EFAB9;
@@ -256,6 +256,62 @@ BeginCmp
 TimeStamp = /5490BDF2;
 Reference = R4;
 ValeurCmp = R;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5492DE26;
+Reference = R5;
+ValeurCmp = 0;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5493119F;
+Reference = R6;
+ValeurCmp = 0;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /54931F3D;
+Reference = R7;
+ValeurCmp = 0;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /54931F4C;
+Reference = R8;
+ValeurCmp = 0;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /54931B9C;
+Reference = R9;
+ValeurCmp = 0;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /54931F5B;
+Reference = R10;
+ValeurCmp = 0;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /54933231;
+Reference = R11;
+ValeurCmp = 0;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /549342E3;
+Reference = R12;
+ValeurCmp = 0;
 IdModule  = SM1206;
 EndCmp
 
