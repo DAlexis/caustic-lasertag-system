@@ -1,4 +1,4 @@
-update=Чт 18 дек 2014 00:41:16
+update=Чт 18 дек 2014 13:27:17
 version=1
 last_client=cvpcb
 [general]
@@ -83,10 +83,9 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
-LibName17=LQFP48
-LibName18=unipac
-LibName19=dsp56f8323
-LibName20=micro-sd2
+LibName17=unipac
+LibName18=dsp56f8323
+LibName19=micro-sd2
 LibDir=
 [cvpcb]
 version=1

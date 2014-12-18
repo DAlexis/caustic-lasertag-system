@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Чт 18 дек 2014 00:41:35
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Чт 18 дек 2014 13:39:48
 
 BeginCmp
 TimeStamp = /548EFAB9;
@@ -180,6 +180,20 @@ TimeStamp = /5490C903;
 Reference = P13;
 ValeurCmp = IR_LED;
 IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /54929F23;
+Reference = P14;
+ValeurCmp = Power_in;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /5492B181;
+Reference = P15;
+ValeurCmp = Power_out;
+IdModule  = PIN_ARRAY_4x1;
 EndCmp
 
 BeginCmp
