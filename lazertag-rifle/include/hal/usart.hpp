@@ -28,6 +28,7 @@ public:
 class IUSARTSPool
 {
 public:
+	virtual ~IUSARTSPool() {}
 	virtual IUSARTManager* getUSART(uint8_t portNumber) = 0;
 };
 
