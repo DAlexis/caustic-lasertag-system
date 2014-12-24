@@ -10,6 +10,11 @@
 
 #include "Timer.h"
 #include "BlinkLed.h"
+#include "hal/usart.hpp"
+#include "hw/usart.hpp"
+
+#include <functional>
+#include <vector>
 
 // ----------------------------------------------------------------------------
 //
@@ -55,7 +60,15 @@ namespace
       - BLINK_ON_TICKS;
 }
 
+Timer *timer = nullptr;
+
 // ----- main() ---------------------------------------------------------------
+
+void testfunc(int q)
+{
+	printf("q=%d", q);
+	timer->sleep(BLINK_ON_TICKS);
+}
 
 // Sample pragmas to cope with warnings. Please note the related line at
 // the end of this function, used to pop the compiler diagnostics status.
@@ -64,9 +77,8 @@ namespace
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
-int
-main(int argc, char* argv[])
-{/*
+int main(int argc, char* argv[])
+{
   // By customising __initialize_args() it is possible to pass arguments,
   // for example when running tests with semihosting you can pass various
   // options to the test.
@@ -84,9 +96,23 @@ main(int argc, char* argv[])
   // At this stage the system clock should have already been configured
   // at high speed.
   trace_printf("System clock: %uHz\n", SystemCoreClock);
+
+  timer = new Timer;
+  timer->start();
+  //USARTManager mgr;
+/*
+  IUSARTManager *usart1 = USARTS->getUSART(0);
+  usart1->init(921600);
+  usart1->syncWrite("Hello!\n", 7);
 */
-  Timer timer;
-  timer.start();
+  std::function<void()> func = std::bind(testfunc, 0);
+/*
+  std::vector<int> a(1);
+  a.push_back(25);
+  a.push_back(25);
+  a.push_back(25);
+  a.push_back(25);
+  a.clear();*/
 
   BlinkLed blinkLed;
 
@@ -99,10 +125,10 @@ main(int argc, char* argv[])
   while (1)
     {
       blinkLed.turnOn();
-      timer.sleep(BLINK_ON_TICKS);
-
+      //timer->sleep(BLINK_ON_TICKS);
+      func();
       blinkLed.turnOff();
-      timer.sleep(BLINK_OFF_TICKS);
+      timer->sleep(BLINK_OFF_TICKS);
 
       ++seconds;
 

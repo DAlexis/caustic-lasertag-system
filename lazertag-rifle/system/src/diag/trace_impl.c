@@ -9,6 +9,7 @@
 
 #include "cmsis_device.h"
 #include "diag/Trace.h"
+#include "hal/usart-write-impl.h"
 
 // ----------------------------------------------------------------------------
 
@@ -62,7 +63,9 @@ ssize_t
 trace_write (const char* buf __attribute__((unused)),
 	     size_t nbyte __attribute__((unused)))
 {
-#if defined(OS_USE_TRACE_ITM)
+#if defined(OS_USE_TRACE_USART)
+  usartWriteImpl(buf, nbyte);
+#elif defined(OS_USE_TRACE_ITM)
   return _trace_write_itm (buf, nbyte);
 #elif defined(OS_USE_TRACE_SEMIHOSTING_STDOUT)
   return _trace_write_semihosting_stdout(buf, nbyte);
