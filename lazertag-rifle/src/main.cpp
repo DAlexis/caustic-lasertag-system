@@ -12,6 +12,7 @@
 #include "BlinkLed.h"
 #include "hal/usart.hpp"
 #include "hw/usart.hpp"
+#include "dev/console.hpp"
 
 #include <functional>
 #include <vector>
@@ -66,7 +67,6 @@ Timer *timer = nullptr;
 
 void testfunc(int q)
 {
-	printf("q=%d", q);
 	timer->sleep(BLINK_ON_TICKS);
 }
 
@@ -77,65 +77,61 @@ void testfunc(int q)
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
+char buff[100];
+
+void test(const char* b, int size)
+{
+	printf("Registered\n");
+}
+
 int main(int argc, char* argv[])
 {
-  // By customising __initialize_args() it is possible to pass arguments,
-  // for example when running tests with semihosting you can pass various
-  // options to the test.
-  // trace_dump_args(argc, argv);
+	// By customising __initialize_args() it is possible to pass arguments,
+	// for example when running tests with semihosting you can pass various
+	// options to the test.
+	// trace_dump_args(argc, argv);
 
-  // Send a greeting to the trace device (skipped on Release).
-  trace_puts("Hello ARM World!");
+	// Send a greeting to the trace device (skipped on Release).
+	trace_puts("Hello ARM World!");
 
-  // The standard output and the standard error should be forwarded to
-  // the trace device. For this to work, a redirection in _write.c is
-  // required.
-  puts("Standard output message.");
-  fprintf(stderr, "Standard error message.\n");
+	// The standard output and the standard error should be forwarded to
+	// the trace device. For this to work, a redirection in _write.c is
+	// required.
+	puts("Standard output message.");
+	fprintf(stderr, "Standard error message.\n");
 
-  // At this stage the system clock should have already been configured
-  // at high speed.
-  trace_printf("System clock: %uHz\n", SystemCoreClock);
+	// At this stage the system clock should have already been configured
+	// at high speed.
+	trace_printf("System clock: %uHz\n", SystemCoreClock);
 
-  timer = new Timer;
-  timer->start();
-  //USARTManager mgr;
-/*
-  IUSARTManager *usart1 = USARTS->getUSART(0);
-  usart1->init(921600);
-  usart1->syncWrite("Hello!\n", 7);
-*/
-  std::function<void()> func = std::bind(testfunc, 0);
-/*
-  std::vector<int> a(1);
-  a.push_back(25);
-  a.push_back(25);
-  a.push_back(25);
-  a.push_back(25);
-  a.clear();*/
+	timer = new Timer;
+	timer->start();
 
-  BlinkLed blinkLed;
+	BlinkLed blinkLed;
 
-  // Perform all necessary initialisations for the LED.
-  blinkLed.powerUp();
+	// Perform all necessary initialisations for the LED.
+	blinkLed.powerUp();
 
-  uint32_t seconds = 0;
+	uint32_t seconds = 0;
 
-  // Infinite loop
-  while (1)
-    {
-      blinkLed.turnOn();
-      //timer->sleep(BLINK_ON_TICKS);
-      func();
-      blinkLed.turnOff();
-      timer->sleep(BLINK_OFF_TICKS);
+	Console::instance().init(0);
+	Console::instance().prompt();
 
-      ++seconds;
+	// Infinite loop
+	while (1)
+	{
+		blinkLed.turnOn();
+		timer->sleep(BLINK_ON_TICKS);
+		//func();
+		blinkLed.turnOff();
+		timer->sleep(BLINK_OFF_TICKS);
 
-      // Count seconds on the trace device.
-      trace_printf("Second %u\n", seconds);
-    }
-  // Infinite loop, never return.
+		++seconds;
+
+		// Count seconds on the trace device.
+		//trace_printf("Second %u\n", seconds);
+	}
+	// Infinite loop, never return.
 }
 
 #pragma GCC diagnostic pop

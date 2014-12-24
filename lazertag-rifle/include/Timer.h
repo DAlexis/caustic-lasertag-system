@@ -23,18 +23,15 @@ public:
   // Default constructor
   Timer() = default;
 
-  inline void
-  start(void)
+  inline void start(void)
   {
     // Use SysTick as reference for the delay loops.
     SysTick_Config(SystemCoreClock / FREQUENCY_HZ);
   }
 
-  static void
-  sleep(ticks_t ticks);
+  static void sleep(ticks_t ticks);
 
-  inline static void
-  tick(void)
+  inline static void tick(void)
   {
     // Decrement to zero the counter used by the delay routine.
     if (ms_delayCount != 0u)

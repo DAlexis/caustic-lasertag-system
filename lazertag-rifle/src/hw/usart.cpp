@@ -10,8 +10,15 @@
 USARTSPool USARTSPoolInstance;
 IUSARTSPool* USARTS = &USARTSPoolInstance;
 
+using USART_IRQHandler = std::function<void()>;
+
+USART_IRQHandler usartRX_IRQHandlers[3];
+
 namespace
 {
+	constexpr uint8_t USART_IO_STATUS_RECEIVING = 1;
+	constexpr uint8_t USART_IO_STATUS_TRANSMITTIMG = 2;
+
 	struct USARTHWOptions {
 		uint8_t APBx;
 		uint32_t RCC_APBnPeriph_USARTn;
@@ -135,6 +142,8 @@ void USARTManager::init(uint32_t baudrate)
 	USART_ITConfig(usartOptions[m_portNumber].USARTn, USART_IT_TXE, DISABLE);
 	//enable Receive Data register not empty interrupt
 	USART_ITConfig(usartOptions[m_portNumber].USARTn, USART_IT_RXNE, DISABLE);
+
+	usartRX_IRQHandlers[m_portNumber] = std::bind(&USARTManager::RX_IRQHandler, this);
 }
 
 void USARTManager::waitForTransmitionEnd()
@@ -157,8 +166,48 @@ int USARTManager::syncWrite(const char* ptr, int len)
 	return len;
 }
 
-void USARTManager::asyncRead(char* buffer, char stop_char, int maxlen, USARTReadingDoneCallback callback, uint8_t need_echo)
+void USARTManager::asyncRead(char* buffer, char stop_char, int maxlen, USARTReadingDoneCallback callback, uint8_t _need_echo)
 {
+	if (io_status & USART_IO_STATUS_RECEIVING)
+		return;
+	input_buffer = buffer;
+	input_cursor = 0;
+	input_buffer_size = maxlen;
+	m_readingDoneCB = callback;
+	io_status |= USART_IO_STATUS_RECEIVING;
+	need_echo = _need_echo;
+	input_stop_char = stop_char;
+	USART_ITConfig(usartOptions[m_portNumber].USARTn, USART_IT_RXNE, ENABLE);
+}
+
+void USARTManager::RX_IRQHandler()
+{
+	char data_byte = (char)USART_ReceiveData(USART1);
+	input_buffer[input_cursor] = data_byte;
+
+	if (need_echo)
+	{
+		if (data_byte == '\r')
+			USART_SendData(USART1, '\n');
+		else
+			USART_SendData(USART1, (uint16_t)data_byte);
+		waitForTransmitionEnd();
+	}
+
+	if (data_byte == input_stop_char
+		|| data_byte == '\0'
+		|| input_cursor == input_buffer_size-2)
+	{
+		USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
+		if (input_cursor == input_buffer_size-2)
+			input_cursor++;
+		input_buffer[input_cursor] = '\0';
+		io_status &= ~USART_IO_STATUS_RECEIVING;
+		if (m_readingDoneCB) {
+			m_readingDoneCB(input_buffer, input_cursor);
+		}
+	} else
+		input_cursor++;
 }
 
 
@@ -185,4 +234,39 @@ USARTSPool::~USARTSPool()
 	// For Chuck Norris MCU
 	for (int i=0; i<MAX_USARTS_COUNT; i++)
 		if (m_usart[i]) delete m_usart[i];
+}
+
+///////////////////////
+// IRQs
+
+extern "C" {
+    void USART1_IRQHandler(void)
+    {
+        // If we received a byte
+        if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+        {
+            USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+            usartRX_IRQHandlers[0]();
+        }
+    }
+
+    void USART2_IRQHandler(void)
+	{
+		// If we received a byte
+		if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+		{
+			USART_ClearITPendingBit(USART2, USART_IT_RXNE);
+			usartRX_IRQHandlers[1]();
+		}
+	}
+
+    void USART3_IRQHandler(void)
+	{
+		// If we received a byte
+		if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+		{
+			USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+			usartRX_IRQHandlers[2]();
+		}
+	}
 }

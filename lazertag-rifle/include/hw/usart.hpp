@@ -22,6 +22,7 @@ public:
 	void asyncRead(char* buffer, char stop_char, int maxlen, USARTReadingDoneCallback callback, uint8_t need_echo);
 
 private:
+	void RX_IRQHandler();
 	USARTManager(const USARTManager&) = delete;
 	void waitForTransmitionEnd();
 

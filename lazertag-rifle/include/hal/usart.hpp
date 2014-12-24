@@ -36,7 +36,11 @@ extern IUSARTSPool* USARTS;
 class USARTManagerBase : public IUSARTManager
 {
 protected:
-	USARTManagerBase(uint8_t portNumber) : m_portNumber(portNumber) {}
+	USARTManagerBase(uint8_t portNumber) :
+		m_readingDoneCB(nullptr),
+		m_writingDoneCB(nullptr),
+		m_portNumber(portNumber)
+    {}
 
 	USARTReadingDoneCallback m_readingDoneCB;
 	USARTWritingDoneCallback m_writingDoneCB;
