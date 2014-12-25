@@ -175,7 +175,8 @@ EXTISPool::~EXTISPool()
 
 ExternalInterruptManagerBase* EXTISPool::getEXTI(uint8_t pinNumber)
 {
-	if (!m_EXTIS[pinNumber])
+	if (!m_EXTIS[pinNumber]) {
 		m_EXTIS[pinNumber] = new ExternalInterruptManager(pinNumber);
+	}
 	return m_EXTIS[pinNumber];
 }

@@ -14,6 +14,7 @@
 #include "hw/usart.hpp"
 #include "dev/console.hpp"
 
+#include "tests/console-tester.hpp"
 #include <functional>
 #include <vector>
 
@@ -117,6 +118,7 @@ int main(int argc, char* argv[])
 	Console::instance().init(0);
 	Console::instance().prompt();
 
+	ConsoleTester tester;
 	// Infinite loop
 	while (1)
 	{
