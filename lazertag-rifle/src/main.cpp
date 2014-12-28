@@ -13,6 +13,7 @@
 #include "hal/usart.hpp"
 #include "hw/usart.hpp"
 #include "dev/console.hpp"
+#include "hal/system-clock.hpp"
 
 #include "tests/console-tester.hpp"
 #include <functional>
@@ -127,7 +128,7 @@ int main(int argc, char* argv[])
 		//func();
 		blinkLed.turnOff();
 		timer->sleep(BLINK_OFF_TICKS);
-
+		printf("Time: %u\n", systemClock->getTime());
 		++seconds;
 
 		// Count seconds on the trace device.
