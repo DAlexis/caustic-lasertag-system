@@ -14,6 +14,7 @@
 #include "hw/usart.hpp"
 #include "dev/console.hpp"
 #include "hal/system-clock.hpp"
+#include "hal/leds.hpp"
 #include "core/scheduler.hpp"
 
 #include "tests/console-tester.hpp"
@@ -123,10 +124,14 @@ int main(int argc, char* argv[])
 	// Infinite loop
 
 	Scheduler sheduler;
-
+	ILedManager *alive = ledsPool->getLed(1);
+/*
 	//blinkLed.turnOn();
 	printf("new task: %u\n", sheduler.addTask(std::bind(&BlinkLed::turnOn, &blinkLed), false, 2000000));
 	printf("new task: %u\n", sheduler.addTask(std::bind(&BlinkLed::turnOff, &blinkLed), false, 2000000, 0, 1000000));
+*/
+	printf("new task: %u\n", sheduler.addTask(std::bind(&ILedManager::ledOn, alive), false, 2000000));
+	printf("new task: %u\n", sheduler.addTask(std::bind(&ILedManager::ledOff, alive), false, 2000000, 0, 1000000));
 
 	Console::instance().prompt();
 
