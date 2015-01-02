@@ -14,6 +14,7 @@
 #include "hw/usart.hpp"
 #include "dev/console.hpp"
 #include "hal/system-clock.hpp"
+#include "core/scheduler.hpp"
 
 #include "tests/console-tester.hpp"
 #include <functional>
@@ -67,10 +68,7 @@ Timer *timer = nullptr;
 
 // ----- main() ---------------------------------------------------------------
 
-void testfunc(int q)
-{
-	timer->sleep(BLINK_ON_TICKS);
-}
+
 
 // Sample pragmas to cope with warnings. Please note the related line at
 // the end of this function, used to pop the compiler diagnostics status.
@@ -78,6 +76,11 @@ void testfunc(int q)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
+
+void testfunc(int q)
+{
+	timer->sleep(BLINK_ON_TICKS);
+}
 
 char buff[100];
 
@@ -114,27 +117,20 @@ int main(int argc, char* argv[])
 	// Perform all necessary initialisations for the LED.
 	blinkLed.powerUp();
 
-	uint32_t seconds = 0;
-
 	Console::instance().init(0);
-	Console::instance().prompt();
 
 	ConsoleTester tester;
 	// Infinite loop
-	while (1)
-	{
-		blinkLed.turnOn();
-		timer->sleep(BLINK_ON_TICKS);
-		//func();
-		blinkLed.turnOff();
-		timer->sleep(BLINK_OFF_TICKS);
-		printf("Time: %u\n", systemClock->getTime());
-		++seconds;
 
-		// Count seconds on the trace device.
-		//trace_printf("Second %u\n", seconds);
-	}
-	// Infinite loop, never return.
+	Scheduler sheduler;
+
+	//blinkLed.turnOn();
+	printf("new task: %u\n", sheduler.addTask(std::bind(&BlinkLed::turnOn, &blinkLed), false, 2000000));
+	printf("new task: %u\n", sheduler.addTask(std::bind(&BlinkLed::turnOff, &blinkLed), false, 2000000, 0, 1000000));
+
+	Console::instance().prompt();
+
+	sheduler.mainLoop();
 }
 
 #pragma GCC diagnostic pop
