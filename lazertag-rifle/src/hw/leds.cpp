@@ -26,6 +26,11 @@ void LedManager::ledOff()
 	GPIO_ResetBits(m_gpio, m_pinMask);
 }
 
+bool LedManager::state()
+{
+	return GPIO_ReadInputDataBit(m_gpio, m_pinMask) ? true : false;
+}
+
 LedsPool::LedsPool()
 {
 	for (int i=0; i<MAX_LEDS_COUNT; i++)

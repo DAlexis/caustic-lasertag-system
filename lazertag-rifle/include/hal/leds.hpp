@@ -16,6 +16,7 @@ public:
 	virtual ~ILedManager() {}
 	virtual void ledOn() = 0;
 	virtual void ledOff() = 0;
+	virtual bool state() = 0;
 };
 
 class ILedsPool

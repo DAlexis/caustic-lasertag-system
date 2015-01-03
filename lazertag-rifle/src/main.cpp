@@ -13,6 +13,7 @@
 #include "hal/usart.hpp"
 #include "hw/usart.hpp"
 #include "dev/console.hpp"
+#include "dev/alive-indicator.hpp"
 #include "hal/system-clock.hpp"
 #include "hal/leds.hpp"
 #include "core/scheduler.hpp"
@@ -125,14 +126,19 @@ int main(int argc, char* argv[])
 
 	Scheduler sheduler;
 	ILedManager *alive = ledsPool->getLed(1);
+	AliveIndicator aliveIndicator;
+	aliveIndicator.init(alive);
+
 /*
 	//blinkLed.turnOn();
 	printf("new task: %u\n", sheduler.addTask(std::bind(&BlinkLed::turnOn, &blinkLed), false, 2000000));
 	printf("new task: %u\n", sheduler.addTask(std::bind(&BlinkLed::turnOff, &blinkLed), false, 2000000, 0, 1000000));
 */
+	/*
 	printf("new task: %u\n", sheduler.addTask(std::bind(&ILedManager::ledOn, alive), false, 2000000));
 	printf("new task: %u\n", sheduler.addTask(std::bind(&ILedManager::ledOff, alive), false, 2000000, 0, 1000000));
-
+*/
+	printf("new task: %u\n", sheduler.addTask(std::bind(&AliveIndicator::blink, aliveIndicator), false, 500000));
 	Console::instance().prompt();
 
 	sheduler.mainLoop();

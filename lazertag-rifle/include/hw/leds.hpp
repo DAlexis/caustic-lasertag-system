@@ -24,6 +24,7 @@ public:
 
 	void ledOn();
 	void ledOff();
+	bool state();
 
 private:
 	GPIO_TypeDef* m_gpio;
