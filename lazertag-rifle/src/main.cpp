@@ -14,6 +14,7 @@
 #include "hw/usart.hpp"
 #include "dev/console.hpp"
 #include "dev/alive-indicator.hpp"
+#include "dev/buttons.hpp"
 #include "hal/system-clock.hpp"
 #include "hal/leds.hpp"
 #include "core/scheduler.hpp"
@@ -91,6 +92,11 @@ void test(const char* b, int size)
 	printf("Registered\n");
 }
 
+void fireCallbackTest(bool state)
+{
+	printf("keypressedm state=%d\n", state ? 1 : 0);
+}
+
 int main(int argc, char* argv[])
 {
 	// By customising __initialize_args() it is possible to pass arguments,
@@ -139,6 +145,15 @@ int main(int argc, char* argv[])
 	printf("new task: %u\n", sheduler.addTask(std::bind(&ILedManager::ledOff, alive), false, 2000000, 0, 1000000));
 */
 	printf("new task: %u\n", sheduler.addTask(std::bind(&AliveIndicator::blink, aliveIndicator), false, 500000));
+
+	ButtonManager* bmgr = ButtonsPool::instance().getButtonManager(0,0);
+	ButtonsPool::instance().setExti(0, 0, true);
+
+	bmgr->setAutoRepeat(true);
+	bmgr->setCallback(fireCallbackTest);
+
+	printf("new task: %u\n", sheduler.addTask(std::bind(&ButtonManager::interrogate, bmgr), false, 5000));
+
 	Console::instance().prompt();
 
 	sheduler.mainLoop();
