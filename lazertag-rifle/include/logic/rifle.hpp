@@ -110,7 +110,9 @@ private:
 	void initState();
 	void makeShot(bool isFirst);
 	void reload(bool isFirst);
+
 	bool isReloading();
+	bool isSafeSwitchSelected();
 
 	Scheduler m_sheduler;
 

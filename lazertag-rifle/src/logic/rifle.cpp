@@ -93,34 +93,16 @@ void Rifle::configure()
 
 	m_sheduler.addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
 
+	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(automaticButtonPort, automaticButtonPin);
+	m_automaticFireSwitch->turnOff();
+
+	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(semiAutomaticButtonPort, semiAutomaticButtonPin);
+	m_semiAutomaticFireSwitch->turnOff();
+
+
 	m_mt2Transmitter.setPlayerId(1);
 	m_mt2Transmitter.setTeamId(1);
 	m_mt2Transmitter.init();
-	/*
-	devicesPool->getMilesTagTransmitter()->init();
-	buttons = devicesPool->buttonsManager();
-	// Configuring fire button
-	buttons->setButtonCallback(0, makeShotWrapper, this);
-	buttons->configButton(
-			0,
-			//config.automaticAllowed ?
-					IButtonsManager::BUTTON_AUTO_REPEAT_ENABLE,
-			//		: IButtonsManager::BUTTON_AUTO_REPEAT_DISABLE,
-			config.firePeriod
-	);
-	// Configuring reload button
-	/// @todo Configuring reload button
-
-	buttons->setButtonCallback(1, reloadWrapper, this);
-	buttons->configButton(
-			1,
-			IButtonsManager::BUTTON_AUTO_REPEAT_DISABLE,
-			config.reloadingTime
-	);
-
-	/// @todo Configuring MT transmitter for player and team id
-*/
-
 }
 
 void Rifle::initState()
@@ -132,6 +114,9 @@ void Rifle::initState()
 
 void Rifle::makeShot(bool isFirst)
 {
+	if (isSafeSwitchSelected())
+		return;
+
 	// Preventing reloading while reloading (for those who very like reloading)
 	if (isReloading())
 		return;
@@ -140,8 +125,9 @@ void Rifle::makeShot(bool isFirst)
 	if (state.bulletsLeft == 0)
 	{
 		/// @todo Play empty magazine sound
-		/// @todo Disable button auto repeat
 		printf("Magazine is empty\n");
+		// Disabling auto repeating if automatic mode
+		m_fireButton->setAutoRepeat(false);
 		return;
 	}
 
@@ -154,6 +140,12 @@ void Rifle::makeShot(bool isFirst)
 	printf("--- shot --->\n");
 
 	m_mt2Transmitter.shot(config.damage);
+
+	if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
+		m_fireButton->setAutoRepeat(false);
+
+	if (m_automaticFireSwitch->state() && config.automaticAllowed)
+		m_fireButton->setAutoRepeat(true);
 }
 
 void Rifle::reload(bool)
@@ -164,18 +156,25 @@ void Rifle::reload(bool)
 	if (time - state.lastReloadTime < config.reloadingTime)
 		return;
 
-	state.lastReloadTime = time;
-
 	if (state.magazinesLeft == 0)
 	{
 		/// @todo Play no magazines sound
 		return;
 	}
+
+	state.lastReloadTime = time;
+
 	/// @todo Play reloading sound
 	printf("Reloading...\n");
 	// So reloading
 	state.magazinesLeft--;
 	state.bulletsLeft = config.bulletsPerMagazine;
+	m_fireButton->setAutoRepeat(false);
+}
+
+bool Rifle::isSafeSwitchSelected()
+{
+	return !(m_automaticFireSwitch->state() || m_semiAutomaticFireSwitch->state());
 }
 
 

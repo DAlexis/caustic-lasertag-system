@@ -33,7 +33,7 @@ public:
 
 	void interrogate();
 
-	constexpr static uint32_t AntiBounceDelay = 1000;
+	constexpr static uint32_t AntiBounceDelay = 5000;
 private:
 	bool wasBounce();
 	void extiCallback(bool state);
