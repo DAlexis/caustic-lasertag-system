@@ -29,6 +29,7 @@ public:
 	void turnOn();
 	void turnOff();
 	bool useExti() { return m_extiManager ? true : false; }
+	bool state();   /// @return true if pressed, false if depressed
 
 	void interrogate();
 
@@ -49,6 +50,7 @@ private:
 	bool m_extiDetected = false;
 	bool m_lastState = false;           /// Last detected button state (pressed or not)
 	bool m_isFirstPress = true;
+	bool m_isEnabled = true;
 };
 
 class ButtonsPool

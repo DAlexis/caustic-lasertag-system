@@ -43,10 +43,23 @@ ButtonManager& ButtonManager::setRepeatPeriod(uint32_t repeatPeriod)
 
 void ButtonManager::turnOn()
 {
+	if (m_extiManager) {
+		m_extiManager->turnOn();
+	}
+	m_isEnabled = true;
 }
 
 void ButtonManager::turnOff()
 {
+	if (m_extiManager) {
+		m_extiManager->turnOff();
+	}
+	m_isEnabled = false;
+}
+
+bool ButtonManager::state()
+{
+	return !m_inputInterrogator->interrogate();
 }
 
 void ButtonManager::extiCallback(bool state)
@@ -64,6 +77,7 @@ void ButtonManager::extiCallback(bool state)
 
 void ButtonManager::interrogate()
 {
+	if (!m_isEnabled) return;
 	if (wasBounce()) return;
 
 	if (m_inputInterrogator->interrogate() == false || m_extiDetected == true)

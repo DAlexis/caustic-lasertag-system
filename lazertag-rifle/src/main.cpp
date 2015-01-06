@@ -10,6 +10,8 @@
 
 #include "Timer.h"
 #include "BlinkLed.h"
+
+#include "logic/rifle.hpp"
 #include "hal/usart.hpp"
 #include "hw/usart.hpp"
 #include "dev/console.hpp"
@@ -128,22 +130,19 @@ int main(int argc, char* argv[])
 	Console::instance().init(0);
 
 	ConsoleTester tester;
-	// Infinite loop
 
+	Console::instance().prompt();
+
+	Rifle rifle;
+	rifle.configure();
+	rifle.run();
+	// Infinite loop
+	/*
 	Scheduler sheduler;
 	ILedManager *alive = ledsPool->getLed(1);
 	AliveIndicator aliveIndicator;
 	aliveIndicator.init(alive);
 
-/*
-	//blinkLed.turnOn();
-	printf("new task: %u\n", sheduler.addTask(std::bind(&BlinkLed::turnOn, &blinkLed), false, 2000000));
-	printf("new task: %u\n", sheduler.addTask(std::bind(&BlinkLed::turnOff, &blinkLed), false, 2000000, 0, 1000000));
-*/
-	/*
-	printf("new task: %u\n", sheduler.addTask(std::bind(&ILedManager::ledOn, alive), false, 2000000));
-	printf("new task: %u\n", sheduler.addTask(std::bind(&ILedManager::ledOff, alive), false, 2000000, 0, 1000000));
-*/
 	printf("new task: %u\n", sheduler.addTask(std::bind(&AliveIndicator::blink, aliveIndicator), false, 500000));
 
 	ButtonManager* bmgr = ButtonsPool::instance().getButtonManager(0,0);
@@ -154,9 +153,9 @@ int main(int argc, char* argv[])
 
 	printf("new task: %u\n", sheduler.addTask(std::bind(&ButtonManager::interrogate, bmgr), false, 5000));
 
-	Console::instance().prompt();
 
-	sheduler.mainLoop();
+
+	sheduler.mainLoop();*/
 }
 
 #pragma GCC diagnostic pop
