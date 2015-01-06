@@ -6,6 +6,7 @@
  */
 
 #include "logic/rifle.hpp"
+#include "dev/miles-tag-2.hpp"
 #include "hal/system-clock.hpp"
 
 #include "res/buttons-mapping.h"
@@ -92,6 +93,9 @@ void Rifle::configure()
 
 	m_sheduler.addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
 
+	m_mt2Transmitter.setPlayerId(1);
+	m_mt2Transmitter.setTeamId(1);
+	m_mt2Transmitter.init();
 	/*
 	devicesPool->getMilesTagTransmitter()->init();
 	buttons = devicesPool->buttonsManager();
@@ -136,6 +140,7 @@ void Rifle::makeShot(bool isFirst)
 	if (state.bulletsLeft == 0)
 	{
 		/// @todo Play empty magazine sound
+		/// @todo Disable button auto repeat
 		printf("Magazine is empty\n");
 		return;
 	}
@@ -147,7 +152,8 @@ void Rifle::makeShot(bool isFirst)
 	state.bulletsLeft--;
 	/// @todo Play shot sound
 	printf("--- shot --->\n");
-	//devicesPool->getMilesTagTransmitter()->shot(config.damage);
+
+	m_mt2Transmitter.shot(config.damage);
 }
 
 void Rifle::reload(bool)

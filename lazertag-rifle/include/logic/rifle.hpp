@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 
 #include "dev/buttons.hpp"
+#include "dev/miles-tag-2.hpp"
 #include "core/scheduler.hpp"
 
 #include <stdint.h>
@@ -117,6 +118,8 @@ private:
 	ButtonManager* m_reloadButton = nullptr;
 	ButtonManager* m_automaticFireSwitch = nullptr;
 	ButtonManager* m_semiAutomaticFireSwitch = nullptr;
+
+	MilesTag2Transmitter m_mt2Transmitter;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */
