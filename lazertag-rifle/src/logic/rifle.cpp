@@ -7,6 +7,7 @@
 
 #include "logic/rifle.hpp"
 #include "dev/miles-tag-2.hpp"
+#include "dev/console.hpp"
 #include "hal/system-clock.hpp"
 
 #include "res/buttons-mapping.h"
@@ -48,6 +49,7 @@ void Rifle::Configuration::setFallback()
 Rifle::Rifle()
 {
 	initState();
+	m_sheduler.addTask(std::bind(&Console::interrogate, &Console::instance()), false, 50000);
 }
 
 bool Rifle::Configuration::acceptOption(uint8_t optionCode, void* data)

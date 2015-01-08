@@ -16,6 +16,8 @@ public:
 private:
 	void firePulseTest(const char*);
 	void firePulseTestCallback(bool state);
+	void SDReadingTest(const char*);
+	void readSDMBRTest(const char*);
 };
 
 

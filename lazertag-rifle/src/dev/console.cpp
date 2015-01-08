@@ -26,7 +26,7 @@ void Console::init(uint8_t port)
 
 void Console::registerCommand(const char* command, const char* help, ConsoleCallback callback)
 {
-	m_commands.push_back(CommandDescr(callback, command, help));
+    m_commands.push_back(CommandDescr(callback, command, help));
 }
 
 Console::CommandDescr::CommandDescr() :
@@ -89,40 +89,53 @@ int Console::receiveStringCb(char* buffer, int)
     while (*first_space != ' ' && *first_space != '\0')
         first_space++;
 
-    const char *argument = "";
+    m_argument = "";
     if (*first_space == ' ') {
         *first_space = '\0';
-        argument = first_space+1;
+        m_argument = first_space+1;
     }
 
     auto it = m_commands.begin();
     for (; it != m_commands.end(); it++)
     {
         if (strcmp(buffer, it->command) == 0) {
-            it->callback (argument);
+            m_toCall = it->callback;
             break;
         }
     }
 
     if (it == m_commands.end())
+    {
         printf("Unknown command\n");
+        clearBuffer();
+        prompt();
+    }
 
-    clearBuffer();
-    prompt();
     return 0;
+}
+
+void Console::interrogate()
+{
+    if (m_toCall)
+    {
+        m_toCall (m_argument);
+        m_toCall = nullptr;
+        clearBuffer();
+        prompt();
+    }
 }
 
 Console& Console::instance()
 {
-	if (!m_console)
-		m_console = new Console;
-	return *m_console;
+    if (!m_console)
+        m_console = new Console;
+    return *m_console;
 }
 
 Console::StaticDeinitializer::~StaticDeinitializer()
 {
-	if (Console::m_console)
-		delete Console::m_console;
+    if (Console::m_console)
+        delete Console::m_console;
 }
 
 

@@ -13,7 +13,7 @@
 
 #include "logic/rifle.hpp"
 #include "hal/usart.hpp"
-#include "hw/usart.hpp"
+#include "hw/sdcard.h"
 #include "dev/console.hpp"
 #include "dev/alive-indicator.hpp"
 #include "dev/buttons.hpp"
@@ -107,16 +107,17 @@ int main(int argc, char* argv[])
 	// trace_dump_args(argc, argv);
 
 	// Send a greeting to the trace device (skipped on Release).
-	trace_puts("Hello ARM World!");
+	//trace_puts("Hello ARM World!");
 
 	// The standard output and the standard error should be forwarded to
 	// the trace device. For this to work, a redirection in _write.c is
 	// required.
-	puts("Standard output message.");
-	fprintf(stderr, "Standard error message.\n");
+	//puts("Standard output message.");
+	//fprintf(stderr, "Standard error message.\n");
 
 	// At this stage the system clock should have already been configured
 	// at high speed.
+	trace_printf("\n\nStarting system...\n", SystemCoreClock);
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
 
 	timer = new Timer;

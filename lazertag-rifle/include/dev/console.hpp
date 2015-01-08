@@ -23,6 +23,7 @@ public:
     void init(uint8_t port);
     void registerCommand(const char* command, const char* help, ConsoleCallback callback);
     void prompt();
+    void interrogate();
 
     static Console& instance();
 private:
@@ -56,8 +57,11 @@ private:
 
     std::list<CommandDescr> m_commands;
     char m_buffer[CONSOLE_INPUT_BUFFER_SIZE];
+    char* m_argument = nullptr;
     IUSARTManager* m_pUsart;
     unsigned int m_commandsCount;
+
+    ConsoleCallback m_toCall = nullptr;
 
     static Console* m_console;
     static StaticDeinitializer m_deinitializer;
