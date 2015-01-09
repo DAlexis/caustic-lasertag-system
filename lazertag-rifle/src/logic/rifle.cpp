@@ -146,10 +146,14 @@ void Rifle::makeShot(bool isFirst)
 		return;
 
 	state.bulletsLeft--;
+	m_mt2Transmitter.shot(config.damage);
 	/// @todo Play shot sound
+	WavPlayer::instance().loadFile("sound/shoot-1.wav");
+	WavPlayer::instance().play();
+
 	printf("--- shot --->\n");
 
-	m_mt2Transmitter.shot(config.damage);
+
 
 	if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
 		m_fireButton->setAutoRepeat(false);

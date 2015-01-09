@@ -50,6 +50,11 @@ ConsoleTester::ConsoleTester()
 		"Test play sound file",
 		std::bind(&ConsoleTester::playSoundFile, this, std::placeholders::_1)
 	);
+	Console::instance().registerCommand(
+		"sp",
+		"Stop playing sound",
+		std::bind(&ConsoleTester::stopPlaying, this, std::placeholders::_1)
+	);
 }
 
 void ConsoleTester::firePulseTest(const char*)
@@ -199,4 +204,9 @@ void ConsoleTester::playSoundFile(const char* filename)
 		return;
 	}
 	WavPlayer::instance().play();
+}
+
+void ConsoleTester::stopPlaying(const char*)
+{
+	WavPlayer::instance().stop();
 }

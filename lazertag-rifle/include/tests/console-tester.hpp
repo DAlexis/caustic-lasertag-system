@@ -25,6 +25,7 @@ private:
 	void loadNextFragment(SoundSample* old);
 
 	void playSoundFile(const char* filename);
+	void stopPlaying(const char*);
 };
 
 

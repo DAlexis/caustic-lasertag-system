@@ -31,6 +31,7 @@ void WavPlayer::setVerbose(bool verbose)
 
 bool WavPlayer::loadFile(const char* fileName)
 {
+	fragmentPlayer->stop();
 	FRESULT res;
 	printf("Opening file...\n");
 	res = f_open(&m_fil, fileName, FA_OPEN_EXISTING | FA_READ);
@@ -62,22 +63,30 @@ bool WavPlayer::loadFile(const char* fileName)
 
 void WavPlayer::play()
 {
+	fragmentPlayer->stop();
 	fragmentPlayer->setFragmentSize(AUDIO_BUFFER_SIZE);
 	fragmentPlayer->playFragment(m_buffer1);
+	m_isPlaying = true;
 }
 
+void WavPlayer::stop()
+{
+	fragmentPlayer->stop();
+	m_isPlaying = false;
+}
 
 void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 {
 	if (m_lastBufferSize == 0)
+	{
+		m_isPlaying = false;
 		return;
+	}
 	fragmentPlayer->setFragmentSize(m_lastBufferSize);
 	if (oldBuffer == m_buffer1) {
-		//printf("Play 2\n");
 		fragmentPlayer->playFragment(m_buffer2);
 		loadFragment(m_buffer1);
 	} else {
-		//printf("Play 1\n");
 		fragmentPlayer->playFragment(m_buffer1);
 		loadFragment(m_buffer2);
 	}

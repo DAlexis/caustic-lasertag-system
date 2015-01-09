@@ -17,6 +17,7 @@ public:
 	FragmentPlayer();
 	void playFragment(SoundSample* buffer);
 	void DMAInterruptionHandler();
+	void stop();
 
 private:
 	void stopFragment();

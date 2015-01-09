@@ -9,9 +9,7 @@
 
 #include <stdio.h>
 
-#define DAC_DHR12R1_ADDRESS   0x40007408
-#define DAC_DHR12R2_ADDRESS   0x40007414
-#define DAC_DHR8R1_ADDRESS    0x40007410
+constexpr uint32_t sampleRate = 44100;
 
 FragmentPlayer fragmentPlayerInstance;
 IFragmentPlayer *fragmentPlayer = &fragmentPlayerInstance;
@@ -40,17 +38,11 @@ FragmentPlayer::FragmentPlayer()
 
 	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInitStructure.TIM_Prescaler = SystemCoreClock / 88200 - 1;
+	TIM_TimeBaseInitStructure.TIM_Prescaler = SystemCoreClock / (sampleRate * 2) - 1;
 	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInitStructure.TIM_Period = 1;
 	TIM_TimeBaseInit(TIM6, &TIM_TimeBaseInitStructure);
-/*
-	TIM_SelectMasterSlaveMode(TIM4, TIM_MasterSlaveMode_Enable);
-	TIM_SelectOutputTrigger(TIM4, TIM_TRGOSource_Update);
-*/
 
-	//TIM_PrescalerConfig(TIM6, SystemCoreClock / 88200 - 1, TIM_PSCReloadMode_Update);
-	//TIM_SetAutoreload(TIM6, 0xFF);
 	// TIM6 TRGO selection
 	TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
 
@@ -65,7 +57,7 @@ FragmentPlayer::FragmentPlayer()
 
 	// Filling most part of fields of m_DMA_InitStructure that are always identical
 	DMA_StructInit(&m_DMA_InitStructure);
-	m_DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR12R1_ADDRESS;
+	m_DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) &(DAC->DHR12R1);//DAC_DHR12R1_ADDRESS;
 	//m_DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)buffer;
 	m_DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
 	//m_DMA_InitStructure.DMA_BufferSize = 6;
@@ -84,6 +76,12 @@ FragmentPlayer::FragmentPlayer()
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+
+	// Putting middle value
+	/// @todo Why not working?
+	DAC->DHR12R1 = 1 << 11;
+	// Enable DAC Channel1: Once the DAC channel1 is enabled, PA.04 is
+	// automatically connected to the DAC converter.
 	DAC_Cmd(DAC_Channel_1, ENABLE);
 }
 
@@ -97,16 +95,12 @@ void FragmentPlayer::playFragment(SoundSample* buffer)
 	m_DMA_InitStructure.DMA_BufferSize = m_size;
 	DMA_Init(DMA2_Channel3, &m_DMA_InitStructure);
 	DMA_ITConfig(DMA2_Channel3, DMA_IT_TC, ENABLE);
-	// Enable DMA2 Channel4
+
+	// Enable DMA2 Channel3
 	DMA_Cmd(DMA2_Channel3, ENABLE);
 
-	//printf("Enabling DAC\n");
-	// Enable DAC Channel1: Once the DAC channel1 is enabled, PA.04 is
-	// automatically connected to the DAC converter.
-	//DAC_Cmd(DAC_Channel_1, ENABLE);
+	DAC_Cmd(DAC_Channel_1, ENABLE);
 
-
-	// Enable DMA for DAC Channel1
 	DAC_DMACmd(DAC_Channel_1, ENABLE);
 	//printf("Starting TIM6\n");
 	// TIM6 enable counter
@@ -116,9 +110,17 @@ void FragmentPlayer::playFragment(SoundSample* buffer)
 void FragmentPlayer::stopFragment()
 {
 	//DMA_ITConfig(DMA2_Channel3, DMA_IT_TC, DISABLE);
-	TIM_Cmd(TIM6, DISABLE);
+	//TIM_Cmd(TIM6, DISABLE);
 	//DAC_DMACmd(DAC_Channel_1, DISABLE);
 }
+
+void FragmentPlayer::stop()
+{
+	TIM_Cmd(TIM6, DISABLE);
+	DAC_DMACmd(DAC_Channel_1, DISABLE);
+	DMA_DeInit(DMA2_Channel3);
+}
+
 
 void FragmentPlayer::DMAInterruptionHandler()
 {

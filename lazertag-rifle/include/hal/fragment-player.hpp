@@ -20,6 +20,7 @@ public:
 	virtual void setFragmentSize(uint32_t size) = 0;
 	virtual void setFragmentDoneCallback(FragmentDoneCallback callback) = 0;
 	virtual void playFragment(SoundSample* buffer) = 0;
+	virtual void stop() = 0;
 };
 
 extern IFragmentPlayer* fragmentPlayer;

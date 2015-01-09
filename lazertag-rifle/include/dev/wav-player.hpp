@@ -50,6 +50,7 @@ private:
 	uint32_t m_lastBufferSize;
 	WavHeader m_header;
 	bool m_verbose = true;
+	bool m_isPlaying = false;
 	SoundSample m_buffer1[AUDIO_BUFFER_SIZE], m_buffer2[AUDIO_BUFFER_SIZE];
 
 	static WavPlayer* m_wavPlayer;
