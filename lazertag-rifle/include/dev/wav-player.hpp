@@ -12,12 +12,13 @@
 #include "hal/ff/ff.h"
 #include "core/singleton-macro.hpp"
 
-#define AUDIO_BUFFER_SIZE		512
+#define AUDIO_BUFFER_SIZE		300
 
 class WavPlayer
 {
 public:
 	static WavPlayer& instance();
+	void init();
 	bool loadFile(const char* fileName);
 	void play();
 	void stop();
@@ -43,13 +44,19 @@ private:
 
 	void fragmentDoneCallback(SoundSample* oldBuffer);
 	bool readHeader();
+	bool loadFragment(SoundSample* m_buffer);
 
 	FIL m_fil;
-	SoundSample m_buffer1[AUDIO_BUFFER_SIZE], m_buffer2[AUDIO_BUFFER_SIZE];
+	uint32_t m_lastBufferSize;
 	WavHeader m_header;
 	bool m_verbose = true;
-	static WavPlayer* m_wavPlayer;
+	SoundSample m_buffer1[AUDIO_BUFFER_SIZE], m_buffer2[AUDIO_BUFFER_SIZE];
 
+
+	int16_t m_tmpBuffer[AUDIO_BUFFER_SIZE];
+
+
+	static WavPlayer* m_wavPlayer;
 	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 };
 

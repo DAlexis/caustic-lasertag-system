@@ -9,6 +9,7 @@
 #include "dev/miles-tag-2.hpp"
 #include "dev/console.hpp"
 #include "dev/sdcard-fs.hpp"
+#include "dev/wav-player.hpp"
 #include "hal/system-clock.hpp"
 
 #include "res/buttons-mapping.h"
@@ -50,7 +51,7 @@ void Rifle::Configuration::setFallback()
 Rifle::Rifle()
 {
 	initState();
-	m_sheduler.addTask(std::bind(&Console::interrogate, &Console::instance()), false, 50000);
+	m_sheduler.addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
 }
 
 bool Rifle::Configuration::acceptOption(uint8_t optionCode, void* data)
@@ -86,7 +87,7 @@ void Rifle::configure()
 	m_fireButton->setCallback(std::bind(&Rifle::makeShot, this, std::placeholders::_1));
 	m_fireButton->turnOn();
 
-	m_sheduler.addTask(std::bind(&ButtonManager::interrogate, m_fireButton), false, 5000);
+	//m_sheduler.addTask(std::bind(&ButtonManager::interrogate, m_fireButton), false, 5000);
 
 	m_reloadButton = ButtonsPool::instance().getButtonManager(reloadButtonPort, reloadButtonPin);
 	m_reloadButton->setAutoRepeat(false);
@@ -94,7 +95,7 @@ void Rifle::configure()
 	m_reloadButton->setCallback(std::bind(&Rifle::reload, this, std::placeholders::_1));
 	m_reloadButton->turnOn();
 
-	m_sheduler.addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
+	//m_sheduler.addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
 
 	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(automaticButtonPort, automaticButtonPin);
 	m_automaticFireSwitch->turnOff();
@@ -110,6 +111,8 @@ void Rifle::configure()
 
 	if (!SDCardFS::instance().init())
 		printf("Error during mounting sd-card!\n");
+
+	WavPlayer::instance().init();
 }
 
 void Rifle::initState()

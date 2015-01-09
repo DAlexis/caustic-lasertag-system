@@ -194,6 +194,9 @@ void ConsoleTester::playSoundFile(const char* filename)
 	if (filename[0] == '\0')
 		filename = "sine.wav";
 	if (!WavPlayer::instance().loadFile(filename))
+	{
 		printf("Failed to load file\n");
-
+		return;
+	}
+	WavPlayer::instance().play();
 }

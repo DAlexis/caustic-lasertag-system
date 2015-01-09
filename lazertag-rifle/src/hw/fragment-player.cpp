@@ -40,7 +40,7 @@ FragmentPlayer::FragmentPlayer()
 
 	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInitStructure.TIM_Prescaler = SystemCoreClock / 44100 - 1;
+	TIM_TimeBaseInitStructure.TIM_Prescaler = SystemCoreClock / 88200 - 1;
 	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInitStructure.TIM_Period = 1;
 	TIM_TimeBaseInit(TIM6, &TIM_TimeBaseInitStructure);
@@ -49,17 +49,27 @@ FragmentPlayer::FragmentPlayer()
 	TIM_SelectOutputTrigger(TIM4, TIM_TRGOSource_Update);
 */
 
-//	TIM_PrescalerConfig(TIM6, 0xF, TIM_PSCReloadMode_Update);
+	//TIM_PrescalerConfig(TIM6, SystemCoreClock / 88200 - 1, TIM_PSCReloadMode_Update);
 	//TIM_SetAutoreload(TIM6, 0xFF);
 	// TIM6 TRGO selection
 	TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
+
+/*
+	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStructure.TIM_Prescaler = SystemCoreClock / 88200 - 1;
+	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInitStructure.TIM_Period = 1;
+	TIM_TimeBaseInit(TIM6, &TIM_TimeBaseInitStructure);
+*/
 
 	DAC_InitTypeDef DAC_InitStructure;
 	DAC_StructInit(&DAC_InitStructure);
 
 	DAC_InitStructure.DAC_Trigger = DAC_Trigger_T6_TRGO;
 	DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
-	DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Disable;
+	//DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Disable;
+	DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
 	DAC_Init(DAC_Channel_1, &DAC_InitStructure);
 
 	// Filling most part of fields of m_DMA_InitStructure that are always identical
@@ -79,10 +89,11 @@ FragmentPlayer::FragmentPlayer()
 
 	NVIC_InitTypeDef NVIC_InitStructure;
 	NVIC_InitStructure.NVIC_IRQChannel = DMA2_Channel3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+	DAC_Cmd(DAC_Channel_1, ENABLE);
 }
 
 void FragmentPlayer::playFragment(SoundSample* buffer)
@@ -91,6 +102,7 @@ void FragmentPlayer::playFragment(SoundSample* buffer)
 	//printf("Enabling DMA\n");
 	DMA_DeInit(DMA2_Channel3);
 	m_DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)buffer;
+	//printf("Fragment size: %u\n", m_size);
 	m_DMA_InitStructure.DMA_BufferSize = m_size;
 	DMA_Init(DMA2_Channel3, &m_DMA_InitStructure);
 	DMA_ITConfig(DMA2_Channel3, DMA_IT_TC, ENABLE);
@@ -100,7 +112,7 @@ void FragmentPlayer::playFragment(SoundSample* buffer)
 	//printf("Enabling DAC\n");
 	// Enable DAC Channel1: Once the DAC channel1 is enabled, PA.04 is
 	// automatically connected to the DAC converter.
-	DAC_Cmd(DAC_Channel_1, ENABLE);
+	//DAC_Cmd(DAC_Channel_1, ENABLE);
 
 
 	// Enable DMA for DAC Channel1
@@ -108,14 +120,13 @@ void FragmentPlayer::playFragment(SoundSample* buffer)
 	//printf("Starting TIM6\n");
 	// TIM6 enable counter
 	TIM_Cmd(TIM6, ENABLE);
-
 }
 
 void FragmentPlayer::stopFragment()
 {
-	DMA_ITConfig(DMA2_Channel3, DMA_IT_TC, DISABLE);
+	//DMA_ITConfig(DMA2_Channel3, DMA_IT_TC, DISABLE);
 	TIM_Cmd(TIM6, DISABLE);
-	DAC_DMACmd(DAC_Channel_1, DISABLE);
+	//DAC_DMACmd(DAC_Channel_1, DISABLE);
 }
 
 void FragmentPlayer::DMAInterruptionHandler()
@@ -130,8 +141,8 @@ extern "C" void DMA2_Channel3_IRQHandler(void)
 {
 	if (DMA_GetITStatus(DMA2_IT_TC3) != RESET)
 	{
-		DMA_ClearITPendingBit(DMA2_IT_TC3);
 		fragmentPlayerInstance.DMAInterruptionHandler();
+		DMA_ClearITPendingBit(DMA2_IT_TC3);
 	}
 }
 
