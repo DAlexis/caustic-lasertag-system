@@ -52,10 +52,6 @@ private:
 	bool m_verbose = true;
 	SoundSample m_buffer1[AUDIO_BUFFER_SIZE], m_buffer2[AUDIO_BUFFER_SIZE];
 
-
-	int16_t m_tmpBuffer[AUDIO_BUFFER_SIZE];
-
-
 	static WavPlayer* m_wavPlayer;
 	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 };

@@ -125,7 +125,9 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 
 	FRESULT res;
 	UINT readed = 0;
-	res = f_read(&m_fil, m_tmpBuffer, AUDIO_BUFFER_SIZE*sizeof(int16_t), &readed);
+	void* ptr = m_buffer;
+	int16_t *tmpPrt = (int16_t *)ptr;
+	res = f_read(&m_fil, tmpPrt, AUDIO_BUFFER_SIZE*sizeof(int16_t), &readed);
 	if (res != FR_OK)
 	{
 		m_lastBufferSize = 0;
@@ -133,12 +135,10 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 	}
 	m_lastBufferSize = readed / sizeof(int16_t);
 
-	for (int i=0; i<m_lastBufferSize; i++)
-	{
-		m_buffer[i] = m_tmpBuffer[i] + 32767;
-		m_buffer[i] = ((unsigned int) m_buffer[i] * (2048)) / (32767);
+	// Decoding int16_t 16 bit -> uint16_t 12 bit
+	for (unsigned int i=0; i<m_lastBufferSize; i++)
+		m_buffer[i] = (tmpPrt[i] + INT16_MAX) >> 4;
 
-	}
 	return true;
 }
 
