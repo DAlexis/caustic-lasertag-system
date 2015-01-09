@@ -12,7 +12,7 @@
 #include "hal/ff/ff.h"
 #include "core/singleton-macro.hpp"
 
-#define AUDIO_BUFFER_SIZE		300
+#define AUDIO_BUFFER_SIZE		200
 
 class WavPlayer
 {

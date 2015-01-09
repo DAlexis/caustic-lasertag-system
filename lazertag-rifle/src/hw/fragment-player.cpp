@@ -54,15 +54,6 @@ FragmentPlayer::FragmentPlayer()
 	// TIM6 TRGO selection
 	TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
 
-/*
-	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInitStructure.TIM_Prescaler = SystemCoreClock / 88200 - 1;
-	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInitStructure.TIM_Period = 1;
-	TIM_TimeBaseInit(TIM6, &TIM_TimeBaseInitStructure);
-*/
-
 	DAC_InitTypeDef DAC_InitStructure;
 	DAC_StructInit(&DAC_InitStructure);
 
