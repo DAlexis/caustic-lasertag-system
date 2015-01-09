@@ -9,6 +9,8 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_CONSOLE_HPP_
 
 #include "hal/usart.hpp"
+#include "core/singleton-macro.hpp"
+
 #include <functional>
 #include <list>
 
@@ -41,12 +43,6 @@ private:
         const char* help;
     };
 
-    struct StaticDeinitializer
-    { // Yes, this is for Chuck Norris
-    public:
-    	~StaticDeinitializer();
-    };
-
     Console();
 
     void printHelp(const char* buffer);
@@ -64,7 +60,10 @@ private:
     ConsoleCallback m_toCall = nullptr;
 
     static Console* m_console;
-    static StaticDeinitializer m_deinitializer;
+   // static StaticDeinitializer m_deinitializer;
+
+    // Yes, this is for Chuck Norris
+    STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 };
 
 

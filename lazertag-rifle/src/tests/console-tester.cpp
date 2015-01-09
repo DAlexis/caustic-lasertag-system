@@ -8,8 +8,11 @@
 #include "tests/console-tester.hpp"
 #include "hal/fire-emitter.hpp"
 #include "hal/ff/ff.h"
+#include "hal/fragment-player.hpp"
 #include "hw/sdcard.h"
 #include "dev/console.hpp"
+#include "dev/wav-player.hpp"
+#include "dev/sdcard-fs.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -37,6 +40,16 @@ ConsoleTester::ConsoleTester()
 		"Test simple data reading",
 		std::bind(&ConsoleTester::readSDMBRTest, this, std::placeholders::_1)
 	);
+	Console::instance().registerCommand(
+		"tfp",
+		"Test fragment player",
+		std::bind(&ConsoleTester::fragmentPlayerTest, this, std::placeholders::_1)
+	);
+	Console::instance().registerCommand(
+		"tpsf",
+		"Test play sound file",
+		std::bind(&ConsoleTester::playSoundFile, this, std::placeholders::_1)
+	);
 }
 
 void ConsoleTester::firePulseTest(const char*)
@@ -55,23 +68,31 @@ void ConsoleTester::firePulseTestCallback(bool state)
 
 void ConsoleTester::SDReadingTest(const char*)
 {
-	 printf("SD-card (re)initialization...\n");
+
+	printf("Mounting volume...\n");
+	if (!SDCardFS::instance().init())
+	{
+		printf("Error during mounting sd-card!\n");
+		return;
+	}
+
 	FRESULT res;
-	FATFS fatfs;
+	//FATFS fatfs;
 	FIL fil;
 	char buffer[20];
 
-	f_mount(NULL, "", 1);
+	//f_mount(NULL, "", 1);
 
-	printf("Mounting volume...\n");
-	res = f_mount(&fatfs, "", 1); // mount the drive
+
+	//res = f_mount(&fatfs, "", 1); // mount the drive
+	/*
 	if (res)
 	{
 		printf("error %d occured!\n", res);
 		return;
 	} else {
 		printf("success!\n");
-	}
+	}*/
 
 	printf("Opening file...\n");
 	res = f_open(&fil, "1.txt", FA_OPEN_EXISTING | FA_WRITE | FA_READ); // open existing file in read and write mode
@@ -150,3 +171,29 @@ void ConsoleTester::readSDMBRTest(const char* arg)
 	delete[] mbr;
 }
 
+uint16_t buffer[] = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+
+void ConsoleTester::fragmentPlayerTest(const char* arg)
+{
+	fragmentPlayer->setFragmentSize(11);
+	if (strcmp(arg, "1") == 0)
+		fragmentPlayer->setFragmentDoneCallback(nullptr);
+	else
+		fragmentPlayer->setFragmentDoneCallback(std::bind(&ConsoleTester::loadNextFragment, this, std::placeholders::_1));
+	fragmentPlayer->playFragment(buffer);
+}
+
+void ConsoleTester::loadNextFragment(SoundSample* old)
+{
+	fragmentPlayer->setFragmentSize(11);
+	fragmentPlayer->playFragment(buffer);
+}
+
+void ConsoleTester::playSoundFile(const char* filename)
+{
+	if (filename[0] == '\0')
+		filename = "sine.wav";
+	if (!WavPlayer::instance().loadFile(filename))
+		printf("Failed to load file\n");
+
+}

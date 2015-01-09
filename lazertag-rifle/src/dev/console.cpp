@@ -10,7 +10,8 @@
 #include <string.h>
 
 Console *Console::m_console = nullptr;
-Console::StaticDeinitializer Console::m_deinitializer;
+
+STATIC_DEINITIALIZER_IN_CPP_FILE(Console, m_console)
 
 Console::Console() :
     m_commandsCount(0)
@@ -130,12 +131,6 @@ Console& Console::instance()
     if (!m_console)
         m_console = new Console;
     return *m_console;
-}
-
-Console::StaticDeinitializer::~StaticDeinitializer()
-{
-    if (Console::m_console)
-        delete Console::m_console;
 }
 
 

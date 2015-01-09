@@ -69,8 +69,6 @@ namespace
       - BLINK_ON_TICKS;
 }
 
-Timer *timer = nullptr;
-
 // ----- main() ---------------------------------------------------------------
 
 
@@ -81,11 +79,6 @@ Timer *timer = nullptr;
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
-
-void testfunc(int q)
-{
-	timer->sleep(BLINK_ON_TICKS);
-}
 
 char buff[100];
 
@@ -120,9 +113,6 @@ int main(int argc, char* argv[])
 	trace_printf("\n\nStarting system...\n", SystemCoreClock);
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
 
-	timer = new Timer;
-	timer->start();
-
 	BlinkLed blinkLed;
 
 	// Perform all necessary initialisations for the LED.
@@ -133,7 +123,7 @@ int main(int argc, char* argv[])
 	ConsoleTester tester;
 
 	Console::instance().prompt();
-
+	systemClock->wait_us(100000);
 	Rifle rifle;
 	rifle.configure();
 	rifle.run();

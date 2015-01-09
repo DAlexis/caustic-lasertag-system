@@ -8,6 +8,7 @@
 #include "logic/rifle.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/console.hpp"
+#include "dev/sdcard-fs.hpp"
 #include "hal/system-clock.hpp"
 
 #include "res/buttons-mapping.h"
@@ -105,6 +106,10 @@ void Rifle::configure()
 	m_mt2Transmitter.setPlayerId(1);
 	m_mt2Transmitter.setTeamId(1);
 	m_mt2Transmitter.init();
+
+
+	if (!SDCardFS::instance().init())
+		printf("Error during mounting sd-card!\n");
 }
 
 void Rifle::initState()
