@@ -54,30 +54,6 @@ Rifle::Rifle()
 	m_sheduler.addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
 }
 
-bool Rifle::Configuration::acceptOption(uint8_t optionCode, void* data)
-{
-	switch (optionCode)
-	{
-	case slot_code:                 interpretVariable(slot, data); break;
-	case weightInSlot_code:         interpretVariable(weightInSlot, data); break;
-	case damage_code:               interpretVariable(damage, data); break;
-	case firePeriod_code:           interpretVariable(firePeriod, data); break;
-	case shotDelay_code:            interpretVariable(shotDelay, data); break;
-	case semiAutomaticAllowed_code: interpretVariable(semiAutomaticAllowed, data); break;
-	case automaticAllowed_code:     interpretVariable(automaticAllowed, data); break;
-	case magazineType_code:         interpretVariable(magazineType, data); break;
-	case magazinesReloadMode_code:  interpretVariable(magazinesReloadMode, data); break;
-	case autoReload_code:           interpretVariable(autoReload, data); break;
-	case magazinesCount_code:       interpretVariable(magazinesCount, data); break;
-	case bulletsInMagazineAtStart_code: interpretVariable(bulletsInMagazineAtStart, data); break;
-	case bulletsPerMagazine_code:   interpretVariable(bulletsPerMagazine, data); break;
-	case reloadingTime_code:        interpretVariable(reloadingTime, data); break;
-	default:
-		return false;
-	}
-	return true;
-}
-
 void Rifle::configure()
 {
 	m_fireButton = ButtonsPool::instance().getButtonManager(fireButtonPort, fireButtonPin);
@@ -113,6 +89,7 @@ void Rifle::configure()
 		printf("Error during mounting sd-card!\n");
 
 	WavPlayer::instance().init();
+	printf("Rifle ready to use\n");
 }
 
 void Rifle::initState()

@@ -8,6 +8,8 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 
+#include "logic/configuration.hpp"
+#include "logic/config-codes.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "core/scheduler.hpp"
@@ -50,52 +52,33 @@ public:
 		Configuration();
 
 		void setFallback();
-		bool acceptOption(uint8_t optionCode, void* data);    /// @return true if option is accepted
-		//void readFromFile(const char* filename);
 
-		constexpr static uint8_t slot_code = 1;
-		uint32_t slot;
-		constexpr static uint8_t weightInSlot_code = 2;
-		uint32_t weightInSlot;
+		PARAMETER(ConfigCodes::Rifle, uint32_t, slot);
+		PARAMETER(ConfigCodes::Rifle, uint32_t, weightInSlot);
 
-		constexpr static uint8_t damage_code = 5;
-		uint32_t damage;
-		constexpr static uint8_t firePeriod_code = 6;
-		uint32_t firePeriod; // Time between shots in us
-		constexpr static uint8_t shotDelay_code = 7;
-		uint32_t shotDelay;  // Delay between shutter pressing and shot
+		PARAMETER(ConfigCodes::Rifle, uint32_t, damage);
+		PARAMETER(ConfigCodes::Rifle, uint32_t, firePeriod);
+		PARAMETER(ConfigCodes::Rifle, uint32_t, shotDelay);
 
-		constexpr static uint8_t semiAutomaticAllowed_code = 10;
-		bool semiAutomaticAllowed;
-		constexpr static uint8_t automaticAllowed_code = 11;
-		bool automaticAllowed;
+		PARAMETER(ConfigCodes::Rifle, bool, semiAutomaticAllowed);
+		PARAMETER(ConfigCodes::Rifle, bool, automaticAllowed);
 
-		constexpr static uint8_t magazineType_code = 15;
-		RifleMagazineType magazineType;
-		constexpr static uint8_t magazinesReloadMode_code = 16;
-		RifleReloadMode magazinesReloadMode;
-		constexpr static uint8_t autoReload_code = 17;
-		RifleAutoReload autoReload;
+		PARAMETER(ConfigCodes::Rifle, RifleMagazineType, magazineType);
+		PARAMETER(ConfigCodes::Rifle, RifleReloadMode, magazinesReloadMode);
+		PARAMETER(ConfigCodes::Rifle, RifleAutoReload, autoReload);
 
-		constexpr static uint8_t magazinesCount_code = 20;
-		uint32_t magazinesCount;
-		constexpr static uint8_t bulletsInMagazineAtStart_code = 21;
-		uint32_t bulletsInMagazineAtStart;
-		constexpr static uint8_t bulletsPerMagazine_code = 22;
-		uint32_t bulletsPerMagazine;
-		constexpr static uint8_t reloadingTime_code = 23;
-		uint32_t reloadingTime;
+		PARAMETER(ConfigCodes::Rifle, uint32_t, magazinesCount);
+		PARAMETER(ConfigCodes::Rifle, uint32_t, bulletsInMagazineAtStart);
+		PARAMETER(ConfigCodes::Rifle, uint32_t, bulletsPerMagazine);
+		PARAMETER(ConfigCodes::Rifle, uint32_t, reloadingTime);
 	};
 
 	class State
 	{
 	public:
-		constexpr static uint8_t bulletsLeft_code = 101;
-		uint32_t bulletsLeft = 0;
-		constexpr static uint8_t magazinesLeft_code = 102;
-		uint32_t magazinesLeft = 0;
-		constexpr static uint8_t lastReloadTime_code = 103;
-		uint32_t lastReloadTime = 0;
+		PARAMETER(ConfigCodes::Rifle, uint32_t, bulletsLeft);
+		PARAMETER(ConfigCodes::Rifle, uint32_t, magazinesLeft);
+		PARAMETER(ConfigCodes::Rifle, uint32_t, lastReloadTime);
 	};
 
 	Rifle();

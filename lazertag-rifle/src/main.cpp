@@ -92,6 +92,8 @@ void fireCallbackTest(bool state)
 	printf("keypressedm state=%d\n", state ? 1 : 0);
 }
 
+Rifle *rifle = nullptr;
+
 int main(int argc, char* argv[])
 {
 	// By customising __initialize_args() it is possible to pass arguments,
@@ -124,29 +126,13 @@ int main(int argc, char* argv[])
 
 	Console::instance().prompt();
 	systemClock->wait_us(100000);
-	Rifle rifle;
-	rifle.configure();
-	rifle.run();
-	// Infinite loop
-	/*
-	Scheduler sheduler;
-	ILedManager *alive = ledsPool->getLed(1);
-	AliveIndicator aliveIndicator;
-	aliveIndicator.init(alive);
 
-	printf("new task: %u\n", sheduler.addTask(std::bind(&AliveIndicator::blink, aliveIndicator), false, 500000));
+	rifle = new Rifle;
+	rifle->configure();
+	rifle->run();
 
-	ButtonManager* bmgr = ButtonsPool::instance().getButtonManager(0,0);
-	ButtonsPool::instance().setExti(0, 0, true);
-
-	bmgr->setAutoRepeat(true);
-	bmgr->setCallback(fireCallbackTest);
-
-	printf("new task: %u\n", sheduler.addTask(std::bind(&ButtonManager::interrogate, bmgr), false, 5000));
-
-
-
-	sheduler.mainLoop();*/
+	// Why? This is a law )
+	delete rifle;
 }
 
 #pragma GCC diagnostic pop
