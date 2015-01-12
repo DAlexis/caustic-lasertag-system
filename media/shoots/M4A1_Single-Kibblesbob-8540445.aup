@@ -1,0 +1,20 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="M4A1_Single-Kibblesbob-8540445_data" version="1.3.0" audacityversion="2.0.6" sel0="0.0000000000" sel1="0.0000000000" vpos="0" h="0.0000000000" zoom="1802.7916666667" rate="22050.0" snapto="off" selectionformat="чч:мм:сс + миллисекунды">
+	<tags/>
+	<wavetrack name="M4A1_Single-Kibblesbob-8540445" channel="2" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="22050" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="8917">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000655.au" len="8917" min="-1.364534" max="1.33396" rms="0.155916"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="4">
+				<controlpoint t="0.000000000000" val="0.058635962962"/>
+				<controlpoint t="0.018859638986" val="0.986111104488"/>
+				<controlpoint t="0.151431807151" val="0.986111104488"/>
+				<controlpoint t="0.397716504495" val="0.055555582047"/>
+			</envelope>
+		</waveclip>
+	</wavetrack>
+</project>

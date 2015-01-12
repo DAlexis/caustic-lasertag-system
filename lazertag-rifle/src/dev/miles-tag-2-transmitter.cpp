@@ -8,6 +8,8 @@
 #include "dev/miles-tag-2.hpp"
 #include "dev/miles-tag-2-timings.h"
 
+#include <stdio.h>
+
 #define SHOT_LENGTH             14
 #define MESSAGE_LENGTH          (3*8)
 
@@ -268,6 +270,7 @@ void MilesTag2Transmitter::init()
 {
 	m_fireEmitter = fireEmittersPool->getFireEmitter(0);
 	m_fireEmitter->setCallback(std::bind(&MilesTag2Transmitter::fireCallback, this, std::placeholders::_1));
+	m_fireEmitter->init();
 }
 
 void MilesTag2Transmitter::beginTransmission()

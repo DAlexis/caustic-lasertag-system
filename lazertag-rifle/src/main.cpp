@@ -10,10 +10,16 @@
 
 #include "Timer.h"
 #include "BlinkLed.h"
+
+#include "logic/rifle.hpp"
 #include "hal/usart.hpp"
-#include "hw/usart.hpp"
+#include "hw/sdcard.h"
 #include "dev/console.hpp"
+#include "dev/alive-indicator.hpp"
+#include "dev/buttons.hpp"
 #include "hal/system-clock.hpp"
+#include "hal/leds.hpp"
+#include "core/scheduler.hpp"
 
 #include "tests/console-tester.hpp"
 #include <functional>
@@ -63,14 +69,9 @@ namespace
       - BLINK_ON_TICKS;
 }
 
-Timer *timer = nullptr;
-
 // ----- main() ---------------------------------------------------------------
 
-void testfunc(int q)
-{
-	timer->sleep(BLINK_ON_TICKS);
-}
+
 
 // Sample pragmas to cope with warnings. Please note the related line at
 // the end of this function, used to pop the compiler diagnostics status.
@@ -86,6 +87,13 @@ void test(const char* b, int size)
 	printf("Registered\n");
 }
 
+void fireCallbackTest(bool state)
+{
+	printf("keypressedm state=%d\n", state ? 1 : 0);
+}
+
+Rifle *rifle = nullptr;
+
 int main(int argc, char* argv[])
 {
 	// By customising __initialize_args() it is possible to pass arguments,
@@ -94,47 +102,37 @@ int main(int argc, char* argv[])
 	// trace_dump_args(argc, argv);
 
 	// Send a greeting to the trace device (skipped on Release).
-	trace_puts("Hello ARM World!");
+	//trace_puts("Hello ARM World!");
 
 	// The standard output and the standard error should be forwarded to
 	// the trace device. For this to work, a redirection in _write.c is
 	// required.
-	puts("Standard output message.");
-	fprintf(stderr, "Standard error message.\n");
+	//puts("Standard output message.");
+	//fprintf(stderr, "Standard error message.\n");
 
 	// At this stage the system clock should have already been configured
 	// at high speed.
+	trace_printf("\n\nStarting system...\n", SystemCoreClock);
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
-
-	timer = new Timer;
-	timer->start();
 
 	BlinkLed blinkLed;
 
 	// Perform all necessary initialisations for the LED.
 	blinkLed.powerUp();
 
-	uint32_t seconds = 0;
-
 	Console::instance().init(0);
-	Console::instance().prompt();
 
 	ConsoleTester tester;
-	// Infinite loop
-	while (1)
-	{
-		blinkLed.turnOn();
-		timer->sleep(BLINK_ON_TICKS);
-		//func();
-		blinkLed.turnOff();
-		timer->sleep(BLINK_OFF_TICKS);
-		printf("Time: %u\n", systemClock->getTime());
-		++seconds;
 
-		// Count seconds on the trace device.
-		//trace_printf("Second %u\n", seconds);
-	}
-	// Infinite loop, never return.
+	Console::instance().prompt();
+	systemClock->wait_us(100000);
+
+	rifle = new Rifle;
+	rifle->configure();
+	rifle->run();
+
+	// Why? This is a law )
+	delete rifle;
 }
 
 #pragma GCC diagnostic pop

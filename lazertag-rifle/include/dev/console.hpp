@@ -9,6 +9,8 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_CONSOLE_HPP_
 
 #include "hal/usart.hpp"
+#include "core/singleton-macro.hpp"
+
 #include <functional>
 #include <list>
 
@@ -23,6 +25,7 @@ public:
     void init(uint8_t port);
     void registerCommand(const char* command, const char* help, ConsoleCallback callback);
     void prompt();
+    void interrogate();
 
     static Console& instance();
 private:
@@ -40,12 +43,6 @@ private:
         const char* help;
     };
 
-    struct StaticDeinitializer
-    { // Yes, this is for Chuck Norris
-    public:
-    	~StaticDeinitializer();
-    };
-
     Console();
 
     void printHelp(const char* buffer);
@@ -56,11 +53,17 @@ private:
 
     std::list<CommandDescr> m_commands;
     char m_buffer[CONSOLE_INPUT_BUFFER_SIZE];
+    char* m_argument = nullptr;
     IUSARTManager* m_pUsart;
     unsigned int m_commandsCount;
 
+    ConsoleCallback m_toCall = nullptr;
+
     static Console* m_console;
-    static StaticDeinitializer m_deinitializer;
+   // static StaticDeinitializer m_deinitializer;
+
+    // Yes, this is for Chuck Norris
+    STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 };
 
 

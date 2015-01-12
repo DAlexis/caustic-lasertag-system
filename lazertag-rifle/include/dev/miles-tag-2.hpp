@@ -28,6 +28,9 @@ public:
 	void setPlayerId(uint8_t playerId);
 	void setTeamId(uint8_t teamId);
 
+	uint8_t getPlayerId() { return m_playerId; }
+	uint8_t getTeamId() { return m_teamId; }
+
 	// Standard commands
 	void shot(uint8_t damage);
 	void addHealth(uint8_t value);
