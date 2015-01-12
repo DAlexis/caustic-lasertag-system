@@ -29,11 +29,11 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:stm32
 LIBS:linStab-(1-GND,Adj,2-Out,3-in)
-LIBS:rfid-rc522-module
-LIBS:nrf24l01
 LIBS:microsd-sdio
+LIBS:nrf24l01
+LIBS:rfid-rc522-module
+LIBS:stm32
 LIBS:rifle-cache
 EELAYER 27 0
 EELAYER END

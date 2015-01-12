@@ -1,8 +1,53 @@
-update=Чт 18 дек 2014 13:27:17
+update=Пн 12 янв 2015 13:54:47
 version=1
-last_client=cvpcb
+last_client=eeschema
 [general]
 version=1
+[pcbnew]
+version=1
+LastNetListRead=
+UseCmpFile=1
+PadDrill="    0,600000"
+PadDrillOvalY="    0,600000"
+PadSizeH="    1,000000"
+PadSizeV="    1,000000"
+PcbTextSizeV="    1,000000"
+PcbTextSizeH="    1,000000"
+PcbTextThickness="    0,300000"
+ModuleTextSizeV="    1,000000"
+ModuleTextSizeH="    1,000000"
+ModuleTextSizeThickness="    0,150000"
+SolderMaskClearance="    0,000000"
+SolderMaskMinWidth="    0,000000"
+DrawSegmentWidth="    0,200000"
+BoardOutlineThickness="    0,150000"
+ModuleOutlineThickness="    0,150000"
+[pcbnew/libraries]
+LibName1=sockets
+LibName2=connect
+LibName3=discret
+LibName4=pin_array
+LibName5=divers
+LibName6=smd_capacitors
+LibName7=smd_resistors
+LibName8=smd_crystal&oscillator
+LibName9=smd_dil
+LibName10=smd_transistors
+LibName11=libcms
+LibName12=display
+LibName13=led
+LibName14=dip_sockets
+LibName15=pga_sockets
+LibName16=valves
+LibName17=unipac
+LibName18=dsp56f8323
+LibName19=../../components/micro-sd2
+LibDir=
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -42,53 +87,8 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=stm32
-LibName32=linStab-(1-GND,Adj,2-Out,3-in)
-LibName33=rfid-rc522-module
-LibName34=nrf24l01
-LibName35=microsd-sdio
-[pcbnew]
-version=1
-LastNetListRead=
-UseCmpFile=1
-PadDrill="    0,600000"
-PadDrillOvalY="    0,600000"
-PadSizeH="    1,000000"
-PadSizeV="    1,000000"
-PcbTextSizeV="    1,000000"
-PcbTextSizeH="    1,000000"
-PcbTextThickness="    0,300000"
-ModuleTextSizeV="    1,000000"
-ModuleTextSizeH="    1,000000"
-ModuleTextSizeThickness="    0,150000"
-SolderMaskClearance="    0,000000"
-SolderMaskMinWidth="    0,000000"
-DrawSegmentWidth="    0,200000"
-BoardOutlineThickness="    0,150000"
-ModuleOutlineThickness="    0,150000"
-[pcbnew/libraries]
-LibName1=sockets
-LibName2=connect
-LibName3=discret
-LibName4=pin_array
-LibName5=divers
-LibName6=smd_capacitors
-LibName7=smd_resistors
-LibName8=smd_crystal&oscillator
-LibName9=smd_dil
-LibName10=smd_transistors
-LibName11=libcms
-LibName12=display
-LibName13=led
-LibName14=dip_sockets
-LibName15=pga_sockets
-LibName16=valves
-LibName17=unipac
-LibName18=dsp56f8323
-LibName19=micro-sd2
-LibDir=
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
+LibName31=../../components/linStab-(1-GND,Adj,2-Out,3-in)
+LibName32=../../components/microsd-sdio
+LibName33=../../components/nrf24l01
+LibName34=../../components/rfid-rc522-module
+LibName35=../../components/stm32

@@ -1,4 +1,4 @@
-update=Вт 30 дек 2014 13:04:28
+update=Пн 12 янв 2015 14:27:27
 version=1
 last_client=eeschema
 [cvpcb]
@@ -84,6 +84,8 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=/home/dalexies/Projects/lazertag-rifle/schematic/components/linStab-(1-GND,Adj,2-Out,3-in)
-LibName32=/home/dalexies/Projects/lazertag-rifle/schematic/components/nrf24l01
-LibName33=/home/dalexies/Projects/lazertag-rifle/schematic/components/stm32
+LibName31=../../components/linStab-(1-GND,Adj,2-Out,3-in)
+LibName32=../../components/nrf24l01
+LibName33=../../components/stm32
+LibName34=../../components/microsd-sdio
+LibName35=../../components/rfid-rc522-module
