@@ -41,7 +41,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Lazertag head sensor"
-Date "13 jan 2015"
+Date "14 jan 2015"
 Rev "1"
 Comp ""
 Comment1 ""
@@ -791,7 +791,7 @@ L CONN_6 P?
 U 1 1 54B571D7
 P 1900 700
 F 0 "P?" V 1850 700 60  0000 C CNN
-F 1 "CONN_6" V 1950 700 60  0000 C CNN
+F 1 "Vibroengines" V 1950 700 60  0000 C CNN
 F 2 "~" H 1900 700 60  0000 C CNN
 F 3 "~" H 1900 700 60  0000 C CNN
 	1    1900 700 
@@ -1327,4 +1327,88 @@ Wire Wire Line
 Wire Wire Line
 	2000 5300 2000 5400
 Connection ~ 2000 5400
+$Comp
+L CONN_6 P?
+U 1 1 54B638F6
+P 7750 1200
+F 0 "P?" V 7700 1200 60  0000 C CNN
+F 1 "SensorsVcc" V 7800 1200 60  0000 C CNN
+F 2 "~" H 7750 1200 60  0000 C CNN
+F 3 "~" H 7750 1200 60  0000 C CNN
+	1    7750 1200
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_6 P?
+U 1 1 54B63911
+P 8600 1200
+F 0 "P?" V 8550 1200 60  0000 C CNN
+F 1 "SensorsGND" V 8650 1200 60  0000 C CNN
+F 2 "~" H 8600 1200 60  0000 C CNN
+F 3 "~" H 8600 1200 60  0000 C CNN
+	1    8600 1200
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 54B63936
+P 7250 1200
+F 0 "#PWR?" H 7250 1160 30  0001 C CNN
+F 1 "+3.3V" H 7250 1310 30  0000 C CNN
+F 2 "" H 7250 1200 60  0000 C CNN
+F 3 "" H 7250 1200 60  0000 C CNN
+	1    7250 1200
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7400 1450 7350 1450
+Wire Wire Line
+	7350 1450 7350 950 
+Wire Wire Line
+	7350 950  7400 950 
+Wire Wire Line
+	7400 1050 7350 1050
+Connection ~ 7350 1050
+Wire Wire Line
+	7400 1150 7350 1150
+Connection ~ 7350 1150
+Wire Wire Line
+	7400 1250 7350 1250
+Connection ~ 7350 1250
+Wire Wire Line
+	7400 1350 7350 1350
+Connection ~ 7350 1350
+Wire Wire Line
+	7250 1200 7350 1200
+Connection ~ 7350 1200
+$Comp
+L DGND #PWR?
+U 1 1 54B63F33
+P 8150 1550
+F 0 "#PWR?" H 8150 1550 40  0001 C CNN
+F 1 "DGND" H 8150 1480 40  0000 C CNN
+F 2 "" H 8150 1550 60  0000 C CNN
+F 3 "" H 8150 1550 60  0000 C CNN
+	1    8150 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8150 1550 8150 950 
+Wire Wire Line
+	8150 950  8250 950 
+Wire Wire Line
+	8250 1050 8150 1050
+Connection ~ 8150 1050
+Wire Wire Line
+	8250 1150 8150 1150
+Connection ~ 8150 1150
+Wire Wire Line
+	8250 1250 8150 1250
+Connection ~ 8150 1250
+Wire Wire Line
+	8250 1350 8150 1350
+Connection ~ 8150 1350
+Wire Wire Line
+	8250 1450 8150 1450
+Connection ~ 8150 1450
 $EndSCHEMATC
