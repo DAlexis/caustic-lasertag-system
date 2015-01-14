@@ -1,4 +1,4 @@
-update=Пн 12 янв 2015 14:27:27
+update=Ср 14 янв 2015 00:20:07
 version=1
 last_client=eeschema
 [cvpcb]
@@ -89,3 +89,4 @@ LibName32=../../components/nrf24l01
 LibName33=../../components/stm32
 LibName34=../../components/microsd-sdio
 LibName35=../../components/rfid-rc522-module
+LibName36=../../components/microsd-sdio
