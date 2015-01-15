@@ -1,11 +1,6 @@
-update=Ср 14 янв 2015 00:20:07
+update=Ср 14 янв 2015 22:56:24
 version=1
-last_client=eeschema
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
+last_client=cvpcb
 [pcbnew]
 version=1
 LastNetListRead=
@@ -26,7 +21,6 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.100000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -43,12 +37,17 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
+LibName17=../../components/lqfp64
+LibName18=../../components/micro-sd3-cd
+LibName19=ds1307_pcf8583
+LibName20=dsp56f8323
+LibDir=
 [general]
 version=1
 [eeschema]
 version=1
 LibDir=
-NetFmtName=
+NetFmtName=PcbnewAdvanced
 RptD_X=0
 RptD_Y=100
 RptLab=1
@@ -89,4 +88,9 @@ LibName32=../../components/nrf24l01
 LibName33=../../components/stm32
 LibName34=../../components/microsd-sdio
 LibName35=../../components/rfid-rc522-module
-LibName36=../../components/microsd-sdio
+LibName36=../../components/microsd-sdio-cd
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
