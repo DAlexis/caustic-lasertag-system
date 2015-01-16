@@ -4,5 +4,6 @@
 *orb.db
 .metadata
 *.bak
+*.kicad_pcb-bak
 
 data-work

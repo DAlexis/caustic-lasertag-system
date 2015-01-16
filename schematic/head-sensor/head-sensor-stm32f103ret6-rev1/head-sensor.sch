@@ -42,7 +42,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Lazertag head sensor"
-Date "14 jan 2015"
+Date "16 jan 2015"
 Rev "1"
 Comp ""
 Comment1 ""
@@ -1593,4 +1593,45 @@ Wire Wire Line
 	3000 3650 3000 4350
 Wire Wire Line
 	3000 4350 4050 4350
+$Comp
+L CONN_2 P16
+U 1 1 54B92F5D
+P 8850 6100
+F 0 "P16" V 8800 6100 40  0000 C CNN
+F 1 "Power" V 8900 6100 40  0000 C CNN
+F 2 "~" H 8850 6100 60  0000 C CNN
+F 3 "~" H 8850 6100 60  0000 C CNN
+	1    8850 6100
+	1    0    0    1   
+$EndComp
+$Comp
+L AGND #PWR042
+U 1 1 54B92F78
+P 8400 6300
+F 0 "#PWR042" H 8400 6300 40  0001 C CNN
+F 1 "AGND" H 8400 6230 50  0000 C CNN
+F 2 "" H 8400 6300 60  0000 C CNN
+F 3 "" H 8400 6300 60  0000 C CNN
+	1    8400 6300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8400 6300 8400 6200
+Wire Wire Line
+	8400 6200 8500 6200
+Wire Wire Line
+	8400 5800 8400 6000
+Wire Wire Line
+	8400 6000 8500 6000
+$Comp
+L +BATT #PWR?
+U 1 1 54B93397
+P 8400 5800
+F 0 "#PWR?" H 8400 5750 20  0001 C CNN
+F 1 "+BATT" H 8400 5900 30  0000 C CNN
+F 2 "" H 8400 5800 60  0000 C CNN
+F 3 "" H 8400 5800 60  0000 C CNN
+	1    8400 5800
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

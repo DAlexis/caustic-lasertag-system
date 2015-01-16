@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Ср 14 янв 2015 22:57:08
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пт 16 янв 2015 18:25:28
 
 BeginCmp
 TimeStamp = /54B6D727;
@@ -92,9 +92,9 @@ IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /54B55F8B;
+TimeStamp = /54B6CA44;
 Reference = P1;
-ValeurCmp = MICROSD-SDIO;
+ValeurCmp = MICROSD-SDIO-CD;
 IdModule  = MICROSD-CD;
 EndCmp
 
@@ -194,6 +194,13 @@ TimeStamp = /54B56B99;
 Reference = P15;
 ValeurCmp = HeadLEDs;
 IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /54B92F5D;
+Reference = P16;
+ValeurCmp = Power;
+IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
 BeginCmp
