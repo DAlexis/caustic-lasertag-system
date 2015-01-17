@@ -1,4 +1,4 @@
-update=Ср 14 янв 2015 22:56:24
+update=Сб 17 янв 2015 22:53:23
 version=1
 last_client=cvpcb
 [pcbnew]
@@ -41,6 +41,7 @@ LibName17=../../components/lqfp64
 LibName18=../../components/micro-sd3-cd
 LibName19=ds1307_pcf8583
 LibName20=dsp56f8323
+LibName21=/home/alexey/Projects/lazertag/schematic/components/terminals
 LibDir=
 [general]
 version=1

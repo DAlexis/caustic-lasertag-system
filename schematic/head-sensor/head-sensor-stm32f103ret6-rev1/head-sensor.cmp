@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пт 16 янв 2015 18:25:28
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Сб 17 янв 2015 22:55:27
 
 BeginCmp
 TimeStamp = /54B6D727;
@@ -102,7 +102,7 @@ BeginCmp
 TimeStamp = /54B571D7;
 Reference = P2;
 ValeurCmp = Vibroengines;
-IdModule  = PIN_ARRAY-6X1;
+IdModule  = TERMINALS_6;
 EndCmp
 
 BeginCmp
@@ -123,7 +123,7 @@ BeginCmp
 TimeStamp = /54B6BD6F;
 Reference = P5;
 ValeurCmp = VibroenginesVCC;
-IdModule  = PIN_ARRAY-6X1;
+IdModule  = TERMINALS_6;
 EndCmp
 
 BeginCmp
@@ -151,14 +151,14 @@ BeginCmp
 TimeStamp = /54B638F6;
 Reference = P9;
 ValeurCmp = SensorsVcc;
-IdModule  = PIN_ARRAY-6X1;
+IdModule  = TERMINALS_6;
 EndCmp
 
 BeginCmp
 TimeStamp = /54B421B0;
 Reference = P10;
 ValeurCmp = SensorsIn;
-IdModule  = PIN_ARRAY-6X1;
+IdModule  = TERMINALS_6;
 EndCmp
 
 BeginCmp
@@ -172,7 +172,7 @@ BeginCmp
 TimeStamp = /54B63911;
 Reference = P12;
 ValeurCmp = SensorsGND;
-IdModule  = PIN_ARRAY-6X1;
+IdModule  = TERMINALS_6;
 EndCmp
 
 BeginCmp
@@ -200,7 +200,7 @@ BeginCmp
 TimeStamp = /54B92F5D;
 Reference = P16;
 ValeurCmp = Power;
-IdModule  = PIN_ARRAY_2X1;
+IdModule  = TERMINALS_2;
 EndCmp
 
 BeginCmp
