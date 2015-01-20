@@ -136,6 +136,9 @@ void ConsoleTester::readSDMBRTest(const char* arg)
 	NVIC_Init(&NVIC_InitStructure);
 
 	printf("SDCard block size: %d\n", (int)SDCardInfo.CardBlockSize);
+	printf("SDCardInfo.CardCapacity = %u\n", SDCardInfo.CardCapacity);
+	printf("SDCardInfo.RCA = %u\n", SDCardInfo.RCA);
+	printf("SDCardInfo.CardType = %u\n", SDCardInfo.CardType);
 	if (strcmp(arg, "1") == 0)
 	{
 		printf("Reading using SD_ReadBlock\n");

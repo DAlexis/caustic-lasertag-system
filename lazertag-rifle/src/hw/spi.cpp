@@ -23,6 +23,20 @@ void SPIManager::init(uint32_t prescaler)
 	GPIO_StructInit(&GPIO_InitStruct);
 	SPI_InitTypeDef SPI_InitStruct;
 	SPI_StructInit(&SPI_InitStruct);
+	uint32_t realPrescaler = SPI_BaudRatePrescaler_256;
+	switch(prescaler)
+	{
+	case BaudRatePrescaler2:   realPrescaler = SPI_BaudRatePrescaler_2; break;
+	case BaudRatePrescaler4:   realPrescaler = SPI_BaudRatePrescaler_4; break;
+	case BaudRatePrescaler8:   realPrescaler = SPI_BaudRatePrescaler_8; break;
+	case BaudRatePrescaler16:  realPrescaler = SPI_BaudRatePrescaler_16; break;
+	case BaudRatePrescaler32:  realPrescaler = SPI_BaudRatePrescaler_32; break;
+	case BaudRatePrescaler64:  realPrescaler = SPI_BaudRatePrescaler_64; break;
+	case BaudRatePrescaler128: realPrescaler = SPI_BaudRatePrescaler_128; break;
+	default:
+	case BaudRatePrescaler256: realPrescaler = SPI_BaudRatePrescaler_256; break;
+	}
+
 	switch(m_portNumber)
 	{
 		case 0:
@@ -53,7 +67,7 @@ void SPIManager::init(uint32_t prescaler)
 			SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;      // data sampled at first edge
 			// For some reason (I dont know!) SPI_NSSInternalSoft_Set cause MC freeze
 			SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;// | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
-			SPI_InitStruct.SPI_BaudRatePrescaler = prescaler; // SPI frequency is APB2 frequency / 4
+			SPI_InitStruct.SPI_BaudRatePrescaler = realPrescaler; // SPI frequency is APB2 frequency / 4
 			SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;// data is transmitted MSB first
 			SPI_Init(m_SPI, &SPI_InitStruct);
 
@@ -86,7 +100,7 @@ void SPIManager::init(uint32_t prescaler)
 			SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;      // data sampled at second edge
 			// For some reason (I dont know!) SPI_NSSInternalSoft_Set cause MC freeze
 			SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;// | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
-			SPI_InitStruct.SPI_BaudRatePrescaler = prescaler; // SPI frequency is APB1 frequency / prescaler
+			SPI_InitStruct.SPI_BaudRatePrescaler = realPrescaler; // SPI frequency is APB1 frequency / prescaler
 			SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;// data is transmitted MSB first
 			SPI_Init(m_SPI, &SPI_InitStruct);
 			SPI_Cmd(m_SPI, ENABLE); // enable SPI2

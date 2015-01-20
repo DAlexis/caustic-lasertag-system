@@ -6,8 +6,8 @@
  */
 
 #include "dev/nrf24l01.hpp"
-#include "stm32f10x.h"
-
+#include "hal/system-clock.hpp"
+#include <stdio.h>
 /*
  * NRF24l01 Registers
  */
@@ -146,39 +146,31 @@
 #define REUSE_TX_PL             0b11100011
 
 
-/*
+
 NRF24L01Manager::NRF24L01Manager()
 {
 }
 
-void NRF24L01Manager::init(IInputInterrogator* inputInterrogator, IExternalInterruptManager* extiManager, ISPIManager* spi)
+void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, IExternalInterruptManager* IRQexti, ISPIManager* spi)
 {
     printf("Radio module initialization...\n");
-	m_inputInterrogator = inputInterrogator;
-	m_extiManager = extiManager;
-	m_spi = spi;
+    m_chipEnablePin = chipEnablePin;
+    m_chipSelectPin = chipSelectPin;
+    m_IRQPin = IRQPin;
+    m_IRQexti = IRQexti;
+    m_spi = spi;
 
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    m_spi->init(SPI_BaudRatePrescaler_8);
+    m_spi->init(ISPIManager::BaudRatePrescaler8);
 
     //////////////////////
     // Chip enable line init
-    GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_StructInit(&GPIO_InitStructure);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    m_chipEnablePin->switchToOutput();
     chipEnableOff();
 
     //////////////////////
     // Chip select SPI line init
-    GPIO_StructInit(&GPIO_InitStructure);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    m_chipSelectPin->switchToOutput();
     chipDeselect();
 
     //////////////////////
@@ -210,17 +202,17 @@ void NRF24L01Manager::init(IInputInterrogator* inputInterrogator, IExternalInter
     initInterrupts();
 }
 
-void NRF24L01Manager::setDataReceiveCallback(DataReceiveCallback callback, void* object)
+void NRF24L01Manager::setDataReceiveCallback(DataReceiveCallback callback)
 {
     m_RXcallback = callback;
 }
 
-void NRF24L01Manager::setTXMaxRetriesCallback(TXMaxRetriesCallback callback, void* object)
+void NRF24L01Manager::setTXMaxRetriesCallback(TXMaxRetriesCallback callback)
 {
     m_TXMaxRTcallback = callback;
 }
 
-void NRF24L01Manager::setTXDoneCallback(TXDoneCallback callback, void* object)
+void NRF24L01Manager::setTXDoneCallback(TXDoneCallback callback)
 {
     m_TXDoneCallback = callback;
 }
@@ -240,32 +232,32 @@ void NRF24L01Manager::switchToRX()
 
 void NRF24L01Manager::chipEnableOn()
 {
-    GPIO_SetBits(GPIOB, GPIO_Pin_11);
+	m_chipEnablePin->set();
 }
 
 void NRF24L01Manager::chipEnableOff()
 {
     //for (volatile int i=0; i<300; i++) { }
-    GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+	m_chipEnablePin->reset();
 }
 
 void NRF24L01Manager::chipSelect()
 {
-    GPIO_ResetBits(GPIOB, GPIO_Pin_12);
+	m_chipSelectPin->reset();
 }
 
 void NRF24L01Manager::chipDeselect()
 {
-    GPIO_SetBits(GPIOB, GPIO_Pin_12);
+	m_chipSelectPin->set();
 }
 
 void NRF24L01Manager::CEImpulse()
 {
     chipEnableOn();
-    systemTimer.delay(20);
+    systemClock->wait_us(20);
     chipEnableOff();
 }
-
+/*
 void NRF24L01Manager::writeReg(unsigned char reg, unsigned char size, unsigned char *data)
 {
     chipSelect();

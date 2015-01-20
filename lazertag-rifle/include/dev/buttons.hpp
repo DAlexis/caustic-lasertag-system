@@ -9,7 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_BUTTONS_HPP_
 
 #include "hal/ext-interrupts.hpp"
-#include "hal/inputs-interrogators.hpp"
+#include "hal/io-pins.hpp"
 
 #include <stdint.h>
 #include <functional>
@@ -20,7 +20,7 @@ using ButtonCallback = std::function<void(bool/* is first press if serial */)>;
 class ButtonManager
 {
 public:
-	ButtonManager(IInputInterrogator* inputInterrogator);
+	ButtonManager(IIOPin* inputInterrogator);
 	~ButtonManager() {}
 	ButtonManager& setCallback(ButtonCallback callback) { m_callback = callback; return *this; }
 	ButtonManager& setAutoRepeat(bool autoRepeat);
@@ -42,7 +42,7 @@ private:
 
 	ButtonCallback m_callback = nullptr;
 	IExternalInterruptManager* m_extiManager = nullptr;
-	IInputInterrogator* m_inputInterrogator = nullptr;
+	IIOPin* m_inputInterrogator = nullptr;
 
 	uint32_t m_repeatPeriod = 500000;
 	uint32_t m_lastPressTime = 0;

@@ -13,6 +13,15 @@
 class ISPIManager
 {
 public:
+	constexpr static uint32_t BaudRatePrescaler2   = 0;
+	constexpr static uint32_t BaudRatePrescaler4   = 1;
+	constexpr static uint32_t BaudRatePrescaler8   = 2;
+	constexpr static uint32_t BaudRatePrescaler16  = 3;
+	constexpr static uint32_t BaudRatePrescaler32  = 4;
+	constexpr static uint32_t BaudRatePrescaler64  = 5;
+	constexpr static uint32_t BaudRatePrescaler128 = 6;
+	constexpr static uint32_t BaudRatePrescaler256 = 7;
+
 	virtual ~ISPIManager() {}
 	virtual void init(uint32_t prescaler) = 0;
 	virtual uint8_t sendByte(unsigned char data) = 0;

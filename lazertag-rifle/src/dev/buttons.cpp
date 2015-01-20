@@ -13,7 +13,7 @@
 ButtonsPool* ButtonsPool::m_buttonsPoolInstance = nullptr;
 ButtonsPool::StaticDeinitializer ButtonsPool::m_deinitializer;
 
-ButtonManager::ButtonManager(IInputInterrogator* inputInterrogator) :
+ButtonManager::ButtonManager(IIOPin* inputInterrogator) :
     m_inputInterrogator(inputInterrogator)
 {
 }
@@ -59,7 +59,7 @@ void ButtonManager::turnOff()
 
 bool ButtonManager::state()
 {
-	return !m_inputInterrogator->interrogate();
+	return !m_inputInterrogator->state();
 }
 
 void ButtonManager::extiCallback(bool state)
@@ -80,7 +80,7 @@ void ButtonManager::interrogate()
 	if (!m_isEnabled) return;
 	if (wasBounce()) return;
 
-	if (m_inputInterrogator->interrogate() == false || m_extiDetected == true)
+	if (m_inputInterrogator->state() == false || m_extiDetected == true)
 	{
 		// Button is pressed
 		uint32_t time = systemClock->getTime();
@@ -107,7 +107,7 @@ void ButtonManager::interrogate()
 			}
 		}
 	}
-	if (m_inputInterrogator->interrogate() == true) {
+	if (m_inputInterrogator->state() == true) {
 		// Button depressed
 		m_lastState = true;
 	}
@@ -142,7 +142,7 @@ ButtonsPool::StaticDeinitializer::~StaticDeinitializer()
 void ButtonsPool::createButtonManager(uint8_t portNumber, uint8_t pinNumber)
 {
 	m_buttonManagers[std::pair<uint8_t, uint8_t>(portNumber, pinNumber)]
-		= new ButtonManager(inputInterrogators->getInputInterrogator(portNumber, pinNumber));
+		= new ButtonManager(IOPins->getIOPin(portNumber, pinNumber));
 }
 
 ButtonManager* ButtonsPool::getButtonManager(uint8_t portNumber, uint8_t pinNumber)

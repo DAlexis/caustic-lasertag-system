@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_HAL_NRF24L01_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_HAL_NRF24L01_HPP_
 
-#include "hal/inputs-interrogators.hpp"
+#include "hal/io-pins.hpp"
 #include "hal/ext-interrupts.hpp"
 #include "hal/spi.hpp"
 
@@ -32,11 +32,13 @@ public:
         ENABLE_OPTION = 1,
     };
 
-    void init(IInputInterrogator* inputInterrogator, IExternalInterruptManager* extiManager, ISPIManager* spi);
+    NRF24L01Manager();
+
+    void init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, IExternalInterruptManager* IRQexti, ISPIManager* spi);
     void printStatus();
-    void setDataReceiveCallback(DataReceiveCallback callback, void* object);
-    void setTXMaxRetriesCallback(TXMaxRetriesCallback callback, void* object);
-    void setTXDoneCallback(TXDoneCallback callback, void* object);
+    void setDataReceiveCallback(DataReceiveCallback callback);
+    void setTXMaxRetriesCallback(TXMaxRetriesCallback callback);
+    void setTXDoneCallback(TXDoneCallback callback);
     void sendData(uint8_t size, uint8_t* data);
 
     void resetAllIRQ();
@@ -188,7 +190,11 @@ private:
 	void chipDeselect();
 	void CEImpulse();
 
-	IInputInterrogator* m_inputInterrogator = nullptr;
+	IIOPin* m_chipEnablePin = nullptr;
+	IIOPin* m_chipSelectPin = nullptr;
+	IIOPin* m_IRQPin = nullptr;
+	IExternalInterruptManager* m_IRQexti = nullptr;
+
 	IExternalInterruptManager* m_extiManager = nullptr;
 	ISPIManager* m_spi = nullptr;
 
