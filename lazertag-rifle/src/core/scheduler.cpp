@@ -8,6 +8,9 @@
 #include "core/scheduler.hpp"
 #include "hal/system-clock.hpp"
 
+Scheduler* Scheduler::m_scheduler = nullptr;
+STATIC_DEINITIALIZER_IN_CPP_FILE(Scheduler, m_scheduler)
+
 TaskId Scheduler::addTask(SchedulerTaskCallback task, bool runOnce, uint32_t period, uint32_t periodDelta, uint32_t firstTimeDelay)
 {
 	if (!task)
@@ -74,4 +77,10 @@ void Scheduler::mainLoop()
 	}
 }
 
+Scheduler& Scheduler::instance()
+{
+	if (!m_scheduler)
+		m_scheduler = new Scheduler;
 
+	return *m_scheduler;
+}

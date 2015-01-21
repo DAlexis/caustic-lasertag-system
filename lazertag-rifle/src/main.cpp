@@ -124,8 +124,10 @@ int main(int argc, char* argv[])
 
 	ConsoleTester tester;
 
-	Console::instance().prompt();
 	systemClock->wait_us(100000);
+
+	Console::instance().prompt();
+	Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
 
 	rifle = new Rifle;
 	rifle->configure();

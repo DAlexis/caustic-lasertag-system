@@ -8,6 +8,8 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_DEV_SCHEDULER_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_DEV_SCHEDULER_HPP_
 
+#include "core/singleton-macro.hpp"
+
 #include <functional>
 #include <map>
 #include <vector>
@@ -23,6 +25,7 @@ using TaskId = uint16_t;
 class Scheduler
 {
 public:
+	static Scheduler& instance();
 	struct Task
 	{
 		SchedulerTaskCallback callback = nullptr;
@@ -39,6 +42,7 @@ public:
 	void mainLoop();
 
 private:
+	Scheduler() {}
 	void stopTasksFromTemporaryList();
 	void addTasksFromTemporaryList();
 
@@ -47,6 +51,9 @@ private:
 	std::map<TaskId, Task> m_tasks;
 	std::map<TaskId, Task> m_tasksToAdd;
 	std::list<TaskId> m_toStop;
+
+	static Scheduler* m_scheduler;
+	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 };
 
 

@@ -51,7 +51,6 @@ void Rifle::Configuration::setFallback()
 Rifle::Rifle()
 {
 	initState();
-	m_sheduler.addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
 }
 
 void Rifle::configure()
@@ -63,7 +62,7 @@ void Rifle::configure()
 	m_fireButton->setCallback(std::bind(&Rifle::makeShot, this, std::placeholders::_1));
 	m_fireButton->turnOn();
 
-	m_sheduler.addTask(std::bind(&ButtonManager::interrogate, m_fireButton), false, 5000);
+	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_fireButton), false, 5000);
 
 	m_reloadButton = ButtonsPool::instance().getButtonManager(reloadButtonPort, reloadButtonPin);
 	m_reloadButton->setAutoRepeat(false);
@@ -71,7 +70,7 @@ void Rifle::configure()
 	m_reloadButton->setCallback(std::bind(&Rifle::reload, this, std::placeholders::_1));
 	m_reloadButton->turnOn();
 
-	m_sheduler.addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
+	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
 
 	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(automaticButtonPort, automaticButtonPin);
 	m_automaticFireSwitch->turnOff();
@@ -176,5 +175,5 @@ bool Rifle::isReloading()
 
 void Rifle::run()
 {
-	m_sheduler.mainLoop();
+	Scheduler::instance().mainLoop();
 }

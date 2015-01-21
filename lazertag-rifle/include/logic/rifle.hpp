@@ -97,8 +97,6 @@ private:
 	bool isReloading();
 	bool isSafeSwitchSelected();
 
-	Scheduler m_sheduler;
-
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;
 	ButtonManager* m_automaticFireSwitch = nullptr;

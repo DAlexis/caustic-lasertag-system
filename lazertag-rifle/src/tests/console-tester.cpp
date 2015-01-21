@@ -6,6 +6,7 @@
  */
 
 #include "tests/console-tester.hpp"
+#include "core/scheduler.hpp"
 #include "hal/fire-emitter.hpp"
 #include "hal/ff/ff.h"
 #include "hal/fragment-player.hpp"
@@ -137,7 +138,7 @@ void ConsoleTester::readSDMBRTest(const char* arg)
 	NVIC_InitTypeDef NVIC_InitStructure;
 
 	printf("Enabling interrupts\n");
-	/* Configure the NVIC Preemption Priority Bits */
+	// Configure the NVIC Preemption Priority Bits
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 
 	NVIC_InitStructure.NVIC_IRQChannel = SDIO_IRQn;
@@ -239,6 +240,7 @@ void ConsoleTester::radioInit(const char*)
 		SPIs->getSPI(1)
 	);
 	nrf->printStatus();
+	Scheduler::instance().addTask(std::bind(&NRF24L01Manager::interrogate, nrf), false, 10000);
 }
 
 void ConsoleTester::interrogateRadio(const char*)
