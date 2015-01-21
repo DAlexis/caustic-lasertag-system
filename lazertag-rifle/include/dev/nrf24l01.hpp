@@ -45,7 +45,7 @@ public:
     void setRXAddress(uint8_t channel, uint8_t* address);
     void setTXAddress(uint8_t* address);
 
-    void interruptHandler();
+    void interrogate();
 
     // EN_RXARRD
     void enablePipe(uint8_t pipe, uint8_t value);
@@ -121,6 +121,7 @@ private:
 	void writeReg(uint8_t reg, uint8_t size, uint8_t *data);
 	void readReg(uint8_t reg, uint8_t size, uint8_t *data);
 
+	void extiHandler(bool state);
 
 	// CONFIG register
 	void setConfig(uint8_t interruptionsMask,
@@ -197,6 +198,8 @@ private:
 
 	IExternalInterruptManager* m_extiManager = nullptr;
 	ISPIManager* m_spi = nullptr;
+
+	bool m_needInterrogation = false;
 
 	uint8_t m_status = 0;
 	uint8_t m_config = 0;

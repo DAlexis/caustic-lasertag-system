@@ -9,6 +9,7 @@
 #include "hal/fire-emitter.hpp"
 #include "hal/ff/ff.h"
 #include "hal/fragment-player.hpp"
+#include "hal/io-pins.hpp"
 #include "hw/sdcard.h"
 #include "dev/console.hpp"
 #include "dev/wav-player.hpp"
@@ -54,6 +55,16 @@ ConsoleTester::ConsoleTester()
 		"sp",
 		"Stop playing sound",
 		std::bind(&ConsoleTester::stopPlaying, this, std::placeholders::_1)
+	);
+	Console::instance().registerCommand(
+		"rinit",
+		"Init nrf24l01 module",
+		std::bind(&ConsoleTester::radioInit, this, std::placeholders::_1)
+	);
+	Console::instance().registerCommand(
+		"ri",
+		"Interrogate radio",
+		std::bind(&ConsoleTester::interrogateRadio, this, std::placeholders::_1)
 	);
 }
 
@@ -201,6 +212,7 @@ void ConsoleTester::playSoundFile(const char* filename)
 {
 	if (filename[0] == '\0')
 		filename = "sine.wav";
+	WavPlayer::instance().setVerbose(false);
 	if (!WavPlayer::instance().loadFile(filename))
 	{
 		printf("Failed to load file\n");
@@ -212,4 +224,33 @@ void ConsoleTester::playSoundFile(const char* filename)
 void ConsoleTester::stopPlaying(const char*)
 {
 	WavPlayer::instance().stop();
+}
+
+void ConsoleTester::radioInit(const char*)
+{
+	if (!nrf)
+		nrf = new NRF24L01Manager;
+	nrf->setDataReceiveCallback(std::bind(&ConsoleTester::radioRXCallback, this, std::placeholders::_1, std::placeholders::_2));
+	nrf->init(
+		IOPins->getIOPin(1, 7),
+		IOPins->getIOPin(1, 12),
+		IOPins->getIOPin(1, 8),
+		nullptr,
+		SPIs->getSPI(1)
+	);
+	nrf->printStatus();
+}
+
+void ConsoleTester::interrogateRadio(const char*)
+{
+	if (!nrf)
+		radioInit("");
+	nrf->interrogate();
+	nrf->printStatus();
+}
+
+void ConsoleTester::radioRXCallback(uint8_t channel, uint8_t* data)
+{
+	printf("Data received on channel %u:\n", channel);
+	printf("%x %x %x %x %x", data[0], data[1], data[2], data[3], data[4]);
 }

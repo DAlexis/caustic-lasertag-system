@@ -74,6 +74,7 @@ void SPIManager::init(uint32_t prescaler)
 			SPI_Cmd(m_SPI, ENABLE); // enable SPI1
 			return;
 		case 1:
+			m_SPI = SPI2;
 			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 			RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 			/* configure pins used by SPI2

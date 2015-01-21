@@ -35,6 +35,7 @@ class ISPIsPool
 {
 public:
 	virtual ~ISPIsPool() {}
+	/// Get SPI manager. SPI enumerated from 0, so MCU port called "SPI_1" has portNumber == 0
 	virtual ISPIManager* getSPI(uint8_t portNumber) = 0;
 };
 

@@ -8,6 +8,7 @@
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
 #include <stdio.h>
+#include <string.h>
 /*
  * NRF24l01 Registers
  */
@@ -160,7 +161,6 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     m_IRQexti = IRQexti;
     m_spi = spi;
 
-
     m_spi->init(ISPIManager::BaudRatePrescaler8);
 
     //////////////////////
@@ -173,9 +173,11 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     m_chipSelectPin->switchToOutput();
     chipDeselect();
 
+    // IRQ line input
+    m_IRQPin->switchToInput();
+
     //////////////////////
     // Configuring nrf24l01
-
     // Global settings
     setAdressWidth(AW_5BYTES);
     setRFChannel(m_RFChannel);
@@ -257,27 +259,27 @@ void NRF24L01Manager::CEImpulse()
     systemClock->wait_us(20);
     chipEnableOff();
 }
-/*
+
 void NRF24L01Manager::writeReg(unsigned char reg, unsigned char size, unsigned char *data)
 {
     chipSelect();
-    m_status = SPI2Manager.send_single(W_REGISTER(reg));
-    if (size != 0) SPI2Manager.send(data, size);
+    m_status = m_spi->sendByte(W_REGISTER(reg));
+    if (size != 0) m_spi->send(data, size);
     chipDeselect();
 }
 
 void NRF24L01Manager::readReg(unsigned char reg, unsigned char size, unsigned char *data)
 {
     chipSelect();
-    m_status = SPI2Manager.send_single(R_REGISTER(reg));
-    if (size != 0) SPI2Manager.receive(data, size);
+    m_status = m_spi->sendByte(R_REGISTER(reg));
+    if (size != 0) m_spi->receive(data, size);
     chipDeselect();
 }
 
 void NRF24L01Manager::updateStatus()
 {
     chipSelect();
-    m_status = SPI2Manager.send_single(NRF_NOP);
+    m_status = m_spi->sendByte(NRF_NOP);
     chipDeselect();
 }
 
@@ -311,8 +313,8 @@ inline bool NRF24L01Manager::isTXFIFOFull()
 void NRF24L01Manager::resetRXDataReady()
 {
     chipSelect();
-    SPI2Manager.send_single(W_REGISTER(NRF_REG_STATUS));
-    SPI2Manager.send_single(1 << NRF_REGF_RX_DR);
+    m_spi->sendByte(W_REGISTER(NRF_REG_STATUS));
+    m_spi->sendByte(1 << NRF_REGF_RX_DR);
     chipDeselect();
     updateStatus();
 }
@@ -320,8 +322,8 @@ void NRF24L01Manager::resetRXDataReady()
 void NRF24L01Manager::resetTXDataSent()
 {
     chipSelect();
-    SPI2Manager.send_single(W_REGISTER(NRF_REG_STATUS));
-    SPI2Manager.send_single(1 << NRF_REGF_TX_DS);
+    m_spi->sendByte(W_REGISTER(NRF_REG_STATUS));
+    m_spi->sendByte(1 << NRF_REGF_TX_DS);
     chipDeselect();
     updateStatus();
 }
@@ -329,8 +331,8 @@ void NRF24L01Manager::resetTXDataSent()
 void NRF24L01Manager::resetMaxRetriesReached()
 {
     chipSelect();
-    SPI2Manager.send_single(W_REGISTER(NRF_REG_STATUS));
-    SPI2Manager.send_single(1 << NRF_REGF_MAX_RT);
+    m_spi->sendByte(W_REGISTER(NRF_REG_STATUS));
+    m_spi->sendByte(1 << NRF_REGF_MAX_RT);
     chipDeselect();
     updateStatus();
 }
@@ -369,7 +371,6 @@ void NRF24L01Manager::switchToTranmitter()
 
 /////////////////////
 // CD
-
 bool NRF24L01Manager::isCarrierDetected()
 {
     unsigned char result=0;
@@ -586,8 +587,8 @@ void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 {
     switchToTX();
     chipSelect();
-    m_status = SPI2Manager.send_single(W_TX_PAYLOAD);
-    SPI2Manager.send(data, size);
+    m_status = m_spi->sendByte(W_TX_PAYLOAD);
+    m_spi->send(data, size);
     chipDeselect();
     CEImpulse();
 }
@@ -596,29 +597,29 @@ void NRF24L01Manager::receiveData(unsigned char size, unsigned char* data)
 {
     chipEnableOff();
     chipSelect();
-    m_status = SPI2Manager.send_single(R_RX_PAYLOAD);
-    SPI2Manager.receive(data, size);
+    m_status = m_spi->sendByte(R_RX_PAYLOAD);
+    m_spi->receive(data, size);
     chipDeselect();
 }
 
 void NRF24L01Manager::flushTX()
 {
     chipSelect();
-    m_status = SPI2Manager.send_single(FLUSH_TX);
+    m_status = m_spi->sendByte(FLUSH_TX);
     chipDeselect();
 }
 
 void NRF24L01Manager::flushRX()
 {
     chipSelect();
-    m_status = SPI2Manager.send_single(FLUSH_RX);
+    m_status = m_spi->sendByte(FLUSH_RX);
     chipDeselect();
 }
 
 void NRF24L01Manager::printStatus()
 {
     updateStatus();
-    printf("Value: %u\n", m_status);
+    printf("status: %x\n", m_status);
     if (isRXDataReady()) printf("RX Data ready\n");
     if (isTXDataSent()) printf("TX Data sent\n");
     if (isMaxRetriesReached()) printf("Max retries reached\n");
@@ -653,39 +654,29 @@ void NRF24L01Manager::resetAllIRQ()
 // Interrupts handling
 void NRF24L01Manager::initInterrupts()
 {
-    EXTI_InitTypeDef   EXTI_InitStructure;
-    GPIO_InitTypeDef   GPIO_InitStructure;
-    NVIC_InitTypeDef   NVIC_InitStructure;
-
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-
-
-    GPIO_StructInit(&GPIO_InitStructure);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource10);
-
-    // Configure EXTI10 line
-    EXTI_InitStructure.EXTI_Line = EXTI_Line10;
-    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
-    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-    EXTI_Init(&EXTI_InitStructure);
-
-    // Enable and set EXTI10 Interrupt to the lowest priority
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
+	if (m_IRQexti)
+	{
+		m_IRQexti->setCallback(std::bind(&NRF24L01Manager::extiHandler, this, std::placeholders::_1));
+		if (false == m_IRQPin->state())
+			m_needInterrogation = true;
+		else
+			m_needInterrogation = false;
+		m_IRQexti->turnOn();
+	}
 }
 
-void NRF24L01Manager::interruptHandler()
+void NRF24L01Manager::interrogate()
 {
+	if (m_IRQexti)
+	{
+		if (!m_needInterrogation)
+			return;
+		m_needInterrogation = false;
+	} else {
+		if (true == m_IRQPin->state())
+			return;
+	}
+
     updateStatus();
     if (isRXDataReady())
     {
@@ -698,7 +689,7 @@ void NRF24L01Manager::interruptHandler()
                 printf("Warning: Callback is not set! RX data from pipe %d: ", pipe);
                 printf("%x %x %x %x %x\n", data[0], data[1], data[2], data[3], data[4]);
             } else {
-                m_RXcallback(m_RXcallbackObject, pipe, data);
+                m_RXcallback(pipe, data);
             }
         }
         chipEnableOn();
@@ -712,14 +703,14 @@ void NRF24L01Manager::interruptHandler()
         if (m_TXDoneCallback == nullptr) {
             printf("TX done; no cb\n");
         } else
-            m_TXDoneCallback(m_TXDoneCallbackObject);
+            m_TXDoneCallback();
     }
     if (isMaxRetriesReached())
     {
         if (m_TXMaxRTcallback == nullptr) {
             printf("Warning: Callback is not set! Max retransmissions count achieved\n");
         } else {
-            m_TXMaxRTcallback(m_TXMaxRTcallbackObject);
+            m_TXMaxRTcallback();
         }
         // Clearing PLOS_CNT
         setRFChannel(RADIO_CHANNEL);
@@ -727,16 +718,10 @@ void NRF24L01Manager::interruptHandler()
         resetMaxRetriesReached();
     }
     //resetAllIRQ();
-}*/
-/*
-extern "C" {
-    void EXTI15_10_IRQHandler()
-    {
-        if(EXTI_GetITStatus(EXTI_Line10) != RESET)
-        {
-        	nrf24l01.interruptHandler();
-            EXTI_ClearITPendingBit(EXTI_Line10);
-        }
-    }
 }
-*/
+
+void NRF24L01Manager::extiHandler(bool state)
+{
+	if (false == state)
+		m_needInterrogation = true;
+}
