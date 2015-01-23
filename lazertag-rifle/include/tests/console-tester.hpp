@@ -31,6 +31,9 @@ private:
 	void radioInit(const char*);
 	void interrogateRadio(const char*);
 	void radioRXCallback(uint8_t channel, uint8_t* data);
+	void regularTX();
+
+	void radioRegularTxOnTest(const char*);
 
 	NRF24L01Manager *nrf = nullptr;
 };

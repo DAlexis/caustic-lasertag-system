@@ -352,22 +352,9 @@ void NRF24L01Manager::setConfig(unsigned char interruptionsMask,
             | (CRC2bytes << NRF_REGF_CRCO)
             | (powerUP << NRF_REGF_PWR_UP)
             | (isRecieving << NRF_REGF_PRIM_RX);
-    printf("Config: %u\n", m_config);
+    //printf("Config: %u\n", m_config);
     writeReg(NRF_REG_CONFIG, 1, &m_config);
 }
-
-void NRF24L01Manager::switchToReceiver()
-{
-    m_config |= (1 << NRF_REGF_PRIM_RX);
-    writeReg(NRF_REG_CONFIG, 1, &m_config);
-}
-
-void NRF24L01Manager::switchToTranmitter()
-{
-    m_config &= ~(1 << NRF_REGF_PRIM_RX);
-    writeReg(NRF_REG_CONFIG, 1, &m_config);
-}
-
 
 /////////////////////
 // CD
@@ -686,7 +673,7 @@ void NRF24L01Manager::interrogate()
         {
             receiveData(PAYLOAD_SIZE, data);
             if (m_RXcallback == nullptr) {
-                printf("Warning: Callback is not set! RX data from pipe %d: ", pipe);
+                printf("Warning: Callback is not set! RX data from pipe %d: \n", pipe);
                 printf("%x %x %x %x %x\n", data[0], data[1], data[2], data[3], data[4]);
             } else {
                 m_RXcallback(pipe, data);
@@ -698,7 +685,7 @@ void NRF24L01Manager::interrogate()
     if (isTXDataSent())
     {
         // Returning to default state: receiver
-        switchToReceiver();
+    	switchToRX();
         resetTXDataSent();
         if (m_TXDoneCallback == nullptr) {
             printf("TX done; no cb\n");
@@ -708,7 +695,7 @@ void NRF24L01Manager::interrogate()
     if (isMaxRetriesReached())
     {
         if (m_TXMaxRTcallback == nullptr) {
-            printf("Warning: Callback is not set! Max retransmissions count achieved\n");
+            printf("Max RT; no cb\n");
         } else {
             m_TXMaxRTcallback();
         }

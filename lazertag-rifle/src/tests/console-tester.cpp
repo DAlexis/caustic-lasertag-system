@@ -67,6 +67,11 @@ ConsoleTester::ConsoleTester()
 		"Interrogate radio",
 		std::bind(&ConsoleTester::interrogateRadio, this, std::placeholders::_1)
 	);
+	Console::instance().registerCommand(
+		"rtx",
+		"turn on radio regular TX",
+		std::bind(&ConsoleTester::radioRegularTxOnTest, this, std::placeholders::_1)
+	);
 }
 
 void ConsoleTester::firePulseTest(const char*)
@@ -231,7 +236,7 @@ void ConsoleTester::radioInit(const char*)
 {
 	if (!nrf)
 		nrf = new NRF24L01Manager;
-	nrf->setDataReceiveCallback(std::bind(&ConsoleTester::radioRXCallback, this, std::placeholders::_1, std::placeholders::_2));
+	//nrf->setDataReceiveCallback(std::bind(&ConsoleTester::radioRXCallback, this, std::placeholders::_1, std::placeholders::_2));
 	nrf->init(
 		IOPins->getIOPin(1, 7),
 		IOPins->getIOPin(1, 12),
@@ -255,4 +260,18 @@ void ConsoleTester::radioRXCallback(uint8_t channel, uint8_t* data)
 {
 	printf("Data received on channel %u:\n", channel);
 	printf("%x %x %x %x %x", data[0], data[1], data[2], data[3], data[4]);
+}
+
+void ConsoleTester::regularTX()
+{
+	unsigned char data[PAYLOAD_SIZE];
+	for (unsigned int i=0; i<PAYLOAD_SIZE; i++)
+		data[i] = i;
+	nrf->sendData(PAYLOAD_SIZE, data);
+}
+
+void ConsoleTester::radioRegularTxOnTest(const char*)
+{
+	printf("Sending every sec\n");
+	Scheduler::instance().addTask(std::bind(&ConsoleTester::regularTX, this), false, 1000000);
 }

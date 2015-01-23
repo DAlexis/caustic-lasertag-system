@@ -22,7 +22,7 @@ ConfigsAggregator& ConfigsAggregator::instance()
 
 void ConfigsAggregator::registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor)
 {
-	printf("Accepted %u: %s\n", code - (1<<14), textName);
+	//printf("Accepted %u: %s\n", code - (1<<14), textName);
 	m_accessorsByOpCode[code] = accessor;
 	m_accessorsByOpText[textName] = accessor;
 }
