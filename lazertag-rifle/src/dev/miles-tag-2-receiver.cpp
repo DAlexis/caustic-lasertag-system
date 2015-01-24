@@ -45,6 +45,7 @@ void MilesTag2Receiver::interrogate()
 
 void MilesTag2Receiver::enableDebug(bool debug)
 {
+	m_debug = debug;
 }
 
 uint8_t MilesTag2Receiver::decodeDamage(uint8_t damage)
@@ -127,19 +128,24 @@ void MilesTag2Receiver::interruptHandler(bool state)
 {
 	unsigned int time = systemClock->getTime();
 	unsigned int dtime = time - m_lastTime;
-
 	// Inverted input:
 	state = !state;
+	if (m_debug) {
+		printf("dt=%u ",  dtime );
+		if (state)
+			printf("1\n");
+		else
+			printf("0\n");
+	}
 
-	if (m_debug) printf("\ni %d %d %d ", (int) state, (int) dtime, (int)m_state);
 	if (dtime < 15) {
-		if (m_debug) printf ("short");
+		if (m_debug) printf ("short\n");
 		m_falseImpulse = true;
 		return;
 	}
 
 	if (m_falseImpulse) {
-		if (m_debug) printf ("short back");
+		if (m_debug) printf ("short back\n");
 		m_falseImpulse = false;
 		return;
 	}
@@ -153,7 +159,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 			return;
 		}
 
-		if (m_debug) printf ("hb ");
+		if (m_debug) printf ("hb \n");
 		// Header beginned
 		m_state = RS_HEADER_BEGINNED;
 		break;
@@ -166,7 +172,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 				return;
 			}
 
-			if (m_debug) printf ("he ");
+			if (m_debug) printf ("he \n");
 			if (isCorrect(dtime, HEADER_PERIOD_MIN, HEADER_PERIOD_MAX)) {
 				if (m_debug) printf("ac \n");
 				m_state = RS_SPACE;
@@ -185,7 +191,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 				return;
 			}
 
-			if (m_debug) printf ("sp ");
+			if (m_debug) printf ("sp \n");
 			if (isCorrect(dtime, BIT_WAIT_PERIOD_MIN, BIT_WAIT_PERIOD_MAX)) {
 				if (m_debug) printf("ac \n");
 				m_state = RS_BIT;
@@ -201,7 +207,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 				resetReceiver();
 				return;
 			}
-			if (m_debug) printf ("b ");
+			if (m_debug) printf ("b \n");
 			if (isCorrect(dtime, BIT_ONE_PERIOD_MIN, BIT_ONE_PERIOD_MAX)) {
 				if (m_debug) printf("ac 1 \n");
 				saveBit(true);

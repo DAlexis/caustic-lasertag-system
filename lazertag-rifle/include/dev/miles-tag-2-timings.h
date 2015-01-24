@@ -19,7 +19,7 @@
 #define HEADER_PERIOD_MAX       2600
 
 #define BIT_ONE_PERIOD_MIN      1100
-#define BIT_ONE_PERIOD_MAX      1350
+#define BIT_ONE_PERIOD_MAX      1500
 
 #define BIT_ZERO_PERIOD_MIN     500
 #define BIT_ZERO_PERIOD_MAX     750

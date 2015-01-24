@@ -92,7 +92,7 @@ public:
     void turnOff();
     void interrogate();
 
-    void enableDebug(bool debug);
+    void enableDebug(bool debug = true);
 private:
 
 	enum ReceivingState

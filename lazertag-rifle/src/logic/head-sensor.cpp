@@ -23,7 +23,7 @@ void HeadSensor::configure()
 
 	m_mainSensor.setShortMessageCallback(std::bind(&HeadSensor::shotCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 	m_mainSensor.init(exti);
-	m_mainSensor.enableDebug(true);
+	//m_mainSensor.enableDebug(true);
 
 	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, &m_mainSensor), false, 50000, 30000);
 	printf("Head sensor ready to use\n");
