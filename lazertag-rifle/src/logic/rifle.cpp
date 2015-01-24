@@ -172,8 +172,3 @@ bool Rifle::isReloading()
 {
 	return (systemClock->getTime() - state.lastReloadTime < config.reloadingTime);
 }
-
-void Rifle::run()
-{
-	Scheduler::instance().mainLoop();
-}

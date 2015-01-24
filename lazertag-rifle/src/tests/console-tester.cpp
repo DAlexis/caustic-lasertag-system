@@ -78,7 +78,7 @@ void ConsoleTester::firePulseTest(const char*)
 {
 	printf("Test pulse start\n");
 	fireEmittersPool->getFireEmitter(0)->init();
-	fireEmittersPool->getFireEmitter(0)->setPower(24);
+	//fireEmittersPool->getFireEmitter(0)->setPower(24);
 	fireEmittersPool->getFireEmitter(0)->setCallback(std::bind(&ConsoleTester::firePulseTestCallback, this, std::placeholders::_1));
 	fireEmittersPool->getFireEmitter(0)->startImpulsePack(true, 600);
 }

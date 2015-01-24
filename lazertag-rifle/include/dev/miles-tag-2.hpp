@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_
 
 #include "hal/fire-emitter.hpp"
+#include "hal/ext-interrupts.hpp"
 
 #include <functional>
 #include <stdint.h>
@@ -80,18 +81,49 @@ private:
 	IFireEmitter *m_fireEmitter = nullptr;
 };
 
-/*
+
 class MilesTag2Receiver
 {
 public:
     ~MilesTag2Receiver() {}
-    void setShortMessageCallback(MilesTag2ShotCallback callback, void* object);
+    void setShortMessageCallback(MilesTag2ShotCallback callback);
+    void init(IExternalInterruptManager* exti);
+    void turnOn();
+    void turnOff();
     void interrogate();
-    void init(unsigned int channel);
-    void interruptionHandler();
 
     void enableDebug(bool debug);
 private:
-};*/
+
+	enum ReceivingState
+	{
+		RS_WAITING_HEADER = 0,
+		RS_HEADER_BEGINNED = 1,
+		RS_SPACE = 2,
+		RS_BIT = 3
+	};
+
+    uint8_t decodeDamage(uint8_t damage);
+	void saveBit(bool value);
+	bool isCorrect(unsigned int value, unsigned int min, unsigned int max);
+	int getCurrentLength();
+	bool getBit(unsigned int n);
+	void parseAndCallShot();
+	void resetReceiver();
+	void interruptHandler(bool state);
+
+	ReceivingState m_state = RS_WAITING_HEADER;
+	bool m_falseImpulse = false;
+
+	MilesTag2ShotCallback m_shotCallback = nullptr;
+	unsigned int m_lastTime = 0;
+	bool m_dataReady = false;
+	bool m_debug = false;
+
+	uint8_t m_data[MILESTAG2_MAX_MESSAGE_LENGTH];
+	uint8_t *m_pCurrentByte = m_data;
+	uint8_t m_currentBit;
+    IExternalInterruptManager* m_exti = nullptr;
+};
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_ */

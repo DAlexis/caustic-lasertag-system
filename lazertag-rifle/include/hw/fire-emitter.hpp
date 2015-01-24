@@ -18,6 +18,7 @@ public:
 	void init();
 	void startImpulsePack(bool isLedOn, unsigned int delayMs);
 	void setPower(uint8_t powerPercent);
+	void setCarrierFrequency(uint32_t frequency);
 
 	void IRQHandler();
 private:
@@ -26,8 +27,11 @@ private:
 
 	unsigned int m_videoPrescaler;
 
-	bool m_isOn;
-	uint8_t m_powerLevel;
+	bool m_isOn = false;
+	uint8_t m_PWMChannel;
+	unsigned int m_carrierFrequency = 56000;
+	constexpr static unsigned int m_radioTimerPeriod = 10;
+	unsigned int m_radioPrescaler;
 };
 
 class FireEmittersPool : public IFireEmittersPool

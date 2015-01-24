@@ -12,6 +12,7 @@
 #include "BlinkLed.h"
 
 #include "logic/rifle.hpp"
+#include "logic/head-sensor.hpp"
 #include "hal/usart.hpp"
 #include "hw/sdcard.h"
 #include "dev/console.hpp"
@@ -93,6 +94,7 @@ void fireCallbackTest(bool state)
 }
 
 Rifle *rifle = nullptr;
+HeadSensor *headSensor = nullptr;
 
 int main(int argc, char* argv[])
 {
@@ -126,15 +128,19 @@ int main(int argc, char* argv[])
 
 	systemClock->wait_us(100000);
 
-	Console::instance().prompt();
-	Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
-
 	rifle = new Rifle;
 	rifle->configure();
-	rifle->run();
 
-	// Why? This is a law )
+	//headSensor = new HeadSensor;
+	//headSensor->configure();
+
+	Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
+	Console::instance().prompt();
+	Scheduler::instance().mainLoop();
+
+	// Why? - Why not?
 	delete rifle;
+	delete headSensor;
 }
 
 #pragma GCC diagnostic pop

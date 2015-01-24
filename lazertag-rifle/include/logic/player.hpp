@@ -8,9 +8,11 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 
-//using PlayerId = uint32_t;
+#include <stdint.h>
 
-class PlayerDataMinimal
+using PlayerId = uint8_t[3];
+
+class PlayerParameters
 {
 public:
 	uint8_t health = 100;

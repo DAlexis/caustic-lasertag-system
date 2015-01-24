@@ -84,7 +84,6 @@ public:
 	Rifle();
 
 	void configure();
-	void run();
 
 	Configuration config;
 	State state;

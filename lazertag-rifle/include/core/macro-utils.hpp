@@ -11,5 +11,6 @@
 #define STRINGIFICATE(a)    _STRINGIFICATE(a)
 #define _STRINGIFICATE(a)   #a
 
+#define ARRAY_SIZE(a)       (sizeof(a) / sizeof(a[0]))
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_CORE_MACRO_UTILS_HPP_ */
