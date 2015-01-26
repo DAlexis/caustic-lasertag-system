@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <map>
+#include <functional>
 #include <string>
 #include <string.h>
 #include <stdint.h>
@@ -132,6 +133,36 @@ public:
 
 	Type* parameter;
 };
+
+using OperationFunction = std::function<void(void*, OperationSize)>;
+
+class DefaultFunctionAccessor : public IOperationAccessor
+{
+public:
+	DefaultFunctionAccessor(OperationCode code, const char* textName, OperationFunction func) :
+		m_func(func)
+	{
+		ConfigsAggregator::instance().registerAccessor(code, textName, this);
+	}
+
+	void deserialize(void* source, OperationSize size)
+	{
+		m_func(source, size);
+	}
+
+	void serialize(void* destination)
+	{
+	}
+	void parseString(const char* str)
+	{
+	}
+
+	uint32_t getSize() { return 0; }
+
+private:
+	OperationFunction m_func;
+};
+
 /*
 /// General case - string parsing not defined
 template<class Type>

@@ -32,7 +32,8 @@ void Rifle::Configuration::setFallback()
 	slot = 0;
 	weightInSlot = 0;
 
-	damage = 25;
+	damageMin = 25;
+	damageMax = 25;
 	firePeriod = 100000;
 	shotDelay = 0;
 
@@ -122,7 +123,7 @@ void Rifle::makeShot(bool isFirst)
 		return;
 
 	state.bulletsLeft--;
-	m_mt2Transmitter.shot(config.damage);
+	m_mt2Transmitter.shot(config.damageMin);
 	/// @todo Play shot sound
 	WavPlayer::instance().loadFile("sound/shoot-1.wav");
 	WavPlayer::instance().play();

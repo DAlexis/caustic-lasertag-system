@@ -33,3 +33,10 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 {
 	printf("Cought a shot: team %d, player %d, damage: %d\n", teamId, playerId, damage);
 }
+
+void HeadSensor::spawn()
+{
+	playerState.health = playerConfig.health;
+	playerState.armor = playerConfig.armor;
+	printf("Player spawned\n");
+}

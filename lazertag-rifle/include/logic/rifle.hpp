@@ -10,11 +10,13 @@
 
 #include "logic/configuration.hpp"
 #include "logic/config-codes.hpp"
+#include "logic/device.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "core/scheduler.hpp"
 
 #include <stdint.h>
+
 
 enum RifleReloadMode
 {
@@ -53,32 +55,40 @@ public:
 
 		void setFallback();
 
-		PARAMETER(ConfigCodes::Rifle, uint32_t, slot);
-		PARAMETER(ConfigCodes::Rifle, uint32_t, weightInSlot);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, slot);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, weightInSlot);
 
-		PARAMETER(ConfigCodes::Rifle, uint32_t, damage);
-		PARAMETER(ConfigCodes::Rifle, uint32_t, firePeriod);
-		PARAMETER(ConfigCodes::Rifle, uint32_t, shotDelay);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMin);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMax);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, firePeriod);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, shotDelay);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, jamProb);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalProb);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalCoeff);
 
-		PARAMETER(ConfigCodes::Rifle, bool, semiAutomaticAllowed);
-		PARAMETER(ConfigCodes::Rifle, bool, automaticAllowed);
+		PARAMETER(ConfigCodes::Rifle::Configuration, bool, semiAutomaticAllowed);
+		PARAMETER(ConfigCodes::Rifle::Configuration, bool, automaticAllowed);
 
-		PARAMETER(ConfigCodes::Rifle, RifleMagazineType, magazineType);
-		PARAMETER(ConfigCodes::Rifle, RifleReloadMode, magazinesReloadMode);
-		PARAMETER(ConfigCodes::Rifle, RifleAutoReload, autoReload);
+		PARAMETER(ConfigCodes::Rifle::Configuration, RifleMagazineType, magazineType);
+		PARAMETER(ConfigCodes::Rifle::Configuration, RifleReloadMode, magazinesReloadMode);
+		PARAMETER(ConfigCodes::Rifle::Configuration, RifleAutoReload, autoReload);
 
-		PARAMETER(ConfigCodes::Rifle, uint32_t, magazinesCount);
-		PARAMETER(ConfigCodes::Rifle, uint32_t, bulletsInMagazineAtStart);
-		PARAMETER(ConfigCodes::Rifle, uint32_t, bulletsPerMagazine);
-		PARAMETER(ConfigCodes::Rifle, uint32_t, reloadingTime);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCount);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineAtStart);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsPerMagazine);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, reloadingTime);
+
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
+		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
 	};
 
 	class State
 	{
 	public:
-		PARAMETER(ConfigCodes::Rifle, uint32_t, bulletsLeft);
-		PARAMETER(ConfigCodes::Rifle, uint32_t, magazinesLeft);
-		PARAMETER(ConfigCodes::Rifle, uint32_t, lastReloadTime);
+		PARAMETER(ConfigCodes::Rifle::State, UintParameter, bulletsLeft);
+		PARAMETER(ConfigCodes::Rifle::State, UintParameter, magazinesLeft);
+
+		uint32_t lastReloadTime;
 	};
 
 	Rifle();
@@ -87,6 +97,7 @@ public:
 
 	Configuration config;
 	State state;
+	DeviceParameters device;
 
 private:
 	void initState();
