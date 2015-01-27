@@ -10,6 +10,9 @@
 
 #include "logic/configuration.hpp"
 #include <stdint.h>
+#include <string.h>
+
+#define ADDRESS_LENGTH          3
 
 struct DeviceAddress
 {
@@ -19,6 +22,9 @@ struct DeviceAddress
 class DeviceParameters
 {
 public:
+	DeviceParameters() :
+		devAddr({1, 1, 1})
+	{ }
 	PARAMETER(ConfigCodes::Device, DeviceAddress, devAddr);
 };
 

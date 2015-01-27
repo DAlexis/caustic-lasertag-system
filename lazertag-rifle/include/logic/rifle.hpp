@@ -11,6 +11,7 @@
 #include "logic/configuration.hpp"
 #include "logic/config-codes.hpp"
 #include "logic/device.hpp"
+#include "logic/package-former.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "core/scheduler.hpp"
