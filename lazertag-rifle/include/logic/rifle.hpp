@@ -11,7 +11,7 @@
 #include "logic/configuration.hpp"
 #include "logic/config-codes.hpp"
 #include "logic/device.hpp"
-#include "logic/package-former.hpp"
+#include "logic/package-sender.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "core/scheduler.hpp"
@@ -61,7 +61,7 @@ public:
 
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMin);
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMax);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, firePeriod);
+		PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t , firePeriod);
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, shotDelay);
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, jamProb);
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalProb);
@@ -77,7 +77,7 @@ public:
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCount);
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineAtStart);
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsPerMagazine);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, reloadingTime);
+		PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t, reloadingTime);
 
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
 		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);

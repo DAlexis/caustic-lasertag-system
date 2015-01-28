@@ -1,0 +1,86 @@
+/*
+ * package-former.hpp
+ *
+ *  Created on: 26 янв. 2015 г.
+ *      Author: alexey
+ */
+
+#ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
+#define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
+
+#include "logic/device.hpp"
+#include "dev/nrf24l01.hpp"
+#include "hal/system-clock.hpp"
+#include <list>
+
+using PackageSendingDoneCallback = std::function<void(uint16_t /*package id*/, bool /*was successfully sent*/)>;
+using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>;
+
+#pragma pack(push, 1)
+struct PackageIdAndTTL
+{
+	uint16_t packageId : 14;
+	uint16_t TTL : 2;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct Package
+{
+
+	DeviceAddress sender;
+	DeviceAddress target;
+	PackageIdAndTTL idAndTTL;
+
+	constexpr static uint16_t packageLength = PAYLOAD_SIZE;
+	constexpr static uint16_t payloadLength = packageLength - sizeof(sender) - sizeof(target) - sizeof(idAndTTL);
+
+	uint8_t payload[payloadLength];
+};
+#pragma pack(pop)
+
+class PackageSender
+{
+public:
+	constexpr static uint32_t timeout = 10000000;
+
+	/**
+	 * Send package and optionaly wait for acknowledgement
+	 * @param target Target device address
+	 * @param data Payload
+	 * @param size Payload's size
+	 * @param waitForAck Need waiting for acknoledgement
+	 * @param doneCallback Function to call after sending done
+	 * @return
+	 */
+	void init();
+	void interrogate();
+	uint16_t send(DeviceAddress target, uint8_t* data, uint16_t size, bool waitForAck = false, PackageSendingDoneCallback doneCallback = nullptr);
+
+	DeviceAddress self{{1,2,3}};
+private:
+
+	struct WaitingPackage
+	{
+		Time wasCreated;
+		Time nextTransmission;
+		PackageSendingDoneCallback callback;
+
+		Package package;
+	};
+
+	void TXDoneCallback();
+	std::list<Package> m_packagesNoAck;
+
+	NRF24L01Manager nrf;
+	std::map<uint16_t, Package*> m_packages;
+};
+
+
+
+
+
+
+
+
+#endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_ */

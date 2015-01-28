@@ -8,8 +8,6 @@
 #include "dev/buttons.hpp"
 #include "hal/system-clock.hpp"
 
-//#include <stdio.h>
-
 ButtonsPool* ButtonsPool::m_buttonsPoolInstance = nullptr;
 ButtonsPool::StaticDeinitializer ButtonsPool::m_deinitializer;
 

@@ -16,7 +16,7 @@ class SystemClock : public ISystemClock
 public:
 	SystemClock();
 	void wait_us(uint32_t time);
-	uint32_t getTime();
+	Time getTime();
 };
 
 

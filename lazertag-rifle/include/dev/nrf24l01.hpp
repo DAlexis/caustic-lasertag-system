@@ -16,7 +16,7 @@
 #include <stdint.h>
 
 #define RADIO_ADDRESS_SIZE  5
-#define PAYLOAD_SIZE        5
+#define PAYLOAD_SIZE        32
 #define RADIO_CHANNEL       1
 
 using DataReceiveCallback = std::function<void(uint8_t/* channel*/, uint8_t*/* data*/)>;

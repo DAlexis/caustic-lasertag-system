@@ -59,7 +59,7 @@ SystemClock::SystemClock()
 	TIM_Cmd(TIM5, ENABLE);
 }
 
-uint32_t SystemClock::getTime()
+Time SystemClock::getTime()
 {
 	uint16_t slave = TIM5->CNT;
 	uint16_t us = TIM4->CNT;
@@ -69,14 +69,14 @@ uint32_t SystemClock::getTime()
 		slave = TIM5->CNT;
 	}
 
-	uint32_t result = slave * msTimerPeriod + us;
+	Time result = slave * msTimerPeriod + us;
 
 	return result;
 }
 
 void SystemClock::wait_us(uint32_t time)
 {
-	uint32_t lastTime = getTime();
+	Time lastTime = getTime();
 	while (getTime()-lastTime < time) { }
 
 }

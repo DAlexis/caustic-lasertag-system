@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
 
-#include "logic/configuration.hpp"
+#include "logic/config-codes.hpp"
 #include <stdint.h>
 #include <string.h>
 

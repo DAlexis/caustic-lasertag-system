@@ -10,11 +10,13 @@
 
 #include <stdint.h>
 
+using Time = uint32_t;
+
 class ISystemClock
 {
 public:
 	virtual void wait_us(uint32_t time) = 0;
-	virtual uint32_t getTime() = 0;
+	virtual Time getTime() = 0;
 };
 
 extern ISystemClock *systemClock;
