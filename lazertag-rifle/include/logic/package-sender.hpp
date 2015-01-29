@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 
 #include "logic/device.hpp"
+#include "logic/config-codes.hpp"
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
 #include <list>
@@ -62,18 +63,26 @@ private:
 
 	struct WaitingPackage
 	{
-		Time wasCreated;
-		Time nextTransmission;
+		Time wasCreated = 0;
+		Time nextTransmission = 0;
 		PackageSendingDoneCallback callback;
 
 		Package package;
 	};
 
+	uint16_t generatePackageId();
+	void generateAcknoledgement();
 	void TXDoneCallback();
+	void RXCallback(uint8_t channel, uint8_t* data);
+
+	uint16_t currentlySendingPackageId = 0;
+	bool isSendingNow = false;
 	std::list<Package> m_packagesNoAck;
 
 	NRF24L01Manager nrf;
-	std::map<uint16_t, Package*> m_packages;
+	std::map<uint16_t, WaitingPackage> m_packages;
+
+	std::list<Package> m_incoming;
 };
 
 

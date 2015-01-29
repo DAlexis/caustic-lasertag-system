@@ -16,7 +16,19 @@
 
 struct DeviceAddress
 {
-	uint8_t address[3];
+	uint8_t address[ADDRESS_LENGTH];
+	inline bool operator==(const DeviceAddress& other)
+	{
+		for(int i=0; i<ADDRESS_LENGTH; i++)
+			if (address[i] != other.address[i])
+				return false;
+			else return true;
+	}
+
+	inline bool operator!=(const DeviceAddress& other)
+	{
+		return not (*this == other);
+	}
 };
 
 class DeviceParameters
