@@ -20,7 +20,8 @@ using PlayerId = uint8_t[3];
 
 namespace ConfigCodes
 {
-	constexpr uint16_t acknoledgement = SetCommandOC(0);
+	constexpr uint16_t noOperation = 0;
+	constexpr uint16_t acknoledgement = SetCommandOC(0xFFFF);
 	namespace Device
 	{
 		PAR_CODE(devAddr,           2000)

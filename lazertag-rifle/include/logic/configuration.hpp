@@ -153,7 +153,7 @@ public:
 	void serialize(void* destination)
 	{
 	}
-	void parseString(const char* str)
+	void parseString(const char*)
 	{
 	}
 

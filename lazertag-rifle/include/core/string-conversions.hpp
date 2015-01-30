@@ -17,7 +17,7 @@ class StringParser
 public:
 	bool isSupported() { return false; }
 
-	Type parse(const char* str) { }
+	Type parse(const char*) { return Type(); }
 };
 
 template<>

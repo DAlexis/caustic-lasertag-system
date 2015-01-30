@@ -31,7 +31,7 @@ uint32_t ConfigsAggregator::dispatchStream(uint8_t* stream, uint32_t size)
 {
 	uint8_t* position = stream;
 	uint32_t unsupported = 0;
-	while ((position - stream) < size)
+	while ((position - stream) <= size-(sizeof(OperationSize)+sizeof(OperationCode)))
 	{
 		OperationSize *pOperationSize = reinterpret_cast<OperationSize*> (position);
 		position += sizeof(OperationSize);

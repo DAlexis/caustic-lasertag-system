@@ -20,6 +20,11 @@ using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>
 #pragma pack(push, 1)
 struct PackageIdAndTTL
 {
+	PackageIdAndTTL()
+	{
+		TTL = 0;
+	}
+
 	uint16_t packageId : 14;
 	uint16_t TTL : 2;
 };
@@ -43,7 +48,10 @@ struct Package
 class PackageSender
 {
 public:
-	constexpr static uint32_t timeout = 10000000;
+	constexpr static uint32_t timeout = 20000000;
+	constexpr static uint32_t resendTime = 500000;
+	constexpr static uint32_t resendTimeDelta = 100000;
+
 
 	/**
 	 * Send package and optionaly wait for acknowledgement
@@ -70,10 +78,22 @@ private:
 		Package package;
 	};
 
+#pragma pack(push, 1)
+	struct AckPayload
+	{
+		uint8_t size = sizeof(uint16_t);
+		uint16_t operationCode = ConfigCodes::acknoledgement;
+		uint16_t packageId : 14;
+		bool isAck() { return operationCode == ConfigCodes::acknoledgement; }
+	};
+#pragma pack(pop)
+
+
 	uint16_t generatePackageId();
-	void generateAcknoledgement();
 	void TXDoneCallback();
 	void RXCallback(uint8_t channel, uint8_t* data);
+	void sendNext();
+
 
 	uint16_t currentlySendingPackageId = 0;
 	bool isSendingNow = false;
