@@ -6,6 +6,7 @@
  */
 
 #include "core/scheduler.hpp"
+#include "dev/random.hpp"
 #include "hal/system-clock.hpp"
 
 Scheduler* Scheduler::m_scheduler = nullptr;
@@ -67,7 +68,7 @@ void Scheduler::mainLoop()
 			Task& task = it->second;
 			if (task.nextRun <= time) {
 				task.callback();
-				task.nextRun = time + task.period;
+				task.nextRun = time + task.period + Random::random(task.periodDelta);
 				if (task.runOnce)
 					stopTask(it->first);
 			}

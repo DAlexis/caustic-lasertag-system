@@ -9,6 +9,8 @@
 
 #include "core/scheduler.hpp"
 
+#include "dev/random.hpp"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -20,15 +22,17 @@ void PackageSender::init()
 	printf("Package sender initialization...\n");
 	nrf.setTXDoneCallback(std::bind(&PackageSender::TXDoneCallback, this));
 	nrf.setDataReceiveCallback(std::bind(&PackageSender::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
+	IExternalInterruptManager *exti = EXTIS->getEXTI(8);
+	exti->init(1);
 	nrf.init(
 		IOPins->getIOPin(1, 7),
 		IOPins->getIOPin(1, 12),
 		IOPins->getIOPin(1, 8),
-		nullptr,
+		exti,
 		SPIs->getSPI(1)
 	);
 	nrf.printStatus();
-	Scheduler::instance().addTask(std::bind(&PackageSender::interrogate, this), false, 10000);
+	Scheduler::instance().addTask(std::bind(&PackageSender::interrogate, this), false, 10000, 10000);
 }
 
 uint16_t PackageSender::generatePackageId()
@@ -54,12 +58,14 @@ uint16_t PackageSender::send(DeviceAddress target, uint8_t* data, uint16_t size,
 	{
 		Time time = systemClock->getTime();
 		m_packages[idAndTTL.packageId] = WaitingPackage();
-		m_packages[idAndTTL.packageId].wasCreated = time;
-		m_packages[idAndTTL.packageId].nextTransmission = time;
-		m_packages[idAndTTL.packageId].callback = doneCallback;
-		m_packages[idAndTTL.packageId].package.sender = self;
-		m_packages[idAndTTL.packageId].package.target = target;
-		m_packages[idAndTTL.packageId].package.idAndTTL = idAndTTL;
+		WaitingPackage& waitingPackage = m_packages[idAndTTL.packageId];
+		waitingPackage.wasCreated = time;
+		waitingPackage.nextTransmission = time;
+		waitingPackage.callback = doneCallback;
+		waitingPackage.package.sender = self;
+		waitingPackage.package.target = target;
+		waitingPackage.package.idAndTTL = idAndTTL;
+		memcpy(waitingPackage.package.payload, data, size);
 		printf("Ack-using package queued\n");
 		return idAndTTL.packageId;
 	} else {
@@ -77,7 +83,6 @@ uint16_t PackageSender::send(DeviceAddress target, uint8_t* data, uint16_t size,
 
 void PackageSender::TXDoneCallback()
 {
-	printf("TX done\n");
 	isSendingNow = false;
 }
 
@@ -148,7 +153,7 @@ void PackageSender::sendNext()
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
 	{
-		printf("Sending package without ack needed\n");
+		printf("Sending package with NO ack needed\n");
 		nrf.sendData(Package::packageLength, (uint8_t*) &(m_packagesNoAck.front()));
 		m_packagesNoAck.pop_front();
 		isSendingNow = true;
@@ -164,6 +169,7 @@ void PackageSender::sendNext()
 		{
 			PackageSendingDoneCallback callback = it->second.callback;
 			uint16_t timeoutedPackageId = it->second.package.idAndTTL.packageId;
+			printf("Package %u timeouted\n", timeoutedPackageId);
 			m_packages.erase(it);
 			if (callback)
 				callback(timeoutedPackageId, false);
@@ -175,10 +181,10 @@ void PackageSender::sendNext()
 		// If it is time to (re)send package
 		if (it->second.nextTransmission < time)
 		{
-			printf("Sending package with ack needed\n");
+			printf("Sending package with ack needed, id=%u\n", it->second.package.idAndTTL.packageId);
 			currentlySendingPackageId = it->first;
 			isSendingNow = true;
-			it->second.nextTransmission = time+resendTime;
+			it->second.nextTransmission = time+resendTime+Random::random(resendTime / 2);
 			nrf.sendData(Package::packageLength, (uint8_t*) &(it->second.package));
 			return;
 		}

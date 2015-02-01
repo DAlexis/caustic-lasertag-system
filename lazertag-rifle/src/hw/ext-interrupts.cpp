@@ -38,6 +38,11 @@ namespace {
 		{GPIO_Pin_2, GPIO_PinSource2, EXTI_Line2, EXTI2_IRQn},
 		{GPIO_Pin_3, GPIO_PinSource3, EXTI_Line3, EXTI3_IRQn},
 		{GPIO_Pin_4, GPIO_PinSource4, EXTI_Line4, EXTI4_IRQn},
+		{GPIO_Pin_5, GPIO_PinSource5, EXTI_Line5, EXTI9_5_IRQn},
+		{GPIO_Pin_6, GPIO_PinSource6, EXTI_Line6, EXTI9_5_IRQn},
+		{GPIO_Pin_7, GPIO_PinSource7, EXTI_Line7, EXTI9_5_IRQn},
+		{GPIO_Pin_8, GPIO_PinSource8, EXTI_Line8, EXTI9_5_IRQn},
+		{GPIO_Pin_9, GPIO_PinSource9, EXTI_Line9, EXTI9_5_IRQn},
 	};
 
 	constexpr PortDescription portDescription[] = {
@@ -156,6 +161,40 @@ extern "C" {
 			EXTI_ClearITPendingBit(EXTI_Line4);
 		}
 	}
+
+	void EXTI9_5_IRQHandler()
+	{
+		if(EXTI_GetITStatus(EXTI_Line5) != RESET)
+		{
+			exti_IRQHandlers[5]();
+			EXTI_ClearITPendingBit(EXTI_Line5);
+		}
+
+		if(EXTI_GetITStatus(EXTI_Line6) != RESET)
+		{
+			exti_IRQHandlers[6]();
+			EXTI_ClearITPendingBit(EXTI_Line6);
+		}
+
+		if(EXTI_GetITStatus(EXTI_Line7) != RESET)
+		{
+			exti_IRQHandlers[7]();
+			EXTI_ClearITPendingBit(EXTI_Line7);
+		}
+
+		if(EXTI_GetITStatus(EXTI_Line8) != RESET)
+		{
+			exti_IRQHandlers[8]();
+			EXTI_ClearITPendingBit(EXTI_Line8);
+		}
+
+		if(EXTI_GetITStatus(EXTI_Line9) != RESET)
+		{
+			exti_IRQHandlers[9]();
+			EXTI_ClearITPendingBit(EXTI_Line9);
+		}
+	}
+
 }
 
 //////////////////

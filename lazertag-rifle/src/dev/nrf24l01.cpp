@@ -162,7 +162,7 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     m_IRQexti = IRQexti;
     m_spi = spi;
 
-    m_spi->init(ISPIManager::BaudRatePrescaler8);
+    m_spi->init(ISPIManager::BaudRatePrescaler2);
 
     //////////////////////
     // Chip enable line init
@@ -193,12 +193,12 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     enablePipe(0, ENABLE_OPTION);
     setRXPayloadLength(0, PAYLOAD_SIZE);
 
-
+/*
     // Setting up pipe 1
     setAutoACK(1, DISABLE_OPTION);
     enablePipe(1, ENABLE_OPTION);
     setRXPayloadLength(1, PAYLOAD_SIZE);
-
+*/
     setRFSettings(BR_1MBIT, PW_0DB, LNA_ENABLE);
     setupRetransmission(2, 15);
     switchToRX();
@@ -257,7 +257,7 @@ void NRF24L01Manager::chipDeselect()
 void NRF24L01Manager::CEImpulse()
 {
     chipEnableOn();
-    systemClock->wait_us(20);
+    systemClock->wait_us(15);
     chipEnableOff();
 }
 
@@ -711,6 +711,20 @@ void NRF24L01Manager::interrogate()
 
 void NRF24L01Manager::extiHandler(bool state)
 {
-	if (false == state)
-		m_needInterrogation = true;
+	if (true == state)
+		return;
+
+	updateStatus();
+	/// @todo Create function with code below
+	if (isTXDataSent())
+	{
+		// Returning to default state: receiver
+		switchToRX();
+		resetTXDataSent();
+		if (m_TXDoneCallback == nullptr) {
+			printf("TX done; no cb\n");
+		} else
+			m_TXDoneCallback();
+	}
+	m_needInterrogation = true;
 }

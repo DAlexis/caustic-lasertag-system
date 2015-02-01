@@ -10,7 +10,7 @@
 
 #include "hal/ext-interrupts.hpp"
 
-#define EXTI_LINES_COUNT	5
+#define EXTI_LINES_COUNT	9
 
 enum PortNumbers
 {
