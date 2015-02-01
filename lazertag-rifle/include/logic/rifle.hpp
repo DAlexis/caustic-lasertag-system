@@ -9,7 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 
 #include "logic/configuration.hpp"
-#include "logic/config-codes.hpp"
+#include "logic/operation-codes.hpp"
 #include "logic/device.hpp"
 #include "logic/package-sender.hpp"
 #include "dev/buttons.hpp"
@@ -46,58 +46,67 @@ enum FireMode
 	FM_AUTOMATIC = 2
 };
 
+class RifleConfiguration
+{
+public:
+	RifleConfiguration();
+
+	void setDefault();
+
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, slot);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, weightInSlot);
+
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMin);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMax);
+	PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t , firePeriod);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, shotDelay);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, jamProb);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalProb);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalCoeff);
+
+	PARAMETER(ConfigCodes::Rifle::Configuration, bool, semiAutomaticAllowed);
+	PARAMETER(ConfigCodes::Rifle::Configuration, bool, automaticAllowed);
+
+	PARAMETER(ConfigCodes::Rifle::Configuration, RifleMagazineType, magazineType);
+	PARAMETER(ConfigCodes::Rifle::Configuration, RifleReloadMode, magazinesReloadMode);
+	PARAMETER(ConfigCodes::Rifle::Configuration, RifleAutoReload, autoReload);
+
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCount);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineAtStart);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsPerMagazine);
+	PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t, reloadingTime);
+
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
+};
+
+class RifleState
+{
+public:
+	RifleState(RifleConfiguration* config);
+	void reset();
+	PARAMETER(ConfigCodes::Rifle::State, UintParameter, bulletsLeft);
+	PARAMETER(ConfigCodes::Rifle::State, UintParameter, magazinesLeft);
+
+	uint32_t lastReloadTime;
+
+private:
+	RifleConfiguration* m_config = nullptr;
+};
+
 class Rifle
 {
 public:
-	class Configuration
-	{
-	public:
-		Configuration();
-
-		void setFallback();
-
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, slot);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, weightInSlot);
-
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMin);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMax);
-		PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t , firePeriod);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, shotDelay);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, jamProb);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalProb);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalCoeff);
-
-		PARAMETER(ConfigCodes::Rifle::Configuration, bool, semiAutomaticAllowed);
-		PARAMETER(ConfigCodes::Rifle::Configuration, bool, automaticAllowed);
-
-		PARAMETER(ConfigCodes::Rifle::Configuration, RifleMagazineType, magazineType);
-		PARAMETER(ConfigCodes::Rifle::Configuration, RifleReloadMode, magazinesReloadMode);
-		PARAMETER(ConfigCodes::Rifle::Configuration, RifleAutoReload, autoReload);
-
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCount);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineAtStart);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsPerMagazine);
-		PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t, reloadingTime);
-
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
-		PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
-	};
-
-	class State
-	{
-	public:
-		PARAMETER(ConfigCodes::Rifle::State, UintParameter, bulletsLeft);
-		PARAMETER(ConfigCodes::Rifle::State, UintParameter, magazinesLeft);
-
-		uint32_t lastReloadTime;
-	};
-
 	Rifle();
 
 	void configure();
 
-	Configuration config;
-	State state;
+	FUNCION(ConfigCodes::Rifle::Functions, Rifle, turnOn);
+	FUNCION(ConfigCodes::Rifle::Functions, Rifle, turnOff);
+	FUNCION(ConfigCodes::Rifle::Functions, Rifle, reset);
+
+	RifleConfiguration config;
+	RifleState state{&config};
 	DeviceParameters device;
 
 private:
@@ -107,6 +116,8 @@ private:
 
 	bool isReloading();
 	bool isSafeSwitchSelected();
+
+	bool isEnabled = true;
 
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;

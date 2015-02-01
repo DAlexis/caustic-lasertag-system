@@ -14,9 +14,10 @@
 #define PAR_CODE(variable, value)   constexpr uint16_t variable = SetParameterOC(value); \
                                     constexpr const char variable##Text[] = STRINGIFICATE(variable);
 
+#define FUNC_CODE(function, value)  constexpr uint16_t function = SetCommandOC(value);
+
 using UintParameter = uint16_t;
 using PlayerId = uint8_t[3];
-
 
 namespace ConfigCodes
 {
@@ -62,6 +63,14 @@ namespace ConfigCodes
 			PAR_CODE(bulletsLeft,             101)
 			PAR_CODE(magazinesLeft,           102)
 		}
+
+		namespace Functions
+		{
+			FUNC_CODE(turnOff,             201)
+			FUNC_CODE(turnOn,              202)
+			FUNC_CODE(reset,               203)
+			FUNC_CODE(respawn,             204)
+		}
 	}
 
 	namespace Player
@@ -96,6 +105,8 @@ namespace ConfigCodes
 			PAR_CODE(autoRespawn,       1013)
 
 			PAR_CODE(plyerId,        1030)
+			PAR_CODE(plyerMT2Id,     1031)
+			PAR_CODE(teamId,         1032)
 
 			PAR_CODE(slot1MaxWeight,    1041)
 			PAR_CODE(slot2MaxWeight,    1042)
@@ -116,6 +127,7 @@ namespace ConfigCodes
 
 			PAR_CODE(pointsCount, 1110)
 			PAR_CODE(killsCount,  1111)
+			PAR_CODE(deathsCount, 1112)
 		}
 	}
 }

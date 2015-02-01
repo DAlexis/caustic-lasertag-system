@@ -39,7 +39,10 @@ uint32_t ConfigsAggregator::dispatchStream(uint8_t* stream, uint32_t size)
 		position += sizeof(OperationCode);
 		auto it = m_accessorsByOpCode.find(*pOperationCode);
 		if (it != m_accessorsByOpCode.end())
+		{
+			printf("Dispatched opcode %u\n", *pOperationCode);
 			it->second->deserialize(position, *pOperationSize);
+		}
 		else
 			unsupported++;
 		position += *pOperationSize;
@@ -47,3 +50,72 @@ uint32_t ConfigsAggregator::dispatchStream(uint8_t* stream, uint32_t size)
 	return unsupported;
 }
 
+uint16_t ConfigsAggregator::serialize(uint8_t* stream, OperationCode code, uint16_t maxSize)
+{
+	auto it = m_accessorsByOpCode.find(code);
+	if (it == m_accessorsByOpCode.end())
+		return 0;
+	/// @todo Add two return variants: maxSize reached and code not found
+	OperationSize size = 0;
+	if (it->second->isReadable())
+	{
+		// We have readable object
+		size = it->second->getSize();
+		uint16_t packageSize = size + sizeof(OperationSize) + sizeof(OperationCode);
+		if (maxSize < packageSize)
+			return 0;
+		memcpy(stream, &size, sizeof(OperationSize));
+		stream += sizeof(OperationSize);
+		memcpy(stream, &code, sizeof(OperationCode));
+		stream += sizeof(OperationCode);
+		it->second->serialize(stream);
+	} else {
+		// We have unreadable object
+		size = 0;
+		uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
+		if (maxSize < packageSize)
+			return 0;
+		memcpy(stream, &size, sizeof(OperationSize));
+		stream += sizeof(OperationSize);
+		memcpy(stream, &code, sizeof(OperationCode));
+	}
+	return sizeof(OperationSize) + sizeof(OperationCode) + size;
+}
+
+StreamGenerator::StreamGenerator(uint16_t size) :
+	m_size(size)
+{
+	m_stream = new uint8_t[size];
+	memset(m_stream, 0, size*sizeof(uint8_t));
+}
+
+StreamGenerator::~StreamGenerator()
+{
+	if (m_stream)
+		delete[] m_stream;
+}
+
+uint8_t* StreamGenerator::getStream()
+{
+	return m_stream;
+}
+
+uint16_t StreamGenerator::getSize()
+{
+	return m_size;
+}
+
+bool StreamGenerator::add(OperationCode code)
+{
+	printf("Adding to stream code %u\n", code);
+	uint8_t *pos = m_stream + m_cursor;
+
+	uint16_t addedSize = ConfigsAggregator::instance().serialize(pos, code, m_size - m_cursor);
+	if (addedSize != 0)
+	{
+		printf("Added to stream code %u\n", code);
+		m_cursor += addedSize;
+		return true;
+	} else
+		return false;
+}

@@ -10,7 +10,10 @@
 
 #include "logic/player.hpp"
 #include "logic/device.hpp"
+#include "logic/package-sender.hpp"
 #include "dev/miles-tag-2.hpp"
+
+#include <set>
 
 class HeadSensor
 {
@@ -19,14 +22,24 @@ public:
 	void configure();
 
 	PlayerConfiguration playerConfig;
-	PlayerState playerState;
+	PlayerState playerState{&playerConfig};
 	DeviceParameters device;
 
+	FUNC_NO_INSTANCE(ConfigCodes::Rifle::Functions, turnOn);
+	FUNC_NO_INSTANCE(ConfigCodes::Rifle::Functions, turnOff);
+	FUNC_NO_INSTANCE(ConfigCodes::Rifle::Functions, reset);
+	FUNC_NO_INSTANCE(ConfigCodes::Rifle::Functions, respawn);
+
 private:
+	// Test functions
+	void testDie(const char*);
+
 	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage);
-	void spawn();
+	void respawn();
+	void reset();
 
 	MilesTag2Receiver m_mainSensor;
+	std::set<DeviceAddress> m_weapons;
 };
 
 

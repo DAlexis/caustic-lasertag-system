@@ -7,6 +7,7 @@
 
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
+#include "tests/utils.hpp"
 #include <stdio.h>
 #include <string.h>
 /*
@@ -572,6 +573,7 @@ bool NRF24L01Manager::isRXEmpty()
 // Send and receive
 void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 {
+	printHex(data, size);
     switchToTX();
     chipSelect();
     m_status = m_spi->sendByte(W_TX_PAYLOAD);

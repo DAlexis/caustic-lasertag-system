@@ -22,20 +22,24 @@ inline void __attribute__((always_inline)) interpretVariable(T& where, void* fro
 	where = *reinterpret_cast<T*>(from);
 }
 
-Rifle::Configuration::Configuration()
+RifleConfiguration::RifleConfiguration()
 {
-	setFallback();
+	setDefault();
 }
 
-void Rifle::Configuration::setFallback()
+void RifleConfiguration::setDefault()
 {
-	slot = 0;
+	slot = 1;
 	weightInSlot = 0;
 
 	damageMin = 25;
 	damageMax = 25;
 	firePeriod = 100000;
 	shotDelay = 0;
+
+	jamProb = 0;
+	criticalProb = 0;
+	criticalCoeff = 1;
 
 	semiAutomaticAllowed = true;
 	automaticAllowed = true;
@@ -47,6 +51,22 @@ void Rifle::Configuration::setFallback()
 	bulletsPerMagazine = 30;
 	bulletsInMagazineAtStart = bulletsPerMagazine;
 	reloadingTime = 3000000;
+
+	heatPerShot = 0;
+	heatLossPerSec = 0;
+}
+
+RifleState::RifleState(RifleConfiguration* config) :
+	m_config(config)
+{
+	if (config)
+		reset();
+}
+
+void RifleState::reset()
+{
+	bulletsLeft = m_config->bulletsInMagazineAtStart;
+	magazinesLeft = m_config->magazinesCount;
 }
 
 Rifle::Rifle()
@@ -84,11 +104,17 @@ void Rifle::configure()
 	m_mt2Transmitter.setTeamId(1);
 	m_mt2Transmitter.init();
 
+	turnOn(nullptr, 0);
 
 	if (!SDCardFS::instance().init())
 		printf("Error during mounting sd-card!\n");
 
+	printf("Wav player initialization\n");
 	WavPlayer::instance().init();
+
+	printf("Package sender initialization\n");
+	PackageSender::instance().init();
+
 	printf("Rifle ready to use\n");
 }
 
@@ -172,4 +198,24 @@ bool Rifle::isSafeSwitchSelected()
 bool Rifle::isReloading()
 {
 	return (systemClock->getTime() - state.lastReloadTime < config.reloadingTime);
+}
+
+void Rifle::turnOff(void*, uint16_t)
+{
+	isEnabled = false;
+	m_fireButton->turnOff();
+	m_reloadButton->turnOff();
+}
+
+void Rifle::turnOn(void*, uint16_t)
+{
+	isEnabled = true;
+	m_fireButton->turnOn();
+	m_reloadButton->turnOn();
+}
+
+void Rifle::reset(void*, uint16_t)
+{
+	state.reset();
+	//turnOn(nullptr, 0);
 }

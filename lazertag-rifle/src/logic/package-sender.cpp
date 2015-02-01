@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
+PackageSender* PackageSender::m_packageSender = nullptr;
+STATIC_DEINITIALIZER_IN_CPP_FILE(PackageSender, m_packageSender)
+
 void PackageSender::init()
 {
 	printf("Package sender initialization...\n");
@@ -39,8 +42,11 @@ uint16_t PackageSender::generatePackageId()
 
 uint16_t PackageSender::send(DeviceAddress target, uint8_t* data, uint16_t size, bool waitForAck, PackageSendingDoneCallback doneCallback)
 {
-	if (size>Package::payloadLength)
+	if (size > Package::payloadLength)
+	{
+		printf("Error: too long payload!\n");
 		return 0;
+	}
 	PackageIdAndTTL idAndTTL;
 	idAndTTL.packageId = generatePackageId();
 
@@ -54,6 +60,7 @@ uint16_t PackageSender::send(DeviceAddress target, uint8_t* data, uint16_t size,
 		m_packages[idAndTTL.packageId].package.sender = self;
 		m_packages[idAndTTL.packageId].package.target = target;
 		m_packages[idAndTTL.packageId].package.idAndTTL = idAndTTL;
+		printf("Ack-using package queued\n");
 		return idAndTTL.packageId;
 	} else {
 		m_packagesNoAck.push_back(Package());
@@ -63,12 +70,14 @@ uint16_t PackageSender::send(DeviceAddress target, uint8_t* data, uint16_t size,
 		memcpy(m_packagesNoAck.back().payload, data, size);
 		if (size<Package::payloadLength)
 			memset(m_packagesNoAck.back().payload+size, 0, size-Package::payloadLength);
+		printf("No-ack package queued\n");
 		return 0;
 	}
 }
 
 void PackageSender::TXDoneCallback()
 {
+	printf("TX done\n");
 	isSendingNow = false;
 }
 
@@ -87,9 +96,13 @@ void PackageSender::RXCallback(uint8_t channel, uint8_t* data)
 	{
 		printf("Ack package received for id=%u\n", ackDispatcher->packageId);
 		auto it = m_packages.find(ackDispatcher->packageId);
+		if (it == m_packages.end())
+		{
+			// No packages waiting this ack
+			return;
+		}
 		PackageSendingDoneCallback callback = it->second.callback;
-		if (it != m_packages.end())
-			m_packages.erase(it);
+		m_packages.erase(it);
 		printf("Package removed from queue\n");
 		if (callback)
 			callback(ackDispatcher->packageId, true);
@@ -108,6 +121,7 @@ void PackageSender::RXCallback(uint8_t channel, uint8_t* data)
 	ack.sender = self;
 	ack.idAndTTL.packageId = generatePackageId();
 	memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
+	memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
 	// Adding ack package to list for sending
 	m_packagesNoAck.push_back(ack);
 
@@ -117,7 +131,11 @@ void PackageSender::RXCallback(uint8_t channel, uint8_t* data)
 
 void PackageSender::interrogate()
 {
-	if (!isSendingNow) sendNext();
+	nrf.interrogate();
+	if (!isSendingNow)
+	{
+		sendNext();
+	}
 	while (!m_incoming.empty())
 	{
 		ConfigsAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength);
@@ -165,4 +183,11 @@ void PackageSender::sendNext()
 			return;
 		}
 	}
+}
+
+PackageSender& PackageSender::instance()
+{
+	if (!m_packageSender)
+		m_packageSender = new PackageSender;
+	return *m_packageSender;
 }

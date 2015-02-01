@@ -9,12 +9,15 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 
 #include "logic/configuration.hpp"
-#include "logic/config-codes.hpp"
+#include "logic/operation-codes.hpp"
 #include <stdint.h>
 
 class PlayerConfiguration
 {
 public:
+	PlayerConfiguration();
+	void setDefault();
+
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, health);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armor);
 
@@ -26,11 +29,15 @@ public:
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, isHealable);
 
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, lifesCount);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, shockDelay);
+	PARAMETER(ConfigCodes::Player::Configuration, uint32_t,      shockDelay);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, preRespawnDelay);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, postRespawnDelay);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, autoRespawn);
+
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, plyerId);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, plyerMT2Id);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, teamId);
+
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, slot1MaxWeight);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, slot2MaxWeight);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, slot3MaxWeight);
@@ -41,6 +48,13 @@ public:
 class PlayerState
 {
 public:
+	PlayerState(PlayerConfiguration* configuration) :
+		m_configuration(configuration)
+	{
+		if (m_configuration)
+			reset();
+	}
+
 	PARAMETER(ConfigCodes::Player::State, UintParameter, health);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, armor);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, armorCoeff);
@@ -49,9 +63,15 @@ public:
 	PARAMETER(ConfigCodes::Player::State, UintParameter, lifesCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, pointsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, deathsCount);
 
 	bool damage(uint8_t damage);
 	bool isAlive();
+	void respawn();
+	void reset();
+
+private:
+	const PlayerConfiguration* m_configuration = nullptr;
 };
 
 

@@ -41,9 +41,14 @@
  *   11 - reserved
  */
 
-#define PARAMETER(NameSpace, Type, name)    Type name; \
-                                            DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
+#define PARAMETER(NameSpace, Type, name)               Type name; \
+                                                       DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
 
+#define FUNCION(NameSpace, ClassName, functionName)    void functionName(void* arguments, uint16_t size); \
+                                                       DefaultFunctionAccessor functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
+                                                           std::bind(&ClassName::functionName, this, std::placeholders::_1, std::placeholders::_2)}
+
+#define FUNC_NO_INSTANCE(NameSpace, functionName)      DefaultFunctionAccessor functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), nullptr}
 
 using OperationSize = uint8_t;
 using OperationCode = uint16_t;
@@ -68,9 +73,17 @@ class IOperationAccessor
 {
 public:
 	virtual ~IOperationAccessor() {}
+	/// Get data from stream and set parameter, call function etc.
 	virtual void deserialize(void* source, OperationSize size) = 0;
+	/// Put parameter, function return value etc. to stream
 	virtual void serialize(void* destination) = 0;
+	/// Get data from string
 	virtual void parseString(const char* str) = 0;
+	/// Check if serialize is callable method
+	virtual bool isReadable() = 0;
+	/// Check if deserialize is callable method
+	virtual bool isWritable() = 0;
+	/// Get data size in stream
 	virtual uint32_t getSize() = 0;
 };
 
@@ -91,12 +104,70 @@ public:
 
 	void readFromFile(const char* filename);
 
+	uint16_t serialize(uint8_t* stream, OperationCode code, uint16_t maxSize);
 private:
 	std::map<OperationCode, IOperationAccessor*> m_accessorsByOpCode;
 	std::map<std::string, IOperationAccessor*> m_accessorsByOpText;
 	static ConfigsAggregator* m_configsAggregator;
 	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 
+};
+
+class StreamGenerator
+{
+public:
+	StreamGenerator(uint16_t size);
+	~StreamGenerator();
+	uint8_t* getStream();
+	uint16_t getSize();
+	bool add(OperationCode code);
+
+private:
+	uint8_t* m_stream = nullptr;
+	uint16_t m_cursor = 0;
+	uint16_t m_size = 0;
+};
+
+using FunctionAccessorCallback = std::function<void(void* /*arguments*/, uint16_t /*size*/)>;
+
+/// Realization of IOperationAccessor for function
+class DefaultFunctionAccessor : public IOperationAccessor
+{
+public:
+	DefaultFunctionAccessor(OperationCode code, const char* textName, FunctionAccessorCallback _callback) :
+		callback(_callback)
+	{
+		ConfigsAggregator::instance().registerAccessor(code, textName, this);
+	}
+
+	void deserialize(void* source, OperationSize size)
+	{
+		callback(source, size);
+	}
+
+	bool isReadable()
+	{
+		return true;
+	}
+
+	bool isWritable()
+	{
+		return false;
+	}
+
+	void serialize(void*)
+	{
+	}
+
+	void parseString(const char*)
+	{
+	}
+
+	inline uint32_t getSize() { return 0; }
+
+
+private:
+	FunctionAccessorCallback callback;
 };
 
 /// Realization of IOperationAccessor for simple typed parameters
@@ -120,6 +191,16 @@ public:
 		memcpy(destination, parameter, sizeof(Type));
 	}
 
+	bool isReadable()
+	{
+		return true;
+	}
+
+	bool isWritable()
+	{
+		return true;
+	}
+
 	void parseString(const char* str)
 	{
 		if (StringParser<Type>().isSupported())
@@ -133,58 +214,5 @@ public:
 
 	Type* parameter;
 };
-
-using OperationFunction = std::function<void(void*, OperationSize)>;
-
-class DefaultFunctionAccessor : public IOperationAccessor
-{
-public:
-	DefaultFunctionAccessor(OperationCode code, const char* textName, OperationFunction func) :
-		m_func(func)
-	{
-		ConfigsAggregator::instance().registerAccessor(code, textName, this);
-	}
-
-	void deserialize(void* source, OperationSize size)
-	{
-		m_func(source, size);
-	}
-
-	void serialize(void* destination)
-	{
-	}
-	void parseString(const char*)
-	{
-	}
-
-	uint32_t getSize() { return 0; }
-
-private:
-	OperationFunction m_func;
-};
-
-/*
-/// General case - string parsing not defined
-template<class Type>
-class DefaultParameterAccessor : public DefaultParameterAccessorBase<Type>
-{
-public:
-	DefaultParameterAccessor(OperationCode code, const char* textName, Type* _parameter) :
-		DefaultParameterAccessorBase<Type>(code, textName, _parameter)
-	{}
-
-	void parseString(const char* str)
-	{}
-};
-
-template<>
-class DefaultParameterAccessor<uint32_t> : public DefaultParameterAccessorBase<uint32_t>
-{
-public:
-	DefaultParameterAccessor(OperationCode code, const char* textName, uint32_t* _parameter) :
-		DefaultParameterAccessorBase<uint32_t>(code, textName, _parameter)
-	{}
-
-};*/
 
 #endif /* LOGIC_CONFIGURATION_HPP_ */

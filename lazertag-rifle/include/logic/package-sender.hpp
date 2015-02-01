@@ -8,11 +8,14 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 
-#include "logic/device.hpp"
-#include "logic/config-codes.hpp"
+#include "logic/operation-codes.hpp"
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
+#include "core/singleton-macro.hpp"
 #include <list>
+
+
+#define ADDRESS_LENGTH          3
 
 using PackageSendingDoneCallback = std::function<void(uint16_t /*package id*/, bool /*was successfully sent*/)>;
 using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>;
@@ -20,6 +23,11 @@ using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>
 #pragma pack(push, 1)
 struct PackageIdAndTTL
 {
+	PackageIdAndTTL(uint16_t id, uint16_t ttl = 0) :
+		packageId(id),
+		TTL(ttl)
+	{}
+
 	PackageIdAndTTL()
 	{
 		TTL = 0;
@@ -29,6 +37,38 @@ struct PackageIdAndTTL
 	uint16_t TTL : 2;
 };
 #pragma pack(pop)
+
+
+struct DeviceAddress
+{
+	uint8_t address[ADDRESS_LENGTH];
+
+	// Operators
+	inline bool operator==(const DeviceAddress& other) const
+	{
+		for(int i=0; i<ADDRESS_LENGTH; i++)
+			if (address[i] != other.address[i])
+				return false;
+			else return true;
+	}
+
+	inline bool operator!=(const DeviceAddress& other) const
+	{
+		return not (*this == other);
+	}
+
+	inline bool operator<(const DeviceAddress& other) const
+	{
+		for(int i=0; i<ADDRESS_LENGTH; i++)
+		{
+			if (address[i] < other.address[i])
+				return true;
+			if (address[i] > other.address[i])
+				return false;
+		}
+		return false;
+	}
+};
 
 #pragma pack(push, 1)
 struct Package
@@ -45,6 +85,8 @@ struct Package
 };
 #pragma pack(pop)
 
+
+
 class PackageSender
 {
 public:
@@ -52,7 +94,7 @@ public:
 	constexpr static uint32_t resendTime = 500000;
 	constexpr static uint32_t resendTimeDelta = 100000;
 
-
+	static PackageSender& instance();
 	/**
 	 * Send package and optionaly wait for acknowledgement
 	 * @param target Target device address
@@ -63,10 +105,9 @@ public:
 	 * @return
 	 */
 	void init();
-	void interrogate();
 	uint16_t send(DeviceAddress target, uint8_t* data, uint16_t size, bool waitForAck = false, PackageSendingDoneCallback doneCallback = nullptr);
 
-	DeviceAddress self{{1,2,3}};
+	DeviceAddress self{{1,1,1}};
 private:
 
 	struct WaitingPackage
@@ -89,6 +130,7 @@ private:
 #pragma pack(pop)
 
 
+	void interrogate();
 	uint16_t generatePackageId();
 	void TXDoneCallback();
 	void RXCallback(uint8_t channel, uint8_t* data);
@@ -103,6 +145,9 @@ private:
 	std::map<uint16_t, WaitingPackage> m_packages;
 
 	std::list<Package> m_incoming;
+
+	static PackageSender* m_packageSender;
+	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 };
 
 
