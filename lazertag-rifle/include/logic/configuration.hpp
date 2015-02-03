@@ -41,14 +41,18 @@
  *   11 - reserved
  */
 
+/// Create variable in class and connect in to configs aggregator
 #define PARAMETER(NameSpace, Type, name)               Type name; \
                                                        DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
 
+/// Create variable in class and connect in to configs aggregator with custom test name
+#define PARAMETER_S(NameSpace, Type, name, textName)   Type name; \
+                                                       DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, textName, &name}
+
+/// Create function in class and connect in to configs aggregator
 #define FUNCION(NameSpace, ClassName, functionName)    void functionName(void* arguments, uint16_t size); \
                                                        DefaultFunctionAccessor functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
                                                            std::bind(&ClassName::functionName, this, std::placeholders::_1, std::placeholders::_2)}
-
-#define FUNC_NO_INSTANCE(NameSpace, functionName)      DefaultFunctionAccessor functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), nullptr}
 
 using OperationSize = uint8_t;
 using OperationCode = uint16_t;
@@ -105,6 +109,7 @@ public:
 	void readFromFile(const char* filename);
 
 	uint16_t serialize(uint8_t* stream, OperationCode code, uint16_t maxSize);
+	uint16_t serializeWithoutArgumentLookup(uint8_t* stream, OperationCode code, uint16_t maxSize);
 private:
 	std::map<OperationCode, IOperationAccessor*> m_accessorsByOpCode;
 	std::map<std::string, IOperationAccessor*> m_accessorsByOpText;
@@ -120,7 +125,7 @@ public:
 	~StreamGenerator();
 	uint8_t* getStream();
 	uint16_t getSize();
-	bool add(OperationCode code);
+	bool add(OperationCode code, bool needArgumentLookup = true);
 
 private:
 	uint8_t* m_stream = nullptr;

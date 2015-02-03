@@ -55,11 +55,11 @@ public:
 			reset();
 	}
 
-	PARAMETER(ConfigCodes::Player::State, UintParameter, health);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, armor);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, armorCoeff);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, damageCoeff);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, shotsCoeff);
+	PARAMETER_S(ConfigCodes::Player::State, UintParameter, health, "s_health");
+	PARAMETER_S(ConfigCodes::Player::State, UintParameter, armor, "s_armor");
+	PARAMETER_S(ConfigCodes::Player::State, UintParameter, armorCoeff, "armorCoeff");
+	PARAMETER_S(ConfigCodes::Player::State, UintParameter, damageCoeff, "s_damageCoeff");
+	PARAMETER_S(ConfigCodes::Player::State, UintParameter, shotsCoeff, "s_shotsCoeff");
 	PARAMETER(ConfigCodes::Player::State, UintParameter, lifesCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, pointsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);

@@ -82,6 +82,19 @@ uint16_t ConfigsAggregator::serialize(uint8_t* stream, OperationCode code, uint1
 	return sizeof(OperationSize) + sizeof(OperationCode) + size;
 }
 
+uint16_t ConfigsAggregator::serializeWithoutArgumentLookup(uint8_t* stream, OperationCode code, uint16_t maxSize)
+{
+	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
+	if (packageSize > maxSize)
+		return 0;
+
+	OperationSize size = 0;
+	memcpy(stream, &size, sizeof(OperationSize));
+	stream += sizeof(OperationSize);
+	memcpy(stream, &code, sizeof(OperationCode));
+	return packageSize;
+}
+
 StreamGenerator::StreamGenerator(uint16_t size) :
 	m_size(size)
 {
@@ -105,17 +118,22 @@ uint16_t StreamGenerator::getSize()
 	return m_size;
 }
 
-bool StreamGenerator::add(OperationCode code)
+bool StreamGenerator::add(OperationCode code, bool needArgumentLookup)
 {
 	printf("Adding to stream code %u\n", code);
 	uint8_t *pos = m_stream + m_cursor;
 
-	uint16_t addedSize = ConfigsAggregator::instance().serialize(pos, code, m_size - m_cursor);
+	uint16_t addedSize = needArgumentLookup ?
+			ConfigsAggregator::instance().serialize(pos, code, m_size - m_cursor)
+			: ConfigsAggregator::instance().serializeWithoutArgumentLookup(pos, code, m_size - m_cursor);
+
 	if (addedSize != 0)
 	{
-		printf("Added to stream code %u\n", code);
+		printf("Added to stream opcode %u\n", code);
 		m_cursor += addedSize;
 		return true;
-	} else
+	} else {
+		printf("Warning: no more size in stream to add opcode %u!\n", code);
 		return false;
+	}
 }

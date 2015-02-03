@@ -25,11 +25,6 @@ public:
 	PlayerState playerState{&playerConfig};
 	DeviceParameters device;
 
-	FUNC_NO_INSTANCE(ConfigCodes::Rifle::Functions, turnOn);
-	FUNC_NO_INSTANCE(ConfigCodes::Rifle::Functions, turnOff);
-	FUNC_NO_INSTANCE(ConfigCodes::Rifle::Functions, reset);
-	FUNC_NO_INSTANCE(ConfigCodes::Rifle::Functions, respawn);
-
 private:
 	// Test functions
 	void testDie(const char*);
