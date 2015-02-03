@@ -6,7 +6,7 @@
  */
 
 #include "logic/configuration.hpp"
-
+#include "hal/ff/ff.h"
 #include <stdio.h>
 
 ConfigsAggregator* ConfigsAggregator::m_configsAggregator = nullptr;
@@ -94,6 +94,16 @@ uint16_t ConfigsAggregator::serializeWithoutArgumentLookup(uint8_t* stream, Oper
 	memcpy(stream, &code, sizeof(OperationCode));
 	return packageSize;
 }
+
+void ConfigsAggregator::readFromFile(const char* filename)
+{
+	FRESULT res;
+	FIL fil;
+	res = f_open(&fil, filename, FA_OPEN_EXISTING | FA_READ);
+	f_close(&fil);
+}
+
+
 
 StreamGenerator::StreamGenerator(uint16_t size) :
 	m_size(size)
