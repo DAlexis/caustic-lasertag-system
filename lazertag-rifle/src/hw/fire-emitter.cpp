@@ -68,6 +68,10 @@ void LEDFireEmitter::init()
 
 void LEDFireEmitter::startImpulsePack(bool isLedOn, unsigned int delayMs)
 {
+	if (isLedOn)
+		printf("1, %u\n", delayMs);
+	else
+		printf("0, %u\n", delayMs);
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
 

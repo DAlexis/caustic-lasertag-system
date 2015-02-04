@@ -32,7 +32,7 @@ void PackageSender::init()
 		SPIs->getSPI(1)
 	);
 	nrf.printStatus();
-	Scheduler::instance().addTask(std::bind(&PackageSender::interrogate, this), false, 10000, 10000);
+	Scheduler::instance().addTask(std::bind(&PackageSender::interrogate, this), false, 100000, 10000);
 }
 
 uint16_t PackageSender::generatePackageId()

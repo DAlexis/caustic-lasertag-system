@@ -31,6 +31,7 @@ void HeadSensor::configure()
 
 	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, &m_mainSensor), false, 50000, 30000);
 
+	m_mainSensor.enableDebug(true);
 	PackageSender::instance().init();
 
 	printf("Creating console commands for head sensor\n");

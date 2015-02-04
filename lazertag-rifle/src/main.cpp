@@ -26,7 +26,7 @@
 #include <functional>
 #include <vector>
 
-//#define DEVICE_RIFLE
+#define DEVICE_RIFLE
 
 #ifndef DEVICE_RIFLE
 #define DEVICE_HEAD_SENSOR
