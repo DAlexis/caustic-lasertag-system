@@ -6,6 +6,7 @@
  */
 
 #include "logic/configuration.hpp"
+#include "core/string-utils.hpp"
 #include "hal/ff/ff.h"
 #include <stdio.h>
 
@@ -97,9 +98,62 @@ uint16_t ConfigsAggregator::serializeWithoutArgumentLookup(uint8_t* stream, Oper
 
 void ConfigsAggregator::readFromFile(const char* filename)
 {
+	constexpr uint32_t bufferSize = 512;
+
 	FRESULT res;
 	FIL fil;
 	res = f_open(&fil, filename, FA_OPEN_EXISTING | FA_READ);
+
+	UINT readed=0;
+	uint8_t *buffer = new uint8_t[bufferSize];
+
+	bool isCommentNow = false;
+	while (not f_eof(&fil))
+	{
+		res = f_read(&fil, buffer, bufferSize, &readed);
+		if (res != FR_OK)
+			return;
+
+		uint16_t cursor = 0;
+
+		if (isCommentNow)
+		{
+			while (cursor < readed && buffer[cursor] != '\n')
+				cursor++;
+
+			// If no comment's end in this block
+			if (cursor == readed)
+				continue;
+			// If we are here, comment was skipped
+			isCommentNow = false;
+		}
+
+		// Skipping spaces
+		while (cursor < readed && isSpace(buffer[cursor]))
+			cursor++;
+
+		// If all symbols are spaces
+		if (cursor == readed)
+			continue;
+
+		// If comment
+		if (buffer[cursor] == '#')
+		{
+			// Looking for eol
+			while (cursor < readed && buffer[cursor] != '\n')
+				cursor++;
+			// If comments are longer then buffer
+			if (cursor == readed)
+			{
+				isCommentNow = true;
+				continue;
+			}
+		}
+
+		// If we are here, we have probably beginning of token
+	}
+
+	delete[] buffer;
 	f_close(&fil);
 }
 

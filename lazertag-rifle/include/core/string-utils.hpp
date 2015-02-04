@@ -92,6 +92,9 @@ public:
 	double parse(const char* str) { return (double) atof(str); }
 };
 
-
+inline bool isSpace(char symbol)
+{
+	return (symbol == ' ') || (symbol == '\t');
+}
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_CORE_STRING_CONVERSIONS_HPP_ */

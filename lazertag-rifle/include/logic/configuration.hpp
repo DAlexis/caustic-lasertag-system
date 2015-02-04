@@ -10,7 +10,7 @@
 
 #include "core/singleton-macro.hpp"
 #include "core/macro-utils.hpp"
-#include "core/string-conversions.hpp"
+#include "core/string-utils.hpp"
 
 #include <vector>
 #include <map>
