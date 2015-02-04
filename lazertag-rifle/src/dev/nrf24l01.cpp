@@ -257,7 +257,7 @@ void NRF24L01Manager::chipDeselect()
 void NRF24L01Manager::CEImpulse()
 {
     chipEnableOn();
-    systemClock->wait_us(20);
+    systemClock->wait_us(15);
     chipEnableOff();
 }
 

@@ -25,7 +25,7 @@
 #define BIT_ZERO_PERIOD_MAX     750
 
 #define BIT_WAIT_PERIOD_MIN     500
-#define BIT_WAIT_PERIOD_MAX     1000
+#define BIT_WAIT_PERIOD_MAX     900
 
 
 

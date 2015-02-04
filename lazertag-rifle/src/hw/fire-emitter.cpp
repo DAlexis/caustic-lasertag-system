@@ -62,16 +62,25 @@ void LEDFireEmitter::init()
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
 
 	TIM_ClearITPendingBit(TIM7, TIM_IT_Update);
-	NVIC_EnableIRQ(TIM7_IRQn);
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* Configure the NVIC Preemption Priority Bits */
+	//NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+
+	NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+	//NVIC_SetPriority(TIM7_IRQn, 0);
+	//NVIC_EnableIRQ(TIM7_IRQn);
+
 	TIM_ITConfig(TIM7, TIM_DIER_UIE, ENABLE);
 }
 
 void LEDFireEmitter::startImpulsePack(bool isLedOn, unsigned int delayMs)
 {
-	if (isLedOn)
-		printf("1, %u\n", delayMs);
-	else
-		printf("0, %u\n", delayMs);
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
 

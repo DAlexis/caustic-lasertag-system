@@ -133,8 +133,8 @@ void USARTManager::init(uint32_t baudrate)
 	USART_Cmd(usartOptions[m_portNumber].USARTn, ENABLE);
 
 	NVIC_InitStructure.NVIC_IRQChannel = usartOptions[m_portNumber].USARTn_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; // Set priority to lowest
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3; // Set subpriority to lowest
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 15; // Set priority to lowest
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0; // Set subpriority to lowest
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 

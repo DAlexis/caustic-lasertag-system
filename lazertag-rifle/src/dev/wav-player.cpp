@@ -12,6 +12,27 @@
 WavPlayer* WavPlayer::m_wavPlayer = nullptr;
 STATIC_DEINITIALIZER_IN_CPP_FILE(WavPlayer, m_wavPlayer);
 
+WavPlayer::WavPlayer()
+{
+	printf("Creating audio buffers\n");
+	m_buffer1 = new SoundSample[AUDIO_BUFFER_SIZE];
+	m_buffer2 = new SoundSample[AUDIO_BUFFER_SIZE];
+	printf("Testing audio buffers\n");
+	for (int i=0; i<AUDIO_BUFFER_SIZE; i++)
+	{
+		m_buffer1[i] = 0xFFFF;
+		m_buffer2[i] = 0xFFFF;
+	}
+	printf("Done\n");
+}
+
+WavPlayer::~WavPlayer()
+{
+	delete[] m_buffer1;
+	delete[] m_buffer2;
+}
+
+
 void WavPlayer::init()
 {
 	fragmentPlayer->setFragmentDoneCallback(std::bind(&WavPlayer::fragmentDoneCallback, this, std::placeholders::_1));
@@ -131,12 +152,32 @@ bool WavPlayer::readHeader()
 
 bool WavPlayer::loadFragment(SoundSample* m_buffer)
 {
-
 	FRESULT res;
 	UINT readed = 0;
+	UINT readedNow = 0;
 	void* ptr = m_buffer;
 	int16_t *tmpPrt = (int16_t *)ptr;
-	res = f_read(&m_fil, tmpPrt, AUDIO_BUFFER_SIZE*sizeof(int16_t), &readed);
+
+	// For some unknown reason, f_read does not read more about 1k and crashes
+	/// @todo increase blockSize to maximum
+	uint8_t* curs = (uint8_t*) ptr;
+	constexpr uint16_t blockSize = 400;
+	constexpr uint16_t count = AUDIO_BUFFER_SIZE*sizeof(int16_t) / blockSize;
+	constexpr uint16_t tail = AUDIO_BUFFER_SIZE*sizeof(int16_t) % blockSize;
+	for (uint16_t i=0; i<count; i++)
+	{
+		res = f_read(&m_fil, curs, blockSize, &readedNow);
+		curs += readedNow;
+		readed += readedNow;
+	}
+
+	if (tail != 0) {
+		res = f_read(&m_fil, curs, tail, &readedNow);
+		readed += readedNow;
+	}
+
+	//res = f_read(&m_fil, tmpPrt, AUDIO_BUFFER_SIZE*sizeof(int16_t), &readed);
+
 	if (res != FR_OK)
 	{
 		m_lastBufferSize = 0;

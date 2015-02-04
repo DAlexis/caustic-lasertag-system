@@ -23,6 +23,7 @@ _sbrk(int incr)
 {
   extern char _Heap_Begin; // Defined by the linker.
   extern char _Heap_Limit; // Defined by the linker.
+  extern char isMemoryCorrupted;
 
   static char* current_heap_end;
   char* current_block_address;
@@ -51,6 +52,8 @@ _sbrk(int incr)
       abort ();
 #else
       // Heap has overflowed
+      isMemoryCorrupted = 1;
+
       errno = ENOMEM;
       return (caddr_t) - 1;
 #endif

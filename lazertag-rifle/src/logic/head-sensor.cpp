@@ -31,7 +31,7 @@ void HeadSensor::configure()
 
 	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, &m_mainSensor), false, 50000, 30000);
 
-	m_mainSensor.enableDebug(true);
+	//m_mainSensor.enableDebug(true);
 	PackageSender::instance().init();
 
 	printf("Creating console commands for head sensor\n");
@@ -58,7 +58,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		{
 			printf("Turning off weapon...\n");
 			StreamGenerator stream(Package::payloadLength);
-			stream.add(ConfigCodes::Rifle::Functions::turnOff);
+			stream.add(ConfigCodes::Rifle::Functions::turnOff, false);
 			PackageSender::instance().send(*it, stream.getStream(), stream.getSize(), true, nullptr);
 		}
 	}
@@ -78,8 +78,8 @@ void HeadSensor::reset()
 	{
 		printf("Resetting weapon...\n");
 		StreamGenerator stream(Package::payloadLength);
-		stream.add(ConfigCodes::Rifle::Functions::reset);
-		stream.add(ConfigCodes::Rifle::Functions::turnOn);
+		stream.add(ConfigCodes::Rifle::Functions::reset, false);
+		stream.add(ConfigCodes::Rifle::Functions::turnOn, false);
 		PackageSender::instance().send(*it, stream.getStream(), stream.getSize(), true, nullptr);
 	}
 	printf("Player reseted\n");

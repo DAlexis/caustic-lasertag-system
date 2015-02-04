@@ -18,9 +18,11 @@
 #include "dev/console.hpp"
 #include "dev/alive-indicator.hpp"
 #include "dev/buttons.hpp"
+#include "dev/wav-player.hpp"
 #include "hal/system-clock.hpp"
 #include "hal/leds.hpp"
 #include "core/scheduler.hpp"
+#include "core/memory-utils.h"
 
 #include "tests/console-tester.hpp"
 #include <functional>
@@ -73,6 +75,14 @@ void fireCallbackTest(bool state)
 Rifle *rifle = nullptr;
 HeadSensor *headSensor = nullptr;
 
+void checkMemory()
+{
+	if (isMemoryCorrupted) {
+		printf("Memory corrupted!!\n");
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
 	// Send a greeting to the trace device (skipped on Release).
@@ -86,6 +96,8 @@ int main(int argc, char* argv[])
 
 	// At this stage the system clock should have already been configured
 	// at high speed.
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
 	trace_printf("\n\nStarting system...\n", SystemCoreClock);
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
 
@@ -111,7 +123,10 @@ int main(int argc, char* argv[])
 #endif
 
 	Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
+	Scheduler::instance().addTask(checkMemory, false, 500000);
 	Console::instance().prompt();
+	WavPlayer::instance();
+
 	Scheduler::instance().mainLoop();
 
 	// Why? - Why not?
