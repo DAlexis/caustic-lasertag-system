@@ -111,6 +111,7 @@ public:
 
 private:
 	void initState();
+	void loadConfig();
 	void makeShot(bool isFirst);
 	void reload(bool isFirst);
 

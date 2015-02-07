@@ -19,7 +19,6 @@ STATIC_DEINITIALIZER_IN_CPP_FILE(PackageSender, m_packageSender)
 
 void PackageSender::init()
 {
-	printf("Package sender initialization...\n");
 	nrf.setTXDoneCallback(std::bind(&PackageSender::TXDoneCallback, this));
 	nrf.setDataReceiveCallback(std::bind(&PackageSender::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
 	IExternalInterruptManager *exti = EXTIS->getEXTI(8);

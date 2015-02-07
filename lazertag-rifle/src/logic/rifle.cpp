@@ -6,6 +6,7 @@
  */
 
 #include "logic/rifle.hpp"
+#include "core/string-utils.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/console.hpp"
 #include "dev/sdcard-fs.hpp"
@@ -109,6 +110,9 @@ void Rifle::configure()
 	if (!SDCardFS::instance().init())
 		printf("Error during mounting sd-card!\n");
 
+	printf("Loading default config\n");
+	loadConfig();
+
 	printf("Wav player initialization\n");
 	WavPlayer::instance().init();
 
@@ -116,6 +120,16 @@ void Rifle::configure()
 	PackageSender::instance().init();
 
 	printf("Rifle ready to use\n");
+}
+
+void Rifle::loadConfig()
+{
+	IniParcer *parcer = new IniParcer;
+	parcer->setCallback([](const char* key, const char* val) { printf("k = %s, v = %s\n", key, val); });
+	Result res = parcer->parseFile("default-config.ini");
+	if (!res.isSuccess)
+		printf("Error: %s\n", res.errorText);
+	delete parcer;
 }
 
 void Rifle::initState()

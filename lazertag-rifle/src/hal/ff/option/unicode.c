@@ -11,7 +11,7 @@
 #elif _CODE_PAGE == 950
 #include "cc950.c"
 #else
-#include "ccsbcs.c"
+#include "hal/ff/ccsbcs.c"
 #endif
 
 #endif

@@ -129,7 +129,7 @@ void ConsoleTester::SDReadingTest(const char*)
 	buffer[19] = '\0';
 	printf("I read: \"%s\"\n", buffer);
 	f_close(&fil);
-	f_mount(NULL, "", 1);
+	//f_mount(NULL, "", 1);
 }
 
 void ConsoleTester::readSDMBRTest(const char* arg)
