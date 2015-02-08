@@ -51,6 +51,24 @@ uint32_t ConfigsAggregator::dispatchStream(uint8_t* stream, uint32_t size)
 	return unsupported;
 }
 
+Result ConfigsAggregator::parseSring(const char* key, const char* value)
+{
+	//printf("Parsing k = %s, v = %s\n", key, value);
+	auto it = m_accessorsByOpText.find(key);
+	if (it == m_accessorsByOpText.end())
+	{
+		printf("Unknown variable\n");
+		return Result("Unknown variable");
+	}
+	if (!it->second->isWritable())
+	{
+		return Result("Parameter cannot be setted");
+	}
+
+	it->second->parseString(value);
+	return Result();
+}
+
 uint16_t ConfigsAggregator::serialize(uint8_t* stream, OperationCode code, uint16_t maxSize)
 {
 	auto it = m_accessorsByOpCode.find(code);
@@ -96,65 +114,15 @@ uint16_t ConfigsAggregator::serializeWithoutArgumentLookup(uint8_t* stream, Oper
 	return packageSize;
 }
 
-void ConfigsAggregator::readFromFile(const char* filename)
+Result ConfigsAggregator::readIni(const char* filename)
 {
-	constexpr uint32_t bufferSize = 512;
+	IniParcer* parcer = new IniParcer;
+	//parcer->setCallback([this](const char* key, const char* value){ parseSring(key, value); });
+	parcer->setCallback(std::bind(&ConfigsAggregator::parseSring, this, std::placeholders::_1, std::placeholders::_2));
+	Result res = parcer->parseFile(filename);
+	delete parcer;
+	return res;
 
-	FRESULT res;
-	FIL fil;
-	res = f_open(&fil, filename, FA_OPEN_EXISTING | FA_READ);
-
-	UINT readed=0;
-	uint8_t *buffer = new uint8_t[bufferSize];
-
-	bool isCommentNow = false;
-	while (not f_eof(&fil))
-	{
-		res = f_read(&fil, buffer, bufferSize, &readed);
-		if (res != FR_OK)
-			return;
-
-		uint16_t cursor = 0;
-
-		if (isCommentNow)
-		{
-			while (cursor < readed && buffer[cursor] != '\n')
-				cursor++;
-
-			// If no comment's end in this block
-			if (cursor == readed)
-				continue;
-			// If we are here, comment was skipped
-			isCommentNow = false;
-		}
-
-		// Skipping spaces
-		while (cursor < readed && isSpace(buffer[cursor]))
-			cursor++;
-
-		// If all symbols are spaces
-		if (cursor == readed)
-			continue;
-
-		// If comment
-		if (buffer[cursor] == '#')
-		{
-			// Looking for eol
-			while (cursor < readed && buffer[cursor] != '\n')
-				cursor++;
-			// If comments are longer then buffer
-			if (cursor == readed)
-			{
-				isCommentNow = true;
-				continue;
-			}
-		}
-
-		// If we are here, we have probably beginning of token
-	}
-
-	delete[] buffer;
-	f_close(&fil);
 }
 
 

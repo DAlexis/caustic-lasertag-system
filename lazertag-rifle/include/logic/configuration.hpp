@@ -11,6 +11,7 @@
 #include "core/singleton-macro.hpp"
 #include "core/macro-utils.hpp"
 #include "core/string-utils.hpp"
+#include "core/result-code.hpp"
 
 #include <vector>
 #include <map>
@@ -19,7 +20,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 
 /**
  *   Format of any serialized operation:
@@ -106,7 +107,9 @@ public:
 	 */
 	uint32_t dispatchStream(uint8_t* stream, uint32_t size);
 
-	void readFromFile(const char* filename);
+	Result readIni(const char* filename);
+
+	Result parseSring(const char* key, const char* value);
 
 	uint16_t serialize(uint8_t* stream, OperationCode code, uint16_t maxSize);
 	uint16_t serializeWithoutArgumentLookup(uint8_t* stream, OperationCode code, uint16_t maxSize);
@@ -209,9 +212,11 @@ public:
 	void parseString(const char* str)
 	{
 		if (StringParser<Type>().isSupported())
+		{
 			*parameter = StringParser<Type>().parse(str);
-		else {
+		} else {
 			/// @todo printf("Parsing of type not supported\n");
+			printf("Parsing of type not supported\n");
 		}
 	}
 

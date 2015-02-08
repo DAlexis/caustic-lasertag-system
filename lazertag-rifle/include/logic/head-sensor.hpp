@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 
-#include "logic/player.hpp"
+#include "logic/player-config-and-state.hpp"
 #include "logic/device.hpp"
 #include "logic/package-sender.hpp"
 #include "dev/miles-tag-2.hpp"

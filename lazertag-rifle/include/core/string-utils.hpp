@@ -14,6 +14,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+inline char lower(char c)
+{
+	if (c >= 0x41 && c <= 0x5A)
+		return c+(0x61-0x41);
+	else
+		return c;
+}
+
 inline bool isSpace(char c)
 {
     return c == ' ' || c == '\t';
@@ -83,7 +91,7 @@ class StringParser<int32_t>
 public:
 	bool isSupported() { return true; }
 
-	int32_t parse(const char* str) { return (int32_t) atof(str); }
+	int32_t parse(const char* str) { return (int32_t) atoi(str); }
 };
 
 template<>
@@ -138,6 +146,47 @@ public:
 	bool isSupported() { return true; }
 
 	double parse(const char* str) { return (double) atof(str); }
+};
+
+template<>
+class StringParser<bool>
+{
+public:
+	bool isSupported() { return true; }
+
+	bool parse(const char* str)
+	{
+		unsigned int cursor = 0;
+		while (isSpace(str[cursor])) cursor++;
+		const char* begin = &str[cursor];
+
+		while (!isSpace(str[cursor]) && (str[cursor] != '\0')) cursor++;
+		unsigned int len = &str[cursor] - begin;
+
+		if (len == 1)
+		{
+			if (begin[0] == '1')
+				return true;
+		}
+
+		if (len == 2)
+		{
+			if (lower(begin[0]) == 'o'
+				&& lower(begin[1]) == 'n')
+				return true;
+		}
+
+		if (len == 4)
+		{
+			if (lower(begin[0]) == 't'
+				&& lower(begin[1]) == 'r'
+				&& lower(begin[2]) == 'u'
+				&& lower(begin[3]) == 'e')
+				return true;
+		}
+
+		return false;
+	}
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_CORE_STRING_CONVERSIONS_HPP_ */

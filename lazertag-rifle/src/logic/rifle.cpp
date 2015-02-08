@@ -45,9 +45,9 @@ void RifleConfiguration::setDefault()
 	semiAutomaticAllowed = true;
 	automaticAllowed = true;
 
-	magazineType = RMT_UNCHANGABLE;
-	magazinesReloadMode = RRM_ONLY_SHUTTER;
-	autoReload = RAR_ENABLED;
+	magazineType = MagazineType::unchangeable;
+	reloadAction = ReloadAction::shutterOnly;
+	autoReload = ReloadMode::automatic;
 	magazinesCount = 10;
 	bulletsPerMagazine = 30;
 	bulletsInMagazineAtStart = bulletsPerMagazine;
@@ -68,11 +68,11 @@ void RifleState::reset()
 {
 	bulletsLeft = m_config->bulletsInMagazineAtStart;
 	magazinesLeft = m_config->magazinesCount;
+	lastReloadTime = 0;
 }
 
 Rifle::Rifle()
 {
-	initState();
 }
 
 void Rifle::configure()
@@ -107,17 +107,20 @@ void Rifle::configure()
 
 	turnOn(nullptr, 0);
 
+	printf("- Mounting sd-card\n");
 	if (!SDCardFS::instance().init())
 		printf("Error during mounting sd-card!\n");
 
-	printf("Loading default config\n");
-	loadConfig();
 
-	printf("Wav player initialization\n");
+	printf("- Wav player initialization\n");
 	WavPlayer::instance().init();
 
-	printf("Package sender initialization\n");
+	printf("- Package sender initialization\n");
 	PackageSender::instance().init();
+
+	printf("- Loading default config\n");
+	//loadConfig();
+	ConfigsAggregator::instance().readIni("default-config.ini");
 
 	printf("Rifle ready to use\n");
 }
@@ -132,15 +135,9 @@ void Rifle::loadConfig()
 	delete parcer;
 }
 
-void Rifle::initState()
-{
-	state.bulletsLeft = config.bulletsInMagazineAtStart;
-	state.magazinesLeft = config.magazinesCount;
-	state.lastReloadTime = 0;
-}
-
 void Rifle::makeShot(bool isFirst)
 {
+	/// @todo Add support of absolutely non-automatic devices
 	if (isSafeSwitchSelected())
 		return;
 

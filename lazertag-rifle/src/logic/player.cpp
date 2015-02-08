@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include "logic/player.hpp"
+#include "logic/player-config-and-state.hpp"
 
 PlayerConfiguration::PlayerConfiguration()
 {

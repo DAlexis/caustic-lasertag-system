@@ -45,7 +45,7 @@ namespace ConfigCodes
 			PAR_CODE(automaticAllowed,     12)
 
 			PAR_CODE(magazineType,         15)
-			PAR_CODE(magazinesReloadMode,  16)
+			PAR_CODE(reloadAction,         16)
 			PAR_CODE(autoReload,           17)
 
 			PAR_CODE(magazinesCount,           20)
