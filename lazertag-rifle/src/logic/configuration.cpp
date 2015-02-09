@@ -8,6 +8,7 @@
 #include "logic/configuration.hpp"
 #include "core/string-utils.hpp"
 #include "hal/ff/ff.h"
+#include <memory>
 #include <stdio.h>
 
 ConfigsAggregator* ConfigsAggregator::m_configsAggregator = nullptr;
@@ -28,7 +29,7 @@ void ConfigsAggregator::registerAccessor(OperationCode code, const char* textNam
 	m_accessorsByOpText[textName] = accessor;
 }
 
-uint32_t ConfigsAggregator::dispatchStream(uint8_t* stream, uint32_t size)
+uint32_t ConfigsAggregator::dispatchStream(uint8_t* stream, uint32_t size, StreamGenerator* answerStream)
 {
 	uint8_t* position = stream;
 	uint32_t unsupported = 0;
@@ -38,14 +39,30 @@ uint32_t ConfigsAggregator::dispatchStream(uint8_t* stream, uint32_t size)
 		position += sizeof(OperationSize);
 		OperationCode *pOperationCode = reinterpret_cast<OperationCode*> (position);
 		position += sizeof(OperationCode);
-		auto it = m_accessorsByOpCode.find(*pOperationCode);
-		if (it != m_accessorsByOpCode.end())
+
+		if (isParameterRequest(*pOperationCode))
 		{
-			printf("Dispatched opcode %u\n", *pOperationCode);
-			it->second->deserialize(position, *pOperationSize);
+			if (answerStream)
+			{
+				// Adding parameter to answer stream
+				OperationCode parameterCode = SetParameterOC(*pOperationCode);
+				printf("Parameter request: %u\n", parameterCode);
+				auto it = m_accessorsByOpCode.find(*pOperationCode);
+				if (it != m_accessorsByOpCode.end())
+				{
+					answerStream->add(parameterCode);
+				}
+			}
+		} else {
+			auto it = m_accessorsByOpCode.find(*pOperationCode);
+			if (it != m_accessorsByOpCode.end())
+			{
+				printf("Dispatched opcode: %u\n", *pOperationCode);
+				it->second->deserialize(position, *pOperationSize);
+			}
+			else
+				unsupported++;
 		}
-		else
-			unsupported++;
 		position += *pOperationSize;
 	}
 	return unsupported;
@@ -130,7 +147,7 @@ Result ConfigsAggregator::readIni(const char* filename)
 StreamGenerator::StreamGenerator(uint16_t size) :
 	m_size(size)
 {
-	m_stream = new uint8_t[size];
+	m_stream = new uint8_t[m_size];
 	memset(m_stream, 0, size*sizeof(uint8_t));
 }
 
@@ -168,4 +185,9 @@ bool StreamGenerator::add(OperationCode code, bool needArgumentLookup)
 		printf("Warning: no more size in stream to add opcode %u!\n", code);
 		return false;
 	}
+}
+
+bool StreamGenerator::empty()
+{
+	return (m_cursor == 0);
 }

@@ -142,7 +142,12 @@ void PackageSender::interrogate()
 	}
 	while (!m_incoming.empty())
 	{
-		ConfigsAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength);
+		StreamGenerator answerStream(Package::payloadLength);
+		ConfigsAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
+		if (!answerStream.empty())
+		{
+			PackageSender::instance().send(m_incoming.front().sender, answerStream.getStream(), answerStream.getSize(), true, nullptr);
+		}
 		m_incoming.pop_front();
 	}
 }

@@ -38,7 +38,7 @@
  *
  *   00 - command (means action like restart or other)
  *   01 - set parameter
- *   10 - reserved
+ *   10 - request parameter
  *   11 - reserved
  */
 
@@ -73,6 +73,9 @@ inline bool __attribute__((always_inline)) isSetParameterOC(uint16_t operationCo
 inline bool __attribute__((always_inline)) isCommand(uint16_t operationCode)
 		{ return !getBit(operationCode, 15) && !getBit(operationCode, 14); }
 
+inline bool __attribute__((always_inline)) isParameterRequest(uint16_t operationCode)
+		{ return getBit(operationCode, 15) && !getBit(operationCode, 14); }
+
 /// Any kind of object that can read data from stream and write data to stream
 class IOperationAccessor
 {
@@ -92,6 +95,8 @@ public:
 	virtual uint32_t getSize() = 0;
 };
 
+class StreamGenerator;
+
 class ConfigsAggregator
 {
 public:
@@ -105,7 +110,7 @@ public:
 	 * @param size Stream size in bytes
 	 * @return Count of unsupported operation found on stream
 	 */
-	uint32_t dispatchStream(uint8_t* stream, uint32_t size);
+	uint32_t dispatchStream(uint8_t* stream, uint32_t size, StreamGenerator* answerStream = nullptr);
 
 	Result readIni(const char* filename);
 
@@ -129,6 +134,7 @@ public:
 	uint8_t* getStream();
 	uint16_t getSize();
 	bool add(OperationCode code, bool needArgumentLookup = true);
+	bool empty();
 
 private:
 	uint8_t* m_stream = nullptr;
