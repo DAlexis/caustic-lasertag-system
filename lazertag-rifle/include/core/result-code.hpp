@@ -31,10 +31,13 @@ template <typename T>
 struct DetailedResult : public Result
 {
 public:
-	DetailedResult() {}
-	DetailedResult(T& _details, const char* str) :
+	DetailedResult(const T& _details) :
+		Result(),
+		details(_details)
+	{}
+	DetailedResult(const T& _details, const char* str) :
 		Result(str),
-		details(details)
+		details(_details)
 	{}
 
 	T details;

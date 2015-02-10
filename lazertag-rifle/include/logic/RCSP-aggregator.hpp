@@ -105,6 +105,14 @@ class RCSPStream;
 class RCSPAggregator
 {
 public:
+	enum AddingResult
+	{
+		OK = 0,
+		INVALID_OPCODE,
+		NOT_ENOUGH_SPACE,
+		NOT_READABLE
+	};
+
 	static RCSPAggregator& instance();
 
 	void registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor);
@@ -121,8 +129,57 @@ public:
 
 	Result parseSring(const char* key, const char* value);
 
-	uint16_t serialize(uint8_t* stream, OperationCode code, uint16_t maxSize);
-	uint16_t serializeWithoutArgumentLookup(uint8_t* stream, OperationCode code, uint16_t maxSize);
+	/**
+	 * Serialize variable or other object with accessor and put it to stream
+	 * @param stream Array where to put
+	 * @param code Code of variable/accessible object
+	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
+	 * @return result of operation
+	 */
+	DetailedResult<AddingResult> serializeObject(uint8_t* stream, OperationCode code, uint16_t& freeSpace);
+
+	/**
+	 * Put to stream request for variable
+	 * @param stream Array where to put
+	 * @param code Code of variable
+	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
+	 * @return result of operation
+	 */
+	DetailedResult<AddingResult> requestVariable(uint8_t* stream, OperationCode variableCode, uint16_t& freeSpace);
+
+	/**
+	 * Put to stream request for function call without parameters
+	 * @param stream Array where to put
+	 * @param variableCode Code of variable
+	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
+	 * @return result of operation
+	 */
+	DetailedResult<AddingResult> functionCall(uint8_t* stream, OperationCode functionCode, uint16_t& freeSpace);
+
+	/**
+	 * Put to stream request for function call with parameter
+	 * @param stream Array where to put
+	 * @param variableCode Code of variable
+	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
+	 * @param parameter Parameter value
+	 * @return result of operation
+	 */
+	template<typename Type>
+	DetailedResult<AddingResult> functionCall(uint8_t* stream, OperationCode functionCode, uint16_t& freeSpace, const Type& parameter)
+	{
+		uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode)+sizeof(parameter);
+		if (packageSize > freeSpace)
+			return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
+
+		functionCode = SetCommandOC(functionCode);
+		OperationSize size = sizeof(parameter);
+		memcpy(stream, &size, sizeof(OperationSize));
+		stream += sizeof(OperationSize);
+		memcpy(stream, &functionCode, sizeof(OperationCode));
+		stream += sizeof(OperationCode);
+		memcpy(stream, &parameter, sizeof(parameter));
+		return DetailedResult<AddingResult>(OK);
+	}
 
 private:
 	std::map<OperationCode, IOperationAccessor*> m_accessorsByOpCode;

@@ -87,49 +87,76 @@ Result RCSPAggregator::parseSring(const char* key, const char* value)
 	return Result();
 }
 
-uint16_t RCSPAggregator::serialize(uint8_t* stream, OperationCode code, uint16_t maxSize)
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(uint8_t* stream, OperationCode code, uint16_t& freeSpace)
 {
 	auto it = m_accessorsByOpCode.find(code);
 	if (it == m_accessorsByOpCode.end())
-		return 0;
-	/// @todo Add two return variants: maxSize reached and code not found
+	{
+		return DetailedResult<AddingResult>(INVALID_OPCODE, "Opcode not found");
+	}
 	OperationSize size = 0;
 	if (it->second->isReadable())
 	{
 		// We have readable object
 		size = it->second->getSize();
 		uint16_t packageSize = size + sizeof(OperationSize) + sizeof(OperationCode);
-		if (maxSize < packageSize)
-			return 0;
+		if (freeSpace < packageSize)
+		{
+			// Not enough space
+			return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
+		}
 		memcpy(stream, &size, sizeof(OperationSize));
 		stream += sizeof(OperationSize);
 		memcpy(stream, &code, sizeof(OperationCode));
 		stream += sizeof(OperationCode);
 		it->second->serialize(stream);
 	} else {
+		return DetailedResult<AddingResult>(NOT_READABLE, "Object not readable");
+		/*
 		// We have unreadable object
 		size = 0;
 		uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
 		if (maxSize < packageSize)
-			return 0;
+		{
+			addedSize = 0;
+			return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
+		}
 		memcpy(stream, &size, sizeof(OperationSize));
 		stream += sizeof(OperationSize);
-		memcpy(stream, &code, sizeof(OperationCode));
+		memcpy(stream, &code, sizeof(OperationCode));*/
 	}
-	return sizeof(OperationSize) + sizeof(OperationCode) + size;
+	freeSpace -= sizeof(OperationSize) + sizeof(OperationCode) + size;
+	return DetailedResult<AddingResult>(OK);
 }
 
-uint16_t RCSPAggregator::serializeWithoutArgumentLookup(uint8_t* stream, OperationCode code, uint16_t maxSize)
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::requestVariable(uint8_t* stream, OperationCode variableCode, uint16_t& freeSpace)
 {
 	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
-	if (packageSize > maxSize)
-		return 0;
+	if (packageSize > freeSpace)
+		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
 
+	variableCode = SetParameterRequest(variableCode);
 	OperationSize size = 0;
 	memcpy(stream, &size, sizeof(OperationSize));
 	stream += sizeof(OperationSize);
-	memcpy(stream, &code, sizeof(OperationCode));
-	return packageSize;
+	memcpy(stream, &variableCode, sizeof(OperationCode));
+	freeSpace -= packageSize;
+	return DetailedResult<AddingResult>(OK);
+}
+
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::functionCall(uint8_t* stream, OperationCode functionCode, uint16_t& freeSpace)
+{
+	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
+	if (packageSize > freeSpace)
+		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
+
+	functionCode = SetCommandOC(functionCode);
+	OperationSize size = 0;
+	memcpy(stream, &size, sizeof(OperationSize));
+	stream += sizeof(OperationSize);
+	memcpy(stream, &functionCode, sizeof(OperationCode));
+	freeSpace -= packageSize;
+	return DetailedResult<AddingResult>(OK);
 }
 
 Result RCSPAggregator::readIni(const char* filename)
