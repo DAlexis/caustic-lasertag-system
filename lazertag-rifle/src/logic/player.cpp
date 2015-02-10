@@ -42,29 +42,29 @@ void PlayerConfiguration::setDefault()
 bool PlayerState::damage(uint8_t damage)
 {
 	UintParameter totalDamage = damage;
-	if (totalDamage > health)
+	if (totalDamage > s_health)
 	{
-		health = 0;
+		s_health = 0;
 		return true;
 	} else {
-		health -= totalDamage;
+		s_health -= totalDamage;
 		return false;
 	}
 }
 
 bool PlayerState::isAlive()
 {
-	return health != 0;
+	return s_health != 0;
 }
 
 void PlayerState::reset()
 {
-	health = m_configuration->health;
-	armor = m_configuration->armor;
-	armorCoeff = m_configuration->armorCoeff;
-	damageCoeff = m_configuration->damageCoeff;
-	shotsCoeff = m_configuration->shotsCoeff;
-	lifesCount = m_configuration->lifesCount;
+	s_health = m_configuration->health;
+	s_armor = m_configuration->armor;
+	s_armorCoeff = m_configuration->armorCoeff;
+	s_damageCoeff = m_configuration->damageCoeff;
+	s_shotsCoeff = m_configuration->shotsCoeff;
+	s_lifesCount = m_configuration->lifesCount;
 
 	pointsCount = 0;
 	killsCount = 0;
@@ -72,11 +72,11 @@ void PlayerState::reset()
 
 void PlayerState::respawn()
 {
-	health = m_configuration->health;
-	armor = m_configuration->armor;
-	armorCoeff = m_configuration->armorCoeff;
-	damageCoeff = m_configuration->damageCoeff;
-	shotsCoeff = m_configuration->shotsCoeff;
-	lifesCount--;
+	s_health = m_configuration->health;
+	s_armor = m_configuration->armor;
+	s_armorCoeff = m_configuration->armorCoeff;
+	s_damageCoeff = m_configuration->damageCoeff;
+	s_shotsCoeff = m_configuration->shotsCoeff;
+	s_lifesCount--;
 	deathsCount++;
 }

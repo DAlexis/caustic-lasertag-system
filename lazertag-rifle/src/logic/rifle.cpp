@@ -6,6 +6,7 @@
  */
 
 #include "logic/rifle.hpp"
+#include "logic/RCSP-stream.hpp"
 #include "core/string-utils.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/console.hpp"
@@ -17,10 +18,28 @@
 
 #include <stdio.h>
 
-template<typename T>
-inline void __attribute__((always_inline)) interpretVariable(T& where, void* from)
+PlayerDisplayableData::PlayerDisplayableData()
 {
-	where = *reinterpret_cast<T*>(from);
+	health = 0;
+	armor = 0;
+
+	s_health = 0;
+	s_armor = 0;
+
+	s_lifesCount = 0;
+	pointsCount = 0;
+	killsCount = 0;
+	deathsCount = 0;
+}
+
+void PlayerDisplayableData::syncAll()
+{
+	printf("Requesting player parameters\n");
+	RCSPStream stream(Package::payloadLength);
+	stream.add(SetParameterRequest(ConfigCodes::Player::Configuration::health), false);
+	/// @todo Add settable address of head sensor
+	DeviceAddress target = {1,1,1};
+	RCSPModem::instance().send(target, stream.getStream(), stream.getSize(), true, nullptr);
 }
 
 RifleConfiguration::RifleConfiguration()
@@ -116,11 +135,22 @@ void Rifle::configure()
 	WavPlayer::instance().init();
 
 	printf("- Package sender initialization\n");
-	PackageSender::instance().init();
+	RCSPModem::instance().init();
 
 	printf("- Loading default config\n");
 	//loadConfig();
-	ConfigsAggregator::instance().readIni("default-config.ini");
+	RCSPAggregator::instance().readIni("default-config.ini");
+
+	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::syncAll, &playerDisplayable), false, 10000000, 0, 3000000);
+	Scheduler::instance().addTask([this] () -> void
+		{
+			printf("health = %u\n", playerDisplayable.health);
+		},
+		false,
+		1000000,
+		0,
+		1000000
+	);
 
 	printf("Rifle ready to use\n");
 }

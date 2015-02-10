@@ -10,13 +10,30 @@
 
 #include "logic/rifle-config-and-state.hpp"
 #include "logic/device.hpp"
-#include "logic/package-sender.hpp"
+#include "logic/RCSP-modem.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "core/scheduler.hpp"
 
 #include <stdint.h>
 
+class PlayerDisplayableData
+{
+public:
+	PlayerDisplayableData();
+	void syncAll();
+
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, health);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armor);
+
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_health);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_armor);
+
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_lifesCount);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, pointsCount);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, deathsCount);
+};
 
 class Rifle
 {
@@ -32,6 +49,8 @@ public:
 	RifleConfiguration config;
 	RifleState state{&config};
 	DeviceParameters device;
+
+	PlayerDisplayableData playerDisplayable;
 
 private:
 	void loadConfig();

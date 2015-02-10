@@ -9,7 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
 
 #include "logic/operation-codes.hpp"
-#include "logic/package-sender.hpp"
+#include "logic/RCSP-modem.hpp"
 #include <stdint.h>
 #include <string.h>
 

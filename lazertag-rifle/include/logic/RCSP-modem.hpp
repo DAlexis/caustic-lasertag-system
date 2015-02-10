@@ -8,6 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 
+#include "logic/RCSP-aggregator.hpp"
 #include "logic/operation-codes.hpp"
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
@@ -87,14 +88,14 @@ struct Package
 
 
 
-class PackageSender
+class RCSPModem
 {
 public:
 	constexpr static uint32_t timeout = 20000000;
 	constexpr static uint32_t resendTime = 500000;
 	constexpr static uint32_t resendTimeDelta = 100000;
 
-	static PackageSender& instance();
+	static RCSPModem& instance();
 	/**
 	 * Send package and optionaly wait for acknowledgement
 	 * @param target Target device address
@@ -146,14 +147,9 @@ private:
 
 	std::list<Package> m_incoming;
 
-	static PackageSender* m_packageSender;
+	static RCSPModem* m_RCSPModem;
 	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 };
-
-
-
-
-
 
 
 

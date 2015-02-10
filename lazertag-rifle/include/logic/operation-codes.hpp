@@ -8,7 +8,7 @@
 #ifndef LOGIC_CONFIGS_H_
 #define LOGIC_CONFIGS_H_
 
-#include "logic/configuration.hpp"
+#include "logic/RCSP-aggregator.hpp"
 #include "core/macro-utils.hpp"
 
 #define PAR_CODE(variable, value)   constexpr uint16_t variable = SetParameterOC(value); \
@@ -117,13 +117,13 @@ namespace ConfigCodes
 
 		namespace State
 		{
-			PAR_CODE(health,      1100)
-			PAR_CODE(armor,       1101)
-			PAR_CODE(armorCoeff,  1102)
-			PAR_CODE(damageCoeff, 1103)
-			PAR_CODE(shotsCoeff,  1104)
+			PAR_CODE(s_health,      1100)
+			PAR_CODE(s_armor,       1101)
+			PAR_CODE(s_armorCoeff,  1102)
+			PAR_CODE(s_damageCoeff, 1103)
+			PAR_CODE(s_shotsCoeff,  1104)
 
-			PAR_CODE(lifesCount,  1005)
+			PAR_CODE(s_lifesCount,  1005)
 
 			PAR_CODE(pointsCount, 1110)
 			PAR_CODE(killsCount,  1111)

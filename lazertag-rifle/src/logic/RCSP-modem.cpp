@@ -5,7 +5,8 @@
  *      Author: alexey
  */
 
-#include "logic/package-sender.hpp"
+#include "logic/RCSP-modem.hpp"
+#include "logic/RCSP-stream.hpp"
 
 #include "core/scheduler.hpp"
 
@@ -14,13 +15,13 @@
 #include <stdio.h>
 #include <string.h>
 
-PackageSender* PackageSender::m_packageSender = nullptr;
-STATIC_DEINITIALIZER_IN_CPP_FILE(PackageSender, m_packageSender)
+RCSPModem* RCSPModem::m_RCSPModem = nullptr;
+STATIC_DEINITIALIZER_IN_CPP_FILE(RCSPModem, m_RCSPModem)
 
-void PackageSender::init()
+void RCSPModem::init()
 {
-	nrf.setTXDoneCallback(std::bind(&PackageSender::TXDoneCallback, this));
-	nrf.setDataReceiveCallback(std::bind(&PackageSender::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
+	nrf.setTXDoneCallback(std::bind(&RCSPModem::TXDoneCallback, this));
+	nrf.setDataReceiveCallback(std::bind(&RCSPModem::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
 	IExternalInterruptManager *exti = EXTIS->getEXTI(8);
 	exti->init(1);
 	nrf.init(
@@ -31,10 +32,10 @@ void PackageSender::init()
 		SPIs->getSPI(1)
 	);
 	nrf.printStatus();
-	Scheduler::instance().addTask(std::bind(&PackageSender::interrogate, this), false, 10000, 10000);
+	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 10000, 10000);
 }
 
-uint16_t PackageSender::generatePackageId()
+uint16_t RCSPModem::generatePackageId()
 {
 	uint16_t id = (systemClock->getTime()) & 0x3FFF;
 	if (id == 0)
@@ -43,7 +44,7 @@ uint16_t PackageSender::generatePackageId()
 }
 
 
-uint16_t PackageSender::send(DeviceAddress target, uint8_t* data, uint16_t size, bool waitForAck, PackageSendingDoneCallback doneCallback)
+uint16_t RCSPModem::send(DeviceAddress target, uint8_t* data, uint16_t size, bool waitForAck, PackageSendingDoneCallback doneCallback)
 {
 	if (size > Package::payloadLength)
 	{
@@ -80,12 +81,12 @@ uint16_t PackageSender::send(DeviceAddress target, uint8_t* data, uint16_t size,
 	}
 }
 
-void PackageSender::TXDoneCallback()
+void RCSPModem::TXDoneCallback()
 {
 	isSendingNow = false;
 }
 
-void PackageSender::RXCallback(uint8_t channel, uint8_t* data)
+void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 {
 	Package received;
 	memcpy(&received, data, sizeof(Package));
@@ -133,7 +134,7 @@ void PackageSender::RXCallback(uint8_t channel, uint8_t* data)
 	m_incoming.push_back(received);
 }
 
-void PackageSender::interrogate()
+void RCSPModem::interrogate()
 {
 	nrf.interrogate();
 	if (!isSendingNow)
@@ -142,17 +143,18 @@ void PackageSender::interrogate()
 	}
 	while (!m_incoming.empty())
 	{
-		StreamGenerator answerStream(Package::payloadLength);
-		ConfigsAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
+		/// @todo [Refactoring] Remove stream from there
+		RCSPStream answerStream(Package::payloadLength);
+		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
 		if (!answerStream.empty())
 		{
-			PackageSender::instance().send(m_incoming.front().sender, answerStream.getStream(), answerStream.getSize(), true, nullptr);
+			RCSPModem::instance().send(m_incoming.front().sender, answerStream.getStream(), answerStream.getSize(), true, nullptr);
 		}
 		m_incoming.pop_front();
 	}
 }
 
-void PackageSender::sendNext()
+void RCSPModem::sendNext()
 {
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
@@ -195,9 +197,9 @@ void PackageSender::sendNext()
 	}
 }
 
-PackageSender& PackageSender::instance()
+RCSPModem& RCSPModem::instance()
 {
-	if (!m_packageSender)
-		m_packageSender = new PackageSender;
-	return *m_packageSender;
+	if (!m_RCSPModem)
+		m_RCSPModem = new RCSPModem;
+	return *m_RCSPModem;
 }

@@ -63,6 +63,8 @@ constexpr OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14
 constexpr OperationCode SetCommandOC(OperationCode operationCode) { return operationCode & OperationCodeMask; }
 constexpr OperationCode SetParameterOC(OperationCode operationCode)
 		{ return (operationCode & OperationCodeMask) | (1 << 14); }
+constexpr OperationCode SetParameterRequest(OperationCode operationCode)
+		{ return (operationCode & OperationCodeMask) | (1 << 15); }
 
 inline bool __attribute__((always_inline)) getBit(OperationCode code, uint8_t bit)
 		{ return (code & (1 << bit)) ? true : false; }
@@ -95,12 +97,15 @@ public:
 	virtual uint32_t getSize() = 0;
 };
 
-class StreamGenerator;
+class RCSPStream;
 
-class ConfigsAggregator
+/**
+ * Remote Control and Synchronization Protocol Aggregator
+ */
+class RCSPAggregator
 {
 public:
-	static ConfigsAggregator& instance();
+	static RCSPAggregator& instance();
 
 	void registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor);
 
@@ -110,7 +115,7 @@ public:
 	 * @param size Stream size in bytes
 	 * @return Count of unsupported operation found on stream
 	 */
-	uint32_t dispatchStream(uint8_t* stream, uint32_t size, StreamGenerator* answerStream = nullptr);
+	uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPStream* answerStream = nullptr);
 
 	Result readIni(const char* filename);
 
@@ -118,28 +123,13 @@ public:
 
 	uint16_t serialize(uint8_t* stream, OperationCode code, uint16_t maxSize);
 	uint16_t serializeWithoutArgumentLookup(uint8_t* stream, OperationCode code, uint16_t maxSize);
+
 private:
 	std::map<OperationCode, IOperationAccessor*> m_accessorsByOpCode;
 	std::map<std::string, IOperationAccessor*> m_accessorsByOpText;
-	static ConfigsAggregator* m_configsAggregator;
+	static RCSPAggregator* m_RCSPAggregator;
 	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
 
-};
-
-class StreamGenerator
-{
-public:
-	StreamGenerator(uint16_t size);
-	~StreamGenerator();
-	uint8_t* getStream();
-	uint16_t getSize();
-	bool add(OperationCode code, bool needArgumentLookup = true);
-	bool empty();
-
-private:
-	uint8_t* m_stream = nullptr;
-	uint16_t m_cursor = 0;
-	uint16_t m_size = 0;
 };
 
 using FunctionAccessorCallback = std::function<void(void* /*arguments*/, uint16_t /*size*/)>;
@@ -151,7 +141,7 @@ public:
 	DefaultFunctionAccessor(OperationCode code, const char* textName, FunctionAccessorCallback _callback) :
 		callback(_callback)
 	{
-		ConfigsAggregator::instance().registerAccessor(code, textName, this);
+		RCSPAggregator::instance().registerAccessor(code, textName, this);
 	}
 
 	void deserialize(void* source, OperationSize size)
@@ -192,7 +182,7 @@ public:
 	DefaultParameterAccessor(OperationCode code, const char* textName, Type* _parameter) :
 		parameter(_parameter)
 	{
-		ConfigsAggregator::instance().registerAccessor(code, textName, this);
+		RCSPAggregator::instance().registerAccessor(code, textName, this);
 	}
 
 	void deserialize(void* source, OperationSize)

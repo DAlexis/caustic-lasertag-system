@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 
-#include "logic/configuration.hpp"
+#include "logic/RCSP-aggregator.hpp"
 #include "logic/operation-codes.hpp"
 #include <stdint.h>
 
@@ -55,12 +55,12 @@ public:
 			reset();
 	}
 
-	PARAMETER_S(ConfigCodes::Player::State, UintParameter, health, "s_health");
-	PARAMETER_S(ConfigCodes::Player::State, UintParameter, armor, "s_armor");
-	PARAMETER_S(ConfigCodes::Player::State, UintParameter, armorCoeff, "armorCoeff");
-	PARAMETER_S(ConfigCodes::Player::State, UintParameter, damageCoeff, "s_damageCoeff");
-	PARAMETER_S(ConfigCodes::Player::State, UintParameter, shotsCoeff, "s_shotsCoeff");
-	PARAMETER(ConfigCodes::Player::State, UintParameter, lifesCount);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_health);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_armor);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_armorCoeff);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_damageCoeff);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_shotsCoeff);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, s_lifesCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, pointsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, deathsCount);
@@ -73,9 +73,6 @@ public:
 private:
 	const PlayerConfiguration* m_configuration = nullptr;
 };
-
-
-
 
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_ */

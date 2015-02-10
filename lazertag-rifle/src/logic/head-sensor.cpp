@@ -6,6 +6,7 @@
  */
 
 #include "logic/head-sensor.hpp"
+#include "logic/RCSP-stream.hpp"
 #include "dev/console.hpp"
 #include "core/scheduler.hpp"
 #include "hal/ext-interrupts.hpp"
@@ -32,7 +33,7 @@ void HeadSensor::configure()
 	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, &m_mainSensor), false, 50000, 30000);
 
 	//m_mainSensor.enableDebug(true);
-	PackageSender::instance().init();
+	RCSPModem::instance().init();
 
 	printf("Creating console commands for head sensor\n");
 	Console::instance().registerCommand(
@@ -49,7 +50,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	printf("Cought a shot: team %d, player %d, damage: %d\n", teamId, playerId, damage);
 	if (playerState.isAlive()) {
 		playerState.damage(damage);
-		printf("health: %u, armor: %u\n", playerState.health, playerState.armor);
+		printf("health: %u, armor: %u\n", playerState.s_health, playerState.s_armor);
 	}
 	if (!playerState.isAlive()) {
 		printf("Player died.\n");
@@ -57,9 +58,9 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 		{
 			printf("Turning off weapon...\n");
-			StreamGenerator stream(Package::payloadLength);
+			RCSPStream stream(Package::payloadLength);
 			stream.add(ConfigCodes::Rifle::Functions::turnOff, false);
-			PackageSender::instance().send(*it, stream.getStream(), stream.getSize(), true, nullptr);
+			RCSPModem::instance().send(*it, stream.getStream(), stream.getSize(), true, nullptr);
 		}
 	}
 }
@@ -77,10 +78,10 @@ void HeadSensor::reset()
 	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 	{
 		printf("Resetting weapon...\n");
-		StreamGenerator stream(Package::payloadLength);
+		RCSPStream stream(Package::payloadLength);
 		stream.add(ConfigCodes::Rifle::Functions::reset, false);
 		stream.add(ConfigCodes::Rifle::Functions::turnOn, false);
-		PackageSender::instance().send(*it, stream.getStream(), stream.getSize(), true, nullptr);
+		RCSPModem::instance().send(*it, stream.getStream(), stream.getSize(), true, nullptr);
 	}
 	printf("Player reseted\n");
 }
@@ -89,6 +90,6 @@ void HeadSensor::reset()
 // Test functions
 void HeadSensor::testDie(const char*)
 {
-	playerState.health = 0;
+	playerState.s_health = 0;
 	shotCallback(0, 0, 0);
 }
