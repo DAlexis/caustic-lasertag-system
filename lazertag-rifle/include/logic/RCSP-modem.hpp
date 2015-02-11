@@ -115,6 +115,9 @@ private:
 	{
 		Time wasCreated = 0;
 		Time nextTransmission = 0;
+		uint32_t timeout = 0;
+		uint32_t resendTime = 0;
+		uint32_t resendTimeDelta = 0;
 		PackageSendingDoneCallback callback;
 
 		Package package;

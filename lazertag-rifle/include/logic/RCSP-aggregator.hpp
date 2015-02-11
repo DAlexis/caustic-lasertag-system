@@ -113,6 +113,8 @@ public:
 		NOT_READABLE
 	};
 
+	using ResultType = DetailedResult<AddingResult>;
+
 	static RCSPAggregator& instance();
 
 	void registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor);
@@ -136,7 +138,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	DetailedResult<AddingResult> serializeObject(uint8_t* stream, OperationCode code, uint16_t& freeSpace);
+	ResultType serializeObject(uint8_t* stream, OperationCode code, uint16_t freeSpace, uint16_t& actualSize);
 
 	/**
 	 * Put to stream request for variable
@@ -145,7 +147,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	DetailedResult<AddingResult> requestVariable(uint8_t* stream, OperationCode variableCode, uint16_t& freeSpace);
+	ResultType requestVariable(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
 
 	/**
 	 * Put to stream request for function call without parameters
@@ -154,7 +156,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	DetailedResult<AddingResult> functionCall(uint8_t* stream, OperationCode functionCode, uint16_t& freeSpace);
+	ResultType functionCall(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize);
 
 	/**
 	 * Put to stream request for function call with parameter
@@ -165,8 +167,10 @@ public:
 	 * @return result of operation
 	 */
 	template<typename Type>
-	DetailedResult<AddingResult> functionCall(uint8_t* stream, OperationCode functionCode, uint16_t& freeSpace, const Type& parameter)
+	ResultType functionCall(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize, const Type& parameter)
 	{
+		/// @todo [refactor] Remove code duplication with functionCallwithout parameters
+		actualSize = 0;
 		uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode)+sizeof(parameter);
 		if (packageSize > freeSpace)
 			return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
@@ -178,6 +182,7 @@ public:
 		memcpy(stream, &functionCode, sizeof(OperationCode));
 		stream += sizeof(OperationCode);
 		memcpy(stream, &parameter, sizeof(parameter));
+		actualSize = packageSize;
 		return DetailedResult<AddingResult>(OK);
 	}
 

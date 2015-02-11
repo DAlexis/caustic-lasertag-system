@@ -36,7 +36,7 @@ void PlayerDisplayableData::syncAll()
 {
 	printf("Requesting player parameters\n");
 	RCSPStream stream(Package::payloadLength);
-	stream.add(SetParameterRequest(ConfigCodes::Player::Configuration::health), false);
+	stream.addRequest(ConfigCodes::Player::Configuration::health);
 	/// @todo Add settable address of head sensor
 	DeviceAddress target = {1,1,1};
 	RCSPModem::instance().send(target, stream.getStream(), stream.getSize(), true, nullptr);
