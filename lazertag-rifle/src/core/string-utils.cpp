@@ -18,7 +18,7 @@ void printBar(int barLength, int filled)
 	printf(">");
 	for (int i=0; i < barLength-1-filled; i++)
 		printf(" ");
-	printf("]\n");
+	printf("]");
 }
 
 void IniParcer::setCallback(AcceptKeyValueCallback callback)

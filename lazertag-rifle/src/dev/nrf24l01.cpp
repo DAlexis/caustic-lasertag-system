@@ -573,7 +573,8 @@ bool NRF24L01Manager::isRXEmpty()
 // Send and receive
 void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 {
-	printHex(data, size);
+	if (m_debug)
+		printHex(data, size);
     switchToTX();
     chipSelect();
     m_status = m_spi->sendByte(W_TX_PAYLOAD);
@@ -727,4 +728,9 @@ void NRF24L01Manager::extiHandler(bool state)
 			m_TXDoneCallback();
 	}
 	m_needInterrogation = true;
+}
+
+void NRF24L01Manager::enableDebug(bool debug)
+{
+	m_debug = debug;
 }

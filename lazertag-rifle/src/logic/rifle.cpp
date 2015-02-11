@@ -34,15 +34,6 @@ PlayerDisplayableData::PlayerDisplayableData()
 
 void PlayerDisplayableData::syncAll()
 {
-/*
-	printf("Requesting player parameters\n");
-	RCSPStream stream(Package::payloadLength);
-	stream.addRequest(ConfigCodes::Player::Configuration::health);
-	stream.addRequest(ConfigCodes::Player::State::s_health);
-	/// @todo Add settable address of head sensor
-	DeviceAddress target = {1,1,1};
-	*/
-
 	RCSPMultiStream stream;
 	stream.addRequest(ConfigCodes::Player::Configuration::health);
 	stream.addRequest(ConfigCodes::Player::Configuration::armor);
@@ -54,15 +45,29 @@ void PlayerDisplayableData::syncAll()
 	stream.addRequest(ConfigCodes::Player::State::deathsCount);
 
 	DeviceAddress target = {1,1,1};
-	stream.send(target, true);
+	stream.send(target, false);
 }
 
 void PlayerDisplayableData::print()
 {
-	printf("Current player's state:\n");
+	printf("\nCurrent player's state:\n");
 	constexpr uint8_t barLength = 10;
 	if (health != 0)
+	{
+		printf("Health:  ");
 		printBar(barLength, barLength * s_health / health);
+		printf(" %u/%u\n", s_health, health);
+	}
+	if (armor != 0)
+	{
+		printf("Armor:   ");
+		printBar(barLength, barLength * s_armor / armor);
+		printf(" %u/%u\n", s_armor, armor);
+	}
+	printf("Lifes:  %u\n", s_lifesCount);
+	printf("Points: %u\n", pointsCount);
+	printf("Kills:  %u\n", killsCount);
+	printf("Deaths: %u\n", deathsCount);
 }
 
 RifleConfiguration::RifleConfiguration()
@@ -164,13 +169,8 @@ void Rifle::configure()
 	//loadConfig();
 	RCSPAggregator::instance().readIni("default-config.ini");
 
-	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::syncAll, &playerDisplayable), false, 3000000, 0, 3000000);
-	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::print, &playerDisplayable),
-		false,
-		1000000,
-		0,
-		1000000
-	);
+	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::syncAll, &playerDisplayable), false, 3000000, 0, 1000);
+	Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 1000000, 0, 1000000);
 
 	printf("Rifle ready to use\n");
 }
@@ -261,6 +261,19 @@ bool Rifle::isReloading()
 	return (systemClock->getTime() - state.lastReloadTime < config.reloadingTime);
 }
 
+
+void Rifle::updatePlayerState()
+{
+	playerDisplayable.syncAll();
+	if (isEnabled && playerDisplayable.s_health == 0)
+		turnOff(nullptr, 0);
+
+	if (!isEnabled && playerDisplayable.s_health != 0)
+		turnOn(nullptr, 0);
+
+	playerDisplayable.print();
+}
+
 void Rifle::turnOff(void*, uint16_t)
 {
 	isEnabled = false;
@@ -280,3 +293,4 @@ void Rifle::reset(void*, uint16_t)
 	state.reset();
 	//turnOn(nullptr, 0);
 }
+

@@ -46,7 +46,7 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 			{
 				// Adding parameter to answer stream
 				OperationCode parameterCode = SetParameterOC(*pOperationCode);
-				printf("Parameter request: %u\n", parameterCode);
+				//printf("Parameter request: %u\n", parameterCode);
 				auto it = m_accessorsByOpCode.find(parameterCode);
 				if (it != m_accessorsByOpCode.end())
 				{
@@ -57,8 +57,11 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 			auto it = m_accessorsByOpCode.find(*pOperationCode);
 			if (it != m_accessorsByOpCode.end())
 			{
-				printf("Dispatched opcode: %u\n", *pOperationCode);
-				it->second->deserialize(position, *pOperationSize);
+				//printf("Dispatched opcode: %u\n", *pOperationCode);
+				if (*pOperationSize == 0)
+					it->second->deserialize(nullptr, 0);
+				else
+					it->second->deserialize(position, *pOperationSize);
 			}
 			else
 				unsupported++;

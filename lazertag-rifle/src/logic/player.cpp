@@ -42,9 +42,13 @@ void PlayerConfiguration::setDefault()
 bool PlayerState::damage(uint8_t damage)
 {
 	UintParameter totalDamage = damage;
+	if (s_health == 0)
+		return true;
+
 	if (totalDamage > s_health)
 	{
 		s_health = 0;
+		deathsCount++;
 		return true;
 	} else {
 		s_health -= totalDamage;
@@ -68,6 +72,7 @@ void PlayerState::reset()
 
 	pointsCount = 0;
 	killsCount = 0;
+	deathsCount = 0;
 }
 
 void PlayerState::respawn()
@@ -78,5 +83,4 @@ void PlayerState::respawn()
 	s_damageCoeff = m_configuration->damageCoeff;
 	s_shotsCoeff = m_configuration->shotsCoeff;
 	s_lifesCount--;
-	deathsCount++;
 }

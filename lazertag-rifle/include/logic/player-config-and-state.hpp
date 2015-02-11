@@ -65,6 +65,11 @@ public:
 	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, deathsCount);
 
+	/**
+	 * Cough some damage and calculate s_armor and s_health after it
+	 * @param damage Value of damage
+	 * @return true if dead after damage
+	 */
 	bool damage(uint8_t damage);
 	bool isAlive();
 	void respawn();

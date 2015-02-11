@@ -53,6 +53,8 @@ public:
     void flushTX();
     void flushRX();
 
+    void enableDebug(bool debug = true);
+
 private:
     enum Power
 	{
@@ -215,6 +217,8 @@ private:
 	DataReceiveCallback m_RXcallback = nullptr;
 	TXMaxRetriesCallback m_TXMaxRTcallback = nullptr;
 	TXDoneCallback m_TXDoneCallback = nullptr;
+
+	bool m_debug = false;
 };
 
 

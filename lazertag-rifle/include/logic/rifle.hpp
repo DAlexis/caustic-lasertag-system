@@ -61,6 +61,8 @@ private:
 	bool isReloading();
 	bool isSafeSwitchSelected();
 
+	void updatePlayerState();
+
 	bool isEnabled = true;
 
 	ButtonManager* m_fireButton = nullptr;

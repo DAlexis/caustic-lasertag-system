@@ -51,6 +51,13 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	if (playerState.isAlive()) {
 		playerState.damage(damage);
 		printf("health: %u, armor: %u\n", playerState.s_health, playerState.s_armor);
+		for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+		{
+			RCSPStream stream;
+			stream.addValue(ConfigCodes::Player::State::s_health);
+			stream.addValue(ConfigCodes::Player::State::s_armor);
+			stream.send(*it, true, nullptr);
+		}
 	}
 	if (!playerState.isAlive()) {
 		printf("Player died.\n");
@@ -58,7 +65,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 		{
 			printf("Turning off weapon...\n");
-			RCSPStream stream(Package::payloadLength);
+			RCSPStream stream;
 			stream.addCall(ConfigCodes::Rifle::Functions::turnOff);
 			stream.send(*it, true, nullptr);
 		}

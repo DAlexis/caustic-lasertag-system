@@ -143,11 +143,14 @@ private:
 #pragma pack(pop)
 
 
+	constexpr static uint32_t lastReceivedIdsBufferSize = 30;
+
 	void interrogate();
 	uint16_t generatePackageId();
 	void TXDoneCallback();
 	void RXCallback(uint8_t channel, uint8_t* data);
 	void sendNext();
+	bool checkIfIdStoredAndStore(uint16_t id);
 
 
 	uint16_t currentlySendingPackageId = 0;
@@ -158,6 +161,8 @@ private:
 	std::map<uint16_t, WaitingPackage> m_packages;
 
 	std::list<Package> m_incoming;
+
+	std::list<uint16_t> m_lastReceivedIds;
 
 	static RCSPModem* m_RCSPModem;
 	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;

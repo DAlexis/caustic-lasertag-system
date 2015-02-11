@@ -37,7 +37,7 @@ uint16_t RCSPStream::getSize()
 
 RCSPAggregator::ResultType RCSPStream::addValue(OperationCode code)
 {
-	printf("Adding value, code %u", code);
+	//printf("Adding value, code %u\n", code);
 	return serializeAnything(
 		code,
 		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
@@ -49,7 +49,7 @@ RCSPAggregator::ResultType RCSPStream::addValue(OperationCode code)
 
 RCSPAggregator::ResultType RCSPStream::addRequest(OperationCode code)
 {
-	printf("Adding value, code %u", code);
+	//printf("Adding value, code %u\n", code);
 	return serializeAnything(
 		code,
 		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
@@ -61,7 +61,7 @@ RCSPAggregator::ResultType RCSPStream::addRequest(OperationCode code)
 
 RCSPAggregator::ResultType RCSPStream::addCall(OperationCode code)
 {
-	printf("Adding value, code %u", code);
+	//printf("Adding value, code %u\n", code);
 	return serializeAnything(
 		code,
 		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
@@ -76,11 +76,11 @@ RCSPAggregator::ResultType RCSPStream::serializeAnything(OperationCode code, Ser
 	uint8_t *pos = m_stream + m_cursor;
 	uint16_t addedSize = 0;
 	RCSPAggregator::ResultType result = serializer(pos, code, addedSize);
-	if (!result.isSuccess)
+	if (result.isSuccess)
 	{
-		printf("Cannot add %u: %s\n", code, result.errorText);
-	} else {
 		m_cursor += addedSize;
+	} else {
+		//printf("Cannot add %u: %s\n", code, result.errorText);
 	}
 	return result;
 }
@@ -126,7 +126,6 @@ RCSPMultiStream::RCSPMultiStream()
 
 void RCSPMultiStream::pushBackStream()
 {
-	printf("Creating new stream\n");
 	m_streams.push_back(std::shared_ptr<RCSPStream> (new RCSPStream));
 }
 
