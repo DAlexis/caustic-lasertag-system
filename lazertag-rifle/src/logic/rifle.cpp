@@ -34,12 +34,35 @@ PlayerDisplayableData::PlayerDisplayableData()
 
 void PlayerDisplayableData::syncAll()
 {
+/*
 	printf("Requesting player parameters\n");
 	RCSPStream stream(Package::payloadLength);
 	stream.addRequest(ConfigCodes::Player::Configuration::health);
+	stream.addRequest(ConfigCodes::Player::State::s_health);
 	/// @todo Add settable address of head sensor
 	DeviceAddress target = {1,1,1};
-	RCSPModem::instance().send(target, stream.getStream(), stream.getSize(), true, nullptr);
+	*/
+
+	RCSPMultiStream stream;
+	stream.addRequest(ConfigCodes::Player::Configuration::health);
+	stream.addRequest(ConfigCodes::Player::Configuration::armor);
+	stream.addRequest(ConfigCodes::Player::State::s_health);
+	stream.addRequest(ConfigCodes::Player::State::s_armor);
+	stream.addRequest(ConfigCodes::Player::State::s_lifesCount);
+	stream.addRequest(ConfigCodes::Player::State::pointsCount);
+	stream.addRequest(ConfigCodes::Player::State::killsCount);
+	stream.addRequest(ConfigCodes::Player::State::deathsCount);
+
+	DeviceAddress target = {1,1,1};
+	stream.send(target, true);
+}
+
+void PlayerDisplayableData::print()
+{
+	printf("Current player's state:\n");
+	constexpr uint8_t barLength = 10;
+	if (health != 0)
+		printBar(barLength, barLength * s_health / health);
 }
 
 RifleConfiguration::RifleConfiguration()
@@ -141,11 +164,8 @@ void Rifle::configure()
 	//loadConfig();
 	RCSPAggregator::instance().readIni("default-config.ini");
 
-	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::syncAll, &playerDisplayable), false, 10000000, 0, 3000000);
-	Scheduler::instance().addTask([this] () -> void
-		{
-			printf("health = %u\n", playerDisplayable.health);
-		},
+	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::syncAll, &playerDisplayable), false, 3000000, 0, 3000000);
+	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::print, &playerDisplayable),
 		false,
 		1000000,
 		0,

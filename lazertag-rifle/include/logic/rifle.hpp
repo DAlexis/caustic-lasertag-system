@@ -22,6 +22,7 @@ class PlayerDisplayableData
 public:
 	PlayerDisplayableData();
 	void syncAll();
+	void print();
 
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, health);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armor);

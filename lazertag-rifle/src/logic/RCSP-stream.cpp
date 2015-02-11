@@ -11,7 +11,6 @@
 #include "hal/ff/ff.h"
 #include <stdio.h>
 
-
 RCSPStream::RCSPStream(uint16_t size) :
 	m_size(size)
 {
@@ -36,7 +35,7 @@ uint16_t RCSPStream::getSize()
 	return m_size;
 }
 
-bool RCSPStream::addValue(OperationCode code)
+RCSPAggregator::ResultType RCSPStream::addValue(OperationCode code)
 {
 	printf("Adding value, code %u", code);
 	return serializeAnything(
@@ -48,7 +47,7 @@ bool RCSPStream::addValue(OperationCode code)
 	);
 }
 
-bool RCSPStream::addRequest(OperationCode code)
+RCSPAggregator::ResultType RCSPStream::addRequest(OperationCode code)
 {
 	printf("Adding value, code %u", code);
 	return serializeAnything(
@@ -60,7 +59,7 @@ bool RCSPStream::addRequest(OperationCode code)
 	);
 }
 
-bool RCSPStream::addCall(OperationCode code)
+RCSPAggregator::ResultType RCSPStream::addCall(OperationCode code)
 {
 	printf("Adding value, code %u", code);
 	return serializeAnything(
@@ -72,7 +71,7 @@ bool RCSPStream::addCall(OperationCode code)
 	);
 }
 
-bool RCSPStream::serializeAnything(OperationCode code, SerializationFunc serializer)
+RCSPAggregator::ResultType RCSPStream::serializeAnything(OperationCode code, SerializationFunc serializer)
 {
 	uint8_t *pos = m_stream + m_cursor;
 	uint16_t addedSize = 0;
@@ -80,10 +79,10 @@ bool RCSPStream::serializeAnything(OperationCode code, SerializationFunc seriali
 	if (!result.isSuccess)
 	{
 		printf("Cannot add %u: %s\n", code, result.errorText);
-		return false;
+	} else {
+		m_cursor += addedSize;
 	}
-	m_cursor += addedSize;
-	return true;
+	return result;
 }
 
 uint16_t RCSPStream::send(DeviceAddress target, bool waitForAck, PackageSendingDoneCallback doneCallback)
@@ -91,7 +90,105 @@ uint16_t RCSPStream::send(DeviceAddress target, bool waitForAck, PackageSendingD
 	return RCSPModem::instance().send(target, m_stream, m_size, waitForAck, doneCallback);
 }
 
+uint16_t RCSPStream::send(
+	DeviceAddress target,
+	bool waitForAck,
+	PackageSendingDoneCallback doneCallback,
+	uint32_t timeout,
+	uint32_t resendTime,
+	uint32_t resendTimeDelta
+)
+{
+	return RCSPModem::instance().send(
+		target,
+		m_stream,
+		m_size,
+		waitForAck,
+		doneCallback,
+		timeout,
+		resendTime,
+		resendTimeDelta
+	);
+}
+
 bool RCSPStream::empty()
 {
 	return (m_cursor == 0);
+}
+
+//////////////////////////
+// RCSPMultiStream
+
+RCSPMultiStream::RCSPMultiStream()
+{
+	pushBackStream();
+}
+
+void RCSPMultiStream::pushBackStream()
+{
+	printf("Creating new stream\n");
+	m_streams.push_back(std::shared_ptr<RCSPStream> (new RCSPStream));
+}
+
+RCSPAggregator::ResultType RCSPMultiStream::addValue(OperationCode code)
+{
+	RCSPAggregator::ResultType result = m_streams.back()->addValue(code);
+	if (!result.isSuccess && result.details == RCSPAggregator::NOT_ENOUGH_SPACE)
+	{
+		pushBackStream();
+		result = m_streams.back()->addValue(code);
+	}
+	return result;
+}
+
+RCSPAggregator::ResultType RCSPMultiStream::addRequest(OperationCode code)
+{
+	RCSPAggregator::ResultType result = m_streams.back()->addRequest(code);
+	if (!result.isSuccess && result.details == RCSPAggregator::NOT_ENOUGH_SPACE)
+	{
+		pushBackStream();
+		result = m_streams.back()->addRequest(code);
+	}
+	return result;
+}
+
+RCSPAggregator::ResultType RCSPMultiStream::addCall(OperationCode code)
+{
+	RCSPAggregator::ResultType result = m_streams.back()->addCall(code);
+	if (!result.isSuccess && result.details == RCSPAggregator::NOT_ENOUGH_SPACE)
+	{
+		pushBackStream();
+		result = m_streams.back()->addCall(code);
+	}
+	return result;
+}
+
+void RCSPMultiStream::send(
+		DeviceAddress target,
+		bool waitForAck
+	)
+{
+	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
+	{
+		(*it)->send(target, waitForAck);
+	}
+}
+
+void RCSPMultiStream::send(
+		DeviceAddress target,
+		bool waitForAck,
+		uint32_t timeout,
+		uint32_t resendTime,
+		uint32_t resendTimeDelta
+	)
+{
+	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
+	{
+		(*it)->send(target, waitForAck, nullptr, timeout, resendTime, resendTimeDelta);
+	}
+}
+
+bool RCSPMultiStream::empty()
+{
+	return m_streams.front()->empty();
 }

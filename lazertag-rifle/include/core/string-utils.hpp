@@ -37,6 +37,8 @@ inline bool isNumber(char c)
     return (c >= 0x30 && c <= 0x39);
 }
 
+void printBar(int barLength, int filled);
+
 class IniParcer
 {
 public:

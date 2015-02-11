@@ -91,9 +91,9 @@ struct Package
 class RCSPModem
 {
 public:
-	constexpr static uint32_t timeout = 20000000;
-	constexpr static uint32_t resendTime = 500000;
-	constexpr static uint32_t resendTimeDelta = 100000;
+	constexpr static uint32_t defaultTimeout = 20000000;
+	constexpr static uint32_t defaultResendTime = 500000;
+	constexpr static uint32_t defaultResendTimeDelta = 100000;
 
 	static RCSPModem& instance();
 	/**
@@ -106,7 +106,16 @@ public:
 	 * @return
 	 */
 	void init();
-	uint16_t send(DeviceAddress target, uint8_t* data, uint16_t size, bool waitForAck = false, PackageSendingDoneCallback doneCallback = nullptr);
+	uint16_t send(
+		DeviceAddress target,
+		uint8_t* data,
+		uint16_t size,
+		bool waitForAck = false,
+		PackageSendingDoneCallback doneCallback = nullptr,
+		uint32_t timeout = defaultTimeout,
+		uint32_t resendTime = defaultResendTime,
+		uint32_t resendTimeDelta = defaultResendTimeDelta
+	);
 
 	DeviceAddress self{{1,1,1}};
 private:

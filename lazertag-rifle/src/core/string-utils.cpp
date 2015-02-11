@@ -10,6 +10,17 @@
 
 #include <stdio.h>
 
+void printBar(int barLength, int filled)
+{
+	printf("[");
+	for (int i=0; i < filled-1; i++)
+		printf("=");
+	printf(">");
+	for (int i=0; i < barLength-1-filled; i++)
+		printf(" ");
+	printf("]\n");
+}
+
 void IniParcer::setCallback(AcceptKeyValueCallback callback)
 {
 	m_acceptKeyValueCallback = callback;

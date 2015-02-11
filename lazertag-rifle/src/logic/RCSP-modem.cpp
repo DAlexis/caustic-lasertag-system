@@ -44,7 +44,16 @@ uint16_t RCSPModem::generatePackageId()
 }
 
 
-uint16_t RCSPModem::send(DeviceAddress target, uint8_t* data, uint16_t size, bool waitForAck, PackageSendingDoneCallback doneCallback)
+uint16_t RCSPModem::send(
+	DeviceAddress target,
+	uint8_t* data,
+	uint16_t size,
+	bool waitForAck,
+	PackageSendingDoneCallback doneCallback,
+	uint32_t timeout,
+	uint32_t resendTime,
+	uint32_t resendTimeDelta
+)
 {
 	if (size > Package::payloadLength)
 	{
@@ -61,6 +70,11 @@ uint16_t RCSPModem::send(DeviceAddress target, uint8_t* data, uint16_t size, boo
 		WaitingPackage& waitingPackage = m_packages[idAndTTL.packageId];
 		waitingPackage.wasCreated = time;
 		waitingPackage.nextTransmission = time;
+
+		waitingPackage.timeout = timeout;
+		waitingPackage.resendTime = resendTime;
+		waitingPackage.resendTimeDelta = resendTimeDelta;
+
 		waitingPackage.callback = doneCallback;
 		waitingPackage.package.sender = self;
 		waitingPackage.package.target = target;
@@ -144,11 +158,11 @@ void RCSPModem::interrogate()
 	while (!m_incoming.empty())
 	{
 		/// @todo [Refactoring] Remove stream from there
-		RCSPStream answerStream(Package::payloadLength);
+		RCSPMultiStream answerStream;
 		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
 		if (!answerStream.empty())
 		{
-			RCSPModem::instance().send(m_incoming.front().sender, answerStream.getStream(), answerStream.getSize(), true, nullptr);
+			answerStream.send(m_incoming.front().sender, true);
 		}
 		m_incoming.pop_front();
 	}
@@ -171,7 +185,7 @@ void RCSPModem::sendNext()
 	for (auto it=m_packages.begin(); it!=m_packages.end(); it++)
 	{
 		// If timeout
-		if (time - it->second.wasCreated > timeout)
+		if (time - it->second.wasCreated > it->second.timeout)
 		{
 			PackageSendingDoneCallback callback = it->second.callback;
 			uint16_t timeoutedPackageId = it->second.package.idAndTTL.packageId;
@@ -190,7 +204,7 @@ void RCSPModem::sendNext()
 			printf("Sending package with ack needed, id=%u\n", it->second.package.idAndTTL.packageId);
 			currentlySendingPackageId = it->first;
 			isSendingNow = true;
-			it->second.nextTransmission = time+resendTime+Random::random(resendTime / 2);
+			it->second.nextTransmission = time + it->second.resendTime + Random::random(it->second.resendTimeDelta);
 			nrf.sendData(Package::packageLength, (uint8_t*) &(it->second.package));
 			return;
 		}

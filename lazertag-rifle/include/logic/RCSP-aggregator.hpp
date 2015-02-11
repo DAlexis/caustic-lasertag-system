@@ -98,6 +98,7 @@ public:
 };
 
 class RCSPStream;
+class RCSPMultiStream;
 
 /**
  * Remote Control and Synchronization Protocol Aggregator
@@ -125,7 +126,7 @@ public:
 	 * @param size Stream size in bytes
 	 * @return Count of unsupported operation found on stream
 	 */
-	uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPStream* answerStream = nullptr);
+	uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
 
 	Result readIni(const char* filename);
 

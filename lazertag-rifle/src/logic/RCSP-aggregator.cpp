@@ -29,7 +29,7 @@ void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, 
 	m_accessorsByOpText[textName] = accessor;
 }
 
-uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPStream* answerStream)
+uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream)
 {
 	uint8_t* position = stream;
 	uint32_t unsupported = 0;
