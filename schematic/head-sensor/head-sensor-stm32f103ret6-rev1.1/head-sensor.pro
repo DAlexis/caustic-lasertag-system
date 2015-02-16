@@ -41,8 +41,8 @@ LibName17=../../components/lqfp64
 LibName18=../../components/micro-sd3-cd
 LibName19=ds1307_pcf8583
 LibName20=dsp56f8323
-LibName21=/home/alexey/Projects/lazertag/schematic/components/terminals
-LibName22=/home/alexey/Projects/lazertag/schematic/components/pin-arr-2mm-horiz
+LibName21=../../components/terminals
+LibName22=../../components/pin-arr-2mm-horiz
 LibDir=
 [general]
 version=1

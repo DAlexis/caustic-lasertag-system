@@ -43,7 +43,7 @@ encoding utf-8
 Sheet 1 1
 Title "Lazertag head sensor"
 Date "16 feb 2015"
-Rev "1"
+Rev "1.1"
 Comp ""
 Comment1 ""
 Comment2 ""
