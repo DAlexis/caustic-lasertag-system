@@ -1,0 +1,16 @@
+Drill report for /home/alexey/Projects/lazertag/schematic/head-sensor/head-sensor-stm32f103ret6-rev1.1/head-sensor.kicad_pcb
+Created on Вт 17 фев 2015 22:40:56
+Drill report for plated through holes :
+T1  0,30mm  0,012"  (53 holes)
+T2  0,80mm  0,031"  (2 holes)
+T3  1,00mm  0,039"  (67 holes)
+T4  3,00mm  0,118"  (3 holes)
+
+Total plated holes count 125
+
+
+Drill report for unplated through holes :
+
+Total unplated holes count 0
+
+
