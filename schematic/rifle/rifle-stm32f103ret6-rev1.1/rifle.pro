@@ -1,4 +1,4 @@
-update=Чт 19 фев 2015 11:09:32
+update=Чт 19 фев 2015 22:52:53
 version=1
 last_client=pcbnew
 [general]
@@ -52,7 +52,7 @@ LibName32=../../components/microsd-sdio
 LibName33=../../components/nrf24l01
 LibName34=../../components/rfid-rc522-module
 LibName35=../../components/stm32
-LibName36=/home/alexey/Projects/lazertag/schematic/components/microsd-sdio-cd
+LibName36=../../components/microsd-sdio-cd
 [pcbnew]
 version=1
 LastNetListRead=
@@ -93,7 +93,6 @@ LibName16=valves
 LibName17=unipac
 LibName18=dsp56f8323
 LibName19=../../components/micro-sd2
-LibName20=/home/alexey/Projects/lazertag/schematic/components/terminals
-LibName21=/home/alexey/Projects/lazertag/schematic/components/pin-arr-2mm-horiz
-LibName22=/home/alexey/Projects/lazertag/schematic/components/micro-sd3-cd
-LibName23=/home/alexey/Projects/lazertag/schematic/components/pin-arr-7
+LibName20=../../components/terminals
+LibName21=../../components/pin-arr-2mm-horiz
+LibName22=../../components/micro-sd3-cd

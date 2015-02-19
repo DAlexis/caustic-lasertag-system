@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пт 19 дек 2014 17:33:28
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Чт 19 фев 2015 23:16:35
 
 BeginCmp
 TimeStamp = /548EFAB9;
@@ -71,38 +71,45 @@ IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /5491F4C1;
-Reference = K1;
-ValeurCmp = Magazine;
-IdModule  = PIN_ARRAY_3X1;
+TimeStamp = /54E51D4E;
+Reference = C11;
+ValeurCmp = C;
+IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /5491E3E2;
+TimeStamp = /5491F4C1;
+Reference = K1;
+ValeurCmp = Magazine;
+IdModule  = TERMINALS_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E51735;
 Reference = K2;
-ValeurCmp = Sound;
-IdModule  = PIN_ARRAY_3X1;
+ValeurCmp = Fire_mode;
+IdModule  = TERMINALS_3;
 EndCmp
 
 BeginCmp
 TimeStamp = /5490CAA5;
 Reference = K3;
 ValeurCmp = IR_LASER;
-IdModule  = PIN_ARRAY_3X1;
+IdModule  = PIN_ARRAY-3X1-2mm-horiz;
 EndCmp
 
 BeginCmp
-TimeStamp = /5491CD94;
+TimeStamp = /54E4F0B5;
 Reference = P1;
-ValeurCmp = Indication;
-IdModule  = PIN_ARRAY_5x2;
+ValeurCmp = MICROSD-SDIO-CD;
+IdModule  = MICROSD-CD;
 EndCmp
 
 BeginCmp
-TimeStamp = /5491D40F;
+TimeStamp = /54E51BC2;
 Reference = P2;
-ValeurCmp = MICROSD-SDIO;
-IdModule  = MICROSD;
+ValeurCmp = GND;
+IdModule  = PIN_ARRAY_1;
 EndCmp
 
 BeginCmp
@@ -113,17 +120,17 @@ IdModule  = PIN_ARRAY_1;
 EndCmp
 
 BeginCmp
-TimeStamp = /5491FAFA;
+TimeStamp = /54E514DF;
 Reference = P4;
-ValeurCmp = CONN_5;
-IdModule  = PIN_ARRAY_5x1;
+ValeurCmp = Reload;
+IdModule  = TERMINALS_2;
 EndCmp
 
 BeginCmp
-TimeStamp = /5490B292;
+TimeStamp = /54E5127A;
 Reference = P5;
-ValeurCmp = CONN_4;
-IdModule  = PIN_ARRAY_4x1;
+ValeurCmp = Fire;
+IdModule  = TERMINALS_2;
 EndCmp
 
 BeginCmp
@@ -158,7 +165,7 @@ BeginCmp
 TimeStamp = /5490ADB4;
 Reference = P10;
 ValeurCmp = RFID-RC522-MODULE;
-IdModule  = pin_array_4x2;
+IdModule  = PIN_ARRAY-9X1-2mm-horiz;
 EndCmp
 
 BeginCmp
@@ -171,29 +178,43 @@ EndCmp
 BeginCmp
 TimeStamp = /5491F8BC;
 Reference = P12;
-ValeurCmp = CONN_2;
-IdModule  = PIN_ARRAY_2X1;
+ValeurCmp = VibroEng;
+IdModule  = TERMINALS_2;
 EndCmp
 
 BeginCmp
 TimeStamp = /5490C903;
 Reference = P13;
 ValeurCmp = IR_LED;
-IdModule  = PIN_ARRAY_2X1;
+IdModule  = TERMINALS_2;
 EndCmp
 
 BeginCmp
 TimeStamp = /54929F23;
 Reference = P14;
 ValeurCmp = Power_in;
-IdModule  = PIN_ARRAY_2X1;
+IdModule  = TERMINALS_2;
 EndCmp
 
 BeginCmp
-TimeStamp = /5492B181;
+TimeStamp = /54E4ED70;
 Reference = P15;
-ValeurCmp = Power_out;
-IdModule  = PIN_ARRAY_4x1;
+ValeurCmp = Sound;
+IdModule  = PIN_ARRAY-4X1-2mm-horiz;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E4DE65;
+Reference = P16;
+ValeurCmp = Indicators;
+IdModule  = PIN_ARRAY-6X1-2mm-horiz;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E6464E;
+Reference = P17;
+ValeurCmp = FireFlash;
+IdModule  = TERMINALS_2;
 EndCmp
 
 BeginCmp
@@ -204,15 +225,8 @@ IdModule  = SOT23GDS;
 EndCmp
 
 BeginCmp
-TimeStamp = /5490BDB6;
+TimeStamp = /54E64676;
 Reference = Q2;
-ValeurCmp = MOS_N;
-IdModule  = SOT23GDS;
-EndCmp
-
-BeginCmp
-TimeStamp = /5490BD7F;
-Reference = Q3;
 ValeurCmp = MOS_N;
 IdModule  = SOT23GDS;
 EndCmp
@@ -232,16 +246,16 @@ IdModule  = SOT23GDS;
 EndCmp
 
 BeginCmp
-TimeStamp = /5490BDC5;
+TimeStamp = /54E4F882;
 Reference = R1;
-ValeurCmp = R;
+ValeurCmp = 47k;
 IdModule  = SM1206;
 EndCmp
 
 BeginCmp
-TimeStamp = /5490BDD4;
+TimeStamp = /54E4F06F;
 Reference = R2;
-ValeurCmp = R;
+ValeurCmp = 47k;
 IdModule  = SM1206;
 EndCmp
 
@@ -260,72 +274,44 @@ IdModule  = SM1206;
 EndCmp
 
 BeginCmp
-TimeStamp = /5492DE26;
+TimeStamp = /54E4F088;
 Reference = R5;
-ValeurCmp = 0;
+ValeurCmp = 47k;
 IdModule  = SM1206;
 EndCmp
 
 BeginCmp
-TimeStamp = /5493119F;
+TimeStamp = /54E4F097;
 Reference = R6;
-ValeurCmp = 0;
+ValeurCmp = 47k;
 IdModule  = SM1206;
 EndCmp
 
 BeginCmp
-TimeStamp = /54931F3D;
+TimeStamp = /54E4F0A6;
 Reference = R7;
-ValeurCmp = 0;
+ValeurCmp = 47k;
 IdModule  = SM1206;
 EndCmp
 
 BeginCmp
-TimeStamp = /54931F4C;
+TimeStamp = /54E4E64C;
 Reference = R8;
-ValeurCmp = 0;
+ValeurCmp = R;
 IdModule  = SM1206;
 EndCmp
 
 BeginCmp
-TimeStamp = /54931B9C;
+TimeStamp = /54E4E65B;
 Reference = R9;
-ValeurCmp = 0;
+ValeurCmp = R;
 IdModule  = SM1206;
 EndCmp
 
 BeginCmp
-TimeStamp = /54931F5B;
+TimeStamp = /54E51D3A;
 Reference = R10;
-ValeurCmp = 0;
-IdModule  = SM1206;
-EndCmp
-
-BeginCmp
-TimeStamp = /54943426;
-Reference = R11;
-ValeurCmp = 0;
-IdModule  = SM1206;
-EndCmp
-
-BeginCmp
-TimeStamp = /549342E3;
-Reference = R12;
-ValeurCmp = 0;
-IdModule  = SM1206;
-EndCmp
-
-BeginCmp
-TimeStamp = /54943703;
-Reference = R13;
-ValeurCmp = 0;
-IdModule  = SM1206;
-EndCmp
-
-BeginCmp
-TimeStamp = /54943717;
-Reference = R14;
-ValeurCmp = 0;
+ValeurCmp = R;
 IdModule  = SM1206;
 EndCmp
 
