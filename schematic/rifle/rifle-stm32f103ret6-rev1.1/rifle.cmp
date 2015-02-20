@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Чт 19 фев 2015 23:16:35
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пт 20 фев 2015 17:14:46
 
 BeginCmp
 TimeStamp = /548EFAB9;
@@ -151,7 +151,7 @@ BeginCmp
 TimeStamp = /5490AA64;
 Reference = P8;
 ValeurCmp = USART2;
-IdModule  = PIN_ARRAY_4x1;
+IdModule  = PIN_ARRAY-4X1-2mm-horiz;
 EndCmp
 
 BeginCmp
