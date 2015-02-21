@@ -101,10 +101,7 @@ int main(int argc, char* argv[])
 	trace_printf("\n\nStarting system...\n", SystemCoreClock);
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
 
-	BlinkLed blinkLed;
-
 	// Perform all necessary initialisations for the LED.
-	blinkLed.powerUp();
 
 	Console::instance().init(0);
 

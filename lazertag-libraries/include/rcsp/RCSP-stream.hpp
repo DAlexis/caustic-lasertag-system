@@ -8,8 +8,8 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_
 
-#include "logic/RCSP-aggregator.hpp"
-#include "logic/RCSP-modem.hpp"
+#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/RCSP-modem.hpp"
 #include <list>
 #include <memory>
 

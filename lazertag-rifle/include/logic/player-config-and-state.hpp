@@ -8,8 +8,8 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 
-#include "logic/RCSP-aggregator.hpp"
-#include "logic/operation-codes.hpp"
+#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/operation-codes.hpp"
 #include <stdint.h>
 
 class PlayerConfiguration

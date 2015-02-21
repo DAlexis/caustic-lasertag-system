@@ -8,8 +8,8 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 
-#include "logic/RCSP-aggregator.hpp"
-#include "logic/operation-codes.hpp"
+#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/operation-codes.hpp"
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
 #include "core/singleton-macro.hpp"

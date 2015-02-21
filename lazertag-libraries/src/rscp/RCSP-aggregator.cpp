@@ -5,8 +5,8 @@
  *      Author: alexey
  */
 
-#include "logic/RCSP-aggregator.hpp"
-#include "logic/RCSP-stream.hpp"
+#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/RCSP-stream.hpp"
 #include "core/string-utils.hpp"
 #include "hal/ff/ff.h"
 #include <stdio.h>

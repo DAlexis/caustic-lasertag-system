@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>lazertag-rifle</name>
+	<name>lazertag-libraries</name>
 	<comment></comment>
 	<projects>
-		<project>lazertag-libraries</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

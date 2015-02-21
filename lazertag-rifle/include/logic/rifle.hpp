@@ -10,7 +10,7 @@
 
 #include "logic/rifle-config-and-state.hpp"
 #include "logic/device.hpp"
-#include "logic/RCSP-modem.hpp"
+#include "rcsp/RCSP-modem.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "core/scheduler.hpp"

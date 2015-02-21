@@ -5,8 +5,8 @@
  *      Author: alexey
  */
 
-#include "logic/RCSP-modem.hpp"
-#include "logic/RCSP-stream.hpp"
+#include "rcsp/RCSP-modem.hpp"
+#include "rcsp/RCSP-stream.hpp"
 
 #include "core/scheduler.hpp"
 

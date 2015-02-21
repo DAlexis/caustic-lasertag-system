@@ -8,8 +8,8 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
 
-#include "logic/operation-codes.hpp"
-#include "logic/RCSP-modem.hpp"
+#include "rcsp/operation-codes.hpp"
+#include "rcsp/RCSP-modem.hpp"
 #include <stdint.h>
 #include <string.h>
 

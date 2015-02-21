@@ -6,7 +6,7 @@
  */
 
 #include "logic/rifle.hpp"
-#include "logic/RCSP-stream.hpp"
+#include "rcsp/RCSP-stream.hpp"
 #include "core/string-utils.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/console.hpp"

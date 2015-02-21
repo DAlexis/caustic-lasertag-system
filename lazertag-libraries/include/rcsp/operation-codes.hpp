@@ -8,7 +8,7 @@
 #ifndef LOGIC_CONFIGS_H_
 #define LOGIC_CONFIGS_H_
 
-#include "logic/RCSP-aggregator.hpp"
+#include "rcsp/RCSP-aggregator.hpp"
 #include "core/macro-utils.hpp"
 
 #define PAR_CODE(variable, value)   constexpr uint16_t variable = SetParameterOC(value); \

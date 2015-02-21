@@ -9,8 +9,8 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_CONFIG_AND_STATE_HPP_
 
 #include <stdint.h>
-#include "logic/RCSP-aggregator.hpp"
-#include "logic/operation-codes.hpp"
+#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/operation-codes.hpp"
 
 class RifleConfiguration
 {

@@ -6,7 +6,7 @@
  */
 
 #include "logic/head-sensor.hpp"
-#include "logic/RCSP-stream.hpp"
+#include "rcsp/RCSP-stream.hpp"
 #include "dev/console.hpp"
 #include "core/scheduler.hpp"
 #include "hal/ext-interrupts.hpp"
