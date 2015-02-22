@@ -7,4 +7,4 @@ then
     dir="Head-sensor-release"
 fi
 
-st-flash write $dir/lazertag-rifle.bin 0x8000000
+st-flash write $dir/stm32f103ret6-device.bin 0x8000000

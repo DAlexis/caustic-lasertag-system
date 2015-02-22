@@ -46,28 +46,12 @@
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
-char buff[100];
-
-void test(const char* b, int size)
-{
-	printf("Registered\n");
-}
-
-void fireCallbackTest(bool state)
-{
-	printf("keypressedm state=%d\n", state ? 1 : 0);
-}
-
-Rifle *rifle = nullptr;
-HeadSensor *headSensor = nullptr;
-
 void checkMemory()
 {
 	if (isMemoryCorrupted) {
 		printf("Memory corrupted!!\n");
 	}
 }
-
 
 int main(int argc, char* argv[])
 {
@@ -82,34 +66,45 @@ int main(int argc, char* argv[])
 
 	// At this stage the system clock should have already been configured
 	// at high speed.
+
+	// Setting priorities group where 4 bit for priority and 0 bit for subpriority
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	trace_printf("\n\nStarting system...\n", SystemCoreClock);
+	trace_printf("\n\nStarting system...\n");
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
-
-	// Perform all necessary initialisations for the LED.
 
 	Console::instance().init(0);
 
+#ifdef DEBUG
+	// Creating console tester
 	ConsoleTester tester;
+#endif
 
+	// Waiting for some modules initialization
 	systemClock->wait_us(100000);
 
 #if defined(DEVICE_RIFLE)
+	Rifle *rifle = nullptr;
 	rifle = new Rifle;
 	rifle->configure();
 #elif defined(DEVICE_HEAD_SENSOR)
+	HeadSensor *headSensor = nullptr;
 	headSensor = new HeadSensor;
 	headSensor->configure();
 #else
 	#error "Device type not selected!"
 #endif
 
+	// Turning on console
 	Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
-	Scheduler::instance().addTask(checkMemory, false, 500000);
-	Console::instance().prompt();
-	WavPlayer::instance();
 
+	// Turning on memory checker
+	Scheduler::instance().addTask(checkMemory, false, 500000);
+
+	// Printing console prompt
+	Console::instance().prompt();
+
+	// Running main loop of co-op scheduler
 	Scheduler::instance().mainLoop();
 
 	// Why? - Why not?
