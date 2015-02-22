@@ -14,7 +14,7 @@
 #include "dev/wav-player.hpp"
 #include "hal/system-clock.hpp"
 
-#include "res/buttons-mapping.h"
+//#include "res/buttons-mapping.h"
 
 #include <stdio.h>
 

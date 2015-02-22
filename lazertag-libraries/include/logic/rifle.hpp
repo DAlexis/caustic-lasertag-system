@@ -53,6 +53,22 @@ public:
 
 	PlayerDisplayableData playerDisplayable;
 
+	/////////
+	// Buttons mapping
+	// Default (rifle-rev.1)
+	uint8_t fireButtonPort   =   0;
+	uint8_t fireButtonPin    =   0;
+
+	uint8_t reloadButtonPort =   1;
+	uint8_t reloadButtonPin  =   2;
+
+	uint8_t automaticButtonPort      =   2;
+	uint8_t automaticButtonPin       =   7;
+
+	uint8_t semiAutomaticButtonPort  =   1;
+	uint8_t semiAutomaticButtonPin   =   9;
+
+
 private:
 	void loadConfig();
 	void makeShot(bool isFirst);
@@ -71,6 +87,8 @@ private:
 	ButtonManager* m_semiAutomaticFireSwitch = nullptr;
 
 	MilesTag2Transmitter m_mt2Transmitter;
+
+
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */
