@@ -1,10 +1,10 @@
 #!/bin/bash
 
-dir="Debug"
+dir="Head-sensor-debug"
 
 if [ "$1" == "release" ];
 then
-    dir="Release"
+    dir="Head-sensor-release"
 fi
 
 st-flash write $dir/lazertag-rifle.bin 0x8000000

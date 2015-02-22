@@ -8,9 +8,6 @@
 #include <stdio.h>
 #include "diag/Trace.h"
 
-#include "Timer.h"
-#include "BlinkLed.h"
-
 #include "logic/rifle.hpp"
 #include "logic/head-sensor.hpp"
 #include "hal/usart.hpp"
@@ -28,11 +25,11 @@
 #include <functional>
 #include <vector>
 
-#define DEVICE_RIFLE
+//#undef DEVICE_RIFLE
 
-#ifndef DEVICE_RIFLE
-#define DEVICE_HEAD_SENSOR
-#endif
+//#ifndef DEVICE_RIFLE
+//#define DEVICE_HEAD_SENSOR
+//#endif
 
 // ----------------------------------------------------------------------------
 //
@@ -41,17 +38,6 @@
 // 'Paths and Symbols' -> the 'Symbols' tab, if you want to change it).
 // The value selected during project creation was HSE_VALUE=8000000.
 //
-
-// Definitions visible only within this translation unit.
-namespace
-{
-  // ----- Timing definitions -------------------------------------------------
-
-  // Keep the LED on for 2/3 of a second.
-  constexpr Timer::ticks_t BLINK_ON_TICKS = Timer::FREQUENCY_HZ * 2 / 3;
-  constexpr Timer::ticks_t BLINK_OFF_TICKS = Timer::FREQUENCY_HZ
-      - BLINK_ON_TICKS;
-}
 
 // Sample pragmas to cope with warnings. Please note the related line at
 // the end of this function, used to pop the compiler diagnostics status.
@@ -109,14 +95,14 @@ int main(int argc, char* argv[])
 
 	systemClock->wait_us(100000);
 
-#ifdef DEVICE_RIFLE
+#if defined(DEVICE_RIFLE)
 	rifle = new Rifle;
 	rifle->configure();
-#endif
-
-#ifdef DEVICE_HEAD_SENSOR
+#elif defined(DEVICE_HEAD_SENSOR)
 	headSensor = new HeadSensor;
 	headSensor->configure();
+#else
+	#error "Device type not selected!"
 #endif
 
 	Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
@@ -127,10 +113,9 @@ int main(int argc, char* argv[])
 	Scheduler::instance().mainLoop();
 
 	// Why? - Why not?
-#ifdef DEVICE_RIFLE
+#if defined(DEVICE_RIFLE)
 	delete rifle;
-#endif
-#ifdef DEVICE_HEAD_SENSOR
+#elif defined(DEVICE_HEAD_SENSOR)
 	delete headSensor;
 #endif
 }
