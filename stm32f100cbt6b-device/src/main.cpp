@@ -11,6 +11,7 @@
 #include "core/scheduler.hpp"
 #include "hal/system-clock.hpp"
 #include "dev/console.hpp"
+#include "simple-irrc/simple-irrc.hpp"
 #include <functional>
 #include <vector>
 
@@ -62,6 +63,9 @@ int main(int argc, char* argv[])
 
 	Console::instance().init(0);
 
+	SimpleIRRC *sirrc = new SimpleIRRC;
+	sirrc->init();
+
 	Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
 
 	// Printing console prompt
@@ -69,17 +73,8 @@ int main(int argc, char* argv[])
 
 	// Running main loop of co-op scheduler
 	Scheduler::instance().mainLoop();
-/*	Console::instance().init(0);
 
-	// Waiting for some modules initialization
-	systemClock->wait_us(100000);
-
-	// Turning on console
-	Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
-*/
-	while (true)
-	{
-	}
+	delete sirrc;
 }
 
 #pragma GCC diagnostic pop

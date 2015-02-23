@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 
-#include "logic/rifle-config-and-state.hpp"
+#include "rifle/rifle-config-and-state.hpp"
 #include "logic/device.hpp"
 #include "rcsp/RCSP-modem.hpp"
 #include "dev/buttons.hpp"

@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include "logic/head-sensor.hpp"
+#include "head-sensor/head-sensor.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "dev/console.hpp"
 #include "core/scheduler.hpp"

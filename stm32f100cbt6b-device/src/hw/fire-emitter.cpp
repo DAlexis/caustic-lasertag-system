@@ -39,17 +39,17 @@ void LEDFireEmitter::init()
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	//////////////////////
-	// TIM3 initialization - 38/40/56kHz pulse through PWM
+	// TIM2 initialization - 38/40/56kHz pulse through PWM
 	// Getting system clock frequency
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
 	//Time initialization: setting frequency to default value (56KHz)
 	setCarrierFrequency(m_carrierFrequency);
 
-	TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable);
-	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
-	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
-	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
+	TIM_OC1PreloadConfig(TIM2, TIM_OCPreload_Enable);
+	TIM_OC2PreloadConfig(TIM2, TIM_OCPreload_Enable);
+	TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Enable);
+	TIM_OC4PreloadConfig(TIM2, TIM_OCPreload_Enable);
 
 	setPower(100);
 	modulationOff();
@@ -119,7 +119,7 @@ void LEDFireEmitter::setCarrierFrequency(uint32_t frequency)
 	TIM_TimeBaseInitStructure.TIM_Prescaler = m_radioPrescaler-1;
 	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInitStructure.TIM_Period = m_radioTimerPeriod-1;
-	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
 }
 
 void LEDFireEmitter::setPower(uint8_t powerPercent)
@@ -132,36 +132,36 @@ void LEDFireEmitter::setPower(uint8_t powerPercent)
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
 	TIM_OCInitStructure.TIM_Pulse = m_radioTimerPeriod / 2;
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OC1Init(TIM3, &TIM_OCInitStructure);
-	TIM_OC2Init(TIM3, &TIM_OCInitStructure);
-	TIM_OC3Init(TIM3, &TIM_OCInitStructure);
-	TIM_OC4Init(TIM3, &TIM_OCInitStructure);
+	TIM_OC1Init(TIM2, &TIM_OCInitStructure);
+	TIM_OC2Init(TIM2, &TIM_OCInitStructure);
+	TIM_OC3Init(TIM2, &TIM_OCInitStructure);
+	TIM_OC4Init(TIM2, &TIM_OCInitStructure);
 
 	// Enabling one output channel
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 	if (powerPercent <= 25)
 	{
 		m_PWMChannel = 1;
-		TIM_OC1Init(TIM3, &TIM_OCInitStructure);
+		TIM_OC1Init(TIM2, &TIM_OCInitStructure);
 	}
 	else if (powerPercent <= 50)
 	{
 		m_PWMChannel = 2;
-		TIM_OC2Init(TIM3, &TIM_OCInitStructure);
+		TIM_OC2Init(TIM2, &TIM_OCInitStructure);
 	}
 	else if (powerPercent <= 75)
 	{
 		m_PWMChannel = 3;
-		TIM_OC3Init(TIM3, &TIM_OCInitStructure);
+		TIM_OC3Init(TIM2, &TIM_OCInitStructure);
 	}
 	else
 	{
 		m_PWMChannel = 4;
-		TIM_OC4Init(TIM3, &TIM_OCInitStructure);
+		TIM_OC4Init(TIM2, &TIM_OCInitStructure);
 	}
 
 	// What does this function do?
-	//TIM_ARRPreloadConfig(TIM3, ENABLE);
+	//TIM_ARRPreloadConfig(TIM2, ENABLE);
 }
 
 void LEDFireEmitter::modulationOn()
@@ -177,19 +177,19 @@ void LEDFireEmitter::modulationOn()
 	//TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
 	switch(m_PWMChannel)
 	{
-	case 1: TIM_OC1Init(TIM3, &TIM_OCInitStructure); break;
-	case 2: TIM_OC2Init(TIM3, &TIM_OCInitStructure); break;
-	case 3: TIM_OC3Init(TIM3, &TIM_OCInitStructure); break;
-	case 4: TIM_OC4Init(TIM3, &TIM_OCInitStructure); break;
+	case 1: TIM_OC1Init(TIM2, &TIM_OCInitStructure); break;
+	case 2: TIM_OC2Init(TIM2, &TIM_OCInitStructure); break;
+	case 3: TIM_OC3Init(TIM2, &TIM_OCInitStructure); break;
+	case 4: TIM_OC4Init(TIM2, &TIM_OCInitStructure); break;
 	}
-	TIM_Cmd(TIM3, ENABLE);
+	TIM_Cmd(TIM2, ENABLE);
 
-	//TIM_CtrlPWMOutputs(TIM3, ENABLE);
+	//TIM_CtrlPWMOutputs(TIM2, ENABLE);
 }
 
 void LEDFireEmitter::modulationOff()
 {
-	TIM_Cmd(TIM3, DISABLE);
+	TIM_Cmd(TIM2, DISABLE);
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 	TIM_OCStructInit(&TIM_OCInitStructure);
 
@@ -200,10 +200,10 @@ void LEDFireEmitter::modulationOff()
 	//TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
 	switch(m_PWMChannel)
 	{
-	case 1: TIM_OC1Init(TIM3, &TIM_OCInitStructure); break;
-	case 2: TIM_OC2Init(TIM3, &TIM_OCInitStructure); break;
-	case 3: TIM_OC3Init(TIM3, &TIM_OCInitStructure); break;
-	case 4: TIM_OC4Init(TIM3, &TIM_OCInitStructure); break;
+	case 1: TIM_OC1Init(TIM2, &TIM_OCInitStructure); break;
+	case 2: TIM_OC2Init(TIM2, &TIM_OCInitStructure); break;
+	case 3: TIM_OC3Init(TIM2, &TIM_OCInitStructure); break;
+	case 4: TIM_OC4Init(TIM2, &TIM_OCInitStructure); break;
 	}
 }
 

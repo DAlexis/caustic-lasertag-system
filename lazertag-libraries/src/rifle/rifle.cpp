@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include "logic/rifle.hpp"
+#include "rifle/rifle.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "core/string-utils.hpp"
 #include "dev/miles-tag-2.hpp"

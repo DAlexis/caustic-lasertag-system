@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include "diag/Trace.h"
 
-#include "logic/rifle.hpp"
-#include "logic/head-sensor.hpp"
+#include "rifle/rifle.hpp"
+#include "head-sensor/head-sensor.hpp"
 #include "hal/usart.hpp"
 #include "hw/sdcard.h"
 #include "dev/console.hpp"
