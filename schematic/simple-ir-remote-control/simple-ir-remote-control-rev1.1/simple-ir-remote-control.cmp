@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пн 23 фев 2015 20:25:34
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Сб 28 фев 2015 16:47:30
 
 BeginCmp
 TimeStamp = /54EB560B;
@@ -60,70 +60,77 @@ BeginCmp
 TimeStamp = /54EB5A7F;
 Reference = K1;
 ValeurCmp = CONN_3;
-IdModule  = PIN_ARRAY_3X1;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_3;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EB5749;
 Reference = P1;
 ValeurCmp = CONN_1;
-IdModule  = PIN_ARRAY_1;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_1;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EB5758;
 Reference = P2;
 ValeurCmp = CONN_1;
-IdModule  = PIN_ARRAY_1;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_1;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EB5767;
 Reference = P3;
 ValeurCmp = CONN_1;
-IdModule  = PIN_ARRAY_1;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_1;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EB5776;
 Reference = P4;
 ValeurCmp = CONN_1;
-IdModule  = PIN_ARRAY_1;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_1;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EB7C84;
 Reference = P5;
 ValeurCmp = CONN_5;
-IdModule  = PIN_ARRAY_5x1;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_5;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EB5B7F;
 Reference = P6;
 ValeurCmp = CONN_4;
-IdModule  = PIN_ARRAY_4x1;
+IdModule  = PIN_ARRAY_LARGE_PADS_2.54mm_4;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EB6329;
+TimeStamp = /54F18386;
 Reference = P7;
-ValeurCmp = CONN_5X2;
-IdModule  = PIN_ARRAY_5x2;
+ValeurCmp = CONN_5;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EB7720;
+TimeStamp = /54F18395;
 Reference = P8;
-ValeurCmp = CONN_10;
-IdModule  = PIN_ARRAY_5x2;
+ValeurCmp = CONN_5;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_5;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EB81AA;
 Reference = P9;
 ValeurCmp = CONN_2;
-IdModule  = PIN_ARRAY_2X1;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /54F1C7CE;
+Reference = P10;
+ValeurCmp = CONN_1;
+IdModule  = PIN_ARRAY_LARGE_PADS_3.5mm_1;
 EndCmp
 
 BeginCmp

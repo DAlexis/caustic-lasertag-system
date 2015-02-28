@@ -1,6 +1,6 @@
-update=Пт 27 фев 2015 22:31:11
+update=Сб 28 фев 2015 12:37:04
 version=1
-last_client=pcbnew
+last_client=cvpcb
 [general]
 version=1
 [eeschema]
@@ -43,12 +43,7 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=stm32
-LibName32=/home/alexey/Projects/lazertag/schematic/components/linStab-(1-GND,Adj,2-Out,3-in)
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
+LibName32=../../components/linStab-(1-GND,Adj,2-Out,3-in)
 [pcbnew]
 version=1
 LastNetListRead=
@@ -69,7 +64,6 @@ DrawSegmentWidth="    0,200000"
 BoardOutlineThickness="    0,150000"
 ModuleOutlineThickness="    0,150000"
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -87,8 +81,12 @@ LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
 LibName17=LQFP48
-LibName18=/home/alexey/Projects/lazertag/schematic/components/terminals
-LibName19=/home/alexey/Projects/lazertag/schematic/components/pin-arr-large-pads-5
-LibName20=/home/alexey/Projects/lazertag/schematic/components/pin-arr-large-pads-2
-LibName21=/home/alexey/Projects/lazertag/schematic/components/pin-arr-large-pads-3
-LibName22=/home/alexey/Projects/lazertag/schematic/components/pin-arr-large-pads
+LibName18=../../components/terminals
+LibName19=../../pin-arr-large-pads-3,5mm
+LibName20=../../pin-arr-large-pads-2,5mm
+LibDir=
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
