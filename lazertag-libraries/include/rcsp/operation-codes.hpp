@@ -66,10 +66,10 @@ namespace ConfigCodes
 
 		namespace Functions
 		{
-			FUNC_CODE(turnOff,             201)
-			FUNC_CODE(turnOn,              202)
-			FUNC_CODE(reset,               203)
-			FUNC_CODE(respawn,             204)
+			FUNC_CODE(rifleTurnOff,             201)
+			FUNC_CODE(rifleTurnOn,              202)
+			FUNC_CODE(rifleReset,               203)
+			FUNC_CODE(rifleRespawn,             204)
 		}
 	}
 
@@ -128,6 +128,16 @@ namespace ConfigCodes
 			PAR_CODE(pointsCount, 1110)
 			PAR_CODE(killsCount,  1111)
 			PAR_CODE(deathsCount, 1112)
+		}
+
+		namespace Functions
+		{
+			FUNC_CODE(playerTurnOff,      1201)
+			FUNC_CODE(playerTurnOn,       1202)
+			FUNC_CODE(playerReset,        1203)
+			FUNC_CODE(playerRespawn,      1204)
+			FUNC_CODE(playerKill,         1205)
+
 		}
 	}
 }

@@ -66,7 +66,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		{
 			printf("Turning off weapon...\n");
 			RCSPStream stream;
-			stream.addCall(ConfigCodes::Rifle::Functions::turnOff);
+			stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOff);
 			stream.send(*it, true, nullptr);
 		}
 	}
@@ -86,8 +86,8 @@ void HeadSensor::reset()
 	{
 		printf("Resetting weapon...\n");
 		RCSPStream stream(Package::payloadLength);
-		stream.addCall(ConfigCodes::Rifle::Functions::reset);
-		stream.addCall(ConfigCodes::Rifle::Functions::turnOn);
+		stream.addCall(ConfigCodes::Rifle::Functions::rifleReset);
+		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOn);
 		stream.send(*it, true, nullptr);
 	}
 	printf("Player reseted\n");

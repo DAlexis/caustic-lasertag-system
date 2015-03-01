@@ -5,8 +5,10 @@
  *      Author: alexey
  */
 
+#include "dev/miles-tag-details.h"
+#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/RCSP-stream.hpp"
 #include "dev/miles-tag-2.hpp"
-#include "dev/miles-tag-2-timings.h"
 #include "hal/system-clock.hpp"
 #include <stdio.h>
 
@@ -34,13 +36,14 @@ void MilesTag2Receiver::turnOff()
 
 void MilesTag2Receiver::interrogate()
 {
-	if (getCurrentLength() == 14 && getBit(0) == false) {
-		parseAndCallShot();
-		resetReceiver();
-		// We have shot mesage
+	if (m_nextInterrogationCallback)
+	{
+		m_nextInterrogationCallback();
+		m_nextInterrogationCallback = nullptr;
+		return;
 	}
 
-	    /// @todo determine message type
+	parseVariableSizeMessage();
 }
 
 void MilesTag2Receiver::enableDebug(bool debug)
@@ -104,15 +107,73 @@ int MilesTag2Receiver::getCurrentLength()
 }
 
 
-void MilesTag2Receiver::parseAndCallShot()
+bool MilesTag2Receiver::parseConstantSizeMessage()
 {
-	unsigned int playerId   = m_data[0] & ~(1 << 7);
-	unsigned int teamId     = m_data[1] >> 6;
-	unsigned int damageCode = (m_data[1] & 0b00111100) >> 2;
-	if (m_shotCallback)
-		m_shotCallback(teamId, playerId, decodeDamage(damageCode));
+	if (getCurrentLength() == 14 && getBit(0) == false)
+	{
+		// We have the shot
+		unsigned int playerId   = m_data[0] & ~(1 << 7);
+		unsigned int teamId     = m_data[1] >> 6;
+		unsigned int damageCode = (m_data[1] & 0b00111100) >> 2;
+		if (m_shotCallback)
+		{
+			m_nextInterrogationCallback = std::bind(m_shotCallback, teamId, playerId, decodeDamage(damageCode));
+		} else {
+			m_nextInterrogationCallback = nullptr;
+			printf("Shot callback not set!\n");
+		}
+		return true;
+	}
+	else if (getCurrentLength() == 16 && m_data[0] == MT2Std::Byte1::command)
+	{
+		printf("Command with code %x detected\n", m_data[1]);
+		RCSPStream stream;
+		switch(m_data[1])
+		{
+		case MT2Std::Commands::adminKill:
+			break;
+		case MT2Std::Commands::pauseOrUnpause:
+			break;
+		case MT2Std::Commands::startGame:
+			break;
+		case MT2Std::Commands::restoreDefaults:
+			break;
+		case MT2Std::Commands::respawn:
+			stream.addCall(ConfigCodes::Player::Functions::playerRespawn);
+			break;
+		case MT2Std::Commands::newGameImmediate:
+			break;
+		case MT2Std::Commands::fullAmmo:
+			break;
+		case MT2Std::Commands::endGame:
+			break;
+		case MT2Std::Commands::resetClock:
+			break;
+		case MT2Std::Commands::initializePlayer:
+			break;
+		case MT2Std::Commands::explodePlayer:
+			break;
+		case MT2Std::Commands::newGameReady:
+			break;
+		case MT2Std::Commands::fullHealth:
+			break;
+		case MT2Std::Commands::fullArmor:
+			break;
+		case MT2Std::Commands::clearScores:
+			break;
+		case MT2Std::Commands::testSensors:
+			break;
+		case MT2Std::Commands::stunPlayer:
+			break;
+		case MT2Std::Commands::disarmPlayer:
+			break;
+		default:
+			return false;
+		}
+		stream.dispatch();
+	}
 	else
-		printf("Shot callback not set!\n");
+		return false;
 }
 
 void MilesTag2Receiver::resetReceiver()
@@ -122,6 +183,7 @@ void MilesTag2Receiver::resetReceiver()
 	m_state = RS_WAITING_HEADER;
 	m_falseImpulse = false;
 	m_dataReady = false;
+	m_nextInterrogationCallback = nullptr;
 }
 
 void MilesTag2Receiver::interruptHandler(bool state)
@@ -208,22 +270,53 @@ void MilesTag2Receiver::interruptHandler(bool state)
 				return;
 			}
 			if (m_debug) printf ("b \n");
-			if (isCorrect(dtime, BIT_ONE_PERIOD_MIN, BIT_ONE_PERIOD_MAX)) {
+			if (isCorrect(dtime, BIT_ONE_PERIOD_MIN, BIT_ONE_PERIOD_MAX))
+			{
+				// We have bit "1"
 				if (m_debug) printf("ac 1 \n");
 				saveBit(true);
 				m_state = RS_SPACE;
-				if (getCurrentLength() == 14)
-					m_dataReady = true;
-			} else if (isCorrect(dtime, BIT_ZERO_PERIOD_MIN, BIT_ZERO_PERIOD_MAX)) {
+			} else if (isCorrect(dtime, BIT_ZERO_PERIOD_MIN, BIT_ZERO_PERIOD_MAX)){
+				// We have bit "0"
 				if (m_debug) printf("ac 0 \n");
 				saveBit(false);
 				m_state = RS_SPACE;
-				if (getCurrentLength() == 14)
-					m_dataReady = true;
 			} else {
+				// Translation broken
+				resetReceiver();
+				return;
+			}
+			// Check if we have consistent message with fixed size. This is
+			// to prevent loosing information when interrogation period is long
+			if (parseConstantSizeMessage())
+			{
+				// We have consistent message
 				resetReceiver();
 				return;
 			}
 		} break;
 	}
+}
+
+
+
+bool MilesTag2Receiver::parseVariableSizeMessage()
+{
+	unsigned int time = systemClock->getTime();
+	if (time - m_lastTime < TIME_BEFORE_PARSING)
+		return false;
+
+	if (getCurrentLength() >= 8 + RCSPAggregator::minimalStreamSize
+		&& getCurrentLength() % 8 == 0
+		&& m_data[0] == RCSP_MESSAGE)
+	{
+		printf("Infrared: general purpose RCSP message detected\n");
+		// We have message for RCSP system
+		unsigned int messageSize = getCurrentLength() / 8 - 1;
+		uint8_t *message = &m_data[1];
+		if (RCSPAggregator::instance().isStreamConsistent(message, messageSize))
+			RCSPAggregator::instance().dispatchStream(message, messageSize);
+	}
+	resetReceiver();
+	return false;
 }

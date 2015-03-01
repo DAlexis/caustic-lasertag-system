@@ -71,6 +71,24 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 	return unsupported;
 }
 
+bool RCSPAggregator::isStreamConsistent(uint8_t* stream, uint32_t size)
+{
+	//uint8_t* position = stream;
+	for (uint8_t* position = stream; position - stream <= size; position++)
+	{
+		OperationSize operationSize = *position;
+		unsigned int thisOperationSize = sizeof(operationSize)+sizeof(OperationCode)+operationSize;
+		position += thisOperationSize;
+		/// TODO Add "nope" ignoring support
+		if (position - stream == size)
+			return true;
+		else if (position - stream > size)
+			return false;
+	}
+	return false;
+}
+
+
 Result RCSPAggregator::parseSring(const char* key, const char* value)
 {
 	//printf("Parsing k = %s, v = %s\n", key, value);

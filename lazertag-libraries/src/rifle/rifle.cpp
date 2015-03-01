@@ -152,7 +152,7 @@ void Rifle::configure()
 	m_mt2Transmitter.setTeamId(1);
 	m_mt2Transmitter.init();
 
-	turnOn(nullptr, 0);
+	rifleTurnOn(nullptr, 0);
 
 	printf("- Mounting sd-card\n");
 	if (!SDCardFS::instance().init())
@@ -266,29 +266,29 @@ void Rifle::updatePlayerState()
 {
 	playerDisplayable.syncAll();
 	if (isEnabled && playerDisplayable.s_health == 0)
-		turnOff(nullptr, 0);
+		rifleTurnOff(nullptr, 0);
 
 	if (!isEnabled && playerDisplayable.s_health != 0)
-		turnOn(nullptr, 0);
+		rifleTurnOn(nullptr, 0);
 
 	playerDisplayable.print();
 }
 
-void Rifle::turnOff(void*, uint16_t)
+void Rifle::rifleTurnOff(void*, uint16_t)
 {
 	isEnabled = false;
 	m_fireButton->turnOff();
 	m_reloadButton->turnOff();
 }
 
-void Rifle::turnOn(void*, uint16_t)
+void Rifle::rifleTurnOn(void*, uint16_t)
 {
 	isEnabled = true;
 	m_fireButton->turnOn();
 	m_reloadButton->turnOn();
 }
 
-void Rifle::reset(void*, uint16_t)
+void Rifle::rifleReset(void*, uint16_t)
 {
 	state.reset();
 	//turnOn(nullptr, 0);

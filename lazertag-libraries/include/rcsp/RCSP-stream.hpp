@@ -69,6 +69,8 @@ public:
 		uint32_t resendTimeDelta
 	);
 
+	void dispatch();
+
 	bool empty();
 private:
 

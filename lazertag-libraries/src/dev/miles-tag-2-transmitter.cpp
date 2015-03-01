@@ -5,15 +5,11 @@
  *      Author: alexey
  */
 
+#include <dev/miles-tag-details.h>
 #include "dev/miles-tag-2.hpp"
-#include "dev/miles-tag-2-timings.h"
-
 #include <stdio.h>
 
-#define SHOT_LENGTH             14
-#define MESSAGE_LENGTH          (3*8)
 
-#define MESSAGE_END_BYTE        0xE8
 
 /////////////////////
 // Transmitter
@@ -125,7 +121,7 @@ uint8_t MilesTag2Transmitter::encodeDamage(uint8_t damage)
 void MilesTag2Transmitter::addHealth(uint8_t value)
 {
     m_length = MESSAGE_LENGTH;
-    m_data[0] = 0x80;
+    m_data[0] = MT2Std::Byte1::addHealth;
     m_data[1] = value;
     m_data[3] = MESSAGE_END_BYTE;
     beginTransmission();
@@ -134,7 +130,7 @@ void MilesTag2Transmitter::addHealth(uint8_t value)
 void MilesTag2Transmitter::addRounds(uint8_t value)
 {
     m_length = MESSAGE_LENGTH;
-    m_data[0] = 0x81;
+    m_data[0] = MT2Std::Byte1::addRounds;
     m_data[1] = value;
     m_data[3] = MESSAGE_END_BYTE;
     beginTransmission();
@@ -143,7 +139,7 @@ void MilesTag2Transmitter::addRounds(uint8_t value)
 void MilesTag2Transmitter::sendCommand(uint8_t commandCode)
 {
     m_length = MESSAGE_LENGTH;
-    m_data[0] = 0x83;
+    m_data[0] = MT2Std::Byte1::command;
     m_data[1] = commandCode;
     m_data[3] = MESSAGE_END_BYTE;
     beginTransmission();
@@ -151,99 +147,99 @@ void MilesTag2Transmitter::sendCommand(uint8_t commandCode)
 
 void MilesTag2Transmitter::adminKill()
 {
-    sendCommand(0x00);
+    sendCommand(MT2Std::Commands::adminKill);
 }
 
 void MilesTag2Transmitter::pauseOrUnpause()
 {
-    sendCommand(0x01);
+    sendCommand(MT2Std::Commands::pauseOrUnpause);
 }
 
 void MilesTag2Transmitter::startGame()
 {
-    sendCommand(0x02);
+    sendCommand(MT2Std::Commands::startGame);
 }
 
 void MilesTag2Transmitter::restoreDefaults()
 {
-    sendCommand(0x03);
+    sendCommand(MT2Std::Commands::restoreDefaults);
 }
 
 void MilesTag2Transmitter::respawn()
 {
-    sendCommand(0x04);
+    sendCommand(MT2Std::Commands::respawn);
 }
 
 void MilesTag2Transmitter::newGameImmediate()
 {
-    sendCommand(0x05);
+    sendCommand(MT2Std::Commands::newGameImmediate);
 }
 
 void MilesTag2Transmitter::fullAmmo()
 {
-    sendCommand(0x06);
+    sendCommand(MT2Std::Commands::fullAmmo);
 }
 
 void MilesTag2Transmitter::endGame()
 {
-    sendCommand(0x07);
+    sendCommand(MT2Std::Commands::endGame);
 }
 
 void MilesTag2Transmitter::resetClock()
 {
-    sendCommand(0x08);
+    sendCommand(MT2Std::Commands::resetClock);
 }
 
 void MilesTag2Transmitter::initializePlayer()
 {
-    sendCommand(0x0A);
+    sendCommand(MT2Std::Commands::initializePlayer);
 }
 
 void MilesTag2Transmitter::explodePlayer()
 {
-    sendCommand(0x0B);
+    sendCommand(MT2Std::Commands::explodePlayer);
 }
 
 void MilesTag2Transmitter::newGameReady()
 {
-    sendCommand(0x0C);
+    sendCommand(MT2Std::Commands::newGameReady);
 }
 
 void MilesTag2Transmitter::fullHealth()
 {
-    sendCommand(0x0D);
+    sendCommand(MT2Std::Commands::fullHealth);
 }
 
 void MilesTag2Transmitter::fullArmor()
 {
-    sendCommand(0x0F);
+    sendCommand(MT2Std::Commands::fullArmor);
 }
 
 void MilesTag2Transmitter::clearScores()
 {
-    sendCommand(0x14);
+    sendCommand(MT2Std::Commands::clearScores);
 }
 
 void MilesTag2Transmitter::testSensors()
 {
-    sendCommand(0x15);
+    sendCommand(MT2Std::Commands::testSensors);
 }
 
 void MilesTag2Transmitter::stunPlayer()
 {
-    sendCommand(0x16);
+    sendCommand(MT2Std::Commands::stunPlayer);
 }
 
 void MilesTag2Transmitter::disarmPlayer()
 {
-    sendCommand(0x17);
+    sendCommand(MT2Std::Commands::disarmPlayer);
 }
 
 
 void MilesTag2Transmitter::ammoPickup(uint8_t ammoBoxId)
 {
     m_length = MESSAGE_LENGTH;
-    m_data[0] = 0x8A;
+    m_data[0] = MT2Std::Byte1::ammoPickup;
     m_data[1] = ammoBoxId;
     m_data[3] = MESSAGE_END_BYTE;
     beginTransmission();
@@ -252,7 +248,7 @@ void MilesTag2Transmitter::ammoPickup(uint8_t ammoBoxId)
 void MilesTag2Transmitter::healthPickup(uint8_t healthBoxId)
 {
     m_length = MESSAGE_LENGTH;
-    m_data[0] = 0x8B;
+    m_data[0] = MT2Std::Byte1::healthPickup;
     m_data[1] = healthBoxId;
     m_data[3] = MESSAGE_END_BYTE;
     beginTransmission();
@@ -261,7 +257,7 @@ void MilesTag2Transmitter::healthPickup(uint8_t healthBoxId)
 void MilesTag2Transmitter::flagPickup(uint8_t flagBoxId)
 {
     m_length = MESSAGE_LENGTH;
-    m_data[0] = 0x8C;
+    m_data[0] = MT2Std::Byte1::flagPickup;
     m_data[1] = flagBoxId;
     m_data[3] = MESSAGE_END_BYTE;
     beginTransmission();

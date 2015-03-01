@@ -29,7 +29,7 @@ public:
 	void setPlayerId(uint8_t playerId);
 	void setTeamId(uint8_t teamId);
 
-	/// Set output power in percents. This function may conflict with setChannel();
+	/// Set output power in percents. This function may conflict with setChannel()
 	void setPower(unsigned int percent);
 	/// Set output channel if supported by fire emitter. This function may conflict with setPower()
 	void setChannel(unsigned int channel);
@@ -98,7 +98,7 @@ public:
 
     void enableDebug(bool debug = true);
 private:
-
+    using OnNextInterrogationCallback = std::function<void(void)>;
 	enum ReceivingState
 	{
 		RS_WAITING_HEADER = 0,
@@ -112,9 +112,11 @@ private:
 	bool isCorrect(unsigned int value, unsigned int min, unsigned int max);
 	int getCurrentLength();
 	bool getBit(unsigned int n);
-	void parseAndCallShot();
+	bool parseConstantSizeMessage();
 	void resetReceiver();
 	void interruptHandler(bool state);
+	/// Currently means "parse general-purpose RCSP message"
+	bool parseVariableSizeMessage();
 
 	ReceivingState m_state = RS_WAITING_HEADER;
 	bool m_falseImpulse = false;
@@ -128,6 +130,7 @@ private:
 	uint8_t *m_pCurrentByte = m_data;
 	uint8_t m_currentBit;
     IExternalInterruptManager* m_exti = nullptr;
+    OnNextInterrogationCallback m_nextInterrogationCallback = nullptr;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_ */

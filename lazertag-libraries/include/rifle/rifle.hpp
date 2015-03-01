@@ -43,9 +43,9 @@ public:
 
 	void configure();
 
-	FUNCION(ConfigCodes::Rifle::Functions, Rifle, turnOn);
-	FUNCION(ConfigCodes::Rifle::Functions, Rifle, turnOff);
-	FUNCION(ConfigCodes::Rifle::Functions, Rifle, reset);
+	FUNCION(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
+	FUNCION(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);
+	FUNCION(ConfigCodes::Rifle::Functions, Rifle, rifleReset);
 
 	RifleConfiguration config;
 	RifleState state{&config};

@@ -111,6 +111,15 @@ uint16_t RCSPStream::send(
 	);
 }
 
+void RCSPStream::dispatch()
+{
+	if (!empty())
+	{
+		RCSPAggregator::instance().dispatchStream(m_stream, m_cursor);
+	}
+}
+
+
 bool RCSPStream::empty()
 {
 	return (m_cursor == 0);

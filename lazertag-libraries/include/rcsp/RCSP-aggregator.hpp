@@ -114,11 +114,14 @@ public:
 		NOT_READABLE
 	};
 
+	constexpr static unsigned int minimalStreamSize = sizeof(OperationSize) + sizeof(OperationCode);
+
 	using ResultType = DetailedResult<AddingResult>;
 
 	static RCSPAggregator& instance();
 
 	void registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor);
+
 
 	/**
 	 * Dispatch binary stream with encoded operations
@@ -127,6 +130,8 @@ public:
 	 * @return Count of unsupported operation found on stream
 	 */
 	uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
+
+	bool isStreamConsistent(uint8_t* stream, uint32_t size);
 
 	Result readIni(const char* filename);
 

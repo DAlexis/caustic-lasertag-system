@@ -152,10 +152,10 @@ void LEDFireEmitter::setChannel(unsigned int channel)
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
 	TIM_OCInitStructure.TIM_Pulse = m_radioTimerPeriod / 2;
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OC1Init(TIM2, &TIM_OCInitStructure);
-	TIM_OC2Init(TIM2, &TIM_OCInitStructure);
-	TIM_OC3Init(TIM2, &TIM_OCInitStructure);
-	TIM_OC4Init(TIM2, &TIM_OCInitStructure);
+	TIM_OC1Init(TIM3, &TIM_OCInitStructure);
+	TIM_OC2Init(TIM3, &TIM_OCInitStructure);
+	TIM_OC3Init(TIM3, &TIM_OCInitStructure);
+	TIM_OC4Init(TIM3, &TIM_OCInitStructure);
 
 	// Enabling one output channel
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
@@ -163,14 +163,14 @@ void LEDFireEmitter::setChannel(unsigned int channel)
 	switch(m_PWMChannel)
 	{
 	default:
-	case 1: TIM_OC1Init(TIM2, &TIM_OCInitStructure); break;
-	case 2: TIM_OC2Init(TIM2, &TIM_OCInitStructure); break;
-	case 3: TIM_OC3Init(TIM2, &TIM_OCInitStructure); break;
-	case 4: TIM_OC4Init(TIM2, &TIM_OCInitStructure); break;
+	case 1: TIM_OC1Init(TIM3, &TIM_OCInitStructure); break;
+	case 2: TIM_OC2Init(TIM3, &TIM_OCInitStructure); break;
+	case 3: TIM_OC3Init(TIM3, &TIM_OCInitStructure); break;
+	case 4: TIM_OC4Init(TIM3, &TIM_OCInitStructure); break;
 	}
 
 	// What does this function do?
-	//TIM_ARRPreloadConfig(TIM2, ENABLE);
+	//TIM_ARRPreloadConfig(TIM3, ENABLE);
 }
 
 void LEDFireEmitter::modulationOn()
