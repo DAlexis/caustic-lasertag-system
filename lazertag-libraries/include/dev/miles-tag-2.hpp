@@ -25,10 +25,14 @@ public:
 	MilesTag2Transmitter();
 	~MilesTag2Transmitter() {}
 
-	void init();
+	void init(unsigned int fireEmitterNumber = 0);
 	void setPlayerId(uint8_t playerId);
 	void setTeamId(uint8_t teamId);
 
+	/// Set output power in percents. This function may conflict with setChannel();
+	void setPower(unsigned int percent);
+	/// Set output channel if supported by fire emitter. This function may conflict with setPower()
+	void setChannel(unsigned int channel);
 	uint8_t getPlayerId() { return m_playerId; }
 	uint8_t getTeamId() { return m_teamId; }
 

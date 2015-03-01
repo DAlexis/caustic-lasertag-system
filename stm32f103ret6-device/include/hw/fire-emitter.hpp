@@ -18,6 +18,7 @@ public:
 	void init();
 	void startImpulsePack(bool isLedOn, unsigned int delayMs);
 	void setPower(uint8_t powerPercent);
+	void setChannel(unsigned int channel);
 	void setCarrierFrequency(uint32_t frequency);
 
 	void IRQHandler();

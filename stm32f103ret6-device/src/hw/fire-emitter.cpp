@@ -124,6 +124,26 @@ void LEDFireEmitter::setCarrierFrequency(uint32_t frequency)
 
 void LEDFireEmitter::setPower(uint8_t powerPercent)
 {
+	if (powerPercent <= 25)
+	{
+		setChannel(1);
+	}
+	else if (powerPercent <= 50)
+	{
+		setChannel(2);
+	}
+	else if (powerPercent <= 75)
+	{
+		setChannel(3);
+	}
+	else
+	{
+		setChannel(4);
+	}
+}
+
+void LEDFireEmitter::setChannel(unsigned int channel)
+{
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 	TIM_OCStructInit(&TIM_OCInitStructure);
 
@@ -132,36 +152,25 @@ void LEDFireEmitter::setPower(uint8_t powerPercent)
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
 	TIM_OCInitStructure.TIM_Pulse = m_radioTimerPeriod / 2;
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OC1Init(TIM3, &TIM_OCInitStructure);
-	TIM_OC2Init(TIM3, &TIM_OCInitStructure);
-	TIM_OC3Init(TIM3, &TIM_OCInitStructure);
-	TIM_OC4Init(TIM3, &TIM_OCInitStructure);
+	TIM_OC1Init(TIM2, &TIM_OCInitStructure);
+	TIM_OC2Init(TIM2, &TIM_OCInitStructure);
+	TIM_OC3Init(TIM2, &TIM_OCInitStructure);
+	TIM_OC4Init(TIM2, &TIM_OCInitStructure);
 
 	// Enabling one output channel
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	if (powerPercent <= 25)
+	m_PWMChannel = channel;
+	switch(m_PWMChannel)
 	{
-		m_PWMChannel = 1;
-		TIM_OC1Init(TIM3, &TIM_OCInitStructure);
-	}
-	else if (powerPercent <= 50)
-	{
-		m_PWMChannel = 2;
-		TIM_OC2Init(TIM3, &TIM_OCInitStructure);
-	}
-	else if (powerPercent <= 75)
-	{
-		m_PWMChannel = 3;
-		TIM_OC3Init(TIM3, &TIM_OCInitStructure);
-	}
-	else
-	{
-		m_PWMChannel = 4;
-		TIM_OC4Init(TIM3, &TIM_OCInitStructure);
+	default:
+	case 1: TIM_OC1Init(TIM2, &TIM_OCInitStructure); break;
+	case 2: TIM_OC2Init(TIM2, &TIM_OCInitStructure); break;
+	case 3: TIM_OC3Init(TIM2, &TIM_OCInitStructure); break;
+	case 4: TIM_OC4Init(TIM2, &TIM_OCInitStructure); break;
 	}
 
 	// What does this function do?
-	//TIM_ARRPreloadConfig(TIM3, ENABLE);
+	//TIM_ARRPreloadConfig(TIM2, ENABLE);
 }
 
 void LEDFireEmitter::modulationOn()

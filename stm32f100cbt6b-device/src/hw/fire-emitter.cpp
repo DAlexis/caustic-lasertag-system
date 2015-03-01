@@ -25,18 +25,18 @@ void LEDFireEmitter::init()
 	//////////////////////
 	// GPIO initialization - PWM output pins
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_StructInit(&GPIO_InitStructure);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+//	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	//////////////////////
 	// TIM2 initialization - 38/40/56kHz pulse through PWM
@@ -121,8 +121,27 @@ void LEDFireEmitter::setCarrierFrequency(uint32_t frequency)
 	TIM_TimeBaseInitStructure.TIM_Period = m_radioTimerPeriod-1;
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
 }
-
 void LEDFireEmitter::setPower(uint8_t powerPercent)
+{
+	if (powerPercent <= 25)
+	{
+		setChannel(1);
+	}
+	else if (powerPercent <= 50)
+	{
+		setChannel(2);
+	}
+	else if (powerPercent <= 75)
+	{
+		setChannel(3);
+	}
+	else
+	{
+		setChannel(4);
+	}
+}
+
+void LEDFireEmitter::setChannel(unsigned int channel)
 {
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 	TIM_OCStructInit(&TIM_OCInitStructure);
@@ -139,25 +158,14 @@ void LEDFireEmitter::setPower(uint8_t powerPercent)
 
 	// Enabling one output channel
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	if (powerPercent <= 25)
+	m_PWMChannel = channel;
+	switch(m_PWMChannel)
 	{
-		m_PWMChannel = 1;
-		TIM_OC1Init(TIM2, &TIM_OCInitStructure);
-	}
-	else if (powerPercent <= 50)
-	{
-		m_PWMChannel = 2;
-		TIM_OC2Init(TIM2, &TIM_OCInitStructure);
-	}
-	else if (powerPercent <= 75)
-	{
-		m_PWMChannel = 3;
-		TIM_OC3Init(TIM2, &TIM_OCInitStructure);
-	}
-	else
-	{
-		m_PWMChannel = 4;
-		TIM_OC4Init(TIM2, &TIM_OCInitStructure);
+	default:
+	case 1: TIM_OC1Init(TIM2, &TIM_OCInitStructure); break;
+	case 2: TIM_OC2Init(TIM2, &TIM_OCInitStructure); break;
+	case 3: TIM_OC3Init(TIM2, &TIM_OCInitStructure); break;
+	case 4: TIM_OC4Init(TIM2, &TIM_OCInitStructure); break;
 	}
 
 	// What does this function do?

@@ -25,22 +25,22 @@ public:
 	// Buttons mapping
 	// Default
 	uint8_t respawnButtonPort    = 0;
-	uint8_t respawnButtonPin     = 0;
+	uint8_t respawnButtonPin     = 2;
 
 	uint8_t killButtonPort       = 0;
-	uint8_t killButtonPin        = 0;
+	uint8_t killButtonPin        = 3;
 
 	uint8_t teamRedButtonPort    = 0;
-	uint8_t teamRedButtonPin     = 0;
+	uint8_t teamRedButtonPin     = 4;
 
 	uint8_t teamBlueButtonPort   = 0;
-	uint8_t teamBlueButtonPin    = 0;
+	uint8_t teamBlueButtonPin    = 5;
 
 	uint8_t decreaseHPButtonPort = 0;
-	uint8_t decreaseHPButtonPin  = 0;
+	uint8_t decreaseHPButtonPin  = 6;
 
 	uint8_t increaseHPButtonPort = 0;
-	uint8_t increaseHPButtonPin  = 0;
+	uint8_t increaseHPButtonPin  = 7;
 
 private:
 	ButtonManager* m_respawnButton = nullptr;
@@ -60,6 +60,8 @@ private:
 
 	ButtonManager* m_increaseHPButton = nullptr;
 	void increaseHPButtonCb(bool);
+
+	MilesTag2Transmitter m_mt2;
 };
 
 #endif /* INCLUDE_SIMPLE_IRRC_SIMPLE_IRRC_HPP_ */

@@ -35,6 +35,16 @@ void MilesTag2Transmitter::setTeamId(uint8_t teamId)
     m_teamId = teamId;
 }
 
+void MilesTag2Transmitter::setPower(unsigned int percent)
+{
+	m_fireEmitter->setPower(percent);
+}
+
+void MilesTag2Transmitter::setChannel(unsigned int channel)
+{
+	m_fireEmitter->setChannel(channel);
+}
+
 void MilesTag2Transmitter::shot(uint8_t damage)
 {
     // Forming data package
@@ -266,9 +276,9 @@ void MilesTag2Transmitter::cursorToStart()
 }
 
 ///////////////////
-void MilesTag2Transmitter::init()
+void MilesTag2Transmitter::init(unsigned int fireEmitterNumber)
 {
-	m_fireEmitter = fireEmittersPool->getFireEmitter(0);
+	m_fireEmitter = fireEmittersPool->getFireEmitter(fireEmitterNumber);
 	m_fireEmitter->setCallback(std::bind(&MilesTag2Transmitter::fireCallback, this, std::placeholders::_1));
 	m_fireEmitter->init();
 }

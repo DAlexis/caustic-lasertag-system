@@ -20,6 +20,7 @@ public:
 	virtual void setCallback(FireEmitterCallback callback) = 0;
 	virtual void startImpulsePack(bool isLedOn, unsigned int delayMs) = 0;
 	virtual void setPower(uint8_t powerPercent) = 0;
+	virtual void setChannel(unsigned int channel) = 0;
 	virtual void setCarrierFrequency(uint32_t frequency) = 0;
 };
 
