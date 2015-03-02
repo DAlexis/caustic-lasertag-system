@@ -47,8 +47,7 @@ bool PlayerState::damage(uint8_t damage)
 
 	if (totalDamage > s_health)
 	{
-		s_health = 0;
-		deathsCount++;
+		kill();
 		return true;
 	} else {
 		s_health -= totalDamage;
@@ -84,3 +83,11 @@ void PlayerState::respawn()
 	s_shotsCoeff = m_configuration->shotsCoeff;
 	s_lifesCount--;
 }
+
+void PlayerState::kill()
+{
+	s_health = 0;
+	s_armor = 0;
+	deathsCount++;
+}
+

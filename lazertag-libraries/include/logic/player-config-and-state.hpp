@@ -74,6 +74,7 @@ public:
 	bool isAlive();
 	void respawn();
 	void reset();
+	void kill();
 
 private:
 	const PlayerConfiguration* m_configuration = nullptr;

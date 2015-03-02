@@ -131,10 +131,12 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		switch(m_data[1])
 		{
 		case MT2Std::Commands::adminKill:
+			stream.addCall(ConfigCodes::Player::Functions::playerKill);
 			break;
 		case MT2Std::Commands::pauseOrUnpause:
 			break;
 		case MT2Std::Commands::startGame:
+			stream.addCall(ConfigCodes::Player::Functions::playerReset);
 			break;
 		case MT2Std::Commands::restoreDefaults:
 			break;

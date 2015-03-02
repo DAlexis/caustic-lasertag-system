@@ -39,7 +39,7 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 		position += sizeof(OperationSize);
 		OperationCode *pOperationCode = reinterpret_cast<OperationCode*> (position);
 		position += sizeof(OperationCode);
-		//printf("Dispatched opcode: %u\n", *pOperationCode);
+		printf("Dispatched opcode: %u\n", *pOperationCode);
 		if (isParameterRequest(*pOperationCode))
 		{
 			if (answerStream)

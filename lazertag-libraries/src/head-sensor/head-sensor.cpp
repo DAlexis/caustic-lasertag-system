@@ -28,11 +28,10 @@ void HeadSensor::configure()
 	m_mainSensor.init(exti);
 	//m_mainSensor.enableDebug(true);
 
-	reset();
+	playerReset(nullptr, 0);
 
 	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, &m_mainSensor), false, 50000, 30000);
 
-	//m_mainSensor.enableDebug(true);
 	RCSPModem::instance().init();
 
 	printf("Creating console commands for head sensor\n");
@@ -62,25 +61,31 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	if (!playerState.isAlive()) {
 		printf("Player died.\n");
 		/// Notifying weapons
-		for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
-		{
-			printf("Turning off weapon...\n");
-			RCSPStream stream;
-			stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOff);
-			stream.send(*it, true, nullptr);
-		}
+		turnOffWeapons();
 	}
 }
 
-void HeadSensor::respawn()
+void HeadSensor::playerRespawn(void*, uint16_t)
 {
 	playerState.respawn();
+	turnOnAndResetWeapons();
 	printf("Player spawned\n");
 }
 
-void HeadSensor::reset()
+void HeadSensor::playerReset(void*, uint16_t)
 {
 	playerState.reset();
+	turnOnAndResetWeapons();
+	printf("Player reseted\n");
+}
+
+void HeadSensor::playerKill(void*, uint16_t)
+{
+	playerState.kill();
+}
+
+void HeadSensor::turnOnAndResetWeapons()
+{
 	/// Notifying weapons
 	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 	{
@@ -90,7 +95,17 @@ void HeadSensor::reset()
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOn);
 		stream.send(*it, true, nullptr);
 	}
-	printf("Player reseted\n");
+}
+
+void HeadSensor::turnOffWeapons()
+{
+	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+	{
+		printf("Turning off weapon...\n");
+		RCSPStream stream;
+		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOff);
+		stream.send(*it, true, nullptr);
+	}
 }
 
 /////////////////////

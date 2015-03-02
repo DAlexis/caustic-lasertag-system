@@ -25,13 +25,16 @@ public:
 	PlayerState playerState{&playerConfig};
 	DeviceParameters device;
 
+	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerRespawn);
+	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerReset);
+	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerKill);
 private:
 	// Test functions
 	void testDie(const char*);
 
 	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage);
-	void respawn();
-	void reset();
+	void turnOnAndResetWeapons();
+	void turnOffWeapons();
 
 	MilesTag2Receiver m_mainSensor;
 	std::set<DeviceAddress> m_weapons;
