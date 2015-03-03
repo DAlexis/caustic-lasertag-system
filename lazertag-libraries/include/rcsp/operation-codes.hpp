@@ -16,6 +16,16 @@
 
 #define FUNC_CODE(function, value)  constexpr uint16_t function = SetCommandOC(value);
 
+/*
+ *
+ * Variables naming guideline:
+ *    variableMax
+ *    variableMin
+ *    variableStart
+ *    variableCurrent
+ */
+
+
 using UintParameter = uint16_t;
 using PlayerId = uint8_t[3];
 
@@ -48,10 +58,13 @@ namespace ConfigCodes
 			PAR_CODE(reloadAction,         16)
 			PAR_CODE(autoReload,           17)
 
-			PAR_CODE(magazinesCount,           20)
-			PAR_CODE(bulletsInMagazineAtStart, 21)
-			PAR_CODE(bulletsPerMagazine,       22)
-			PAR_CODE(reloadingTime,            23)
+			PAR_CODE(magazinesCountStart,      20)
+			PAR_CODE(magazinesCountMax,        21)
+
+			PAR_CODE(bulletsInMagazineStart,   22)
+			PAR_CODE(bulletsInMagazineMax,     23)
+
+			PAR_CODE(reloadingTime,            24)
 
 			PAR_CODE(heatPerShot,              30)
 			PAR_CODE(heatLossPerSec,           31)
@@ -60,8 +73,10 @@ namespace ConfigCodes
 		namespace State
 		{
 			// Rifle state
-			PAR_CODE(bulletsLeft,             101)
-			PAR_CODE(magazinesLeft,           102)
+			PAR_CODE(bulletsInMagazineCurrent, 101)
+			PAR_CODE(magazinesCountCurrent,    102)
+
+			PAR_CODE(heatnessCurrent,    110)
 		}
 
 		namespace Functions
@@ -78,31 +93,32 @@ namespace ConfigCodes
 		namespace Configuration
 		{
 			/// Player configuration
-			PAR_CODE(health,      1000)
-			PAR_CODE(armor,       1001)
+			PAR_CODE(healthMax,      1000)
+			PAR_CODE(armorMax,       1001)
+			PAR_CODE(healthStart,       1003)
+			PAR_CODE(armorStart,       1004)
+
+			PAR_CODE(isHealable,   1010)
+			PAR_CODE(lifesCount,   1011)
 
 			/// Effectivity of armor
-			PAR_CODE(armorCoeff,  1002)
+			PAR_CODE(armorCoeffStart,  1012)
 
 			/// Simply multiplied by damage to player
-			PAR_CODE(damageCoeff, 1003)
+			PAR_CODE(damageCoeffStart, 1013)
 
 			/// Multiplied by player's shutting damage
-			PAR_CODE(shotsCoeff,  1004)
+			PAR_CODE(shotsCoeffStart,  1014)
 
 			/// Multiplied by friendly fire
-			PAR_CODE(frendlyFireCoeff,      1005)
+			PAR_CODE(frendlyFireCoeff,      1015)
 
-			PAR_CODE(selfShotCoeff,         1006)
+			PAR_CODE(selfShotCoeff,         1016)
 
-			PAR_CODE(isHealable,   1007)
-			PAR_CODE(lifesCount,   1008)
-
-
-			PAR_CODE(shockDelay,        1010)
-			PAR_CODE(preRespawnDelay,   1011)
-			PAR_CODE(postRespawnDelay,  1012)
-			PAR_CODE(autoRespawn,       1013)
+			PAR_CODE(shockDelay,        1020)
+			PAR_CODE(preRespawnDelay,   1021)
+			PAR_CODE(postRespawnDelay,  1022)
+			PAR_CODE(autoRespawn,       1023)
 
 			PAR_CODE(plyerId,        1030)
 			PAR_CODE(plyerMT2Id,     1031)
@@ -117,13 +133,13 @@ namespace ConfigCodes
 
 		namespace State
 		{
-			PAR_CODE(s_health,      1100)
-			PAR_CODE(s_armor,       1101)
-			PAR_CODE(s_armorCoeff,  1102)
-			PAR_CODE(s_damageCoeff, 1103)
-			PAR_CODE(s_shotsCoeff,  1104)
+			PAR_CODE(healthCurrent,      1100)
+			PAR_CODE(armorCurrent,       1101)
+			PAR_CODE(armorCoeffCurrent,  1102)
+			PAR_CODE(damageCoeffCurrent, 1103)
+			PAR_CODE(shotsCoeffCurrent,  1104)
 
-			PAR_CODE(s_lifesCount,  1005)
+			PAR_CODE(lifesCountCurrent,  1005)
 
 			PAR_CODE(pointsCount, 1110)
 			PAR_CODE(killsCount,  1111)

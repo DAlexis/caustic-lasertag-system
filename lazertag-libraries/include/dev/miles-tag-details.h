@@ -74,4 +74,9 @@ namespace MT2Std
 	}
 }
 
+inline int decodeAddHealth(unsigned int code)
+{
+	return code <= 50 ? code : code - 100;
+}
+
 #endif /* LAZERTAG_RIFLE_INCLUDE_MILES_TAG_2_TIMINGS_H_ */

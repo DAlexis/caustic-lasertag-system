@@ -20,13 +20,13 @@
 
 PlayerDisplayableData::PlayerDisplayableData()
 {
-	health = 0;
-	armor = 0;
+	healthMax = 0;
+	armorMax = 0;
 
-	s_health = 0;
-	s_armor = 0;
+	healthCurrent = 0;
+	armorCurrent = 0;
 
-	s_lifesCount = 0;
+	lifesCountCurrent = 0;
 	pointsCount = 0;
 	killsCount = 0;
 	deathsCount = 0;
@@ -35,11 +35,11 @@ PlayerDisplayableData::PlayerDisplayableData()
 void PlayerDisplayableData::syncAll()
 {
 	RCSPMultiStream stream;
-	stream.addRequest(ConfigCodes::Player::Configuration::health);
-	stream.addRequest(ConfigCodes::Player::Configuration::armor);
-	stream.addRequest(ConfigCodes::Player::State::s_health);
-	stream.addRequest(ConfigCodes::Player::State::s_armor);
-	stream.addRequest(ConfigCodes::Player::State::s_lifesCount);
+	stream.addRequest(ConfigCodes::Player::Configuration::healthMax);
+	stream.addRequest(ConfigCodes::Player::Configuration::armorMax);
+	stream.addRequest(ConfigCodes::Player::State::healthCurrent);
+	stream.addRequest(ConfigCodes::Player::State::armorCurrent);
+	stream.addRequest(ConfigCodes::Player::State::lifesCountCurrent);
 	stream.addRequest(ConfigCodes::Player::State::pointsCount);
 	stream.addRequest(ConfigCodes::Player::State::killsCount);
 	stream.addRequest(ConfigCodes::Player::State::deathsCount);
@@ -52,19 +52,19 @@ void PlayerDisplayableData::print()
 {
 	printf("\nCurrent player's state:\n");
 	constexpr uint8_t barLength = 10;
-	if (health != 0)
+	if (healthMax != 0)
 	{
 		printf("Health:  ");
-		printBar(barLength, barLength * s_health / health);
-		printf(" %u/%u\n", s_health, health);
+		printBar(barLength, barLength * healthCurrent / healthMax);
+		printf(" %u/%u\n", healthCurrent, healthMax);
 	}
-	if (armor != 0)
+	if (armorMax != 0)
 	{
 		printf("Armor:   ");
-		printBar(barLength, barLength * s_armor / armor);
-		printf(" %u/%u\n", s_armor, armor);
+		printBar(barLength, barLength * armorCurrent / armorMax);
+		printf(" %u/%u\n", armorCurrent, armorMax);
 	}
-	printf("Lifes:  %u\n", s_lifesCount);
+	printf("Lifes:  %u\n", lifesCountCurrent);
 	printf("Points: %u\n", pointsCount);
 	printf("Kills:  %u\n", killsCount);
 	printf("Deaths: %u\n", deathsCount);
@@ -95,9 +95,12 @@ void RifleConfiguration::setDefault()
 	magazineType = MagazineType::unchangeable;
 	reloadAction = ReloadAction::shutterOnly;
 	autoReload = ReloadMode::automatic;
-	magazinesCount = 10;
-	bulletsPerMagazine = 30;
-	bulletsInMagazineAtStart = bulletsPerMagazine;
+
+	magazinesCountMax = 10;
+	magazinesCountStart = magazinesCountMax;
+
+	bulletsInMagazineMax = 30;
+	bulletsInMagazineStart = bulletsInMagazineMax;
 	reloadingTime = 3000000;
 
 	heatPerShot = 0;
@@ -113,8 +116,9 @@ RifleState::RifleState(RifleConfiguration* config) :
 
 void RifleState::reset()
 {
-	bulletsLeft = m_config->bulletsInMagazineAtStart;
-	magazinesLeft = m_config->magazinesCount;
+	bulletsInMagazineCurrent = m_config->bulletsInMagazineStart;
+	magazinesCountCurrent = m_config->magazinesCountStart;
+	heatnessCurrent = 0;
 	lastReloadTime = 0;
 }
 
@@ -196,7 +200,7 @@ void Rifle::makeShot(bool isFirst)
 		return;
 
 	// Check remaining bullets
-	if (state.bulletsLeft == 0)
+	if (state.bulletsInMagazineCurrent == 0)
 	{
 		/// @todo Play empty magazine sound
 		printf("Magazine is empty\n");
@@ -209,7 +213,7 @@ void Rifle::makeShot(bool isFirst)
 	if (!isFirst && !config.automaticAllowed)
 		return;
 
-	state.bulletsLeft--;
+	state.bulletsInMagazineCurrent--;
 	m_mt2Transmitter.shot(config.damageMin);
 	/// @todo Play shot sound
 	WavPlayer::instance().loadFile("sound/shoot-1.wav");
@@ -234,7 +238,7 @@ void Rifle::reload(bool)
 	if (time - state.lastReloadTime < config.reloadingTime)
 		return;
 
-	if (state.magazinesLeft == 0)
+	if (state.magazinesCountCurrent == 0)
 	{
 		/// @todo Play no magazines sound
 		return;
@@ -245,8 +249,8 @@ void Rifle::reload(bool)
 	/// @todo Play reloading sound
 	printf("Reloading...\n");
 	// So reloading
-	state.magazinesLeft--;
-	state.bulletsLeft = config.bulletsPerMagazine;
+	state.magazinesCountCurrent--;
+	state.bulletsInMagazineCurrent = config.bulletsInMagazineMax;
 	m_fireButton->setAutoRepeat(false);
 }
 
@@ -265,10 +269,10 @@ bool Rifle::isReloading()
 void Rifle::updatePlayerState()
 {
 	playerDisplayable.syncAll();
-	if (isEnabled && playerDisplayable.s_health == 0)
+	if (isEnabled && playerDisplayable.healthCurrent == 0)
 		rifleTurnOff(nullptr, 0);
 
-	if (!isEnabled && playerDisplayable.s_health != 0)
+	if (!isEnabled && playerDisplayable.healthCurrent != 0)
 		rifleTurnOn(nullptr, 0);
 
 	playerDisplayable.print();

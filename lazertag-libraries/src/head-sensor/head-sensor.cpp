@@ -49,12 +49,12 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	printf("Cought a shot: team %d, player %d, damage: %d\n", teamId, playerId, damage);
 	if (playerState.isAlive()) {
 		playerState.damage(damage);
-		printf("health: %u, armor: %u\n", playerState.s_health, playerState.s_armor);
+		printf("health: %u, armor: %u\n", playerState.healthCurrent, playerState.armorCurrent);
 		for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 		{
 			RCSPStream stream;
-			stream.addValue(ConfigCodes::Player::State::s_health);
-			stream.addValue(ConfigCodes::Player::State::s_armor);
+			stream.addValue(ConfigCodes::Player::State::healthCurrent);
+			stream.addValue(ConfigCodes::Player::State::armorCurrent);
 			stream.send(*it, true, nullptr);
 		}
 	}
@@ -112,6 +112,6 @@ void HeadSensor::turnOffWeapons()
 // Test functions
 void HeadSensor::testDie(const char*)
 {
-	playerState.s_health = 0;
+	playerState.healthCurrent = 0;
 	shotCallback(0, 0, 0);
 }

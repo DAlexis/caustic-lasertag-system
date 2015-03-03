@@ -24,13 +24,13 @@ public:
 	void syncAll();
 	void print();
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, health);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armor);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, healthMax);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorMax);
 
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_health);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_armor);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, healthCurrent);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, armorCurrent);
 
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_lifesCount);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, lifesCountCurrent);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, pointsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, deathsCount);

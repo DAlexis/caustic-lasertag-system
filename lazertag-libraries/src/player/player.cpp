@@ -14,12 +14,15 @@ PlayerConfiguration::PlayerConfiguration()
 
 void PlayerConfiguration::setDefault()
 {
-	health = 100;
-	armor = 0;
+	healthMax = 100;
+	armorMax = 100;
 
-	armorCoeff = 1;
-	damageCoeff = 1;
-	shotsCoeff = 1;
+	healthStart = 100;
+	armorStart = 100;
+
+	armorCoeffStart = 1;
+	damageCoeffStart = 1;
+	shotsCoeffStart = 1;
 	frendlyFireCoeff = 1;
 	selfShotCoeff = 0;
 	isHealable = 1;
@@ -42,32 +45,32 @@ void PlayerConfiguration::setDefault()
 bool PlayerState::damage(uint8_t damage)
 {
 	UintParameter totalDamage = damage;
-	if (s_health == 0)
+	if (healthCurrent == 0)
 		return true;
 
-	if (totalDamage > s_health)
+	if (totalDamage > healthCurrent)
 	{
 		kill();
 		return true;
 	} else {
-		s_health -= totalDamage;
+		healthCurrent -= totalDamage;
 		return false;
 	}
 }
 
 bool PlayerState::isAlive()
 {
-	return s_health != 0;
+	return healthCurrent != 0;
 }
 
 void PlayerState::reset()
 {
-	s_health = m_configuration->health;
-	s_armor = m_configuration->armor;
-	s_armorCoeff = m_configuration->armorCoeff;
-	s_damageCoeff = m_configuration->damageCoeff;
-	s_shotsCoeff = m_configuration->shotsCoeff;
-	s_lifesCount = m_configuration->lifesCount;
+	healthCurrent = m_configuration->healthStart;
+	armorCurrent = m_configuration->armorStart;
+	armorCoeffCurrent = m_configuration->armorCoeffStart;
+	damageCoeffCurrent = m_configuration->damageCoeffStart;
+	shotsCoeffCurrent = m_configuration->shotsCoeffStart;
+	lifesCountCurrent = m_configuration->lifesCount;
 
 	pointsCount = 0;
 	killsCount = 0;
@@ -76,18 +79,18 @@ void PlayerState::reset()
 
 void PlayerState::respawn()
 {
-	s_health = m_configuration->health;
-	s_armor = m_configuration->armor;
-	s_armorCoeff = m_configuration->armorCoeff;
-	s_damageCoeff = m_configuration->damageCoeff;
-	s_shotsCoeff = m_configuration->shotsCoeff;
-	s_lifesCount--;
+	healthCurrent = m_configuration->healthStart;
+	armorCurrent = m_configuration->armorStart;
+	armorCoeffCurrent = m_configuration->armorCoeffStart;
+	damageCoeffCurrent = m_configuration->damageCoeffStart;
+	shotsCoeffCurrent = m_configuration->shotsCoeffStart;
+	lifesCountCurrent--;
 }
 
 void PlayerState::kill()
 {
-	s_health = 0;
-	s_armor = 0;
+	healthCurrent = 0;
+	armorCurrent = 0;
 	deathsCount++;
 }
 

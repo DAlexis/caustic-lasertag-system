@@ -64,9 +64,12 @@ public:
 	PARAMETER(ConfigCodes::Rifle::Configuration, uint8_t, reloadAction);
 	PARAMETER(ConfigCodes::Rifle::Configuration, uint8_t, autoReload);
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCount);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineAtStart);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsPerMagazine);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountStart);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountMax);
+
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineStart);
+	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineMax);
+
 	PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t, reloadingTime);
 
 	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
@@ -78,8 +81,9 @@ class RifleState
 public:
 	RifleState(RifleConfiguration* config);
 	void reset();
-	PARAMETER(ConfigCodes::Rifle::State, UintParameter, bulletsLeft);
-	PARAMETER(ConfigCodes::Rifle::State, UintParameter, magazinesLeft);
+	PARAMETER(ConfigCodes::Rifle::State, UintParameter, bulletsInMagazineCurrent);
+	PARAMETER(ConfigCodes::Rifle::State, UintParameter, magazinesCountCurrent);
+	PARAMETER(ConfigCodes::Rifle::State, UintParameter, heatnessCurrent);
 
 	uint32_t lastReloadTime;
 

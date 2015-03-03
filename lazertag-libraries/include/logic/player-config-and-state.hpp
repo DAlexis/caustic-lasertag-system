@@ -18,12 +18,15 @@ public:
 	PlayerConfiguration();
 	void setDefault();
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, health);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armor);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, healthMax);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorMax);
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorCoeff);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, damageCoeff);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, shotsCoeff);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, healthStart);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorStart);
+
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorCoeffStart);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, damageCoeffStart);
+	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, shotsCoeffStart);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, frendlyFireCoeff);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, selfShotCoeff);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, isHealable);
@@ -55,12 +58,12 @@ public:
 			reset();
 	}
 
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_health);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_armor);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_armorCoeff);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_damageCoeff);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_shotsCoeff);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, s_lifesCount);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, healthCurrent);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, armorCurrent);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, armorCoeffCurrent);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, damageCoeffCurrent);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, shotsCoeffCurrent);
+	PARAMETER(ConfigCodes::Player::State, UintParameter, lifesCountCurrent);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, pointsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);
 	PARAMETER(ConfigCodes::Player::State, UintParameter, deathsCount);

@@ -124,7 +124,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		}
 		return true;
 	}
-	else if (getCurrentLength() == 16 && m_data[0] == MT2Std::Byte1::command)
+	else if (getCurrentLength() == 8*2 && m_data[0] == MT2Std::Byte1::command)
 	{
 		printf("Command with code %x detected\n", m_data[1]);
 		RCSPStream stream;
@@ -172,6 +172,13 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		default:
 			return false;
 		}
+		stream.dispatch();
+	}
+	else if (getCurrentLength() == 8*2 && m_data[0] == MT2Std::Byte1::addHealth)
+	{
+		printf("Add health with code %u detected\n", m_data[1]);
+		RCSPStream stream;
+		/// TODO Add health here
 		stream.dispatch();
 	}
 	else
