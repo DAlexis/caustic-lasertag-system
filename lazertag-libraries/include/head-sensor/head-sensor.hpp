@@ -28,6 +28,7 @@ public:
 	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerRespawn);
 	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerReset);
 	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerKill);
+
 private:
 	// Test functions
 	void testDie(const char*);

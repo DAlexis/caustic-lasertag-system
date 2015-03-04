@@ -42,6 +42,15 @@ void PlayerConfiguration::setDefault()
 	slot5MaxWeight = UINT16_MAX;
 }
 
+void PlayerConfiguration::addMaxHealth(void* source, uint16_t size)
+{
+	/*
+	if (size == sizeof(uint8_t))
+	{
+		uint8_t
+	}*/
+}
+
 bool PlayerState::damage(uint8_t damage)
 {
 	UintParameter totalDamage = damage;

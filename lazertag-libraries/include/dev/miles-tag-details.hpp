@@ -30,15 +30,12 @@
 
 #define TIME_BEFORE_PARSING     HADER_PERIOD
 
-
-#define SHOT_LENGTH             14
-#define MESSAGE_LENGTH          (3*8)
-
-#define MESSAGE_END_BYTE        0xE8
-#define RCSP_MESSAGE            0x8D // Not standard Miles Tag 2 message
-
-namespace MT2Std
+namespace MT2Extended
 {
+	constexpr uint8_t shotLength = 14;
+	constexpr uint8_t messageLength = 3*8;
+	constexpr uint8_t commandLength = 3*8;
+
 	namespace Byte1
 	{
 		constexpr uint8_t addHealth = 0x80;
@@ -49,6 +46,12 @@ namespace MT2Std
 
 		constexpr uint8_t command = 0x83;
 		constexpr uint8_t RCSPMessage = 0x8D;
+	}
+
+	namespace Byte3
+	{
+		constexpr uint8_t messageEnd = 0xE8;
+		constexpr uint8_t commandEnd = 0xE8;
 	}
 
 	namespace Commands
@@ -78,5 +81,11 @@ inline int decodeAddHealth(unsigned int code)
 {
 	return code <= 50 ? code : code - 100;
 }
+
+inline unsigned int encodeAddHealth(int health)
+{
+	return health >= 0 ? health : 100 - health;
+}
+
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_MILES_TAG_2_TIMINGS_H_ */

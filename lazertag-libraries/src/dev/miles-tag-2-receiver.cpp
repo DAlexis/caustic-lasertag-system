@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include "dev/miles-tag-details.h"
+#include <dev/miles-tag-details.hpp>
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "dev/miles-tag-2.hpp"
@@ -109,7 +109,8 @@ int MilesTag2Receiver::getCurrentLength()
 
 bool MilesTag2Receiver::parseConstantSizeMessage()
 {
-	if (getCurrentLength() == 14 && getBit(0) == false)
+	if (getCurrentLength() == MT2Extended::shotLength
+			&& getBit(0) == false)
 	{
 		// We have the shot
 		unsigned int playerId   = m_data[0] & ~(1 << 7);
@@ -124,57 +125,60 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		}
 		return true;
 	}
-	else if (getCurrentLength() == 8*2 && m_data[0] == MT2Std::Byte1::command)
+	else if (getCurrentLength() == MT2Extended::commandLength
+			&& m_data[0] == MT2Extended::Byte1::command
+			&& m_data[2] == MT2Extended::Byte3::commandEnd)
 	{
 		printf("Command with code %x detected\n", m_data[1]);
 		RCSPStream stream;
 		switch(m_data[1])
 		{
-		case MT2Std::Commands::adminKill:
+		case MT2Extended::Commands::adminKill:
 			stream.addCall(ConfigCodes::Player::Functions::playerKill);
 			break;
-		case MT2Std::Commands::pauseOrUnpause:
+		case MT2Extended::Commands::pauseOrUnpause:
 			break;
-		case MT2Std::Commands::startGame:
+		case MT2Extended::Commands::startGame:
 			stream.addCall(ConfigCodes::Player::Functions::playerReset);
 			break;
-		case MT2Std::Commands::restoreDefaults:
+		case MT2Extended::Commands::restoreDefaults:
 			break;
-		case MT2Std::Commands::respawn:
+		case MT2Extended::Commands::respawn:
 			stream.addCall(ConfigCodes::Player::Functions::playerRespawn);
 			break;
-		case MT2Std::Commands::newGameImmediate:
+		case MT2Extended::Commands::newGameImmediate:
 			break;
-		case MT2Std::Commands::fullAmmo:
+		case MT2Extended::Commands::fullAmmo:
 			break;
-		case MT2Std::Commands::endGame:
+		case MT2Extended::Commands::endGame:
 			break;
-		case MT2Std::Commands::resetClock:
+		case MT2Extended::Commands::resetClock:
 			break;
-		case MT2Std::Commands::initializePlayer:
+		case MT2Extended::Commands::initializePlayer:
 			break;
-		case MT2Std::Commands::explodePlayer:
+		case MT2Extended::Commands::explodePlayer:
 			break;
-		case MT2Std::Commands::newGameReady:
+		case MT2Extended::Commands::newGameReady:
 			break;
-		case MT2Std::Commands::fullHealth:
+		case MT2Extended::Commands::fullHealth:
 			break;
-		case MT2Std::Commands::fullArmor:
+		case MT2Extended::Commands::fullArmor:
 			break;
-		case MT2Std::Commands::clearScores:
+		case MT2Extended::Commands::clearScores:
 			break;
-		case MT2Std::Commands::testSensors:
+		case MT2Extended::Commands::testSensors:
 			break;
-		case MT2Std::Commands::stunPlayer:
+		case MT2Extended::Commands::stunPlayer:
 			break;
-		case MT2Std::Commands::disarmPlayer:
+		case MT2Extended::Commands::disarmPlayer:
 			break;
 		default:
 			return false;
 		}
 		stream.dispatch();
 	}
-	else if (getCurrentLength() == 8*2 && m_data[0] == MT2Std::Byte1::addHealth)
+	else if (getCurrentLength() == MT2Extended::messageLength
+			&& m_data[0] == MT2Extended::Byte1::addHealth)
 	{
 		printf("Add health with code %u detected\n", m_data[1]);
 		RCSPStream stream;
@@ -317,7 +321,7 @@ bool MilesTag2Receiver::parseVariableSizeMessage()
 
 	if (getCurrentLength() >= 8 + RCSPAggregator::minimalStreamSize
 		&& getCurrentLength() % 8 == 0
-		&& m_data[0] == RCSP_MESSAGE)
+		&& m_data[0] == MT2Extended::Byte1::RCSPMessage)
 	{
 		printf("Infrared: general purpose RCSP message detected\n");
 		// We have message for RCSP system

@@ -154,6 +154,8 @@ namespace ConfigCodes
 			FUNC_CODE(playerRespawn,      1204)
 			FUNC_CODE(playerKill,         1205)
 
+			FUNC_CODE(addMaxHealth,       1220)
+
 		}
 	}
 }
