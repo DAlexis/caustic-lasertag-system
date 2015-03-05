@@ -25,9 +25,10 @@ public:
 	PlayerState playerState{&playerConfig};
 	DeviceParameters device;
 
-	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerRespawn);
-	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerReset);
-	FUNCION(ConfigCodes::Player::Functions, HeadSensor, playerKill);
+	FUNCION_NP(ConfigCodes::Player::Functions, HeadSensor, playerRespawn);
+	FUNCION_NP(ConfigCodes::Player::Functions, HeadSensor, playerReset);
+	FUNCION_NP(ConfigCodes::Player::Functions, HeadSensor, playerKill);
+	FUNCION_1P(ConfigCodes::Player::Functions, HeadSensor, addMaxHealth, int16_t);
 
 private:
 	// Test functions

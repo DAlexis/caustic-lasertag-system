@@ -28,7 +28,7 @@ void HeadSensor::configure()
 	m_mainSensor.init(exti);
 	//m_mainSensor.enableDebug(true);
 
-	playerReset(nullptr, 0);
+	playerReset();
 
 	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, &m_mainSensor), false, 50000, 30000);
 
@@ -65,23 +65,28 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	}
 }
 
-void HeadSensor::playerRespawn(void*, uint16_t)
+void HeadSensor::playerRespawn()
 {
 	playerState.respawn();
 	turnOnAndResetWeapons();
 	printf("Player spawned\n");
 }
 
-void HeadSensor::playerReset(void*, uint16_t)
+void HeadSensor::playerReset()
 {
 	playerState.reset();
 	turnOnAndResetWeapons();
 	printf("Player reseted\n");
 }
 
-void HeadSensor::playerKill(void*, uint16_t)
+void HeadSensor::playerKill()
 {
 	playerState.kill();
+}
+
+void HeadSensor::addMaxHealth(int16_t delta)
+{
+
 }
 
 void HeadSensor::turnOnAndResetWeapons()

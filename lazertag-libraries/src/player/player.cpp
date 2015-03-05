@@ -42,7 +42,7 @@ void PlayerConfiguration::setDefault()
 	slot5MaxWeight = UINT16_MAX;
 }
 
-void PlayerConfiguration::addMaxHealth(void* source, uint16_t size)
+void PlayerConfiguration::addMaxHealth(int16_t delta)
 {
 	/*
 	if (size == sizeof(uint8_t))

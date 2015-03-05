@@ -17,7 +17,7 @@ class PlayerConfiguration
 public:
 	PlayerConfiguration();
 	void setDefault();
-	FUNCION(ConfigCodes::Player::Functions, PlayerConfiguration, addMaxHealth);
+	FUNCION_1P(ConfigCodes::Player::Functions, PlayerConfiguration, addMaxHealth, int16_t);
 
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, healthMax);
 	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorMax);

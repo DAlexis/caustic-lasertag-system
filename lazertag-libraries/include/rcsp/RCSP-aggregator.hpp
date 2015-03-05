@@ -50,10 +50,15 @@
 #define PARAMETER_S(NameSpace, Type, name, textName)   Type name; \
                                                        DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, textName, &name}
 
-/// Create function in class and connect in to configs aggregator
-#define FUNCION(NameSpace, ClassName, functionName)    void functionName(void* arguments, uint16_t size); \
-                                                       DefaultFunctionAccessor functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
-                                                           std::bind(&ClassName::functionName, this, std::placeholders::_1, std::placeholders::_2)}
+/// Create function in class with 1 parameter and connect it to configs aggregator
+#define FUNCION_1P(NameSpace, ClassName, functionName, ArgType)     void functionName(ArgType argument); \
+                                                                    DefaultFunctionAccessor<ArgType> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
+                                                                    std::bind(&ClassName::functionName, this, std::placeholders::_1)}
+
+/// Create function in class with no parameters and connect it to configs aggregator
+#define FUNCION_NP(NameSpace, ClassName, functionName)     void functionName(); \
+                                                           DefaultFunctionAccessor<> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
+                                                           std::bind(&ClassName::functionName, this)}
 
 using OperationSize = uint8_t;
 using OperationCode = uint16_t;
@@ -200,12 +205,17 @@ private:
 
 };
 
-using FunctionAccessorCallback = std::function<void(void* /*arguments*/, uint16_t /*size*/)>;
-
 /// Realization of IOperationAccessor for function
-class DefaultFunctionAccessor : public IOperationAccessor
+template<typename... Type>
+class DefaultFunctionAccessor;
+
+/// Realization of IOperationAccessor for function without arguments
+template<>
+class DefaultFunctionAccessor<> : public IOperationAccessor
 {
 public:
+	using FunctionAccessorCallback = std::function<void(void)>;
+
 	DefaultFunctionAccessor(OperationCode code, const char* textName, FunctionAccessorCallback _callback) :
 		callback(_callback)
 	{
@@ -214,29 +224,51 @@ public:
 
 	void deserialize(void* source, OperationSize size)
 	{
-		callback(source, size);
+		if (size != 0)
+			printf("Warning: argument provided for function without args\n");
+		callback();
 	}
 
-	bool isReadable()
-	{
-		return true;
-	}
-
-	bool isWritable()
-	{
-		return false;
-	}
-
-	void serialize(void*)
-	{
-	}
-
-	void parseString(const char*)
-	{
-	}
-
+	bool isReadable() { return true; }
+	bool isWritable() { return false; }
+	void serialize(void*) { }
+	void parseString(const char*) { }
 	inline uint32_t getSize() { return 0; }
 
+private:
+	FunctionAccessorCallback callback;
+};
+
+/// Realization of IOperationAccessor for function with argument
+template<typename ArgType>
+class DefaultFunctionAccessor<ArgType> : public IOperationAccessor
+{
+public:
+	using FunctionAccessorCallback = std::function<void(ArgType)>;
+
+	DefaultFunctionAccessor(OperationCode code, const char* textName, FunctionAccessorCallback _callback) :
+		callback(_callback)
+	{
+		RCSPAggregator::instance().registerAccessor(code, textName, this);
+	}
+
+	void deserialize(void* source, OperationSize size)
+	{
+		if (sizeof(ArgType) != size)
+		{
+			printf("Error: Invalid function argument size\n");
+			return;
+		}
+		ArgType argument;
+		memcpy(&argument, source, sizeof(argument));
+		callback(argument);
+	}
+
+	bool isReadable() { return true; }
+	bool isWritable() { return false; }
+	void serialize(void*) { }
+	void parseString(const char*) { }
+	inline uint32_t getSize() { return 0; }
 
 private:
 	FunctionAccessorCallback callback;
@@ -263,15 +295,9 @@ public:
 		memcpy(destination, parameter, sizeof(Type));
 	}
 
-	bool isReadable()
-	{
-		return true;
-	}
+	bool isReadable() { return true; }
 
-	bool isWritable()
-	{
-		return true;
-	}
+	bool isWritable() { return true; }
 
 	void parseString(const char* str)
 	{
@@ -279,7 +305,6 @@ public:
 		{
 			*parameter = StringParser<Type>().parse(str);
 		} else {
-			/// @todo printf("Parsing of type not supported\n");
 			printf("Parsing of type not supported\n");
 		}
 	}
