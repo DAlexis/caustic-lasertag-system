@@ -17,36 +17,36 @@ class PlayerConfiguration
 public:
 	PlayerConfiguration();
 	void setDefault();
-	FUNCION_1P(ConfigCodes::Player::Functions, PlayerConfiguration, addMaxHealth, int16_t);
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, PlayerConfiguration, addMaxHealth, int16_t);
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, healthMax);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorMax);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, healthMax);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, armorMax);
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, healthStart);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorStart);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, healthStart);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, armorStart);
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorCoeffStart);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, damageCoeffStart);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, shotsCoeffStart);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, frendlyFireCoeff);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, selfShotCoeff);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, isHealable);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, armorCoeffStart);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, damageCoeffStart);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, shotsCoeffStart);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, frendlyFireCoeff);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, selfShotCoeff);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, isHealable);
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, lifesCount);
-	PARAMETER(ConfigCodes::Player::Configuration, uint32_t,      shockDelay);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, preRespawnDelay);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, postRespawnDelay);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, autoRespawn);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, lifesCount);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint32_t,      shockDelay);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, preRespawnDelay);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, postRespawnDelay);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, autoRespawn);
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, plyerId);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, plyerMT2Id);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, teamId);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, plyerId);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, plyerMT2Id);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, teamId);
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, slot1MaxWeight);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, slot2MaxWeight);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, slot3MaxWeight);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, slot4MaxWeight);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, slot5MaxWeight);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot1MaxWeight);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot2MaxWeight);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot3MaxWeight);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot4MaxWeight);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot5MaxWeight);
 };
 
 class PlayerState
@@ -59,15 +59,15 @@ public:
 			reset();
 	}
 
-	PARAMETER(ConfigCodes::Player::State, UintParameter, healthCurrent);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, armorCurrent);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, armorCoeffCurrent);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, damageCoeffCurrent);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, shotsCoeffCurrent);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, lifesCountCurrent);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, pointsCount);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, deathsCount);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, healthCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, armorCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, armorCoeffCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, damageCoeffCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, shotsCoeffCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, lifesCountCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, pointsCount);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, killsCount);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, deathsCount);
 
 	/**
 	 * Cough some damage and calculate s_armor and s_health after it

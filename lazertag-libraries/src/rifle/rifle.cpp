@@ -18,7 +18,8 @@
 
 #include <stdio.h>
 
-PlayerDisplayableData::PlayerDisplayableData()
+PlayerDisplayableData::PlayerDisplayableData(const DeviceAddress& headSensorAddress) :
+	m_headSensorAddress(&headSensorAddress)
 {
 	healthMax = 0;
 	armorMax = 0;
@@ -35,17 +36,16 @@ PlayerDisplayableData::PlayerDisplayableData()
 void PlayerDisplayableData::syncAll()
 {
 	RCSPMultiStream stream;
-	stream.addRequest(ConfigCodes::Player::Configuration::healthMax);
-	stream.addRequest(ConfigCodes::Player::Configuration::armorMax);
-	stream.addRequest(ConfigCodes::Player::State::healthCurrent);
-	stream.addRequest(ConfigCodes::Player::State::armorCurrent);
-	stream.addRequest(ConfigCodes::Player::State::lifesCountCurrent);
-	stream.addRequest(ConfigCodes::Player::State::pointsCount);
-	stream.addRequest(ConfigCodes::Player::State::killsCount);
-	stream.addRequest(ConfigCodes::Player::State::deathsCount);
+	stream.addRequest(ConfigCodes::HeadSensor::Configuration::healthMax);
+	stream.addRequest(ConfigCodes::HeadSensor::Configuration::armorMax);
+	stream.addRequest(ConfigCodes::HeadSensor::State::healthCurrent);
+	stream.addRequest(ConfigCodes::HeadSensor::State::armorCurrent);
+	stream.addRequest(ConfigCodes::HeadSensor::State::lifesCountCurrent);
+	stream.addRequest(ConfigCodes::HeadSensor::State::pointsCount);
+	stream.addRequest(ConfigCodes::HeadSensor::State::killsCount);
+	stream.addRequest(ConfigCodes::HeadSensor::State::deathsCount);
 
-	DeviceAddress target = {1,1,1};
-	stream.send(target, false);
+	stream.send(*m_headSensorAddress, false);
 }
 
 void PlayerDisplayableData::print()
@@ -171,10 +171,13 @@ void Rifle::configure()
 
 	printf("- Loading default config\n");
 	//loadConfig();
-	RCSPAggregator::instance().readIni("default-config.ini");
+	RCSPAggregator::instance().readIni("config.ini");
 
 	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::syncAll, &playerDisplayable), false, 3000000, 0, 1000);
 	Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 1000000, 0, 1000000);
+
+	// Registering at head sensor's weapons list
+	registerWeapon();
 
 	printf("Rifle ready to use\n");
 }
@@ -298,3 +301,10 @@ void Rifle::rifleReset()
 	//turnOn(nullptr, 0);
 }
 
+void Rifle::registerWeapon()
+{
+	printf("Registering weapon...\n");
+	RCSPMultiStream stream;
+	stream.addCall(ConfigCodes::HeadSensor::Functions::registerWeapon, RCSPModem::instance().devAddr);
+	stream.send(config.headSensorAddr, true);
+}

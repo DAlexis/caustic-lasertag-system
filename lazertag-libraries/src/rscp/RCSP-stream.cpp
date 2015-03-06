@@ -54,7 +54,7 @@ RCSPAggregator::ResultType RCSPStream::addRequest(OperationCode code)
 		code,
 		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
 		{
-			return RCSPAggregator::instance().requestVariable(pos, code, m_size - m_cursor, addedSize);
+			return RCSPAggregator::instance().serializeObjectRequest(pos, code, m_size - m_cursor, addedSize);
 		}
 	);
 }
@@ -66,7 +66,7 @@ RCSPAggregator::ResultType RCSPStream::addCall(OperationCode code)
 		code,
 		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
 		{
-			return RCSPAggregator::instance().functionCall(pos, code, m_size - m_cursor, addedSize);
+			return RCSPAggregator::instance().serializeCallRequest(pos, code, m_size - m_cursor, addedSize);
 		}
 	);
 }

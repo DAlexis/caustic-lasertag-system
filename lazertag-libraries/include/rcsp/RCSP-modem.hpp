@@ -15,9 +15,6 @@
 #include "core/singleton-macro.hpp"
 #include <list>
 
-
-#define ADDRESS_LENGTH          3
-
 using PackageSendingDoneCallback = std::function<void(uint16_t /*package id*/, bool /*was successfully sent*/)>;
 using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>;
 
@@ -40,14 +37,53 @@ struct PackageIdAndTTL
 #pragma pack(pop)
 
 
-struct DeviceAddress
+struct DeviceAddress : public IConertableFromString
 {
-	uint8_t address[ADDRESS_LENGTH];
+	constexpr static uint8_t size = 3;
+	uint8_t address[size];
+
+	DeviceAddress()
+	{
+		address[0] = address[1] = address[2] = 1;
+	}
+
+	void convertFromString(const char* str)
+	{
+		/// @todo Improve parcer to be absolutely stable
+		printf("Parsing address %s\n", str);
+		const char* pos = str;
+		constexpr unsigned int tmpSize = 20;
+		char tmp[tmpSize];
+		for (int i=0; i<size; i++)
+		{
+			unsigned int cursor = 0;
+
+			while (*pos != '\0' && *pos != '.')
+				tmp[cursor++] = *pos++;
+
+			if (cursor == tmpSize)
+			{
+				printf("Parsing failed: too long line\n");
+				return;
+			}
+
+			if (pos == '\0' && i != size-1)
+			{
+				printf("Parsing failed: inconsistent address\n");
+				return;
+			}
+
+			tmp[cursor] = '\0';
+
+			address[i] = atoi(tmp);
+			pos++;
+		}
+	}
 
 	// Operators
 	inline bool operator==(const DeviceAddress& other) const
 	{
-		for(int i=0; i<ADDRESS_LENGTH; i++)
+		for(int i=0; i<size; i++)
 			if (address[i] != other.address[i])
 				return false;
 			else return true;
@@ -60,7 +96,7 @@ struct DeviceAddress
 
 	inline bool operator<(const DeviceAddress& other) const
 	{
-		for(int i=0; i<ADDRESS_LENGTH; i++)
+		for(int i=0; i<size; i++)
 		{
 			if (address[i] < other.address[i])
 				return true;
@@ -117,7 +153,7 @@ public:
 		uint32_t resendTimeDelta = defaultResendTimeDelta
 	);
 
-	DeviceAddress self{{1,1,1}};
+	PARAMETER_COMPLICATED(ConfigCodes::AnyDevice, DeviceAddress, devAddr);
 private:
 
 	struct WaitingPackage

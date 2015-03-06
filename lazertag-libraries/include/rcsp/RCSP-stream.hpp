@@ -25,14 +25,14 @@ public:
 	RCSPAggregator::ResultType addCall(OperationCode code);
 
 	template<typename Type>
-	bool addCall(OperationCode code, const Type& arg)
+	RCSPAggregator::ResultType addCall(OperationCode code, const Type& arg)
 	{
 		printf("Adding value, code %u", code);
 		return serializeAnything(
 			code,
 			[this, &arg] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
 			{
-				return RCSPAggregator::instance().functionCall(pos, code, m_size - m_cursor, addedSize, arg);
+				return RCSPAggregator::instance().serializeCallRequest(pos, code, m_size - m_cursor, addedSize, arg);
 			}
 		);
 	}

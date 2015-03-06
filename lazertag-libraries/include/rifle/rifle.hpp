@@ -20,20 +20,23 @@
 class PlayerDisplayableData
 {
 public:
-	PlayerDisplayableData();
+	PlayerDisplayableData(const DeviceAddress& headSensorAddress);
 	void syncAll();
 	void print();
 
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, healthMax);
-	PARAMETER(ConfigCodes::Player::Configuration, UintParameter, armorMax);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, healthMax);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, armorMax);
 
-	PARAMETER(ConfigCodes::Player::State, UintParameter, healthCurrent);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, armorCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, healthCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, armorCurrent);
 
-	PARAMETER(ConfigCodes::Player::State, UintParameter, lifesCountCurrent);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, pointsCount);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, killsCount);
-	PARAMETER(ConfigCodes::Player::State, UintParameter, deathsCount);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, lifesCountCurrent);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, pointsCount);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, killsCount);
+	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, deathsCount);
+
+private:
+	const DeviceAddress* m_headSensorAddress;
 };
 
 class Rifle
@@ -42,6 +45,7 @@ public:
 	Rifle();
 
 	void configure();
+	void registerWeapon();
 
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);
@@ -49,9 +53,9 @@ public:
 
 	RifleConfiguration config;
 	RifleState state{&config};
-	DeviceParameters device;
+	//DeviceParameters device;
 
-	PlayerDisplayableData playerDisplayable;
+	PlayerDisplayableData playerDisplayable{config.headSensorAddr};
 
 	/////////
 	// Buttons mapping

@@ -40,12 +40,12 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 		OperationCode *pOperationCode = reinterpret_cast<OperationCode*> (position);
 		position += sizeof(OperationCode);
 		printf("Dispatched opcode: %u\n", *pOperationCode);
-		if (isParameterRequest(*pOperationCode))
+		if (isObjectRequestOC(*pOperationCode))
 		{
 			if (answerStream)
 			{
 				// Adding parameter to answer stream
-				OperationCode parameterCode = SetParameterOC(*pOperationCode);
+				OperationCode parameterCode = SetObjectOC(*pOperationCode);
 				//printf("Parameter request: %u\n", parameterCode);
 				auto it = m_accessorsByOpCode.find(parameterCode);
 				if (it != m_accessorsByOpCode.end())
@@ -115,7 +115,7 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(uin
 	{
 		return DetailedResult<AddingResult>(INVALID_OPCODE, "Opcode not found");
 	}
-	code = SetParameterOC(code);
+	code = SetObjectOC(code);
 	OperationSize size = 0;
 	if (!it->second->isReadable())
 		return DetailedResult<AddingResult>(NOT_READABLE, "Object not readable");
@@ -136,14 +136,14 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(uin
 	return DetailedResult<AddingResult>(OK);
 }
 
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::requestVariable(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize)
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObjectRequest(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize)
 {
 	actualSize = 0;
 	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
 	if (packageSize > freeSpace)
 		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
 
-	variableCode = SetParameterRequest(variableCode);
+	variableCode = SetObjectRequestOC(variableCode);
 	OperationSize size = 0;
 	memcpy(stream, &size, sizeof(OperationSize));
 	stream += sizeof(OperationSize);
@@ -152,14 +152,14 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::requestVariable(uin
 	return DetailedResult<AddingResult>(OK);
 }
 
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::functionCall(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize)
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeCallRequest(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize)
 {
 	actualSize = 0;
 	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
 	if (packageSize > freeSpace)
 		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
 
-	functionCode = SetCommandOC(functionCode);
+	functionCode = SetCallRequestOC(functionCode);
 	OperationSize size = 0;
 	memcpy(stream, &size, sizeof(OperationSize));
 	stream += sizeof(OperationSize);

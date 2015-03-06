@@ -11,10 +11,10 @@
 #include "rcsp/RCSP-aggregator.hpp"
 #include "core/macro-utils.hpp"
 
-#define PAR_CODE(variable, value)   constexpr uint16_t variable = SetParameterOC(value); \
+#define PAR_CODE(variable, value)   constexpr uint16_t variable = RCSPAggregator::SetObjectOC(value); \
                                     constexpr const char variable##Text[] = STRINGIFICATE(variable);
 
-#define FUNC_CODE(function, value)  constexpr uint16_t function = SetCommandOC(value);
+#define FUNC_CODE(function, value)  constexpr uint16_t function = RCSPAggregator::SetCallRequestOC(value);
 
 /*
  *
@@ -32,8 +32,8 @@ using PlayerId = uint8_t[3];
 namespace ConfigCodes
 {
 	constexpr uint16_t noOperation = 0;
-	constexpr uint16_t acknoledgement = SetCommandOC(0xFFFF);
-	namespace Device
+	constexpr uint16_t acknoledgement = RCSPAggregator::SetCallRequestOC(0xFFFF);
+	namespace AnyDevice
 	{
 		PAR_CODE(devAddr,           2000)
 	}
@@ -68,6 +68,8 @@ namespace ConfigCodes
 
 			PAR_CODE(heatPerShot,              30)
 			PAR_CODE(heatLossPerSec,           31)
+
+			PAR_CODE(headSensorAddr,           100)
 		}
 
 		namespace State
@@ -88,7 +90,7 @@ namespace ConfigCodes
 		}
 	}
 
-	namespace Player
+	namespace HeadSensor
 	{
 		namespace Configuration
 		{
@@ -156,6 +158,7 @@ namespace ConfigCodes
 
 			FUNC_CODE(addMaxHealth,       1220)
 
+			FUNC_CODE(registerWeapon,     1300)
 		}
 	}
 }

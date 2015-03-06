@@ -134,17 +134,17 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		switch(m_data[1])
 		{
 		case MT2Extended::Commands::adminKill:
-			stream.addCall(ConfigCodes::Player::Functions::playerKill);
+			stream.addCall(ConfigCodes::HeadSensor::Functions::playerKill);
 			break;
 		case MT2Extended::Commands::pauseOrUnpause:
 			break;
 		case MT2Extended::Commands::startGame:
-			stream.addCall(ConfigCodes::Player::Functions::playerReset);
+			stream.addCall(ConfigCodes::HeadSensor::Functions::playerReset);
 			break;
 		case MT2Extended::Commands::restoreDefaults:
 			break;
 		case MT2Extended::Commands::respawn:
-			stream.addCall(ConfigCodes::Player::Functions::playerRespawn);
+			stream.addCall(ConfigCodes::HeadSensor::Functions::playerRespawn);
 			break;
 		case MT2Extended::Commands::newGameImmediate:
 			break;

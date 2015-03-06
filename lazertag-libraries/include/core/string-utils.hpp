@@ -69,94 +69,110 @@ private:
 	char m_errorMessage[128];
 };
 
+class IConertableFromString
+{
+public:
+	virtual ~IConertableFromString() {}
+	virtual void convertFromString(const char*) = 0;
+};
+
 template<typename Type>
 class StringParser
 {
 public:
-	bool isSupported() { return false; }
+	static bool isSupported() { return false; }
 
-	Type parse(const char*) { return Type(); }
+	static Type parse(const char*) { return Type(); }
 };
-
+/*
 template<>
 class StringParser<uint32_t>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	uint32_t parse(const char* str) { return (uint32_t) atoi(str); }
+	static uint32_t parse(const char* str) { return (uint32_t) atoi(str); }
+};
+*/
+template<>
+class StringParser<uint32_t>
+{
+public:
+	static bool isSupported() { return true; }
+
+	static uint32_t parse(const char* str) { return (uint32_t) atoi(str); }
 };
 
 template<>
 class StringParser<int32_t>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	int32_t parse(const char* str) { return (int32_t) atoi(str); }
+	static int32_t parse(const char* str) { return (int32_t) atoi(str); }
 };
 
 template<>
 class StringParser<uint16_t>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	uint16_t parse(const char* str) { return (uint16_t) atoi(str); }
+	static uint16_t parse(const char* str) { return (uint16_t) atoi(str); }
 };
 
 template<>
 class StringParser<int16_t>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	int16_t parse(const char* str) { return (int16_t) atoi(str); }
+	static int16_t parse(const char* str) { return (int16_t) atoi(str); }
 };
 
 template<>
 class StringParser<uint8_t>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	uint8_t parse(const char* str) { return (uint8_t) atoi(str); }
+	static uint8_t parse(const char* str) { return (uint8_t) atoi(str); }
 };
 
 template<>
 class StringParser<int8_t>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	int8_t parse(const char* str) { return (int8_t) atoi(str); }
+	static int8_t parse(const char* str) { return (int8_t) atoi(str); }
 };
 
 template<>
 class StringParser<float>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	float parse(const char* str) { return (float) atof(str); }
+	static float parse(const char* str) { return (float) atof(str); }
 };
 
 template<>
 class StringParser<double>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	double parse(const char* str) { return (double) atof(str); }
+	static double parse(const char* str) { return (double) atof(str); }
 };
 
 template<>
 class StringParser<bool>
 {
 public:
-	bool isSupported() { return true; }
+	static bool isSupported() { return true; }
 
-	bool parse(const char* str)
+	static bool parse(const char* str)
 	{
 		unsigned int cursor = 0;
 		while (isSpace(str[cursor])) cursor++;

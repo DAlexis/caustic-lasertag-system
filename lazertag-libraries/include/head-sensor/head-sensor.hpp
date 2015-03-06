@@ -23,12 +23,14 @@ public:
 
 	PlayerConfiguration playerConfig;
 	PlayerState playerState{&playerConfig};
-	DeviceParameters device;
+	//DeviceParameters device;
 
-	FUNCION_NP(ConfigCodes::Player::Functions, HeadSensor, playerRespawn);
-	FUNCION_NP(ConfigCodes::Player::Functions, HeadSensor, playerReset);
-	FUNCION_NP(ConfigCodes::Player::Functions, HeadSensor, playerKill);
-	FUNCION_1P(ConfigCodes::Player::Functions, HeadSensor, addMaxHealth, int16_t);
+	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn);
+	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset);
+	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth, int16_t);
+
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon, DeviceAddress);
 
 private:
 	// Test functions

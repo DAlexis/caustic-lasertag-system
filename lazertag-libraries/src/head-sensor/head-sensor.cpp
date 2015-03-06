@@ -15,7 +15,7 @@
 
 HeadSensor::HeadSensor()
 {
-	m_weapons.insert({1,1,1});
+	//m_weapons.insert({1,1,1});
 }
 
 void HeadSensor::configure()
@@ -41,6 +41,8 @@ void HeadSensor::configure()
 		std::bind(&HeadSensor::testDie, this, std::placeholders::_1)
 	);
 
+	RCSPAggregator::instance().readIni("config.ini");
+
 	printf("Head sensor ready to use\n");
 }
 
@@ -53,8 +55,8 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 		{
 			RCSPStream stream;
-			stream.addValue(ConfigCodes::Player::State::healthCurrent);
-			stream.addValue(ConfigCodes::Player::State::armorCurrent);
+			stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
+			stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
 			stream.send(*it, true, nullptr);
 		}
 	}
@@ -95,7 +97,7 @@ void HeadSensor::turnOnAndResetWeapons()
 	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 	{
 		printf("Resetting weapon...\n");
-		RCSPStream stream(Package::payloadLength);
+		RCSPStream stream;
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleReset);
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOn);
 		stream.send(*it, true, nullptr);
@@ -111,6 +113,23 @@ void HeadSensor::turnOffWeapons()
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOff);
 		stream.send(*it, true, nullptr);
 	}
+}
+
+void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
+{
+	printf("Registering weapon\n");
+	auto it = m_weapons.find(weaponAddress);
+	if (it == m_weapons.end())
+	{
+		m_weapons.insert(weaponAddress);
+		if (playerState.isAlive())
+		{
+			RCSPStream stream;
+			stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOn);
+			stream.send(weaponAddress, true);
+		}
+	}
+
 }
 
 /////////////////////

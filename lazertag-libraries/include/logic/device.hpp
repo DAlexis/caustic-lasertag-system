@@ -12,14 +12,14 @@
 #include "rcsp/RCSP-modem.hpp"
 #include <stdint.h>
 #include <string.h>
-
+/*
 class DeviceParameters
 {
 public:
 	DeviceParameters() :
 		devAddr({1, 1, 1})
 	{ }
-	PARAMETER(ConfigCodes::Device, DeviceAddress, devAddr);
-};
+	PARAMETER(ConfigCodes::AnyDevice, DeviceAddress, devAddr);
+};*/
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_ */

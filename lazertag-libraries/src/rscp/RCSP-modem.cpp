@@ -76,7 +76,7 @@ uint16_t RCSPModem::send(
 		waitingPackage.resendTimeDelta = resendTimeDelta;
 
 		waitingPackage.callback = doneCallback;
-		waitingPackage.package.sender = self;
+		waitingPackage.package.sender = devAddr;
 		waitingPackage.package.target = target;
 		waitingPackage.package.idAndTTL = idAndTTL;
 		memcpy(waitingPackage.package.payload, data, size);
@@ -84,7 +84,7 @@ uint16_t RCSPModem::send(
 		return idAndTTL.packageId;
 	} else {
 		m_packagesNoAck.push_back(Package());
-		m_packagesNoAck.back().sender = self;
+		m_packagesNoAck.back().sender = devAddr;
 		m_packagesNoAck.back().target = target;
 		m_packagesNoAck.back().idAndTTL = idAndTTL;
 		memcpy(m_packagesNoAck.back().payload, data, size);
@@ -106,7 +106,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	memcpy(&received, data, sizeof(Package));
 
 	// Skipping packages for other devices
-	if (received.target != self)
+	if (received.target != devAddr)
 		return;
 
 	// Dispatching if this is acknoledgement
@@ -137,7 +137,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	// Forming ack package
 	Package ack;
 	ack.target = received.sender;
-	ack.sender = self;
+	ack.sender = devAddr;
 	ack.idAndTTL.packageId = generatePackageId();
 	memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
 	memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));

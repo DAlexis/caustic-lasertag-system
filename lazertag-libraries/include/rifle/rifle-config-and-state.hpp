@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
+#include "rcsp/RCSP-modem.hpp"
 
 class RifleConfiguration
 {
@@ -21,8 +22,8 @@ public:
 
 	struct ReloadAction
 	{
-		constexpr static uint8_t shutterOnly        = 0;  // Disort the shutter
-		constexpr static uint8_t magazineAndShutter = 1;  // Changing magazine (depends on RifleMagazineType) and disort the shutter
+		constexpr static uint8_t shutterOnly        = 0;  ///< Disort the shutter
+		constexpr static uint8_t magazineAndShutter = 1;  ///< Changing magazine (depends on RifleMagazineType) and disort the shutter
 	};
 
 	struct ReloadMode
@@ -33,17 +34,17 @@ public:
 
 	struct MagazineType
 	{
-		constexpr static uint8_t unchangeable   = 0;    // Magazine does not really exists
-		constexpr static uint8_t oneReplaceable = 1;    // One magazine that can be disconnected
-		constexpr static uint8_t twoReplaceable = 2;    // Two magazines that should be swapped
-		constexpr static uint8_t intellectual   = 3;    // Magazines contains MCU and interface
+		constexpr static uint8_t unchangeable   = 0;    ///< Magazine does not really exists
+		constexpr static uint8_t oneReplaceable = 1;    ///< One magazine that can be disconnected
+		constexpr static uint8_t twoReplaceable = 2;    ///< Two magazines that should be swapped
+		constexpr static uint8_t intellectual   = 3;    ///< Magazines contains MCU and interface
 	};
 
 	struct FireMode
 	{
-		constexpr static uint8_t single        = 0;     // Disort the shutter after every shot
-		constexpr static uint8_t semiAutomatic = 1;     // One press - one shot and no more
-		constexpr static uint8_t Automatic     = 2;     // One press - many shots
+		constexpr static uint8_t single        = 0;     ///< Disort the shutter after every shot
+		constexpr static uint8_t semiAutomatic = 1;     ///< One press - one shot and no more
+		constexpr static uint8_t Automatic     = 2;     ///< One press - many shots
 	};
 
 	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, slot);
@@ -74,6 +75,8 @@ public:
 
 	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
 	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
+
+	PARAMETER_COMPLICATED(ConfigCodes::Rifle::Configuration, DeviceAddress, headSensorAddr);
 };
 
 class RifleState

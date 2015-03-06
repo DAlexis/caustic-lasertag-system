@@ -46,10 +46,15 @@
 #define PARAMETER(NameSpace, Type, name)               Type name; \
                                                        DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
 
+#define PARAMETER_COMPLICATED(NameSpace, Type, name)   Type name; \
+                                                       ComplicatedParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
+
+
+/*
 /// Create variable in class and connect in to configs aggregator with custom test name
 #define PARAMETER_S(NameSpace, Type, name, textName)   Type name; \
                                                        DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, textName, &name}
-
+*/
 /// Create function in class with 1 parameter and connect it to configs aggregator
 #define FUNCION_1P(NameSpace, ClassName, functionName, ArgType)     void functionName(ArgType argument); \
                                                                     DefaultFunctionAccessor<ArgType> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
@@ -63,25 +68,6 @@
 using OperationSize = uint8_t;
 using OperationCode = uint16_t;
 
-constexpr OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); /// All bits =1 except two upper bits
-
-constexpr OperationCode SetCommandOC(OperationCode operationCode) { return operationCode & OperationCodeMask; }
-constexpr OperationCode SetParameterOC(OperationCode operationCode)
-		{ return (operationCode & OperationCodeMask) | (1 << 14); }
-constexpr OperationCode SetParameterRequest(OperationCode operationCode)
-		{ return (operationCode & OperationCodeMask) | (1 << 15); }
-
-inline bool __attribute__((always_inline)) getBit(OperationCode code, uint8_t bit)
-		{ return (code & (1 << bit)) ? true : false; }
-
-inline bool __attribute__((always_inline)) isSetParameterOC(uint16_t operationCode)
-		{ return !getBit(operationCode, 15) && getBit(operationCode, 14); }
-
-inline bool __attribute__((always_inline)) isCommand(uint16_t operationCode)
-		{ return !getBit(operationCode, 15) && !getBit(operationCode, 14); }
-
-inline bool __attribute__((always_inline)) isParameterRequest(uint16_t operationCode)
-		{ return getBit(operationCode, 15) && !getBit(operationCode, 14); }
 
 /// Any kind of object that can read data from stream and write data to stream
 class IOperationAccessor
@@ -118,6 +104,24 @@ public:
 		NOT_ENOUGH_SPACE,
 		NOT_READABLE
 	};
+
+	constexpr static OperationCode SetCallRequestOC(OperationCode operationCode) { return operationCode & OperationCodeMask; }
+	constexpr static OperationCode SetObjectOC(OperationCode operationCode)
+			{ return (operationCode & OperationCodeMask) | (1 << 14); }
+	constexpr static OperationCode SetObjectRequestOC(OperationCode operationCode)
+			{ return (operationCode & OperationCodeMask) | (1 << 15); }
+
+	constexpr static inline bool __attribute__((always_inline)) getBit(OperationCode code, uint8_t bit)
+			{ return (code & (1 << bit)) ? true : false; }
+
+	constexpr static inline bool __attribute__((always_inline)) isObjectOC(uint16_t operationCode)
+			{ return !getBit(operationCode, 15) && getBit(operationCode, 14); }
+
+	constexpr static inline bool __attribute__((always_inline)) isCallRequestOC(uint16_t operationCode)
+			{ return !getBit(operationCode, 15) && !getBit(operationCode, 14); }
+
+	constexpr static inline bool __attribute__((always_inline)) isObjectRequestOC(uint16_t operationCode)
+			{ return getBit(operationCode, 15) && !getBit(operationCode, 14); }
 
 	constexpr static unsigned int minimalStreamSize = sizeof(OperationSize) + sizeof(OperationCode);
 
@@ -158,7 +162,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	ResultType requestVariable(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
+	ResultType serializeObjectRequest(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
 
 	/**
 	 * Put to stream request for function call without parameters
@@ -167,7 +171,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	ResultType functionCall(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize);
+	ResultType serializeCallRequest(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize);
 
 	/**
 	 * Put to stream request for function call with parameter
@@ -178,7 +182,7 @@ public:
 	 * @return result of operation
 	 */
 	template<typename Type>
-	ResultType functionCall(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize, const Type& parameter)
+	ResultType serializeCallRequest(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize, const Type& parameter)
 	{
 		/// @todo [refactor] Remove code duplication with functionCallwithout parameters
 		actualSize = 0;
@@ -186,7 +190,7 @@ public:
 		if (packageSize > freeSpace)
 			return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
 
-		functionCode = SetCommandOC(functionCode);
+		functionCode = SetCallRequestOC(functionCode);
 		OperationSize size = sizeof(parameter);
 		memcpy(stream, &size, sizeof(OperationSize));
 		stream += sizeof(OperationSize);
@@ -198,6 +202,8 @@ public:
 	}
 
 private:
+	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits
+
 	std::map<OperationCode, IOperationAccessor*> m_accessorsByOpCode;
 	std::map<std::string, IOperationAccessor*> m_accessorsByOpText;
 	static RCSPAggregator* m_RCSPAggregator;
@@ -274,16 +280,11 @@ private:
 	FunctionAccessorCallback callback;
 };
 
-/// Realization of IOperationAccessor for simple typed parameters
+/// Realization of IOperationAccessor for any parameters
 template<class Type>
-class DefaultParameterAccessor : public IOperationAccessor
+class ParameterAccessorBase : public IOperationAccessor
 {
 public:
-	DefaultParameterAccessor(OperationCode code, const char* textName, Type* _parameter) :
-		parameter(_parameter)
-	{
-		RCSPAggregator::instance().registerAccessor(code, textName, this);
-	}
 
 	void deserialize(void* source, OperationSize)
 	{
@@ -299,14 +300,52 @@ public:
 
 	bool isWritable() { return true; }
 
+	inline uint32_t getSize() { return sizeof(Type); }
+
+protected:
+	Type* parameter;
+};
+
+/// Realization of IOperationAccessor for simple typed parameters
+template<class Type>
+class DefaultParameterAccessor : public ParameterAccessorBase<Type>
+{
+public:
+	DefaultParameterAccessor(OperationCode code, const char* textName, Type* _parameter) :
+		parameter(_parameter)
+	{
+		RCSPAggregator::instance().registerAccessor(code, textName, this);
+	}
+
 	void parseString(const char* str)
 	{
-		if (StringParser<Type>().isSupported())
+		if (StringParser<Type>::isSupported())
 		{
-			*parameter = StringParser<Type>().parse(str);
+			*parameter = StringParser<Type>::parse(str);
 		} else {
 			printf("Parsing of type not supported\n");
 		}
+	}
+
+	inline uint32_t getSize() { return sizeof(Type); }
+
+	Type* parameter;
+};
+
+/// Realization of IOperationAccessor for simple typed parameters
+template<class Type>
+class ComplicatedParameterAccessor : public ParameterAccessorBase<Type>
+{
+public:
+	ComplicatedParameterAccessor(OperationCode code, const char* textName, Type* _parameter) :
+		parameter(_parameter)
+	{
+		RCSPAggregator::instance().registerAccessor(code, textName, this);
+	}
+
+	void parseString(const char* str)
+	{
+		parameter->convertFromString(str);
 	}
 
 	inline uint32_t getSize() { return sizeof(Type); }
