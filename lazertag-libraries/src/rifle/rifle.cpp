@@ -156,8 +156,6 @@ void Rifle::configure()
 	m_mt2Transmitter.setTeamId(1);
 	m_mt2Transmitter.init();
 
-	rifleTurnOn();
-
 	printf("- Mounting sd-card\n");
 	if (!SDCardFS::instance().init())
 		printf("Error during mounting sd-card!\n");
@@ -176,6 +174,7 @@ void Rifle::configure()
 	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::syncAll, &playerDisplayable), false, 3000000, 0, 1000);
 	Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 1000000, 0, 1000000);
 
+	//rifleTurnOn();
 	// Registering at head sensor's weapons list
 	registerWeapon();
 
@@ -283,6 +282,7 @@ void Rifle::updatePlayerState()
 
 void Rifle::rifleTurnOff()
 {
+	printf("Rifle disabled\n");
 	isEnabled = false;
 	m_fireButton->turnOff();
 	m_reloadButton->turnOff();
@@ -290,6 +290,7 @@ void Rifle::rifleTurnOff()
 
 void Rifle::rifleTurnOn()
 {
+	printf("Rifle enabled\n");
 	isEnabled = true;
 	m_fireButton->turnOn();
 	m_reloadButton->turnOn();

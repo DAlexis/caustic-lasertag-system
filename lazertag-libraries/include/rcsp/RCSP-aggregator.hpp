@@ -36,7 +36,7 @@
  *
  *   tt - operation type:
  *
- *   00 - command (means action like restart or other)
+ *   00 - function call request
  *   01 - set parameter
  *   10 - request parameter
  *   11 - reserved
@@ -311,9 +311,9 @@ template<class Type>
 class DefaultParameterAccessor : public ParameterAccessorBase<Type>
 {
 public:
-	DefaultParameterAccessor(OperationCode code, const char* textName, Type* _parameter) :
-		parameter(_parameter)
+	DefaultParameterAccessor(OperationCode code, const char* textName, Type* _parameter)
 	{
+		ParameterAccessorBase<Type>::parameter = _parameter;
 		RCSPAggregator::instance().registerAccessor(code, textName, this);
 	}
 
@@ -321,15 +321,11 @@ public:
 	{
 		if (StringParser<Type>::isSupported())
 		{
-			*parameter = StringParser<Type>::parse(str);
+			*(ParameterAccessorBase<Type>::parameter) = StringParser<Type>::parse(str);
 		} else {
 			printf("Parsing of type not supported\n");
 		}
 	}
-
-	inline uint32_t getSize() { return sizeof(Type); }
-
-	Type* parameter;
 };
 
 /// Realization of IOperationAccessor for simple typed parameters
@@ -337,20 +333,16 @@ template<class Type>
 class ComplicatedParameterAccessor : public ParameterAccessorBase<Type>
 {
 public:
-	ComplicatedParameterAccessor(OperationCode code, const char* textName, Type* _parameter) :
-		parameter(_parameter)
+	ComplicatedParameterAccessor(OperationCode code, const char* textName, Type* _parameter)
 	{
+		ParameterAccessorBase<Type>::parameter = _parameter;
 		RCSPAggregator::instance().registerAccessor(code, textName, this);
 	}
 
 	void parseString(const char* str)
 	{
-		parameter->convertFromString(str);
+		ParameterAccessorBase<Type>::parameter->convertFromString(str);
 	}
-
-	inline uint32_t getSize() { return sizeof(Type); }
-
-	Type* parameter;
 };
 
 #endif /* LOGIC_CONFIGURATION_HPP_ */

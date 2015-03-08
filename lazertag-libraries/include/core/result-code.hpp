@@ -9,12 +9,16 @@
 #define LAZERTAG_RIFLE_INCLUDE_CORE_RETURN_CODES_HPP_
 
 #include <stdint.h>
+#include <stdio.h>
 
 struct Result
 {
 public:
 	Result() {}
-	Result(const char* str) : isSuccess(false), errorText(str) {}
+	Result(const char* str) : isSuccess(false), errorText(str)
+	{
+		//printf("Error result: %s", errorText);
+	}
 
 	inline void fail(const char* str)
 	{

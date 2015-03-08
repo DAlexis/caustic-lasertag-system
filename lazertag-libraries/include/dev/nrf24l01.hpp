@@ -16,7 +16,6 @@
 #include <stdint.h>
 
 #define RADIO_ADDRESS_SIZE  5
-#define PAYLOAD_SIZE        32
 #define RADIO_CHANNEL       1
 
 using DataReceiveCallback = std::function<void(uint8_t/* channel*/, uint8_t*/* data*/)>;
@@ -31,6 +30,8 @@ public:
         DISABLE_OPTION = 0,
         ENABLE_OPTION = 1,
     };
+
+    constexpr static unsigned int payloadSize = 32;
 
     NRF24L01Manager();
 

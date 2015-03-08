@@ -33,17 +33,17 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 {
 	uint8_t* position = stream;
 	uint32_t unsupported = 0;
-	while ((position - stream) <= size-(sizeof(OperationSize)+sizeof(OperationCode)))
+	while ((position - stream) <= size - (sizeof(OperationSize)+sizeof(OperationCode)) )
 	{
 		OperationSize *pOperationSize = reinterpret_cast<OperationSize*> (position);
 		position += sizeof(OperationSize);
 		OperationCode *pOperationCode = reinterpret_cast<OperationCode*> (position);
 		position += sizeof(OperationCode);
-		printf("Dispatched opcode: %u\n", *pOperationCode);
 		if (isObjectRequestOC(*pOperationCode))
 		{
 			if (answerStream)
 			{
+
 				// Adding parameter to answer stream
 				OperationCode parameterCode = SetObjectOC(*pOperationCode);
 				//printf("Parameter request: %u\n", parameterCode);
@@ -100,7 +100,7 @@ Result RCSPAggregator::parseSring(const char* key, const char* value)
 	}
 	if (!it->second->isWritable())
 	{
-		return Result("Parameter cannot be setted");
+		return Result("Parameter cannot be set\n");
 	}
 
 	it->second->parseString(value);

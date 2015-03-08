@@ -19,14 +19,14 @@ using PackageSendingDoneCallback = std::function<void(uint16_t /*package id*/, b
 using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>;
 
 #pragma pack(push, 1)
-struct PackageIdAndTTL
+struct PackageDetails
 {
-	PackageIdAndTTL(uint16_t id, uint16_t ttl = 0) :
+	PackageDetails(uint16_t id, uint16_t ttl = 0) :
 		packageId(id),
 		TTL(ttl)
 	{}
 
-	PackageIdAndTTL()
+	PackageDetails()
 	{
 		TTL = 0;
 	}
@@ -37,7 +37,7 @@ struct PackageIdAndTTL
 #pragma pack(pop)
 
 
-struct DeviceAddress : public IConertableFromString
+struct DeviceAddress
 {
 	constexpr static uint8_t size = 3;
 	uint8_t address[size];
@@ -47,10 +47,15 @@ struct DeviceAddress : public IConertableFromString
 		address[0] = address[1] = address[2] = 1;
 	}
 
+	void print()
+	{
+		printf("%u-%u-%u\n", address[0], address[1], address[2]);
+	}
+
 	void convertFromString(const char* str)
 	{
 		/// @todo Improve parcer to be absolutely stable
-		printf("Parsing address %s\n", str);
+		//printf("Parsing address %s\n", str);
 		const char* pos = str;
 		constexpr unsigned int tmpSize = 20;
 		char tmp[tmpSize];
@@ -78,6 +83,7 @@ struct DeviceAddress : public IConertableFromString
 			address[i] = atoi(tmp);
 			pos++;
 		}
+		printf("Parsed: %u-%u-%u\n", address[0], address[1], address[2]);
 	}
 
 	// Operators
@@ -113,9 +119,9 @@ struct Package
 
 	DeviceAddress sender;
 	DeviceAddress target;
-	PackageIdAndTTL idAndTTL;
+	PackageDetails idAndTTL;
 
-	constexpr static uint16_t packageLength = PAYLOAD_SIZE;
+	constexpr static uint16_t packageLength = NRF24L01Manager::payloadSize;
 	constexpr static uint16_t payloadLength = packageLength - sizeof(sender) - sizeof(target) - sizeof(idAndTTL);
 
 	uint8_t payload[payloadLength];

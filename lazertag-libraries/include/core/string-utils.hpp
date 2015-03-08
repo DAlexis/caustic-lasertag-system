@@ -69,13 +69,6 @@ private:
 	char m_errorMessage[128];
 };
 
-class IConertableFromString
-{
-public:
-	virtual ~IConertableFromString() {}
-	virtual void convertFromString(const char*) = 0;
-};
-
 template<typename Type>
 class StringParser
 {

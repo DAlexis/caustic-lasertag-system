@@ -32,6 +32,7 @@ void RCSPModem::init()
 		SPIs->getSPI(1)
 	);
 	nrf.printStatus();
+	//nrf.enableDebug();
 	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 10000, 10000);
 }
 
@@ -60,7 +61,7 @@ uint16_t RCSPModem::send(
 		printf("Error: too long payload!\n");
 		return 0;
 	}
-	PackageIdAndTTL idAndTTL;
+	PackageDetails idAndTTL;
 	idAndTTL.packageId = generatePackageId();
 
 	if (waitForAck)
@@ -113,7 +114,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(received.payload);
 	if (ackDispatcher->isAck())
 	{
-		//printf("Ack package received for id=%u\n", ackDispatcher->packageId);
+		printf("Ack for %u\n", ackDispatcher->packageId);
 		auto it = m_packages.find(ackDispatcher->packageId);
 		if (it == m_packages.end())
 		{
@@ -131,18 +132,18 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	//printf("Received package with id=%u\n", received.idAndTTL.packageId);
 	// Generating acknledgement
 
-	// Forming payload for ack package
-	AckPayload ackPayload;
-	ackPayload.packageId = received.idAndTTL.packageId;
-	// Forming ack package
-	Package ack;
-	ack.target = received.sender;
-	ack.sender = devAddr;
-	ack.idAndTTL.packageId = generatePackageId();
-	memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
-	memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
-	// Adding ack package to list for sending
-	m_packagesNoAck.push_back(ack);
+		// Forming payload for ack package
+		AckPayload ackPayload;
+		ackPayload.packageId = received.idAndTTL.packageId;
+		// Forming ack package
+		Package ack;
+		ack.target = received.sender;
+		ack.sender = devAddr;
+		ack.idAndTTL.packageId = generatePackageId();
+		memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
+		memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
+		// Adding ack package to list for sending
+		m_packagesNoAck.push_back(ack);
 
 	if (checkIfIdStoredAndStore(received.idAndTTL.packageId))
 	{
@@ -180,6 +181,7 @@ void RCSPModem::interrogate()
 		/// @todo [Refactoring] Remove stream from there
 		RCSPMultiStream answerStream;
 		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
+		printf("Dispatched %u\n", m_incoming.front().idAndTTL.packageId);
 		if (!answerStream.empty())
 		{
 			answerStream.send(m_incoming.front().sender, true);
@@ -190,10 +192,13 @@ void RCSPModem::interrogate()
 
 void RCSPModem::sendNext()
 {
+	if (isSendingNow)
+		return;
+
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
 	{
-		//printf("Sending package with NO ack needed\n");
+		printf("Sending package with NO ack needed %u\n", m_packagesNoAck.front().idAndTTL.packageId);
 		nrf.sendData(Package::packageLength, (uint8_t*) &(m_packagesNoAck.front()));
 		m_packagesNoAck.pop_front();
 		isSendingNow = true;
@@ -221,7 +226,7 @@ void RCSPModem::sendNext()
 		// If it is time to (re)send package
 		if (it->second.nextTransmission < time)
 		{
-			//printf("Sending package with ack needed, id=%u\n", it->second.package.idAndTTL.packageId);
+			printf("Sending package id=%u\n", it->second.package.idAndTTL.packageId);
 			currentlySendingPackageId = it->first;
 			isSendingNow = true;
 			it->second.nextTransmission = time + it->second.resendTime + Random::random(it->second.resendTimeDelta);

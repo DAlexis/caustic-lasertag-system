@@ -191,7 +191,7 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     // Setting up pipe 0
     setAutoACK(0, DISABLE_OPTION);
     enablePipe(0, ENABLE_OPTION);
-    setRXPayloadLength(0, PAYLOAD_SIZE);
+    setRXPayloadLength(0, payloadSize);
 
 /*
     // Setting up pipe 1
@@ -671,10 +671,10 @@ void NRF24L01Manager::interrogate()
     if (isRXDataReady())
     {
         unsigned char pipe = getPipeNumberAvaliableForRXFIFO();
-        unsigned char data[PAYLOAD_SIZE];
+        unsigned char data[payloadSize];
         while (!isRXEmpty())
         {
-            receiveData(PAYLOAD_SIZE, data);
+            receiveData(payloadSize, data);
             if (m_RXcallback == nullptr) {
                 printf("Warning: Callback is not set! RX data from pipe %d: \n", pipe);
                 printf("%x %x %x %x %x\n", data[0], data[1], data[2], data[3], data[4]);
