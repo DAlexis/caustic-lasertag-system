@@ -32,13 +32,13 @@ void RCSPModem::init()
 		SPIs->getSPI(1)
 	);
 	nrf.printStatus();
-	//nrf.enableDebug();
+	nrf.enableDebug();
 	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 10000, 10000);
 }
 
 uint16_t RCSPModem::generatePackageId()
 {
-	uint16_t id = (systemClock->getTime()) & 0x3FFF;
+	uint16_t id = (systemClock->getTime()) & 0xFFFF;
 	if (id == 0)
 		id = 1;
 	return id;
@@ -61,14 +61,15 @@ uint16_t RCSPModem::send(
 		printf("Error: too long payload!\n");
 		return 0;
 	}
-	PackageDetails idAndTTL;
-	idAndTTL.packageId = generatePackageId();
+	PackageDetails details;
+	details.packageId = generatePackageId();
 
 	if (waitForAck)
 	{
 		Time time = systemClock->getTime();
-		m_packages[idAndTTL.packageId] = WaitingPackage();
-		WaitingPackage& waitingPackage = m_packages[idAndTTL.packageId];
+		details.needAck = 1;
+		m_packages[details.packageId] = WaitingPackage();
+		WaitingPackage& waitingPackage = m_packages[details.packageId];
 		waitingPackage.wasCreated = time;
 		waitingPackage.nextTransmission = time;
 
@@ -79,15 +80,15 @@ uint16_t RCSPModem::send(
 		waitingPackage.callback = doneCallback;
 		waitingPackage.package.sender = devAddr;
 		waitingPackage.package.target = target;
-		waitingPackage.package.idAndTTL = idAndTTL;
+		waitingPackage.package.details = details;
 		memcpy(waitingPackage.package.payload, data, size);
 		//printf("Ack-using package queued\n");
-		return idAndTTL.packageId;
+		return details.packageId;
 	} else {
 		m_packagesNoAck.push_back(Package());
 		m_packagesNoAck.back().sender = devAddr;
 		m_packagesNoAck.back().target = target;
-		m_packagesNoAck.back().idAndTTL = idAndTTL;
+		m_packagesNoAck.back().details = details;
 		memcpy(m_packagesNoAck.back().payload, data, size);
 		if (size<Package::payloadLength)
 			memset(m_packagesNoAck.back().payload+size, 0, size-Package::payloadLength);
@@ -131,23 +132,25 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 
 	//printf("Received package with id=%u\n", received.idAndTTL.packageId);
 	// Generating acknledgement
-
+	if (received.details.needAck == 1)
+	{
 		// Forming payload for ack package
 		AckPayload ackPayload;
-		ackPayload.packageId = received.idAndTTL.packageId;
+		ackPayload.packageId = received.details.packageId;
 		// Forming ack package
 		Package ack;
 		ack.target = received.sender;
 		ack.sender = devAddr;
-		ack.idAndTTL.packageId = generatePackageId();
+		ack.details.packageId = generatePackageId();
 		memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
 		memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
 		// Adding ack package to list for sending
 		m_packagesNoAck.push_back(ack);
+	}
 
-	if (checkIfIdStoredAndStore(received.idAndTTL.packageId))
+	if (checkIfIdStoredAndStore(received.details.packageId))
 	{
-		printf("Package %u repetition detected\n", received.idAndTTL.packageId);
+		printf("Package %u repetition detected\n", received.details.packageId);
 	} else {
 		// Putting received package to list
 		m_incoming.push_back(received);
@@ -181,7 +184,7 @@ void RCSPModem::interrogate()
 		/// @todo [Refactoring] Remove stream from there
 		RCSPMultiStream answerStream;
 		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
-		printf("Dispatched %u\n", m_incoming.front().idAndTTL.packageId);
+		printf("Dispatched %u\n", m_incoming.front().details.packageId);
 		if (!answerStream.empty())
 		{
 			answerStream.send(m_incoming.front().sender, true);
@@ -198,7 +201,7 @@ void RCSPModem::sendNext()
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
 	{
-		printf("Sending package with NO ack needed %u\n", m_packagesNoAck.front().idAndTTL.packageId);
+		printf("Sending package with NO ack needed %u\n", m_packagesNoAck.front().details.packageId);
 		nrf.sendData(Package::packageLength, (uint8_t*) &(m_packagesNoAck.front()));
 		m_packagesNoAck.pop_front();
 		isSendingNow = true;
@@ -213,7 +216,7 @@ void RCSPModem::sendNext()
 		if (time - it->second.wasCreated > it->second.timeout)
 		{
 			PackageSendingDoneCallback callback = it->second.callback;
-			uint16_t timeoutedPackageId = it->second.package.idAndTTL.packageId;
+			uint16_t timeoutedPackageId = it->second.package.details.packageId;
 			printf("Package %u timeouted\n", timeoutedPackageId);
 			m_packages.erase(it);
 			if (callback)
@@ -226,7 +229,7 @@ void RCSPModem::sendNext()
 		// If it is time to (re)send package
 		if (it->second.nextTransmission < time)
 		{
-			printf("Sending package id=%u\n", it->second.package.idAndTTL.packageId);
+			printf("Sending package id=%u\n", it->second.package.details.packageId);
 			currentlySendingPackageId = it->first;
 			isSendingNow = true;
 			it->second.nextTransmission = time + it->second.resendTime + Random::random(it->second.resendTimeDelta);

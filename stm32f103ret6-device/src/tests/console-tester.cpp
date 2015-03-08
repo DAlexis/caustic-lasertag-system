@@ -262,10 +262,10 @@ void ConsoleTester::radioRXCallback(uint8_t channel, uint8_t* data)
 
 void ConsoleTester::regularTX()
 {
-	unsigned char data[PAYLOAD_SIZE];
-	for (unsigned int i=0; i<PAYLOAD_SIZE; i++)
+	unsigned char data[NRF24L01Manager::payloadSize];
+	for (unsigned int i=0; i<NRF24L01Manager::payloadSize; i++)
 		data[i] = i;
-	nrf->sendData(PAYLOAD_SIZE, data);
+	nrf->sendData(NRF24L01Manager::payloadSize, data);
 }
 
 void ConsoleTester::radioRegularTxOnTest(const char*)

@@ -21,18 +21,21 @@ using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>
 #pragma pack(push, 1)
 struct PackageDetails
 {
-	PackageDetails(uint16_t id, uint16_t ttl = 0) :
+	PackageDetails(uint16_t id, uint8_t ack = 0, uint16_t ttl = 0) :
 		packageId(id),
-		TTL(ttl)
+		TTL(ttl),
+		needAck(ack)
 	{}
 
 	PackageDetails()
 	{
 		TTL = 0;
+		needAck = 0;
 	}
 
-	uint16_t packageId : 14;
-	uint16_t TTL : 2;
+	uint16_t packageId;
+	uint8_t TTL : 7;
+	uint8_t needAck : 1;
 };
 #pragma pack(pop)
 
@@ -42,15 +45,9 @@ struct DeviceAddress
 	constexpr static uint8_t size = 3;
 	uint8_t address[size];
 
-	DeviceAddress()
-	{
-		address[0] = address[1] = address[2] = 1;
-	}
+	DeviceAddress() { address[0] = address[1] = address[2] = 1; }
 
-	void print()
-	{
-		printf("%u-%u-%u\n", address[0], address[1], address[2]);
-	}
+	void print() { printf("%u-%u-%u\n", address[0], address[1], address[2]); }
 
 	void convertFromString(const char* str)
 	{
@@ -119,15 +116,14 @@ struct Package
 
 	DeviceAddress sender;
 	DeviceAddress target;
-	PackageDetails idAndTTL;
+	PackageDetails details;
 
 	constexpr static uint16_t packageLength = NRF24L01Manager::payloadSize;
-	constexpr static uint16_t payloadLength = packageLength - sizeof(sender) - sizeof(target) - sizeof(idAndTTL);
+	constexpr static uint16_t payloadLength = packageLength - sizeof(sender) - sizeof(target) - sizeof(details);
 
 	uint8_t payload[payloadLength];
 };
 #pragma pack(pop)
-
 
 
 class RCSPModem
@@ -179,7 +175,7 @@ private:
 	{
 		uint8_t size = sizeof(uint16_t);
 		uint16_t operationCode = ConfigCodes::acknoledgement;
-		uint16_t packageId : 14;
+		uint16_t packageId;
 		bool isAck() { return operationCode == ConfigCodes::acknoledgement; }
 	};
 #pragma pack(pop)
