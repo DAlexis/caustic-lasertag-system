@@ -172,7 +172,7 @@ void Rifle::configure()
 	RCSPAggregator::instance().readIni("config.ini");
 
 	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::print, &playerDisplayable), false, 3000000, 0, 1000);
-	Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 3000000, 0, 1000000);
+	Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 1000000, 0, 1000000);
 
 	//rifleTurnOn();
 	// Registering at head sensor's weapons list

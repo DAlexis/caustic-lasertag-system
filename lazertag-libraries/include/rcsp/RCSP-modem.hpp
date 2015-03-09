@@ -189,7 +189,11 @@ private:
 	void RXCallback(uint8_t channel, uint8_t* data);
 	void sendNext();
 	bool checkIfIdStoredAndStore(uint16_t id);
+	bool isTranslationAllowed();
+	void temproraryProhibitTransmission();
 
+	Time m_transmissionProhibitedTime = 0;
+	Time m_transmissionProhibitionPeriod = 0;
 
 	uint16_t currentlySendingPackageId = 0;
 	bool isSendingNow = false;

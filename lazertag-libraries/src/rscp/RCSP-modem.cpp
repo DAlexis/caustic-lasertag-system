@@ -33,7 +33,7 @@ void RCSPModem::init()
 	);
 	nrf.printStatus();
 	nrf.enableDebug();
-	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 10000, 10000);
+	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 1000, 1000);
 }
 
 uint16_t RCSPModem::generatePackageId()
@@ -107,6 +107,8 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	Package received;
 	memcpy(&received, data, sizeof(Package));
 
+	temproraryProhibitTransmission();
+
 	// Skipping packages for other devices
 	if (received.target != devAddr)
 		return;
@@ -150,7 +152,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 
 	if (checkIfIdStoredAndStore(received.details.packageId))
 	{
-		printf("Package %u repetition detected\n", received.details.packageId);
+		printf("== Package %u repetition detected\n", received.details.packageId);
 	} else {
 		// Putting received package to list
 		m_incoming.push_back(received);
@@ -174,10 +176,7 @@ bool RCSPModem::checkIfIdStoredAndStore(uint16_t id)
 
 void RCSPModem::interrogate()
 {
-	if (!isSendingNow)
-	{
-		sendNext();
-	}
+	sendNext();
 	nrf.interrogate();
 	while (!m_incoming.empty())
 	{
@@ -195,7 +194,7 @@ void RCSPModem::interrogate()
 
 void RCSPModem::sendNext()
 {
-	if (isSendingNow)
+	if (!isTranslationAllowed())
 		return;
 
 	// First, sending packages without response
@@ -237,6 +236,27 @@ void RCSPModem::sendNext()
 			return;
 		}
 	}
+}
+
+bool RCSPModem::isTranslationAllowed()
+{
+	return (
+			!isSendingNow &&
+			(systemClock->getTime() - m_transmissionProhibitedTime) > m_transmissionProhibitionPeriod
+			);
+}
+
+void RCSPModem::temproraryProhibitTransmission()
+{
+	m_transmissionProhibitedTime = systemClock->getTime();
+	/**
+	 * This variable might be optimized. This value means time delay between last receiving and first transmission.
+	 *
+	 * 4000 is too small even for two devices in network: at least some acks does not reach
+	 * 8000 is enough, but may be too large
+	 *
+	 */
+	m_transmissionProhibitionPeriod = 8000;
 }
 
 RCSPModem& RCSPModem::instance()
