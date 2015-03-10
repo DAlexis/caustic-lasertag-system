@@ -81,7 +81,7 @@ private:
 	uint8_t encodeDamage(uint8_t damage);
 	uint8_t m_playerId = 1;
 	uint8_t m_teamId = 0;
-	bool m_sendingHeader;
+	bool m_sendingHeader = false;
 	IFireEmitter *m_fireEmitter = nullptr;
 };
 

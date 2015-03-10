@@ -5,7 +5,8 @@
  *      Author: alexey
  */
 
-#include <dev/miles-tag-details.hpp>
+#include "dev/miles-tag-details.hpp"
+#include "core/scheduler.hpp"
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "dev/miles-tag-2.hpp"
@@ -22,6 +23,7 @@ void MilesTag2Receiver::init(IExternalInterruptManager* exti)
 	m_exti = exti;
 	m_exti->setCallback(std::bind(&MilesTag2Receiver::interruptHandler, this, std::placeholders::_1));
 	resetReceiver();
+	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, this), false, 5000, 2000);
 }
 
 void MilesTag2Receiver::turnOn()
@@ -112,6 +114,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 	if (getCurrentLength() == MT2Extended::shotLength
 			&& getBit(0) == false)
 	{
+		//printf("--- Near to parse the shot\n");
 		// We have the shot
 		unsigned int playerId   = m_data[0] & ~(1 << 7);
 		unsigned int teamId     = m_data[1] >> 6;
@@ -119,6 +122,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		if (m_shotCallback)
 		{
 			m_nextInterrogationCallback = std::bind(m_shotCallback, teamId, playerId, decodeDamage(damageCode));
+			//m_shotCallback(teamId, playerId, decodeDamage(damageCode));
 		} else {
 			m_nextInterrogationCallback = nullptr;
 			printf("Shot callback not set!\n");
@@ -196,7 +200,6 @@ void MilesTag2Receiver::resetReceiver()
 	m_state = RS_WAITING_HEADER;
 	m_falseImpulse = false;
 	m_dataReady = false;
-	m_nextInterrogationCallback = nullptr;
 }
 
 void MilesTag2Receiver::interruptHandler(bool state)
@@ -316,7 +319,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 bool MilesTag2Receiver::parseVariableSizeMessage()
 {
 	unsigned int time = systemClock->getTime();
-	if (time - m_lastTime < TIME_BEFORE_PARSING)
+	if (time - m_lastTime < MT2Extended::variableSizePackageEndDelay)
 		return false;
 
 	if (getCurrentLength() >= 8 + RCSPAggregator::minimalStreamSize

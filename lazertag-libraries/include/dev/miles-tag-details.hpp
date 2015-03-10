@@ -28,14 +28,13 @@
 #define BIT_WAIT_PERIOD_MIN     500
 #define BIT_WAIT_PERIOD_MAX     900
 
-#define TIME_BEFORE_PARSING     HADER_PERIOD
-
 namespace MT2Extended
 {
 	constexpr uint8_t shotLength = 14;
 	constexpr uint8_t messageLength = 3*8;
 	constexpr uint8_t commandLength = 3*8;
 
+	constexpr uint32_t variableSizePackageEndDelay = HADER_PERIOD;
 	namespace Byte1
 	{
 		constexpr uint8_t addHealth = 0x80;

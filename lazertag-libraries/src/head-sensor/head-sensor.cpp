@@ -33,10 +33,6 @@ void HeadSensor::configure()
 	if (!SDCardFS::instance().init())
 		printf("Error during mounting sd-card!\n");
 
-
-
-	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, &m_mainSensor), false, 50000, 30000);
-
 	RCSPModem::instance().init();
 
 	printf("- Creating console commands for head sensor\n");
