@@ -76,7 +76,7 @@ void LEDFireEmitter::init()
 	//NVIC_SetPriority(TIM7_IRQn, 0);
 	//NVIC_EnableIRQ(TIM7_IRQn);
 
-	TIM_ITConfig(TIM7, TIM_DIER_UIE, ENABLE);
+	//TIM_ITConfig(TIM7, TIM_DIER_UIE, ENABLE);
 }
 
 void LEDFireEmitter::startImpulsePack(bool isLedOn, unsigned int delayMs)
