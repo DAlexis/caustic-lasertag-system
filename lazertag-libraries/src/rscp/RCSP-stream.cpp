@@ -200,3 +200,11 @@ bool RCSPMultiStream::empty()
 {
 	return m_streams.front()->empty();
 }
+
+void RCSPMultiStream::dispatch()
+{
+	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
+	{
+		(*it)->dispatch();
+	}
+}

@@ -201,8 +201,22 @@ public:
 		return DetailedResult<AddingResult>(OK);
 	}
 
+	bool doOperation(OperationCode code)
+	{
+		OperationSize size = 0;
+		dispatchOperation(&size, &code, nullptr);
+	}
+
+	template <typename Type>
+	bool doOperation(OperationCode code, Type& arg)
+	{
+		OperationSize size = sizeof(arg);
+		dispatchOperation(&size, &code, reinterpret_cast<uint8_t*>(&arg));
+	}
 private:
 	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits
+
+	bool dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream = nullptr);
 
 	std::map<OperationCode, IOperationAccessor*> m_accessorsByOpCode;
 	std::map<std::string, IOperationAccessor*> m_accessorsByOpText;
@@ -286,8 +300,13 @@ class ParameterAccessorBase : public IOperationAccessor
 {
 public:
 
-	void deserialize(void* source, OperationSize)
+	void deserialize(void* source, OperationSize size)
 	{
+		if (size != sizeof(Type))
+		{
+			printf("Error: invalid size for parameter!\n");
+			return;
+		}
 		memcpy(parameter, source, sizeof(Type));
 	}
 

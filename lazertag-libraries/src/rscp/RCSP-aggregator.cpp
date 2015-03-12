@@ -39,37 +39,51 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 		position += sizeof(OperationSize);
 		OperationCode *pOperationCode = reinterpret_cast<OperationCode*> (position);
 		position += sizeof(OperationCode);
-		if (isObjectRequestOC(*pOperationCode))
-		{
-			if (answerStream)
-			{
-
-				// Adding parameter to answer stream
-				OperationCode parameterCode = SetObjectOC(*pOperationCode);
-				//printf("Parameter request: %u\n", parameterCode);
-				auto it = m_accessorsByOpCode.find(parameterCode);
-				if (it != m_accessorsByOpCode.end())
-				{
-					answerStream->addValue(parameterCode);
-				}
-			}
-		} else {
-			auto it = m_accessorsByOpCode.find(*pOperationCode);
-			if (it != m_accessorsByOpCode.end())
-			{
-				//printf("Dispatched opcode: %u\n", *pOperationCode);
-				if (*pOperationSize == 0)
-					it->second->deserialize(nullptr, 0);
-				else
-					it->second->deserialize(position, *pOperationSize);
-			}
-			else
-				unsupported++;
-		}
+		if (!dispatchOperation(pOperationSize, pOperationCode, position, answerStream))
+			unsupported++;
 		position += *pOperationSize;
 	}
 	return unsupported;
 }
+
+bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream)
+{
+	if (isObjectRequestOC(*code))
+	{
+		if (answerStream)
+		{
+			// Adding parameter to answer stream
+			OperationCode parameterCode = SetObjectOC(*code);
+			//printf("Parameter request: %u\n", parameterCode);
+			auto it = m_accessorsByOpCode.find(parameterCode);
+			if (it != m_accessorsByOpCode.end())
+			{
+				answerStream->addValue(parameterCode);
+				return true;
+			} else {
+				printf("Unknown request code: %u\n", *code);
+				return false;
+			}
+		} else {
+			printf("No answer stream, skipping request\n");
+			return false;
+		}
+	} else {
+		auto it = m_accessorsByOpCode.find(*code);
+		if (it != m_accessorsByOpCode.end())
+		{
+			//printf("Dispatched opcode: %u\n", *pOperationCode);
+			if (*size == 0)
+				it->second->deserialize(nullptr, 0);
+			else
+				it->second->deserialize(arg, *size);
+			return true;
+		}
+		else
+			return false;
+	}
+}
+
 
 bool RCSPAggregator::isStreamConsistent(uint8_t* stream, uint32_t size)
 {

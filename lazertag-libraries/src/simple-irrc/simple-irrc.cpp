@@ -88,23 +88,23 @@ void SimpleIRRC::killButtonCb(bool)
 void SimpleIRRC::teamRedButtonCb(bool)
 {
 	printf("Team id to 0\n");
-	printf("TODO\n");
+	m_mt2.setTeam(0);
 }
 
 void SimpleIRRC::teamBlueButtonCb(bool)
 {
 	printf("Team id to 1\n");
-	printf("TODO\n");
+	m_mt2.setTeam(1);
 }
 
 void SimpleIRRC::decreaseHPButtonCb(bool)
 {
-	printf("Decrease hp\n");
-	printf("TODO\n");
+	printf("Decreasing hp by 10\n");
+	m_mt2.addHealth(-10);
 }
 
 void SimpleIRRC::increaseHPButtonCb(bool)
 {
-	printf("Increase hp\n");
-	printf("TODO\n");
+	printf("Increasing hp\n");
+	m_mt2.addHealth(10);
 }

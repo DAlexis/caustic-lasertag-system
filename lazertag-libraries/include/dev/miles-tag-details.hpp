@@ -39,6 +39,8 @@ namespace MT2Extended
 	{
 		constexpr uint8_t addHealth = 0x80;
 		constexpr uint8_t addRounds = 0x81;
+		constexpr uint8_t setTeam   = 0x82; ///< This code marked as RESERVED in original MT2
+
 		constexpr uint8_t ammoPickup = 0x8A;
 		constexpr uint8_t healthPickup = 0x8B;
 		constexpr uint8_t flagPickup = 0x8C;
@@ -74,17 +76,19 @@ namespace MT2Extended
 		constexpr uint8_t stunPlayer = 0x16;
 		constexpr uint8_t disarmPlayer = 0x17;
 	}
+
+	inline int decodeAddHealth(unsigned int code)
+	{
+		return code <= 50 ? code : code - 100;
+	}
+
+	inline unsigned int encodeAddHealth(int health)
+	{
+		return health >= 0 ? health : 100 + health;
+	}
 }
 
-inline int decodeAddHealth(unsigned int code)
-{
-	return code <= 50 ? code : code - 100;
-}
 
-inline unsigned int encodeAddHealth(int health)
-{
-	return health >= 0 ? health : 100 - health;
-}
 
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_MILES_TAG_2_TIMINGS_H_ */

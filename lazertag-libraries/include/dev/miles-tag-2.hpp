@@ -38,7 +38,8 @@ public:
 
 	// Standard commands
 	void shot(uint8_t damage);
-	void addHealth(uint8_t value);
+	void addHealth(int16_t value);
+	void setTeam(uint8_t teamId);
 	void addRounds(uint8_t value);
 	void adminKill();
 	void pauseOrUnpause();

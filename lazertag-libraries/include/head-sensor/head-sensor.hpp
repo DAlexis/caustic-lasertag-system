@@ -28,7 +28,6 @@ public:
 	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn);
 	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset);
 	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth, int16_t);
 
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon, DeviceAddress);
 

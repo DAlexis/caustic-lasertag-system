@@ -64,7 +64,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		}
 	}
 	if (!playerState.isAlive()) {
-		printf("Player died.\n");
+		printf("Player died\n");
 		/// Notifying weapons
 		turnOffWeapons();
 	}
@@ -86,12 +86,8 @@ void HeadSensor::playerReset()
 
 void HeadSensor::playerKill()
 {
+	printf("Player killed\n");
 	playerState.kill();
-}
-
-void HeadSensor::addMaxHealth(int16_t delta)
-{
-
 }
 
 void HeadSensor::turnOnAndResetWeapons()

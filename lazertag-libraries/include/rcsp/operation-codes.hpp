@@ -157,6 +157,7 @@ namespace ConfigCodes
 			FUNC_CODE(playerKill,         1205)
 
 			FUNC_CODE(addMaxHealth,       1220)
+			FUNC_CODE(setTeam,            1221)
 
 			FUNC_CODE(registerWeapon,     1300)
 		}

@@ -134,21 +134,20 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 			&& m_data[2] == MT2Extended::Byte3::commandEnd)
 	{
 		printf("Command with code %x detected\n", m_data[1]);
-		RCSPStream stream;
 		switch(m_data[1])
 		{
 		case MT2Extended::Commands::adminKill:
-			stream.addCall(ConfigCodes::HeadSensor::Functions::playerKill);
+			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerKill);
 			break;
 		case MT2Extended::Commands::pauseOrUnpause:
 			break;
 		case MT2Extended::Commands::startGame:
-			stream.addCall(ConfigCodes::HeadSensor::Functions::playerReset);
+			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerReset);
 			break;
 		case MT2Extended::Commands::restoreDefaults:
 			break;
 		case MT2Extended::Commands::respawn:
-			stream.addCall(ConfigCodes::HeadSensor::Functions::playerRespawn);
+			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn);
 			break;
 		case MT2Extended::Commands::newGameImmediate:
 			break;
@@ -179,15 +178,23 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		default:
 			return false;
 		}
-		stream.dispatch();
 	}
 	else if (getCurrentLength() == MT2Extended::messageLength
 			&& m_data[0] == MT2Extended::Byte1::addHealth)
 	{
-		printf("Add health with code %u detected\n", m_data[1]);
-		RCSPStream stream;
-		/// TODO Add health here
-		stream.dispatch();
+		printf("Add health with health code %u detected\n", m_data[1]);
+		int16_t healthDelta = MT2Extended::decodeAddHealth(m_data[1]);
+
+		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::addMaxHealth, healthDelta);
+	}
+	else if (getCurrentLength() == MT2Extended::messageLength
+		&& m_data[0] == MT2Extended::Byte1::setTeam)
+	{
+		uint8_t teamId = m_data[1] & 0x03;
+		printf("Setting team to %u\n", teamId);
+		if (m_data[1] & ~(0x03))
+			printf("Warning: team id byte contains non-zero upper bits\n");
+		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Configuration::teamId, m_data[1]);
 	}
 	else
 		return false;

@@ -44,11 +44,13 @@ void PlayerConfiguration::setDefault()
 
 void PlayerConfiguration::addMaxHealth(int16_t delta)
 {
-	/*
-	if (size == sizeof(uint8_t))
+	printf("Adding health: %d\n", delta);
+	if (delta < 0 && healthMax < -delta)
 	{
-		uint8_t
-	}*/
+		printf("Health is %u, so can not add %d\n", healthMax, delta);
+		return;
+	}
+	healthMax += delta;
 }
 
 bool PlayerState::damage(uint8_t damage)

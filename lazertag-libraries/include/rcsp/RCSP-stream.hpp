@@ -34,7 +34,6 @@ public:
 		return stream.send(target, waitForAck, callback);
 	}
 
-
 	uint8_t* getStream();
 	uint16_t getSize();
 	RCSPAggregator::ResultType addValue(OperationCode code);
@@ -133,6 +132,8 @@ public:
 	);
 
 	bool empty();
+
+	void dispatch();
 
 private:
 	void pushBackStream();

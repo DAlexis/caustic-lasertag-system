@@ -40,7 +40,7 @@ public:
 
 	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, plyerId);
 	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, plyerMT2Id);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, teamId);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint8_t, teamId);
 
 	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot1MaxWeight);
 	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot2MaxWeight);
