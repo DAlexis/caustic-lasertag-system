@@ -151,9 +151,6 @@ void Rifle::configure()
 	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(semiAutomaticButtonPort, semiAutomaticButtonPin);
 	m_semiAutomaticFireSwitch->turnOff();
 
-
-	m_mt2Transmitter.setPlayerId(1);
-	m_mt2Transmitter.setTeamId(1);
 	m_mt2Transmitter.init();
 
 	printf("- Mounting sd-card\n");
@@ -308,7 +305,16 @@ void Rifle::rifleReset()
 void Rifle::registerWeapon()
 {
 	printf("Registering weapon...\n");
-	RCSPMultiStream stream;
-	stream.addCall(ConfigCodes::HeadSensor::Functions::registerWeapon, RCSPModem::instance().devAddr);
-	stream.send(config.headSensorAddr, true);
+	RCSPStream::remoteCall(
+			config.headSensorAddr,
+			ConfigCodes::HeadSensor::Functions::registerWeapon,
+			RCSPModem::instance().devAddr,
+			true,
+			[this](PackageId packageId, bool isSuccess) {
+				if (!isSuccess) {
+					printf("No response from head sensor\n");
+					registerWeapon();
+				}
+			}
+	);
 }

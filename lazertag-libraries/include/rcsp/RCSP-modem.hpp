@@ -15,7 +15,9 @@
 #include "core/singleton-macro.hpp"
 #include <list>
 
-using PackageSendingDoneCallback = std::function<void(uint16_t /*package id*/, bool /*was successfully sent*/)>;
+using PackageId = uint16_t;
+
+using PackageSendingDoneCallback = std::function<void(PackageId /*package id*/, bool /*was successfully sent*/)>;
 using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>;
 
 #pragma pack(push, 1)
@@ -134,6 +136,7 @@ public:
 	constexpr static uint32_t defaultResendTimeDelta = 100000;
 
 	static RCSPModem& instance();
+
 	/**
 	 * Send package and optionaly wait for acknowledgement
 	 * @param target Target device address

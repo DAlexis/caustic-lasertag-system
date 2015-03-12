@@ -85,7 +85,7 @@ RCSPAggregator::ResultType RCSPStream::serializeAnything(OperationCode code, Ser
 	return result;
 }
 
-uint16_t RCSPStream::send(DeviceAddress target, bool waitForAck, PackageSendingDoneCallback doneCallback)
+PackageId RCSPStream::send(DeviceAddress target, bool waitForAck, PackageSendingDoneCallback doneCallback)
 {
 	return RCSPModem::instance().send(target, m_stream, m_size, waitForAck, doneCallback);
 }

@@ -18,6 +18,23 @@ class RCSPStream
 public:
 	RCSPStream(uint16_t size = Package::payloadLength);
 	~RCSPStream();
+
+	static PackageId remoteCall(DeviceAddress target, OperationCode code, bool waitForAck = true, PackageSendingDoneCallback callback = nullptr)
+	{
+		RCSPStream stream;
+		stream.addCall(code);
+		return stream.send(target, waitForAck, callback);
+	}
+
+	template <typename Type>
+	static PackageId remoteCall(DeviceAddress target, OperationCode code, Type& argument, bool waitForAck = true, PackageSendingDoneCallback callback = nullptr)
+	{
+		RCSPStream stream;
+		stream.addCall(code, argument);
+		return stream.send(target, waitForAck, callback);
+	}
+
+
 	uint8_t* getStream();
 	uint16_t getSize();
 	RCSPAggregator::ResultType addValue(OperationCode code);
@@ -27,7 +44,7 @@ public:
 	template<typename Type>
 	RCSPAggregator::ResultType addCall(OperationCode code, const Type& arg)
 	{
-		printf("Adding value, code %u", code);
+		//printf("Adding value, code %u", code);
 		return serializeAnything(
 			code,
 			[this, &arg] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
@@ -44,7 +61,7 @@ public:
 	 * @param doneCallback Callback after successful/not successful delivery
 	 * @return Package id
 	 */
-	uint16_t send(
+	PackageId send(
 		DeviceAddress target,
 		bool waitForAck = false,
 		PackageSendingDoneCallback doneCallback = nullptr

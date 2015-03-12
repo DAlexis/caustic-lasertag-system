@@ -21,14 +21,14 @@ MilesTag2Transmitter::MilesTag2Transmitter() :
 {
 }
 
-void MilesTag2Transmitter::setPlayerId(uint8_t playerId)
+void MilesTag2Transmitter::setPlayerIdReference(uint8_t& playerId)
 {
-    m_playerId = playerId;
+    m_playerId = &playerId;
 }
 
-void MilesTag2Transmitter::setTeamId(uint8_t teamId)
+void MilesTag2Transmitter::setTeamIdReference(uint8_t& teamId)
 {
-    m_teamId = teamId;
+    m_teamId = &teamId;
 }
 
 void MilesTag2Transmitter::setPower(unsigned int percent)
@@ -45,8 +45,8 @@ void MilesTag2Transmitter::shot(uint8_t damage)
 {
     // Forming data package
     m_length = MT2Extended::shotLength;
-    m_data[0] = m_playerId & 0b01111111;
-    m_data[1] = (m_teamId << 6) | ( (damage & 0b00001111) << 2);
+    m_data[0] = *m_playerId & 0b01111111;
+    m_data[1] = (*m_teamId << 6) | ( (damage & 0b00001111) << 2);
     beginTransmission();
 }
 

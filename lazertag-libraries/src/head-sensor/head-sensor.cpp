@@ -111,10 +111,8 @@ void HeadSensor::turnOffWeapons()
 {
 	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 	{
-		printf("Turning off weapon...\n");
-		RCSPStream stream;
-		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOff);
-		stream.send(*it, true, nullptr);
+		printf("Turning off weapon\n");
+		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleTurnOff);
 	}
 }
 
@@ -126,12 +124,13 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 	if (it == m_weapons.end())
 	{
 		m_weapons.insert(weaponAddress);
-		if (playerState.isAlive())
-		{
-			RCSPStream stream;
-			stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOn);
-			stream.send(weaponAddress, true);
-		}
+	}
+
+	if (playerState.isAlive())
+	{
+		RCSPStream::remoteCall(weaponAddress, ConfigCodes::Rifle::Functions::rifleTurnOn);
+	} else {
+		RCSPStream::remoteCall(weaponAddress, ConfigCodes::Rifle::Functions::rifleTurnOff);
 	}
 
 }
