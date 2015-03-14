@@ -52,6 +52,7 @@ public:
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset);
 
 	RifleConfiguration config;
+	RifleOwnerConfiguration rifleOwner;
 	RifleState state{&config};
 	//DeviceParameters device;
 

@@ -13,6 +13,16 @@
 #include "rcsp/operation-codes.hpp"
 #include "rcsp/RCSP-modem.hpp"
 
+class RifleOwnerConfiguration
+{
+public:
+	RifleOwnerConfiguration() : plyerMT2Id(1), teamId(0)
+	{}
+
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint8_t, plyerMT2Id);
+	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint8_t, teamId);
+};
+
 class RifleConfiguration
 {
 public:

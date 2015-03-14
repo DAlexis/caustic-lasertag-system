@@ -122,11 +122,27 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 		m_weapons.insert(weaponAddress);
 	}
 
+	RCSPStream stream;
+	stream.addValue(ConfigCodes::HeadSensor::Configuration::plyerMT2Id);
+	stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
+
 	if (playerState.isAlive())
 	{
-		RCSPStream::remoteCall(weaponAddress, ConfigCodes::Rifle::Functions::rifleTurnOn);
+		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOn);
 	} else {
-		RCSPStream::remoteCall(weaponAddress, ConfigCodes::Rifle::Functions::rifleTurnOff);
+		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOff);
+	}
+	stream.send(weaponAddress, true);
+}
+
+void HeadSensor::setTeam(uint8_t teamId)
+{
+	printf("Setting team id\n");
+	playerConfig.teamId = teamId;
+	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+	{
+		printf("Changing weapon team id to %u\n", teamId);
+		RCSPStream::remotePullValue(*it, ConfigCodes::HeadSensor::Configuration::teamId);
 	}
 
 }

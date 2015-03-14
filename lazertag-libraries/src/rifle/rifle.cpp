@@ -152,6 +152,9 @@ void Rifle::configure()
 	m_semiAutomaticFireSwitch->turnOff();
 
 	m_mt2Transmitter.init();
+	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
+	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
+
 
 	printf("- Mounting sd-card\n");
 	if (!SDCardFS::instance().init())
@@ -222,8 +225,6 @@ void Rifle::makeShot(bool isFirst)
 	WavPlayer::instance().play();
 
 	printf("--- shot --->\n");
-
-
 
 	if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
 		m_fireButton->setAutoRepeat(false);

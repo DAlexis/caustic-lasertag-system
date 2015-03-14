@@ -191,10 +191,10 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		&& m_data[0] == MT2Extended::Byte1::setTeam)
 	{
 		uint8_t teamId = m_data[1] & 0x03;
-		printf("Setting team to %u\n", teamId);
+		printf("IR: Set team id to %u\n", teamId);
 		if (m_data[1] & ~(0x03))
 			printf("Warning: team id byte contains non-zero upper bits\n");
-		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Configuration::teamId, m_data[1]);
+		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::setTeam, m_data[1]);
 	}
 	else
 		return false;

@@ -34,6 +34,13 @@ public:
 		return stream.send(target, waitForAck, callback);
 	}
 
+	static PackageId remotePullValue(DeviceAddress target, OperationCode code, bool waitForAck = true, PackageSendingDoneCallback callback = nullptr)
+	{
+		RCSPStream stream;
+		stream.addValue(code);
+		return stream.send(target, waitForAck, callback);
+	}
+
 	uint8_t* getStream();
 	uint16_t getSize();
 	RCSPAggregator::ResultType addValue(OperationCode code);

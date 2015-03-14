@@ -30,6 +30,7 @@ public:
 	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
 
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon, DeviceAddress);
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam, uint8_t);
 
 private:
 	// Test functions
