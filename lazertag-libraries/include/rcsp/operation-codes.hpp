@@ -83,10 +83,11 @@ namespace ConfigCodes
 
 		namespace Functions
 		{
-			FUNC_CODE(rifleTurnOff,             201)
-			FUNC_CODE(rifleTurnOn,              202)
-			FUNC_CODE(rifleReset,               203)
-			FUNC_CODE(rifleRespawn,             204)
+			FUNC_CODE(rifleTurnOff,       201)
+			FUNC_CODE(rifleTurnOn,        202)
+			FUNC_CODE(rifleReset,         203)
+			FUNC_CODE(rifleRespawn,       204)
+			FUNC_CODE(rifleDie,           205)
 		}
 	}
 

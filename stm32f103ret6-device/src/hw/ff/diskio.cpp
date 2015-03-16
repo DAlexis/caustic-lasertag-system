@@ -146,67 +146,8 @@ DRESULT disk_write (
 		SD_WaitWriteOperation();
 		while(SD_GetStatus() != SD_TRANSFER_OK);
 	}
-
-	/*
-	if(count==1)
-	{
-		memcpy(buff2, buff, SECTOR_SIZE);
-		SD_WriteBlock(sector << 9, buff2, SECTOR_SIZE);
-		}
-		else
-	{
-		memcpy(buff2, buff, SECTOR_SIZE * count);
-		SD_WriteMultiBlocks(sector << 9, buff2, SECTOR_SIZE, count);
-	}
-*/
 	return RES_OK;
 
-	/*
-	void *buffer;
-
-	u32 len;
-	s32 ret = 0;
-
-	// Buffer length
-	len = count * SECTOR_SZ(pdrv);
-	if (!len)
-			return RES_ERROR;
-
-	// Check buffer alignment
-	if ((u32)buff & 31) {
-			// Allocate buffer
-			buffer = new char[len];
-			if (!buffer)
-					return RES_ERROR;
-
-			// Copy buffer
-			memcpy(buffer, buff, len);
-	}
-	else
-			buffer = (void *)buff;
-
-	// Write sectors
-	switch (pdrv) {
-	case DRIVE_SDHC:
-			// Write SD sectors
-			ret = sdio_WriteSectors(sector, count, buffer);
-			break;
-
-	case DRIVE_EHCI:
-			// Write USB sectors
-			ret = usbstorage_WriteSectors(sector, count, buffer);
-			break;
-	}
-
-	if (buffer != buff) {
-			// Free buffer
-			delete buffer;
-	}
-
-	return (ret) ? RES_OK : RES_ERROR;
-
-	return RES_OK;
-	*/
 }
 #endif
 

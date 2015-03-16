@@ -13,6 +13,7 @@
 #include "rcsp/RCSP-modem.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
+#include "dev/wav-player.hpp"
 #include "core/scheduler.hpp"
 
 #include <stdint.h>
@@ -76,6 +77,7 @@ public:
 
 private:
 	void loadConfig();
+	void initSounds();
 	void makeShot(bool isFirst);
 	void reload(bool isFirst);
 
@@ -93,7 +95,12 @@ private:
 
 	MilesTag2Transmitter m_mt2Transmitter;
 
-
+	SoundPlayer m_shootingSound;
+	SoundPlayer m_reloadingSound;
+	SoundPlayer m_noAmmoSound;
+	SoundPlayer m_noMagazines;
+	SoundPlayer m_respawnSound;
+	SoundPlayer m_dieSound;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

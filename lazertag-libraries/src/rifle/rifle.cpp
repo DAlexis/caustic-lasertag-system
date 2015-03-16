@@ -17,6 +17,8 @@
 //#include "res/buttons-mapping.h"
 
 #include <stdio.h>
+#include <string>
+#include <utility>
 
 PlayerDisplayableData::PlayerDisplayableData(const DeviceAddress& headSensorAddress) :
 	m_headSensorAddress(&headSensorAddress)
@@ -176,7 +178,8 @@ void Rifle::configure()
 
 	// Line for DEBUG purpose only
 	//rifleTurnOn();
-	//
+	printf("- Looking for sound files...\n");
+	initSounds();
 
 	// Registering at head sensor's weapons list
 	registerWeapon();
@@ -194,6 +197,17 @@ void Rifle::loadConfig()
 	delete parcer;
 }
 
+
+void Rifle::initSounds()
+{
+	m_shootingSound.readVariants("sound/shoot-", ".wav");
+	m_reloadingSound.readVariants("sound/reload-", ".wav");
+	m_noAmmoSound.readVariants("sound/no-ammo-", ".wav");
+	m_noMagazines.readVariants("sound/no-magazines-", ".wav");
+	m_respawnSound.readVariants("sound/respawn-", ".wav");
+	m_dieSound.readVariants("sound/die-", ".wav");
+}
+
 void Rifle::makeShot(bool isFirst)
 {
 	/// @todo Add support of absolutely non-automatic devices
@@ -207,7 +221,7 @@ void Rifle::makeShot(bool isFirst)
 	// Check remaining bullets
 	if (state.bulletsInMagazineCurrent == 0)
 	{
-		/// @todo Play empty magazine sound
+		m_noAmmoSound.play();
 		printf("Magazine is empty\n");
 		// Disabling auto repeating if automatic mode
 		m_fireButton->setAutoRepeat(false);
@@ -220,9 +234,7 @@ void Rifle::makeShot(bool isFirst)
 
 	state.bulletsInMagazineCurrent--;
 	m_mt2Transmitter.shot(config.damageMin);
-	/// @todo Play shot sound
-	WavPlayer::instance().loadFile("sound/shoot-1.wav");
-	WavPlayer::instance().play();
+	m_shootingSound.play();
 
 	printf("--- shot --->\n");
 
@@ -243,13 +255,14 @@ void Rifle::reload(bool)
 
 	if (state.magazinesCountCurrent == 0)
 	{
-		/// @todo Play no magazines sound
+		m_noMagazines.play();
+		printf("No magazines!\n");
 		return;
 	}
 
 	state.lastReloadTime = time;
 
-	/// @todo Play reloading sound
+	m_reloadingSound.play();
 	printf("Reloading...\n");
 	// So reloading
 	state.magazinesCountCurrent--;

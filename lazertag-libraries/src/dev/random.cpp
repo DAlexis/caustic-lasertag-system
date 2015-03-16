@@ -10,6 +10,7 @@
 #include "hal/system-clock.hpp"
 
 #include <stdio.h>
+#include <math.h>
 
 uint32_t Random::m_lastSeed = 0;
 
@@ -26,5 +27,5 @@ uint32_t Random::random32()
 
 uint32_t Random::random(uint32_t maxValue)
 {
-	return (uint32_t) (( (double) random32()) / UINT32_MAX * maxValue);
+	return (uint32_t) round((( (float) random32()) / UINT32_MAX * maxValue));
 }

@@ -11,18 +11,20 @@
 #include "hal/fragment-player.hpp"
 #include "hal/ff/ff.h"
 #include "core/singleton-macro.hpp"
-
-#define AUDIO_BUFFER_SIZE         1000
+#include <vector>
+#include <string>
 
 class WavPlayer
 {
 public:
+	constexpr static uint32_t audioBufferSize = 1000;
 	WavPlayer();
 	~WavPlayer();
 	static WavPlayer& instance();
 	void init();
 	bool loadFile(const char* fileName);
 	void play();
+	void loadAndPlay(const char* fileName);
 	void stop();
 	void setVerbose(bool verbose = true);
 
@@ -47,16 +49,31 @@ private:
 	void fragmentDoneCallback(SoundSample* oldBuffer);
 	bool readHeader();
 	bool loadFragment(SoundSample* m_buffer);
+	void closeFile();
 
 	FIL m_fil;
 	uint32_t m_lastBufferSize;
 	WavHeader m_header;
 	bool m_verbose = true;
 	bool m_isPlaying = false;
+	bool m_fileIsOpened = false;
 	SoundSample *m_buffer1 = nullptr, *m_buffer2 = nullptr;
 
 	static WavPlayer* m_wavPlayer;
 	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
+};
+
+class SoundPlayer
+{
+public:
+	void readVariants(const char* filenamePrexix, const char* filenameSuffix);
+	void addVariant(const char* filename);
+	void addVariant(std::string& filename);
+	void addVariant(std::string&& filename);
+	void play();
+
+private:
+	std::vector<std::string> m_variants;
 };
 
 
