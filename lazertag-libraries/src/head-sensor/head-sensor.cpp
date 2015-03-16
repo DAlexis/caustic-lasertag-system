@@ -62,6 +62,8 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 			stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
 			stream.send(*it, true, nullptr);
 		}
+		if (!playerState.isAlive())
+			dieWeapons();
 	}
 	if (!playerState.isAlive()) {
 		printf("Player died\n");
@@ -73,14 +75,14 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 void HeadSensor::playerRespawn()
 {
 	playerState.respawn();
-	turnOnAndResetWeapons();
+	respawnWeapons();
 	printf("Player spawned\n");
 }
 
 void HeadSensor::playerReset()
 {
 	playerState.reset();
-	turnOnAndResetWeapons();
+	respawnWeapons();
 	printf("Player reseted\n");
 }
 
@@ -88,18 +90,26 @@ void HeadSensor::playerKill()
 {
 	printf("Player killed\n");
 	playerState.kill();
+	dieWeapons();
 }
 
-void HeadSensor::turnOnAndResetWeapons()
+void HeadSensor::dieWeapons()
+{
+	/// Notifying weapons
+	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+	{
+		printf("Sending kill signal...\n");
+		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie);
+	}
+}
+
+void HeadSensor::respawnWeapons()
 {
 	/// Notifying weapons
 	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 	{
 		printf("Resetting weapon...\n");
-		RCSPStream stream;
-		stream.addCall(ConfigCodes::Rifle::Functions::rifleReset);
-		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOn);
-		stream.send(*it, true, nullptr);
+		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleRespawn);
 	}
 }
 

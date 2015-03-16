@@ -37,7 +37,8 @@ private:
 	void testDie(const char*);
 
 	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage);
-	void turnOnAndResetWeapons();
+	void dieWeapons();
+	void respawnWeapons();
 	void turnOffWeapons();
 
 	MilesTag2Receiver m_mainSensor;

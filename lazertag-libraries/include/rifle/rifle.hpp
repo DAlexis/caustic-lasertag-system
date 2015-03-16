@@ -51,6 +51,8 @@ public:
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset);
+	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn);
+	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);
 
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;

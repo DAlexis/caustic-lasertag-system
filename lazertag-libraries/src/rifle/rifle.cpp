@@ -313,7 +313,18 @@ void Rifle::rifleTurnOn()
 void Rifle::rifleReset()
 {
 	state.reset();
-	//turnOn(nullptr, 0);
+}
+
+void Rifle::rifleRespawn()
+{
+	rifleReset();
+	m_respawnSound.play();
+}
+
+void Rifle::rifleDie()
+{
+	rifleTurnOff();
+	m_dieSound.play();
 }
 
 void Rifle::registerWeapon()
