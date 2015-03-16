@@ -97,6 +97,7 @@ void WavPlayer::play()
 	if (!m_fileIsOpened)
 	{
 		printf("Cannot play, file wasn't opened\n");
+		return;
 	}
 	fragmentPlayer->stop();
 	fragmentPlayer->setFragmentSize(audioBufferSize);
