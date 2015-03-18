@@ -32,7 +32,7 @@ void RCSPModem::init()
 		SPIs->getSPI(1)
 	);
 	nrf.printStatus();
-	nrf.enableDebug();
+	//nrf.enableDebug();
 	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 1000, 1000);
 }
 

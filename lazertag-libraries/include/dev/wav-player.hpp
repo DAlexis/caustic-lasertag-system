@@ -54,6 +54,7 @@ private:
 	FIL m_fil;
 	uint32_t m_lastBufferSize;
 	WavHeader m_header;
+	uint32_t m_totalReaded;
 	bool m_verbose = true;
 	bool m_isPlaying = false;
 	bool m_fileIsOpened = false;

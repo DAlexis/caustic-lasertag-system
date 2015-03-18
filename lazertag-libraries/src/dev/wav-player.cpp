@@ -56,6 +56,7 @@ bool WavPlayer::loadFile(const char* fileName)
 	fragmentPlayer->stop();
 	FRESULT res;
 	printf("Opening file...\n");
+	m_totalReaded = 0;
 	m_fileIsOpened = false;
 	res = f_open(&m_fil, fileName, FA_OPEN_EXISTING | FA_READ);
 	if (res)
@@ -180,13 +181,23 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 	UINT readedNow = 0;
 	void* ptr = m_buffer;
 	int16_t *tmpPrt = (int16_t *)ptr;
+	bool needStop = false;
 
 	// For some unknown reason, f_read does not read more about 1k and crashes
 	/// @todo increase blockSize to maximum
 	uint8_t* curs = (uint8_t*) ptr;
+	uint16_t sizeToRead = audioBufferSize*sizeof(int16_t);
+
+	if (sizeToRead > (m_header.chunk_size - m_totalReaded))
+	{
+		sizeToRead = m_header.chunk_size - m_totalReaded;
+		sizeToRead = 0;
+	}
+
 	constexpr uint16_t blockSize = 400;
-	constexpr uint16_t count = audioBufferSize*sizeof(int16_t) / blockSize;
-	constexpr uint16_t tail = audioBufferSize*sizeof(int16_t) % blockSize;
+	uint16_t count = sizeToRead / blockSize;
+	uint16_t tail = sizeToRead % blockSize;
+
 	for (uint16_t i=0; i<count; i++)
 	{
 		res = f_read(&m_fil, curs, blockSize, &readedNow);
@@ -198,9 +209,11 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 		}
 		curs += readedNow;
 		readed += readedNow;
+		if (blockSize != readedNow)
+			break;
 	}
 
-	if (tail != 0) {
+	if (tail != 0 && blockSize == readedNow) {
 		res = f_read(&m_fil, curs, tail, &readedNow);
 		if (res != FR_OK)
 		{
@@ -208,12 +221,13 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 			closeFile();
 			return false;
 		}
+		// If file has metainformation or any other chunk
+		if (readedNow > tail)
+			readedNow = tail;
 		readed += readedNow;
 	}
 
-	//res = f_read(&m_fil, tmpPrt, AUDIO_BUFFER_SIZE*sizeof(int16_t), &readed);
-
-
+	m_totalReaded += readed;
 	m_lastBufferSize = readed / sizeof(int16_t);
 
 	// Decoding int16_t 16 bit -> uint16_t 12 bit
