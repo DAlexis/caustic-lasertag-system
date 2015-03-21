@@ -36,6 +36,14 @@ void SPIManager::init(uint32_t prescaler)
 	default:
 	case BaudRatePrescaler256: realPrescaler = SPI_BaudRatePrescaler_256; break;
 	}
+	SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex; // set to full duplex mode, seperate MOSI and MISO lines
+	SPI_InitStruct.SPI_Mode = SPI_Mode_Master;     // transmit in master mode, NSS pin has to be always high
+	SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b; // one packet of data is 8 bits wide
+	SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;        // clock is low when idle
+	SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;      // data sampled at first edge
+	SPI_InitStruct.SPI_NSS = SPI_NSS_Soft; // set the NSS management to internal and pull internal NSS high
+	SPI_InitStruct.SPI_BaudRatePrescaler = realPrescaler; // SPI frequency is APB2 frequency / 4
+	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;// data is transmitted MSB first
 
 	switch(m_portNumber)
 	{
@@ -56,23 +64,9 @@ void SPIManager::init(uint32_t prescaler)
 
 			// Input
 			GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6;
-			GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+			GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
 			GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 			GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-			SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex; // set to full duplex mode, seperate MOSI and MISO lines
-			SPI_InitStruct.SPI_Mode = SPI_Mode_Master;     // transmit in master mode, NSS pin has to be always high
-			SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b; // one packet of data is 8 bits wide
-			SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;        // clock is low when idle
-			SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;      // data sampled at first edge
-			// For some reason (I dont know!) SPI_NSSInternalSoft_Set cause MC freeze
-			SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;// | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
-			SPI_InitStruct.SPI_BaudRatePrescaler = realPrescaler; // SPI frequency is APB2 frequency / 4
-			SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;// data is transmitted MSB first
-			SPI_Init(m_SPI, &SPI_InitStruct);
-
-			SPI_Cmd(m_SPI, ENABLE); // enable SPI1
-			return;
 		case 1:
 			m_SPI = SPI2;
 			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
@@ -90,23 +84,13 @@ void SPIManager::init(uint32_t prescaler)
 
 			// So input
 			GPIO_InitStruct.GPIO_Pin = GPIO_Pin_14;
-			GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+			GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
 			GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 			GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-			SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex; // set to full duplex mode, seperate MOSI and MISO lines
-			SPI_InitStruct.SPI_Mode = SPI_Mode_Master;     // transmit in master mode, NSS pin has to be always high
-			SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b; // one packet of data is 8 bits wide
-			SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;        // clock is low when idle
-			SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;      // data sampled at second edge
-			// For some reason (I dont know!) SPI_NSSInternalSoft_Set cause MC freeze
-			SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;// | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
-			SPI_InitStruct.SPI_BaudRatePrescaler = realPrescaler; // SPI frequency is APB1 frequency / prescaler
-			SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;// data is transmitted MSB first
-			SPI_Init(m_SPI, &SPI_InitStruct);
-			SPI_Cmd(m_SPI, ENABLE); // enable SPI2
-			return;
 	}
+
+	SPI_Init(m_SPI, &SPI_InitStruct);
+	SPI_Cmd(m_SPI, ENABLE); // enable SPI
 }
 
 uint8_t SPIManager::sendByte(unsigned char data)
