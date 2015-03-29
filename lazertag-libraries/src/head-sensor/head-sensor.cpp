@@ -53,6 +53,16 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 {
 	printf("Cought a shot: team %d, player %d, damage: %d\n", teamId, playerId, damage);
 	if (playerState.isAlive()) {
+
+		if (playerId == playerConfig.plyerMT2Id)
+		{
+			damage *= playerConfig.selfShotCoeff;
+		}
+		else if (teamId == playerConfig.teamId)
+		{
+			damage *= playerConfig.frendlyFireCoeff;
+		}
+
 		playerState.damage(damage);
 		printf("health: %u, armor: %u\n", playerState.healthCurrent, playerState.armorCurrent);
 		for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
@@ -77,6 +87,14 @@ void HeadSensor::playerRespawn()
 	playerState.respawn();
 	respawnWeapons();
 	printf("Player spawned\n");
+/*
+	std::function<void(void)> respawnFunction = [this] {
+		playerState.respawn();
+		respawnWeapons();
+		printf("Player spawned\n");
+	};
+	Scheduler::instance().addTask(respawnFunction, true, 0, 0, systemClock->getTime() + playerConfig.postRespawnDelay);
+*/
 }
 
 void HeadSensor::playerReset()
