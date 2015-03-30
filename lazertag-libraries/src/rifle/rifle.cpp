@@ -156,6 +156,7 @@ void Rifle::configure()
 	m_mt2Transmitter.init();
 	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
 	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
+	m_mt2Transmitter.setChannel(3);
 
 
 	printf("- Mounting sd-card\n");
