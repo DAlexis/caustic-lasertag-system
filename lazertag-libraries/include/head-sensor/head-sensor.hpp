@@ -12,6 +12,7 @@
 #include "logic/device.hpp"
 #include "rcsp/RCSP-modem.hpp"
 #include "dev/miles-tag-2.hpp"
+#include "dev/rgb-leds.hpp"
 
 #include <set>
 
@@ -36,10 +37,14 @@ private:
 	// Test functions
 	void testDie(const char*);
 
+	uint8_t getTeamColor();
+
 	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage);
 	void dieWeapons();
 	void respawnWeapons();
 	void turnOffWeapons();
+
+	RGBLeds m_leds;
 
 	MilesTag2Receiver m_mainSensor;
 	std::set<DeviceAddress> m_weapons;

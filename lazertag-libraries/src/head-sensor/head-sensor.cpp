@@ -45,6 +45,11 @@ void HeadSensor::configure()
 	printf("- Parsing config file\n");
 	RCSPAggregator::instance().readIni("config.ini");
 
+	printf("- Initializing visual effects");
+	m_leds.init(IOPins->getIOPin(1, 0), IOPins->getIOPin(0, 7), IOPins->getIOPin(0, 6));
+	m_leds.setColor(getTeamColor());
+	m_leds.blink(50000, 150000, 5);
+
 	playerReset();
 	printf("Head sensor ready to use\n");
 }
@@ -77,6 +82,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	}
 	if (!playerState.isAlive()) {
 		printf("Player died\n");
+		m_leds.blink(100000, 100000, 100);
 		/// Notifying weapons
 		turnOffWeapons();
 	}
@@ -85,6 +91,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 void HeadSensor::playerRespawn()
 {
 	playerState.respawn();
+	m_leds.blink(100000, 100000, 2);
 	respawnWeapons();
 	printf("Player spawned\n");
 /*
@@ -107,8 +114,11 @@ void HeadSensor::playerReset()
 void HeadSensor::playerKill()
 {
 	printf("Player killed\n");
+	if (!playerState.isAlive())
+		return;
 	playerState.kill();
-	dieWeapons();
+	shotCallback(0, 0, 0);
+	//dieWeapons();
 }
 
 void HeadSensor::dieWeapons()
@@ -167,6 +177,8 @@ void HeadSensor::setTeam(uint8_t teamId)
 {
 	printf("Setting team id\n");
 	playerConfig.teamId = teamId;
+	m_leds.setColor(getTeamColor());
+	m_leds.blink(100000, 100000, 2);
 	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
 	{
 		printf("Changing weapon team id to %u\n", teamId);
@@ -174,6 +186,19 @@ void HeadSensor::setTeam(uint8_t teamId)
 	}
 
 }
+
+uint8_t HeadSensor::getTeamColor()
+{
+	switch (playerConfig.teamId)
+	{
+	case 0: return RGBLeds::red;
+	case 1: return RGBLeds::blue;
+	case 2: return RGBLeds::red | RGBLeds::green;
+	case 3: return RGBLeds::green;
+	default: return RGBLeds::red | RGBLeds::green | RGBLeds::blue;
+	}
+}
+
 
 /////////////////////
 // Test functions
