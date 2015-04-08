@@ -212,28 +212,31 @@ void MilesTag2Receiver::resetReceiver()
 void MilesTag2Receiver::interruptHandler(bool state)
 {
 	unsigned int time = systemClock->getTime();
-	unsigned int dtime = time - m_lastTime;
+	uint32_t lastDtimeCandidate = m_dtime;
+	m_dtime = time - m_lastTime;
 	// Inverted input:
 	state = !state;
 	if (m_debug) {
-		printf("dt=%u ",  dtime );
+		printf("dt=%u ",  m_dtime );
 		if (state)
 			printf("1\n");
 		else
 			printf("0\n");
 	}
 
-	if (dtime < 15) {
+	if (m_dtime < 15) {
 		if (m_debug) printf ("short\n");
 		m_falseImpulse = true;
 		return;
 	}
+
 
 	if (m_falseImpulse) {
 		if (m_debug) printf ("short back\n");
 		m_falseImpulse = false;
 		return;
 	}
+	m_lastDtime = lastDtimeCandidate;
 	m_lastTime = time;
 
 	switch(m_state) {
@@ -258,7 +261,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 			}
 
 			if (m_debug) printf ("he \n");
-			if (isCorrect(dtime, HEADER_PERIOD_MIN, HEADER_PERIOD_MAX)) {
+			if (isCorrect(m_dtime, HEADER_PERIOD_MIN, HEADER_PERIOD_MAX)) {
 				if (m_debug) printf("ac \n");
 				m_state = RS_SPACE;
 
@@ -277,7 +280,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 			}
 
 			if (m_debug) printf ("sp \n");
-			if (isCorrect(dtime, BIT_WAIT_PERIOD_MIN, BIT_WAIT_PERIOD_MAX)) {
+			if (isCorrect(m_dtime, BIT_WAIT_PERIOD_MIN, BIT_WAIT_PERIOD_MAX+BIT_ONE_PERIOD_MAX)) {
 				if (m_debug) printf("ac \n");
 				m_state = RS_BIT;
 			} else {
@@ -293,13 +296,13 @@ void MilesTag2Receiver::interruptHandler(bool state)
 				return;
 			}
 			if (m_debug) printf ("b \n");
-			if (isCorrect(dtime, BIT_ONE_PERIOD_MIN, BIT_ONE_PERIOD_MAX))
+			if (isCorrect(m_dtime+m_lastDtime, BIT_ONE_PERIOD_MIN+BIT_WAIT_PERIOD_MIN, BIT_ONE_PERIOD_MAX+BIT_WAIT_PERIOD_MAX))
 			{
 				// We have bit "1"
 				if (m_debug) printf("ac 1 \n");
 				saveBit(true);
 				m_state = RS_SPACE;
-			} else if (isCorrect(dtime, BIT_ZERO_PERIOD_MIN, BIT_ZERO_PERIOD_MAX)){
+			} else if (isCorrect(m_dtime+m_lastDtime, BIT_ZERO_PERIOD_MIN+BIT_WAIT_PERIOD_MIN, BIT_ZERO_PERIOD_MAX+BIT_WAIT_PERIOD_MAX)){
 				// We have bit "0"
 				if (m_debug) printf("ac 0 \n");
 				saveBit(false);

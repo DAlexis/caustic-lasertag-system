@@ -85,6 +85,8 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		m_leds.blink(100000, 100000, 100);
 		/// Notifying weapons
 		turnOffWeapons();
+	} else {
+		m_leds.blink(100000, 100000, 1);
 	}
 }
 

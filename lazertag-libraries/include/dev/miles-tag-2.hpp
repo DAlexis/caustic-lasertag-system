@@ -134,6 +134,8 @@ private:
 	uint8_t m_data[MILESTAG2_MAX_MESSAGE_LENGTH];
 	uint8_t *m_pCurrentByte = m_data;
 	uint8_t m_currentBit;
+	uint32_t m_dtime = 0;
+	uint32_t m_lastDtime = 0;
     IExternalInterruptManager* m_exti = nullptr;
     OnNextInterrogationCallback m_nextInterrogationCallback = nullptr;
 };

@@ -16,7 +16,7 @@
 #define BIT_WAIT_PERIOD         600
 
 // Receiver constants
-#define HEADER_PERIOD_MIN       2300
+#define HEADER_PERIOD_MIN       1700
 #define HEADER_PERIOD_MAX       2600
 
 #define BIT_ONE_PERIOD_MIN      1100
