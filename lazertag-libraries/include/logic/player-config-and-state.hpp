@@ -9,8 +9,20 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 
 #include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/RCSP-modem.hpp"
 #include "rcsp/operation-codes.hpp"
+#include <set>
 #include <stdint.h>
+
+class ConnectedWeaponsList
+{
+public:
+	void deserialize(void* source, OperationSize size);
+	void serialize(void* destination);
+	uint32_t serializedSize();
+
+	std::set<DeviceAddress> weapons;
+};
 
 class PlayerConfiguration
 {
@@ -19,34 +31,34 @@ public:
 	void setDefault();
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, PlayerConfiguration, addMaxHealth, int16_t);
 
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, healthMax);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, armorMax);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, healthMax);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, armorMax);
 
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, healthStart);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, armorStart);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, healthStart);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, armorStart);
 
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, armorCoeffStart);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, damageCoeffStart);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, shotsCoeffStart);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, frendlyFireCoeff);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, selfShotCoeff);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, isHealable);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, armorCoeffStart);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, damageCoeffStart);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, shotsCoeffStart);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, frendlyFireCoeff);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, selfShotCoeff);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, isHealable);
 
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, lifesCount);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint32_t,      shockDelay);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, preRespawnDelay);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, postRespawnDelay);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, autoRespawn);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, lifesCount);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, uint32_t,      shockDelay);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, preRespawnDelay);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, postRespawnDelay);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, autoRespawn);
 
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, plyerId);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint8_t, plyerMT2Id);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint8_t, teamId);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, plyerId);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, uint8_t, plyerMT2Id);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, uint8_t, teamId);
 
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot1MaxWeight);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot2MaxWeight);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot3MaxWeight);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot4MaxWeight);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, slot5MaxWeight);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot1MaxWeight);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot2MaxWeight);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot3MaxWeight);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot4MaxWeight);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot5MaxWeight);
 };
 
 class PlayerState
@@ -59,15 +71,17 @@ public:
 			reset();
 	}
 
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, healthCurrent);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, armorCurrent);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, armorCoeffCurrent);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, damageCoeffCurrent);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, shotsCoeffCurrent);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, lifesCountCurrent);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, pointsCount);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, killsCount);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, deathsCount);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, healthCurrent);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, armorCurrent);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, armorCoeffCurrent);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, damageCoeffCurrent);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, shotsCoeffCurrent);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, lifesCountCurrent);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, pointsCount);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, killsCount);
+	PAR_ST_R(ConfigCodes::HeadSensor::State, UintParameter, deathsCount);
+
+	PAR_CL_SS_R(ConfigCodes::HeadSensor::State, ConnectedWeaponsList, weaponsList);
 
 	/**
 	 * Cough some damage and calculate s_armor and s_health after it

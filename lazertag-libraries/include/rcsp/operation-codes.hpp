@@ -147,6 +147,8 @@ namespace ConfigCodes
 			PAR_CODE(pointsCount, 1110)
 			PAR_CODE(killsCount,  1111)
 			PAR_CODE(deathsCount, 1112)
+
+			PAR_CODE(weaponsList, 1200)
 		}
 
 		namespace Functions

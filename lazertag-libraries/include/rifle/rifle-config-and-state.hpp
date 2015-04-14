@@ -19,8 +19,8 @@ public:
 	RifleOwnerConfiguration() : plyerMT2Id(1), teamId(0)
 	{}
 
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint8_t, plyerMT2Id);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, uint8_t, teamId);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, uint8_t, plyerMT2Id);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, uint8_t, teamId);
 };
 
 class RifleConfiguration
@@ -57,36 +57,36 @@ public:
 		constexpr static uint8_t Automatic     = 2;     ///< One press - many shots
 	};
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, slot);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, weightInSlot);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, slot);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, weightInSlot);
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMin);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, damageMax);
-	PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t , firePeriod);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, shotDelay);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, jamProb);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalProb);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, criticalCoeff);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, damageMin);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, damageMax);
+	PAR_ST(ConfigCodes::Rifle::Configuration, uint32_t , firePeriod);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, shotDelay);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, jamProb);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, criticalProb);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, criticalCoeff);
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, bool, semiAutomaticAllowed);
-	PARAMETER(ConfigCodes::Rifle::Configuration, bool, automaticAllowed);
+	PAR_ST(ConfigCodes::Rifle::Configuration, bool, semiAutomaticAllowed);
+	PAR_ST(ConfigCodes::Rifle::Configuration, bool, automaticAllowed);
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, uint8_t, magazineType);
-	PARAMETER(ConfigCodes::Rifle::Configuration, uint8_t, reloadAction);
-	PARAMETER(ConfigCodes::Rifle::Configuration, uint8_t, autoReload);
+	PAR_ST(ConfigCodes::Rifle::Configuration, uint8_t, magazineType);
+	PAR_ST(ConfigCodes::Rifle::Configuration, uint8_t, reloadAction);
+	PAR_ST(ConfigCodes::Rifle::Configuration, uint8_t, autoReload);
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountStart);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountMax);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountStart);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountMax);
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineStart);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineMax);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineStart);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineMax);
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, uint32_t, reloadingTime);
+	PAR_ST(ConfigCodes::Rifle::Configuration, uint32_t, reloadingTime);
 
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
-	PARAMETER(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
+	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
 
-	PARAMETER_COMPLICATED(ConfigCodes::Rifle::Configuration, DeviceAddress, headSensorAddr);
+	PAR_CL(ConfigCodes::Rifle::Configuration, DeviceAddress, headSensorAddr);
 };
 
 class RifleState
@@ -94,9 +94,9 @@ class RifleState
 public:
 	RifleState(RifleConfiguration* config);
 	void reset();
-	PARAMETER(ConfigCodes::Rifle::State, UintParameter, bulletsInMagazineCurrent);
-	PARAMETER(ConfigCodes::Rifle::State, UintParameter, magazinesCountCurrent);
-	PARAMETER(ConfigCodes::Rifle::State, UintParameter, heatnessCurrent);
+	PAR_ST(ConfigCodes::Rifle::State, UintParameter, bulletsInMagazineCurrent);
+	PAR_ST(ConfigCodes::Rifle::State, UintParameter, magazinesCountCurrent);
+	PAR_ST(ConfigCodes::Rifle::State, UintParameter, heatnessCurrent);
 
 	uint32_t lastReloadTime;
 

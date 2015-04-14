@@ -158,7 +158,7 @@ public:
 		uint32_t resendTimeDelta = defaultResendTimeDelta
 	);
 
-	PARAMETER_COMPLICATED(ConfigCodes::AnyDevice, DeviceAddress, devAddr);
+	PAR_CL(ConfigCodes::AnyDevice, DeviceAddress, devAddr);
 private:
 
 	struct WaitingPackage

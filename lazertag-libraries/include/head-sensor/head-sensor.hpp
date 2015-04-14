@@ -11,6 +11,7 @@
 #include "logic/player-config-and-state.hpp"
 #include "logic/device.hpp"
 #include "rcsp/RCSP-modem.hpp"
+#include "rcsp/RCSP-state-saver.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/rgb-leds.hpp"
 
@@ -43,11 +44,11 @@ private:
 	void dieWeapons();
 	void respawnWeapons();
 	void turnOffWeapons();
+	void resetToDefaults();
 
 	RGBLeds m_leds;
 
 	MilesTag2Receiver m_mainSensor;
-	std::set<DeviceAddress> m_weapons;
 };
 
 

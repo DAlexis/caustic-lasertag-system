@@ -208,3 +208,22 @@ void RCSPMultiStream::dispatch()
 		(*it)->dispatch();
 	}
 }
+
+DetailedResult<FRESULT> RCSPMultiStream::writeToFile(FIL* file)
+{
+	FRESULT res = FR_OK;
+	UINT written = 0;
+	for (auto it = m_streams.begin(); it != m_streams.end(); it++)
+	{
+		res = f_write (file, (*it)->getStream(), (*it)->getSize(), &written);
+		if (res != FR_OK)
+		{
+			return DetailedResult<FRESULT>(res, "Bad file writing result");
+		}
+		if (written != (*it)->getSize())
+		{
+			return DetailedResult<FRESULT>(res, "Invalid written bytes count");
+		}
+	}
+}
+

@@ -43,16 +43,44 @@ void HeadSensor::configure()
 	);
 
 	printf("- Parsing config file\n");
-	RCSPAggregator::instance().readIni("config.ini");
+	if (!RCSPAggregator::instance().readIni("config.ini"))
+	{
+		printf("Cannot read config file, so setting default values");
+		playerConfig.setDefault();
+	}
+
+	StateSaver::instance().setFilename("state-save");
+	// State restoring is always after config reading, so not stored data will be default
+	printf("- Restoring state\n");
+	if (StateSaver::instance().tryRestore())
+	{
+		printf("  restored\n");
+	} else {
+		printf("  restored failed\n");
+		// setting player state to default
+		playerState.reset();
+	}
 
 	printf("- Initializing visual effects");
 	m_leds.init(IOPins->getIOPin(1, 0), IOPins->getIOPin(0, 7), IOPins->getIOPin(0, 6));
 	m_leds.setColor(getTeamColor());
 	m_leds.blink(50000, 150000, 5);
 
-	playerReset();
+	StateSaver::instance().runSaver(10000000);
 	printf("Head sensor ready to use\n");
 }
+
+void HeadSensor::resetToDefaults()
+{
+	printf("Resetting player configuration\n");
+	if (!RCSPAggregator::instance().readIni("config.ini"))
+	{
+		printf("Cannot read config file, so setting default values");
+		playerConfig.setDefault();
+	}
+	playerState.reset();
+}
+
 
 void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
@@ -70,7 +98,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 
 		playerState.damage(damage);
 		printf("health: %u, armor: %u\n", playerState.healthCurrent, playerState.armorCurrent);
-		for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+		for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 		{
 			RCSPStream stream;
 			stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
@@ -88,6 +116,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	} else {
 		m_leds.blink(100000, 100000, 1);
 	}
+	StateSaver::instance().saveState();
 }
 
 void HeadSensor::playerRespawn()
@@ -126,7 +155,7 @@ void HeadSensor::playerKill()
 void HeadSensor::dieWeapons()
 {
 	/// Notifying weapons
-	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		printf("Sending kill signal...\n");
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie);
@@ -136,7 +165,7 @@ void HeadSensor::dieWeapons()
 void HeadSensor::respawnWeapons()
 {
 	/// Notifying weapons
-	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		printf("Resetting weapon...\n");
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleRespawn);
@@ -145,7 +174,7 @@ void HeadSensor::respawnWeapons()
 
 void HeadSensor::turnOffWeapons()
 {
-	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		printf("Turning off weapon\n");
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleTurnOff);
@@ -156,10 +185,10 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 {
 	printf("Registering weapon\n");
 	weaponAddress.print();
-	auto it = m_weapons.find(weaponAddress);
-	if (it == m_weapons.end())
+	auto it = playerState.weaponsList.weapons.find(weaponAddress);
+	if (it == playerState.weaponsList.weapons.end())
 	{
-		m_weapons.insert(weaponAddress);
+		playerState.weaponsList.weapons.insert(weaponAddress);
 	}
 
 	RCSPStream stream;
@@ -181,7 +210,7 @@ void HeadSensor::setTeam(uint8_t teamId)
 	playerConfig.teamId = teamId;
 	m_leds.setColor(getTeamColor());
 	m_leds.blink(100000, 100000, 2);
-	for (auto it = m_weapons.begin(); it != m_weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		printf("Changing weapon team id to %u\n", teamId);
 		RCSPStream::remotePullValue(*it, ConfigCodes::HeadSensor::Configuration::teamId);

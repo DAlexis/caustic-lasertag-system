@@ -29,6 +29,7 @@ public:
 	bool isSuccess = true;
 	const char* errorText = nullptr;
 
+	operator bool () { return isSuccess; }
 };
 
 template <typename T>

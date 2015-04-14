@@ -7,6 +7,7 @@
 
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/RCSP-stream.hpp"
+#include "rcsp/RCSP-state-saver.hpp"
 #include "core/string-utils.hpp"
 #include "hal/ff/ff.h"
 #include <stdio.h>
@@ -22,11 +23,20 @@ RCSPAggregator& RCSPAggregator::instance()
 	return *m_RCSPAggregator;
 }
 
-void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor)
+void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor, bool restorable)
 {
 	//printf("Accepted %u: %s\n", code - (1<<14), textName);
 	m_accessorsByOpCode[code] = accessor;
 	m_accessorsByOpText[textName] = accessor;
+	if (restorable)
+	{
+		if (!isObjectOC(code))
+		{
+			printf("Only parameter\'s values can save states!\n");
+			return;
+		}
+		StateSaver::instance().addValue(code);
+	}
 }
 
 uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream)
@@ -72,7 +82,7 @@ bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code,
 		auto it = m_accessorsByOpCode.find(*code);
 		if (it != m_accessorsByOpCode.end())
 		{
-			//printf("Dispatched opcode: %u\n", *pOperationCode);
+			//printf("Dispatched opcode: %u\n", *code);
 			if (*size == 0)
 				it->second->deserialize(nullptr, 0);
 			else

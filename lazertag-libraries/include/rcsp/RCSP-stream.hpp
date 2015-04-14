@@ -10,13 +10,16 @@
 
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/RCSP-modem.hpp"
+#include "hal/ff/ff.h"
+#include "core/result-code.hpp"
 #include <list>
 #include <memory>
 
 class RCSPStream
 {
 public:
-	RCSPStream(uint16_t size = Package::payloadLength);
+	constexpr static uint16_t defaultLength = Package::payloadLength;
+	RCSPStream(uint16_t size = defaultLength);
 	~RCSPStream();
 
 	static PackageId remoteCall(DeviceAddress target, OperationCode code, bool waitForAck = true, PackageSendingDoneCallback callback = nullptr)
@@ -141,6 +144,8 @@ public:
 	bool empty();
 
 	void dispatch();
+
+	DetailedResult<FRESULT> writeToFile(FIL* file);
 
 private:
 	void pushBackStream();

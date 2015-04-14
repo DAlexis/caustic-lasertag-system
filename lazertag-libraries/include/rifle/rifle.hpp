@@ -25,16 +25,16 @@ public:
 	void syncAll();
 	void print();
 
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, healthMax);
-	PARAMETER(ConfigCodes::HeadSensor::Configuration, UintParameter, armorMax);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, healthMax);
+	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, armorMax);
 
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, healthCurrent);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, armorCurrent);
+	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, healthCurrent);
+	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, armorCurrent);
 
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, lifesCountCurrent);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, pointsCount);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, killsCount);
-	PARAMETER(ConfigCodes::HeadSensor::State, UintParameter, deathsCount);
+	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, lifesCountCurrent);
+	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, pointsCount);
+	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, killsCount);
+	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, deathsCount);
 
 private:
 	const DeviceAddress* m_headSensorAddress;

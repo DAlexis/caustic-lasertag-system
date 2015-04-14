@@ -42,12 +42,49 @@
  *   11 - reserved
  */
 
-/// Create variable in class and connect in to configs aggregator
-#define PARAMETER(NameSpace, Type, name)               Type name; \
-                                                       DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
+/** Create variable (in any class) and connect in to configs aggregator.
+ *  ST = Simple Types, that can be parsed from string using StringParser<Type>::parse(str)
+ */
+#define PAR_ST(NameSpace, Type, name)          Type name; \
+                                               StandartStrParseParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
 
-#define PARAMETER_COMPLICATED(NameSpace, Type, name)   Type name; \
-                                                       ComplicatedParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
+/** The same as PAR_ST, but R means 'restrable'
+ *
+ */
+#define PAR_ST_R(NameSpace, Type, name)       Type name; \
+                                              StandartStrParseParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name, true}
+
+/** The same as PAR_ST, but string parsing using convertFromString function
+ *  CL = CLass
+ */
+#define PAR_CL(NameSpace, Type, name)         Type name; \
+                                              CustomStrParseParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
+
+/** The same as PAR_CL, but R means 'restorable'
+ *
+ */
+#define PAR_CL_R(NameSpace, Type, name)      Type name; \
+                                             CustomStrParseParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name, true}
+
+/** The same as PAR_CL, but SS means 'Self serializing'
+ *  This macro should be used with classes that has methods
+ *  'serialize' and 'deseriaize'
+ *
+ *  Also no str parsing avaliable for this macro
+ */
+#define PAR_CL_SS(NameSpace, Type, name)     Type name; \
+                                             SelfSerializingParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name, false}
+
+/** The same as PAR_CL_R, but SS means 'Self serializing'
+ *  This macro should be used with classes that has methods
+ *  'serialize' and 'deseriaize'
+ *  R means 'restorable'
+ *
+ *  Also no str parsing avaliable for this macro
+ */
+#define PAR_CL_SS_R(NameSpace, Type, name)   Type name; \
+                                             SelfSerializingParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name, true}
+
 
 
 /*
@@ -129,7 +166,7 @@ public:
 
 	static RCSPAggregator& instance();
 
-	void registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor);
+	void registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor, bool restorable = false);
 
 
 	/**
@@ -225,6 +262,20 @@ private:
 
 };
 
+template<typename T>
+inline void serializeAndInc(void*& cursor, const T& data)
+{
+	memcpy(cursor, &data, sizeof(T));
+	cursor += sizeof(T);
+}
+
+template<typename T>
+inline void deserializeAndInc(void*& cursor, T& target)
+{
+	memcpy(&target, cursor, sizeof(T));
+	cursor += sizeof(T);
+}
+
 /// Realization of IOperationAccessor for function
 template<typename... Type>
 class DefaultFunctionAccessor;
@@ -294,11 +345,48 @@ private:
 	FunctionAccessorCallback callback;
 };
 
+template<class Type>
+class SelfSerializingParameterAccessor : public IOperationAccessor
+{
+public:
+	SelfSerializingParameterAccessor(OperationCode code, const char* textName, Type* _parameter, bool restorable = false) :
+		parameter(_parameter)
+	{
+		RCSPAggregator::instance().registerAccessor(code, textName, this, restorable);
+	}
+
+	void deserialize(void* source, OperationSize size)
+	{
+		parameter->deserialize(source, size);
+	}
+
+	void serialize(void* destination)
+	{
+		parameter->serialize(destination);
+	}
+
+	bool isReadable() { return true; }
+
+	bool isWritable() { return true; }
+
+	void parseString(const char* str) { }
+
+	inline uint32_t getSize() { return parameter->serializedSize(); }
+
+protected:
+	Type* parameter;
+};
+
 /// Realization of IOperationAccessor for any parameters
 template<class Type>
 class ParameterAccessorBase : public IOperationAccessor
 {
 public:
+	ParameterAccessorBase(OperationCode code, const char* textName, Type* _parameter, bool restorable = false) :
+		parameter(_parameter)
+	{
+		RCSPAggregator::instance().registerAccessor(code, textName, this, restorable);
+	}
 
 	void deserialize(void* source, OperationSize size)
 	{
@@ -327,13 +415,12 @@ protected:
 
 /// Realization of IOperationAccessor for simple typed parameters
 template<class Type>
-class DefaultParameterAccessor : public ParameterAccessorBase<Type>
+class StandartStrParseParameterAccessor : public ParameterAccessorBase<Type>
 {
 public:
-	DefaultParameterAccessor(OperationCode code, const char* textName, Type* _parameter)
+	StandartStrParseParameterAccessor(OperationCode code, const char* textName, Type* _parameter, bool restorable = false):
+		ParameterAccessorBase<Type>(code, textName, _parameter, restorable)
 	{
-		ParameterAccessorBase<Type>::parameter = _parameter;
-		RCSPAggregator::instance().registerAccessor(code, textName, this);
 	}
 
 	void parseString(const char* str)
@@ -349,13 +436,12 @@ public:
 
 /// Realization of IOperationAccessor for simple typed parameters
 template<class Type>
-class ComplicatedParameterAccessor : public ParameterAccessorBase<Type>
+class CustomStrParseParameterAccessor : public ParameterAccessorBase<Type>
 {
 public:
-	ComplicatedParameterAccessor(OperationCode code, const char* textName, Type* _parameter)
+	CustomStrParseParameterAccessor(OperationCode code, const char* textName, Type* _parameter, bool restorable = false):
+		ParameterAccessorBase<Type>(code, textName, _parameter, restorable)
 	{
-		ParameterAccessorBase<Type>::parameter = _parameter;
-		RCSPAggregator::instance().registerAccessor(code, textName, this);
 	}
 
 	void parseString(const char* str)

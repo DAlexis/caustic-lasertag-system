@@ -7,6 +7,49 @@
 
 #include "logic/player-config-and-state.hpp"
 
+//////////////////////
+// ConnectedWeaponsList
+
+void ConnectedWeaponsList::deserialize(void* source, OperationSize size)
+{
+	printf("Weapons list deserializing\n");
+	void* cursor = source;
+	uint8_t newSize = 0;
+	deserializeAndInc(cursor, newSize);
+	if (size != sizeof(newSize) + newSize*sizeof(DeviceAddress))
+	{
+		printf("Deserializing weapons list: invalid data size\n");
+		return;
+	}
+	weapons.clear();
+	for (uint8_t i=0; i<newSize; i++)
+	{
+		DeviceAddress addr;
+		deserializeAndInc(cursor, addr);
+		weapons.insert(addr);
+	}
+}
+
+void ConnectedWeaponsList::serialize(void* destination)
+{
+	printf("Weapons list serializing\n");
+	void* cursor = destination;
+	uint8_t size = weapons.size();
+
+	serializeAndInc(cursor, size);
+
+	for (auto it=weapons.begin(); it != weapons.end(); it++)
+	{
+		serializeAndInc(cursor, *it);
+	}
+}
+
+uint32_t ConnectedWeaponsList::serializedSize()
+{
+	return sizeof(uint8_t) + weapons.size() * sizeof(DeviceAddress);
+}
+
+
 PlayerConfiguration::PlayerConfiguration()
 {
 	setDefault();
