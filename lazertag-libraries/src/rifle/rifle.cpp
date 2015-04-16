@@ -7,6 +7,7 @@
 
 #include "rifle/rifle.hpp"
 #include "rcsp/RCSP-stream.hpp"
+#include "rcsp/broadcast.hpp"
 #include "core/string-utils.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/console.hpp"
@@ -181,6 +182,10 @@ void Rifle::configure()
 	//rifleTurnOn();
 	printf("- Looking for sound files...\n");
 	initSounds();
+
+	printf("- Other initialization\n");
+	RCSPModem::instance().registerBroadcast(broadcast.any);
+	RCSPModem::instance().registerBroadcast(broadcast.rifles);
 
 	// Registering at head sensor's weapons list
 	registerWeapon();

@@ -145,6 +145,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerReset);
 			break;
 		case MT2Extended::Commands::restoreDefaults:
+			RCSPAggregator::instance().doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults);
 			break;
 		case MT2Extended::Commands::respawn:
 			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn);

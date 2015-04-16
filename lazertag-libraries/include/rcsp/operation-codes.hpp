@@ -35,7 +35,15 @@ namespace ConfigCodes
 	constexpr uint16_t acknoledgement = RCSPAggregator::SetCallRequestOC(0xFFFF);
 	namespace AnyDevice
 	{
-		PAR_CODE(devAddr,           2000)
+		namespace Configuration
+		{
+			PAR_CODE(devAddr,           2000)
+		}
+
+		namespace Functions
+		{
+			FUNC_CODE(resetToDefaults,   2100)
+		}
 	}
 	namespace Rifle
 	{

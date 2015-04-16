@@ -67,6 +67,10 @@ void HeadSensor::configure()
 	m_leds.blink(50000, 150000, 5);
 
 	StateSaver::instance().runSaver(10000000);
+
+	printf("- Other initialization\n");
+	RCSPModem::instance().registerBroadcast(broadcast.any);
+	RCSPModem::instance().registerBroadcast(broadcast.headSensors);
 	printf("Head sensor ready to use\n");
 }
 

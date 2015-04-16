@@ -36,6 +36,11 @@ void RCSPModem::init()
 	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 1000, 1000);
 }
 
+void RCSPModem::registerBroadcast(const DeviceAddress& address)
+{
+	m_broadcasts.insert(address);
+}
+
 uint16_t RCSPModem::generatePackageId()
 {
 	uint16_t id = (systemClock->getTime()) & 0xFFFF;
@@ -110,7 +115,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	temproraryProhibitTransmission();
 
 	// Skipping packages for other devices
-	if (received.target != devAddr)
+	if (received.target != devAddr && m_broadcasts.find(received.target) == m_broadcasts.end())
 		return;
 
 	// Dispatching if this is acknoledgement

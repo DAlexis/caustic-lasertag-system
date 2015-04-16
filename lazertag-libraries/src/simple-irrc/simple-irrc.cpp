@@ -13,13 +13,6 @@
 void SimpleIRRC::init()
 {
 	printf("Simple IR remote control initialization...\n");
-	m_respawnButton = nullptr;
-	m_killButton = nullptr;
-	m_teamRedButton = nullptr;
-	m_teamBlueButton = nullptr;
-	m_decreaseHPButton = nullptr;
-	m_increaseHPButton = nullptr;
-
 
 	m_respawnButton = ButtonsPool::instance().getButtonManager(respawnButtonPort, respawnButtonPin);
 	m_respawnButton->setAutoRepeat(false);
@@ -57,6 +50,12 @@ void SimpleIRRC::init()
 	m_increaseHPButton->setCallback(std::bind(&SimpleIRRC::increaseHPButtonCb, this, std::placeholders::_1));
 	m_increaseHPButton->turnOn();
 
+	m_resetToDefaultButton = ButtonsPool::instance().getButtonManager(resetToDefaultButtonPort, resetToDefaultButtonPin);
+	m_resetToDefaultButton->setAutoRepeat(false);
+	m_resetToDefaultButton->setRepeatPeriod(buttonsRepeatPeriod);
+	m_resetToDefaultButton->setCallback(std::bind(&SimpleIRRC::increaseHPButtonCb, this, std::placeholders::_1));
+	m_resetToDefaultButton->turnOn();
+
 	m_mt2.init();
 	m_mt2.setChannel(2);
 	Scheduler::instance().addTask(std::bind(&SimpleIRRC::interrogate, this), false, buttonsInterrogationPeriod);
@@ -71,6 +70,7 @@ void SimpleIRRC::interrogate()
 	m_teamBlueButton->interrogate();
 	m_decreaseHPButton->interrogate();
 	m_increaseHPButton->interrogate();
+	m_resetToDefaultButton->interrogate();
 }
 
 void SimpleIRRC::respawnButonCb(bool)
@@ -107,4 +107,10 @@ void SimpleIRRC::increaseHPButtonCb(bool)
 {
 	printf("Increasing hp\n");
 	m_mt2.addHealth(10);
+}
+
+void SimpleIRRC::resetToDefaultButtonCb(bool)
+{
+	printf("Resetting to default\n");
+	m_mt2.restoreDefaults();
 }

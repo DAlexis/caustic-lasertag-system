@@ -42,6 +42,9 @@ public:
 	uint8_t increaseHPButtonPort = 0;
 	uint8_t increaseHPButtonPin  = 7;
 
+	uint8_t resetToDefaultButtonPort = 1;
+	uint8_t resetToDefaultButtonPin  = 0;
+
 private:
 	ButtonManager* m_respawnButton = nullptr;
 	void respawnButonCb(bool);
@@ -60,6 +63,9 @@ private:
 
 	ButtonManager* m_increaseHPButton = nullptr;
 	void increaseHPButtonCb(bool);
+
+	ButtonManager* m_resetToDefaultButton = nullptr;
+	void resetToDefaultButtonCb(bool);
 
 	MilesTag2Transmitter m_mt2;
 };

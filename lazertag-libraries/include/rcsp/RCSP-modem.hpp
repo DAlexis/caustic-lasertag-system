@@ -14,6 +14,8 @@
 #include "hal/system-clock.hpp"
 #include "core/singleton-macro.hpp"
 #include <list>
+#include <map>
+#include <set>
 
 using PackageId = uint16_t;
 
@@ -47,6 +49,10 @@ struct DeviceAddress
 	constexpr static uint8_t size = 3;
 	uint8_t address[size];
 
+	DeviceAddress(uint8_t a0, uint8_t a1, uint8_t a2)
+	{
+		address[0] = a0; address[1] = a1, address[2] = a2;
+	}
 	DeviceAddress() { address[0] = address[1] = address[2] = 1; }
 
 	void print() { printf("%u-%u-%u\n", address[0], address[1], address[2]); }
@@ -158,7 +164,10 @@ public:
 		uint32_t resendTimeDelta = defaultResendTimeDelta
 	);
 
-	PAR_CL(ConfigCodes::AnyDevice, DeviceAddress, devAddr);
+	void registerBroadcast(const DeviceAddress& address);
+
+	PAR_CL(ConfigCodes::AnyDevice::Configuration, DeviceAddress, devAddr);
+
 private:
 
 	struct WaitingPackage
@@ -208,6 +217,8 @@ private:
 	std::list<Package> m_incoming;
 
 	std::list<uint16_t> m_lastReceivedIds;
+
+	std::set<DeviceAddress> m_broadcasts;
 
 	static RCSPModem* m_RCSPModem;
 	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
