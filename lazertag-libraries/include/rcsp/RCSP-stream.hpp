@@ -22,26 +22,45 @@ public:
 	RCSPStream(uint16_t size = defaultLength);
 	~RCSPStream();
 
-	static PackageId remoteCall(DeviceAddress target, OperationCode code, bool waitForAck = true, PackageSendingDoneCallback callback = nullptr)
+	static PackageId remoteCall(
+			DeviceAddress target,
+			OperationCode code,
+			bool waitForAck = true,
+			PackageSendingDoneCallback callback = nullptr,
+			PackageTimings&& timings = PackageTimings()
+			)
 	{
 		RCSPStream stream;
 		stream.addCall(code);
-		return stream.send(target, waitForAck, callback);
+		return stream.send(target, waitForAck, callback, timings);
 	}
 
 	template <typename Type>
-	static PackageId remoteCall(DeviceAddress target, OperationCode code, Type& argument, bool waitForAck = true, PackageSendingDoneCallback callback = nullptr)
+	static PackageId remoteCall(
+			DeviceAddress target,
+			OperationCode code,
+			Type& argument,
+			bool waitForAck = true,
+			PackageSendingDoneCallback callback = nullptr,
+			PackageTimings&& timings = PackageTimings()
+			)
 	{
 		RCSPStream stream;
 		stream.addCall(code, argument);
-		return stream.send(target, waitForAck, callback);
+		return stream.send(target, waitForAck, callback, timings);
 	}
 
-	static PackageId remotePullValue(DeviceAddress target, OperationCode code, bool waitForAck = true, PackageSendingDoneCallback callback = nullptr)
+	static PackageId remotePullValue(
+			DeviceAddress target,
+			OperationCode code,
+			bool waitForAck = true,
+			PackageSendingDoneCallback callback = nullptr,
+			PackageTimings&& timings = PackageTimings()
+			)
 	{
 		RCSPStream stream;
 		stream.addValue(code);
-		return stream.send(target, waitForAck, callback);
+		return stream.send(target, waitForAck, callback, timings);
 	}
 
 	uint8_t* getStream();
@@ -64,35 +83,18 @@ public:
 	}
 
 	/**
-	 * Send current stream with default timeout, resend period and resend period delta
-	 * @param target Address of receiver
-	 * @param waitForAck Need resend while no ACK received
-	 * @param doneCallback Callback after successful/not successful delivery
-	 * @return Package id
-	 */
-	PackageId send(
-		DeviceAddress target,
-		bool waitForAck = false,
-		PackageSendingDoneCallback doneCallback = nullptr
-	);
-
-	/**
 	 * Send current stream with specified timeout, resend period and resend period delta
 	 * @param target Address of receiver
 	 * @param waitForAck Need resend while no ACK received
 	 * @param doneCallback Callback after successful/not successful delivery
-	 * @param timeout Package timeout value
-	 * @param resendTime Resend time value
-	 * @param resendTimeDelta Resend time delta value
+	 * @param timings Package timings
 	 * @return Package id
 	 */
 	uint16_t send(
 		DeviceAddress target,
-		bool waitForAck,
-		PackageSendingDoneCallback doneCallback,
-		uint32_t timeout,
-		uint32_t resendTime,
-		uint32_t resendTimeDelta
+		bool waitForAck = false,
+		PackageSendingDoneCallback doneCallback = nullptr,
+		PackageTimings timings = PackageTimings()
 	);
 
 	void dispatch();
@@ -130,15 +132,8 @@ public:
 
 	void send(
 		DeviceAddress target,
-		bool waitForAck = false
-	);
-
-	void send(
-		DeviceAddress target,
-		bool waitForAck,
-		uint32_t timeout,
-		uint32_t resendTime,
-		uint32_t resendTimeDelta
+		bool waitForAck = false,
+		PackageTimings timings = PackageTimings()
 	);
 
 	bool empty();

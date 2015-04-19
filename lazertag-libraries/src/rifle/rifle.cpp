@@ -6,6 +6,7 @@
  */
 
 #include "rifle/rifle.hpp"
+#include "rifle/packages-timings.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "rcsp/broadcast.hpp"
 #include "core/string-utils.hpp"
@@ -187,6 +188,7 @@ void Rifle::configure()
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.rifles);
 
+	rifleReset();
 	// Registering at head sensor's weapons list
 	registerWeapon();
 
@@ -341,11 +343,14 @@ void Rifle::registerWeapon()
 			ConfigCodes::HeadSensor::Functions::registerWeapon,
 			RCSPModem::instance().devAddr,
 			true,
+			nullptr,
+			std::forward<PackageTimings>(riflePackageTimings.registration)
+			/*
 			[this](PackageId packageId, bool isSuccess) {
 				if (!isSuccess) {
 					printf("No response from head sensor\n");
 					registerWeapon();
 				}
-			}
+			}*/
 	);
 }

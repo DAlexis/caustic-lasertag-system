@@ -49,47 +49,12 @@ struct DeviceAddress
 	constexpr static uint8_t size = 3;
 	uint8_t address[size];
 
-	DeviceAddress(uint8_t a0, uint8_t a1, uint8_t a2)
-	{
-		address[0] = a0; address[1] = a1, address[2] = a2;
-	}
-	DeviceAddress() { address[0] = address[1] = address[2] = 1; }
+	DeviceAddress(uint8_t a0 = 1, uint8_t a1 = 1, uint8_t a2 = 1)
+		{ address[0] = a0; address[1] = a1, address[2] = a2; }
 
 	void print() { printf("%u-%u-%u\n", address[0], address[1], address[2]); }
 
-	void convertFromString(const char* str)
-	{
-		/// @todo Improve parcer to be absolutely stable
-		//printf("Parsing address %s\n", str);
-		const char* pos = str;
-		constexpr unsigned int tmpSize = 20;
-		char tmp[tmpSize];
-		for (int i=0; i<size; i++)
-		{
-			unsigned int cursor = 0;
-
-			while (*pos != '\0' && *pos != '.')
-				tmp[cursor++] = *pos++;
-
-			if (cursor == tmpSize)
-			{
-				printf("Parsing failed: too long line\n");
-				return;
-			}
-
-			if (pos == '\0' && i != size-1)
-			{
-				printf("Parsing failed: inconsistent address\n");
-				return;
-			}
-
-			tmp[cursor] = '\0';
-
-			address[i] = atoi(tmp);
-			pos++;
-		}
-		printf("Parsed: %u-%u-%u\n", address[0], address[1], address[2]);
-	}
+	void convertFromString(const char* str);
 
 	// Operators
 	inline bool operator==(const DeviceAddress& other) const
@@ -133,6 +98,25 @@ struct Package
 };
 #pragma pack(pop)
 
+struct PackageTimings
+{
+	constexpr static uint32_t defaultTimeout = 20000000;
+	constexpr static uint32_t defaultResendTime = 500000;
+	constexpr static uint32_t defaultResendTimeDelta = 100000;
+
+	PackageTimings(
+			bool _infiniteResend = false,
+			uint32_t _timeout = defaultTimeout,
+			uint32_t _resendTime = defaultResendTime,
+			uint32_t _resendTimeDelta = defaultResendTimeDelta
+			) : infiniteResend(_infiniteResend), timeout(_timeout), resendTime(_resendTime), resendTimeDelta(_resendTimeDelta)
+	{ }
+
+	uint32_t timeout = defaultTimeout;
+	bool infiniteResend = false;
+	uint32_t resendTime = defaultResendTime;
+	uint32_t resendTimeDelta = defaultResendTimeDelta;
+};
 
 class RCSPModem
 {
@@ -153,15 +137,14 @@ public:
 	 * @return
 	 */
 	void init();
+
 	uint16_t send(
 		DeviceAddress target,
 		uint8_t* data,
 		uint16_t size,
 		bool waitForAck = false,
 		PackageSendingDoneCallback doneCallback = nullptr,
-		uint32_t timeout = defaultTimeout,
-		uint32_t resendTime = defaultResendTime,
-		uint32_t resendTimeDelta = defaultResendTimeDelta
+		PackageTimings timings = PackageTimings()
 	);
 
 	void registerBroadcast(const DeviceAddress& address);
@@ -174,9 +157,12 @@ private:
 	{
 		Time wasCreated = 0;
 		Time nextTransmission = 0;
+		PackageTimings timings;
+		/*
 		uint32_t timeout = 0;
 		uint32_t resendTime = 0;
 		uint32_t resendTimeDelta = 0;
+		*/
 		PackageSendingDoneCallback callback;
 
 		Package package;

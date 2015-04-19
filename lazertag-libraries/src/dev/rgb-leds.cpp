@@ -47,13 +47,10 @@ void RGBLeds::changeState(uint8_t state)
 		m_blue->reset();
 }
 
-void RGBLeds::blink(uint32_t onStateDuration, uint32_t offStateDuration, unsigned int repetitionsCount, bool infinite)
+void RGBLeds::blink(const BlinkPattern& pattern)
 {
 	stop();
-	m_onStateDuration = onStateDuration;
-	m_offStateDuration = offStateDuration;
-	m_repetitionsCount = repetitionsCount;
-	m_infinite = infinite;
+	m_currentPattern = pattern;
 	m_state = S_OFF;
 	m_currentRepetitionsCount = 0;
 	nextStep();
@@ -71,18 +68,18 @@ void RGBLeds::nextStep()
 	//printf("Next step\n");
 	if (m_state == S_OFF)
 	{
-		if (m_currentRepetitionsCount >= m_repetitionsCount && !m_infinite)
+		if (m_currentRepetitionsCount >= m_currentPattern.repetitionsCount && !m_currentPattern.infinite)
 		{
 			m_lastTask = 0;
 			return;
 		}
 		m_state = S_ON;
 		changeState(m_color);
-		m_lastTask = Scheduler::instance().addTask(std::bind(&RGBLeds::nextStep, this), true, 0, 0, m_onStateDuration);
+		m_lastTask = Scheduler::instance().addTask(std::bind(&RGBLeds::nextStep, this), true, 0, 0, m_currentPattern.onStateDuration);
 	} else {
 		m_currentRepetitionsCount++;
 		m_state = S_OFF;
 		changeState(silence);
-		m_lastTask = Scheduler::instance().addTask(std::bind(&RGBLeds::nextStep, this), true, 0, 0, m_offStateDuration);
+		m_lastTask = Scheduler::instance().addTask(std::bind(&RGBLeds::nextStep, this), true, 0, 0, m_currentPattern.offStateDuration);
 	}
 }

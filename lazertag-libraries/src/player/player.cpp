@@ -6,7 +6,7 @@
  */
 
 #include "logic/player-config-and-state.hpp"
-
+#include "head-sensor/parameters.hpp"
 //////////////////////
 // ConnectedWeaponsList
 
@@ -83,23 +83,6 @@ void PlayerConfiguration::setDefault()
 	slot3MaxWeight = UINT16_MAX;
 	slot4MaxWeight = UINT16_MAX;
 	slot5MaxWeight = UINT16_MAX;
-}
-
-void PlayerConfiguration::addMaxHealth(int16_t delta)
-{
-	printf("Adding health: %d\n", delta);
-	if (delta < 0 && healthMax < -delta)
-	{
-		printf("Max health is %u, so can not add %d\n", healthMax, delta);
-		return;
-	}
-	healthMax += delta;
-	if (delta < 0 && healthStart < -delta)
-	{
-		printf("Start health is %u, so can not add %d\n", healthStart, delta);
-		return;
-	}
-	healthStart += delta;
 }
 
 bool PlayerState::damage(uint8_t damage)

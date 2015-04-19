@@ -85,18 +85,11 @@ RCSPAggregator::ResultType RCSPStream::serializeAnything(OperationCode code, Ser
 	return result;
 }
 
-PackageId RCSPStream::send(DeviceAddress target, bool waitForAck, PackageSendingDoneCallback doneCallback)
-{
-	return RCSPModem::instance().send(target, m_stream, m_size, waitForAck, doneCallback);
-}
-
 uint16_t RCSPStream::send(
 	DeviceAddress target,
 	bool waitForAck,
 	PackageSendingDoneCallback doneCallback,
-	uint32_t timeout,
-	uint32_t resendTime,
-	uint32_t resendTimeDelta
+	PackageTimings timings
 )
 {
 	return RCSPModem::instance().send(
@@ -105,9 +98,7 @@ uint16_t RCSPStream::send(
 		m_size,
 		waitForAck,
 		doneCallback,
-		timeout,
-		resendTime,
-		resendTimeDelta
+		timings
 	);
 }
 
@@ -173,26 +164,13 @@ RCSPAggregator::ResultType RCSPMultiStream::addCall(OperationCode code)
 
 void RCSPMultiStream::send(
 		DeviceAddress target,
-		bool waitForAck
-	)
-{
-	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
-	{
-		(*it)->send(target, waitForAck);
-	}
-}
-
-void RCSPMultiStream::send(
-		DeviceAddress target,
 		bool waitForAck,
-		uint32_t timeout,
-		uint32_t resendTime,
-		uint32_t resendTimeDelta
+		PackageTimings timings
 	)
 {
 	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
 	{
-		(*it)->send(target, waitForAck, nullptr, timeout, resendTime, resendTimeDelta);
+		(*it)->send(target, waitForAck, nullptr, timings);
 	}
 }
 

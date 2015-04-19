@@ -208,6 +208,7 @@ void ConsoleTester::fragmentPlayerTest(const char* arg)
 
 void ConsoleTester::loadNextFragment(SoundSample* old)
 {
+	(void) old;
 	fragmentPlayer->setFragmentSize(11);
 	fragmentPlayer->playFragment(buffer);
 }

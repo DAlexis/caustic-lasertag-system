@@ -18,6 +18,46 @@
 RCSPModem* RCSPModem::m_RCSPModem = nullptr;
 STATIC_DEINITIALIZER_IN_CPP_FILE(RCSPModem, m_RCSPModem)
 
+
+
+///////////////////////
+//
+
+void DeviceAddress::convertFromString(const char* str)
+{
+		/// @todo Improve parcer to be absolutely stable
+		//printf("Parsing address %s\n", str);
+		const char* pos = str;
+		constexpr unsigned int tmpSize = 20;
+		char tmp[tmpSize];
+		for (int i=0; i<size; i++)
+		{
+			unsigned int cursor = 0;
+
+			while (*pos != '\0' && *pos != '.')
+				tmp[cursor++] = *pos++;
+
+			if (cursor == tmpSize)
+			{
+				printf("Parsing failed: too long line\n");
+				return;
+			}
+
+			if (pos == '\0' && i != size-1)
+			{
+				printf("Parsing failed: inconsistent address\n");
+				return;
+			}
+
+			tmp[cursor] = '\0';
+
+			address[i] = atoi(tmp);
+			pos++;
+		}
+		printf("Parsed: %u-%u-%u\n", address[0], address[1], address[2]);
+	}
+///////////////////////
+// RCSPModem
 void RCSPModem::init()
 {
 	nrf.setTXDoneCallback(std::bind(&RCSPModem::TXDoneCallback, this));
@@ -33,7 +73,7 @@ void RCSPModem::init()
 	);
 	nrf.printStatus();
 	//nrf.enableDebug();
-	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 1000, 1000);
+	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 10, 10);
 }
 
 void RCSPModem::registerBroadcast(const DeviceAddress& address)
@@ -56,9 +96,7 @@ uint16_t RCSPModem::send(
 	uint16_t size,
 	bool waitForAck,
 	PackageSendingDoneCallback doneCallback,
-	uint32_t timeout,
-	uint32_t resendTime,
-	uint32_t resendTimeDelta
+	PackageTimings timings
 )
 {
 	if (size > Package::payloadLength)
@@ -78,9 +116,7 @@ uint16_t RCSPModem::send(
 		waitingPackage.wasCreated = time;
 		waitingPackage.nextTransmission = time;
 
-		waitingPackage.timeout = timeout;
-		waitingPackage.resendTime = resendTime;
-		waitingPackage.resendTimeDelta = resendTimeDelta;
+		waitingPackage.timings = timings;
 
 		waitingPackage.callback = doneCallback;
 		waitingPackage.package.sender = devAddr;
@@ -217,7 +253,7 @@ void RCSPModem::sendNext()
 	for (auto it=m_packages.begin(); it!=m_packages.end(); it++)
 	{
 		// If timeout
-		if (time - it->second.wasCreated > it->second.timeout)
+		if (!it->second.timings.infiniteResend && time - it->second.wasCreated > it->second.timings.timeout)
 		{
 			PackageSendingDoneCallback callback = it->second.callback;
 			uint16_t timeoutedPackageId = it->second.package.details.packageId;
@@ -236,7 +272,7 @@ void RCSPModem::sendNext()
 			printf("Sending package id=%u\n", it->second.package.details.packageId);
 			currentlySendingPackageId = it->first;
 			isSendingNow = true;
-			it->second.nextTransmission = time + it->second.resendTime + Random::random(it->second.resendTimeDelta);
+			it->second.nextTransmission = time + it->second.timings.resendTime + Random::random(it->second.timings.resendTimeDelta);
 			nrf.sendData(Package::packageLength, (uint8_t*) &(it->second.package));
 			return;
 		}

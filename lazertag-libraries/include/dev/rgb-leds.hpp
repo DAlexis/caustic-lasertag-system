@@ -20,10 +20,28 @@ public:
 	constexpr static uint8_t green   = 2;
 	constexpr static uint8_t blue    = 4;
 
+	struct BlinkPattern
+	{
+		BlinkPattern(
+				uint32_t _onStateDuration = 200000,
+				uint32_t _offStateDuration = 200000,
+				unsigned int _repetitionsCount = 2
+				) :
+			onStateDuration(_onStateDuration),
+			offStateDuration(_offStateDuration),
+			repetitionsCount(_repetitionsCount)
+		{}
+
+		uint32_t onStateDuration = 200000;
+		uint32_t offStateDuration = 200000;
+		unsigned int repetitionsCount = 2;
+		bool infinite = false;
+	};
+
 	RGBLeds();
 	void init(IIOPin* red, IIOPin* green, IIOPin* blue);
 
-	void blink(uint32_t onStateDuration, uint32_t offStateDuration, unsigned int repetitionsCount, bool infinite = false);
+	void blink(const BlinkPattern& pattern);
 	void stop();
 	void setColor(uint8_t color);
 
@@ -45,10 +63,11 @@ private:
 
 	uint8_t m_color = red;
 
-	uint32_t m_onStateDuration = 1000000;
+	BlinkPattern m_currentPattern;
+	/*uint32_t m_onStateDuration = 1000000;
 	uint32_t m_offStateDuration = 1000000;
 	bool m_infinite = false;
-	unsigned int m_repetitionsCount = 10;
+	unsigned int m_repetitionsCount = 10;*/
 	unsigned int m_currentRepetitionsCount = 0;
 
 	TaskId m_lastTask = 0;

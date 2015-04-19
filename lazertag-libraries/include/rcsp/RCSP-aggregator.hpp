@@ -241,14 +241,14 @@ public:
 	bool doOperation(OperationCode code)
 	{
 		OperationSize size = 0;
-		dispatchOperation(&size, &code, nullptr);
+		return dispatchOperation(&size, &code, nullptr);
 	}
 
 	template <typename Type>
 	bool doOperation(OperationCode code, Type& arg)
 	{
 		OperationSize size = sizeof(arg);
-		dispatchOperation(&size, &code, reinterpret_cast<uint8_t*>(&arg));
+		return dispatchOperation(&size, &code, reinterpret_cast<uint8_t*>(&arg));
 	}
 private:
 	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits
@@ -293,7 +293,7 @@ public:
 		RCSPAggregator::instance().registerAccessor(code, textName, this);
 	}
 
-	void deserialize(void* source, OperationSize size)
+	void deserialize(void*, OperationSize size)
 	{
 		if (size != 0)
 			printf("Warning: argument provided for function without args\n");
@@ -369,7 +369,7 @@ public:
 
 	bool isWritable() { return true; }
 
-	void parseString(const char* str) { }
+	void parseString(const char*) { }
 
 	inline uint32_t getSize() { return parameter->serializedSize(); }
 

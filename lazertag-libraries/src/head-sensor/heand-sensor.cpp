@@ -5,6 +5,7 @@
  *      Author: alexey
  */
 
+#include <head-sensor/parameters.hpp>
 #include "head-sensor/head-sensor.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "dev/console.hpp"
@@ -64,7 +65,7 @@ void HeadSensor::configure()
 	printf("- Initializing visual effects");
 	m_leds.init(IOPins->getIOPin(1, 0), IOPins->getIOPin(0, 7), IOPins->getIOPin(0, 6));
 	m_leds.setColor(getTeamColor());
-	m_leds.blink(50000, 150000, 5);
+	m_leds.blink(blinkPatterns.init);
 
 	StateSaver::instance().runSaver(10000000);
 
@@ -109,16 +110,17 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 			stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
 			stream.send(*it, true, nullptr);
 		}
+		// If it was last shoot
 		if (!playerState.isAlive())
 			dieWeapons();
 	}
 	if (!playerState.isAlive()) {
 		printf("Player died\n");
-		m_leds.blink(100000, 100000, 100);
+		m_leds.blink(blinkPatterns.death);
 		/// Notifying weapons
 		turnOffWeapons();
 	} else {
-		m_leds.blink(100000, 100000, 1);
+		m_leds.blink(blinkPatterns.wound);
 	}
 	StateSaver::instance().saveState();
 }
@@ -126,7 +128,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 void HeadSensor::playerRespawn()
 {
 	playerState.respawn();
-	m_leds.blink(100000, 100000, 2);
+	m_leds.blink(blinkPatterns.respawn);
 	respawnWeapons();
 	printf("Player spawned\n");
 /*
@@ -153,6 +155,7 @@ void HeadSensor::playerKill()
 		return;
 	playerState.kill();
 	shotCallback(0, 0, 0);
+	dieWeapons();
 	//dieWeapons();
 }
 
@@ -213,13 +216,31 @@ void HeadSensor::setTeam(uint8_t teamId)
 	printf("Setting team id\n");
 	playerConfig.teamId = teamId;
 	m_leds.setColor(getTeamColor());
-	m_leds.blink(100000, 100000, 2);
+	m_leds.blink(blinkPatterns.setTeam);
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		printf("Changing weapon team id to %u\n", teamId);
 		RCSPStream::remotePullValue(*it, ConfigCodes::HeadSensor::Configuration::teamId);
 	}
 
+}
+
+void HeadSensor::addMaxHealth(int16_t delta)
+{
+	printf("Adding health: %d\n", delta);
+	if (delta < 0 && playerConfig.healthMax < -delta)
+	{
+		printf("Max health is %u, so can not add %d\n", playerConfig.healthMax, delta);
+		return;
+	}
+	playerConfig.healthMax += delta;
+	if (delta < 0 && playerConfig.healthStart < -delta)
+	{
+		printf("Start health is %u, so can not add %d\n", playerConfig.healthStart, delta);
+		return;
+	}
+	playerConfig.healthStart += delta;
+	m_leds.blink(blinkPatterns.healthChange);
 }
 
 uint8_t HeadSensor::getTeamColor()

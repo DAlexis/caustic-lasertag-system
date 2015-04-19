@@ -35,8 +35,8 @@ DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber (0..) */
 )
 {
+	(void) pdrv;
 	NVIC_InitTypeDef NVIC_InitStructure;
-
 
 	NVIC_InitStructure.NVIC_IRQChannel = SDIO_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 15;
@@ -93,6 +93,7 @@ DRESULT disk_read (
 	UINT count		/* Number of sectors to read (1..128) */
 )
 {
+	(void) pdrv;
 	if(count==1)
 	{
 		SD_ReadBlock(buff, sector*512, 512);
@@ -134,6 +135,7 @@ DRESULT disk_write (
 	UINT count			/* Number of sectors to write (1..128) */
 )
 {
+	(void)pdrv;
 	if(count==1)
 	{
 		SD_WriteBlock((BYTE*)buff, sector*512, 512);
