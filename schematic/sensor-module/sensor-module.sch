@@ -29,19 +29,17 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:tsop4856
 LIBS:led_rgb
 LIBS:led
-LIBS:rgb-led
 LIBS:sensor-module-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
-Date "29 mar 2015"
-Rev ""
+Title "Sensor module"
+Date "21 apr 2015"
+Rev "1"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -224,17 +222,6 @@ F 3 "" H 3350 3650 60  0000 C CNN
 	1    3350 3650
 	1    0    0    -1  
 $EndComp
-$Comp
-L GND #PWR010
-U 1 1 5517BBAF
-P 3800 3800
-F 0 "#PWR010" H 3800 3800 30  0001 C CNN
-F 1 "GND" H 3800 3730 30  0001 C CNN
-F 2 "" H 3800 3800 60  0000 C CNN
-F 3 "" H 3800 3800 60  0000 C CNN
-	1    3800 3800
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3350 2100 3450 2100
 Wire Wire Line
@@ -267,7 +254,7 @@ Wire Wire Line
 Wire Wire Line
 	3350 3750 3350 3650
 Wire Wire Line
-	3800 3650 3800 3800
+	3800 3650 3800 3950
 Wire Wire Line
 	4000 3650 4000 3750
 Wire Wire Line
@@ -275,9 +262,7 @@ Wire Wire Line
 Wire Wire Line
 	3300 3950 4850 3950
 Wire Wire Line
-	4650 3950 4650 3750
-Wire Wire Line
-	4650 3750 4550 3750
+	4550 3750 4850 3750
 $Comp
 L CONN_2 P3
 U 1 1 5517BC38
@@ -289,12 +274,11 @@ F 3 "~" H 5200 3850 60  0000 C CNN
 	1    5200 3850
 	1    0    0    1   
 $EndComp
-Connection ~ 4650 3950
 $Comp
-L +BATT #PWR011
+L +BATT #PWR010
 U 1 1 5517BC65
 P 4800 3650
-F 0 "#PWR011" H 4800 3600 20  0001 C CNN
+F 0 "#PWR010" H 4800 3600 20  0001 C CNN
 F 1 "+BATT" H 4800 3750 30  0000 C CNN
 F 2 "" H 4800 3650 60  0000 C CNN
 F 3 "" H 4800 3650 60  0000 C CNN
@@ -302,9 +286,7 @@ F 3 "" H 4800 3650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4800 3650 4800 3750
-Wire Wire Line
-	4800 3750 4850 3750
+	4800 3750 4800 3650
 $Comp
 L CONN_3 K2
 U 1 1 5517BCAB
@@ -399,10 +381,10 @@ Wire Wire Line
 Wire Wire Line
 	3150 5250 3250 5250
 $Comp
-L +BATT #PWR012
+L +BATT #PWR011
 U 1 1 5517C042
 P 2550 4800
-F 0 "#PWR012" H 2550 4750 20  0001 C CNN
+F 0 "#PWR011" H 2550 4750 20  0001 C CNN
 F 1 "+BATT" H 2550 4900 30  0000 C CNN
 F 2 "" H 2550 4800 60  0000 C CNN
 F 3 "" H 2550 4800 60  0000 C CNN
@@ -500,4 +482,6 @@ Wire Wire Line
 Wire Wire Line
 	4050 2300 4050 3050
 Connection ~ 4050 3050
+Connection ~ 4800 3750
+Connection ~ 3800 3950
 $EndSCHEMATC
