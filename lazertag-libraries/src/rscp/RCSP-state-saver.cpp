@@ -8,6 +8,7 @@
 #include "rcsp/RCSP-state-saver.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "core/scheduler.hpp"
+#include "dev/sdcard-fs.hpp"
 #include "hal/ff/ff.h"
 
 #include <string.h>
@@ -42,6 +43,12 @@ void StateSaver::setFilename(const std::string& filename)
 void StateSaver::saveState()
 {
 	printf("Saving state\n");
+	if (SDCardFS::instance().isLocked())
+	{
+		printf("State saver: sd-card is locked\n");
+		return;
+	}
+	SDCardFS::ScopedLocker sdLocker;
 	FRESULT res = FR_OK;
 	FIL file;
 	// Creating lock file
@@ -88,6 +95,12 @@ void StateSaver::saveState()
 
 bool StateSaver::tryRestore(uint8_t variant)
 {
+	if (SDCardFS::instance().isLocked())
+	{
+		printf("State saver: sd-card is locked\n");
+		return false;
+	}
+	SDCardFS::ScopedLocker sdLocker;
 	printf("In state restoring func\n");
 	// Check if we have not deleted lock file
 	if (f_stat(m_fileLock[variant].c_str(), nullptr) == FR_OK)
@@ -132,6 +145,12 @@ bool StateSaver::tryRestore(uint8_t variant)
 
 bool StateSaver::tryRestore()
 {
+	if (SDCardFS::instance().isLocked())
+	{
+		printf("State saver: sd-card is locked\n");
+		return false;
+	}
+	SDCardFS::ScopedLocker sdLocker;
 	if (f_stat(m_fileCurrent[0].c_str(), nullptr) == FR_OK)
 	{
 		return tryRestore(0) ? true : tryRestore(1);

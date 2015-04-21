@@ -22,10 +22,10 @@ public:
 	~WavPlayer();
 	static WavPlayer& instance();
 	void init();
-	bool loadFile(const char* fileName);
-	void play();
+
 	void loadAndPlay(const char* fileName);
 	void stop();
+	inline bool isPlaying() { return m_isPlaying; }
 	void setVerbose(bool verbose = true);
 
 private:
@@ -46,6 +46,8 @@ private:
 		uint32_t subchunk2_size;
 	};
 
+	bool loadFile(const char* fileName);
+	void play();
 	void fragmentDoneCallback(SoundSample* oldBuffer);
 	bool readHeader();
 	bool loadFragment(SoundSample* m_buffer);

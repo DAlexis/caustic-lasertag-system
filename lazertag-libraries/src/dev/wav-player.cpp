@@ -7,6 +7,7 @@
 
 #include "dev/wav-player.hpp"
 #include "dev/random.hpp"
+#include "dev/sdcard-fs.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -108,6 +109,7 @@ void WavPlayer::play()
 
 void WavPlayer::stop()
 {
+	//SDCardFS::instance().unlock();
 	fragmentPlayer->stop();
 	m_isPlaying = false;
 	closeFile();
@@ -244,13 +246,27 @@ void WavPlayer::closeFile()
 	{
 		f_close(&m_fil);
 		m_fileIsOpened = false;
+		SDCardFS::instance().unlock();
 	}
 }
 
 void WavPlayer::loadAndPlay(const char* fileName)
 {
+	// If SD-card is busy
+	if (SDCardFS::instance().isLocked() && !m_isPlaying)
+		return;
+	/// @todo Add here deferred call
+
+	if (m_isPlaying)
+	{
+		stop();
+	}
+
+	SDCardFS::instance().lock();
 	if (loadFile(fileName))
 		play();
+	else
+		SDCardFS::instance().unlock();
 }
 
 /////////////////////////
