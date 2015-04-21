@@ -103,6 +103,8 @@ private:
 	SoundPlayer m_noMagazines;
 	SoundPlayer m_respawnSound;
 	SoundPlayer m_dieSound;
+
+	PackageId m_registerWeaponPAckageId = 0;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

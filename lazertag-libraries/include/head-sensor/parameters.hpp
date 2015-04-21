@@ -21,11 +21,10 @@ class BlinkPatterns
 {
 public:
 	const RGBLeds::BlinkPattern init{100000, 100000, 2};
-	const RGBLeds::BlinkPattern setTeam{100000, 100000, 2};
+	const RGBLeds::BlinkPattern anyCommand{100000, 100000, 2};
 	const RGBLeds::BlinkPattern death{100000, 100000, 2};
 	const RGBLeds::BlinkPattern wound{50000, 50000, 3};
 	const RGBLeds::BlinkPattern respawn{100000, 100000, 2};
-	const RGBLeds::BlinkPattern healthChange{100000, 100000, 2};
 };
 
 extern HeadSensorPackageTimings headSensorPackageTimings;

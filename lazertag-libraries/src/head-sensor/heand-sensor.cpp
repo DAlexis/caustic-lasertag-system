@@ -67,23 +67,27 @@ void HeadSensor::configure()
 	m_leds.setColor(getTeamColor());
 	m_leds.blink(blinkPatterns.init);
 
-	StateSaver::instance().runSaver(10000000);
 
 	printf("- Other initialization\n");
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.headSensors);
+
+	StateSaver::instance().runSaver(10000000);
+
 	printf("Head sensor ready to use\n");
 }
 
 void HeadSensor::resetToDefaults()
 {
 	printf("Resetting player configuration\n");
+	m_leds.blink(blinkPatterns.anyCommand);
 	if (!RCSPAggregator::instance().readIni("config.ini"))
 	{
 		printf("Cannot read config file, so setting default values");
 		playerConfig.setDefault();
 	}
 	playerState.reset();
+	StateSaver::instance().saveState();
 }
 
 
@@ -103,16 +107,21 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 
 		playerState.damage(damage);
 		printf("health: %u, armor: %u\n", playerState.healthCurrent, playerState.armorCurrent);
-		for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
-		{
-			RCSPStream stream;
-			stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
-			stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
-			stream.send(*it, true, nullptr);
-		}
+
 		// If it was last shoot
 		if (!playerState.isAlive())
+		{
 			dieWeapons();
+			StateSaver::instance().saveState();
+		} else {
+			for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+			{
+				RCSPStream stream;
+				stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
+				stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
+				stream.send(*it, true, nullptr);
+			}
+		}
 	}
 	if (!playerState.isAlive()) {
 		printf("Player died\n");
@@ -122,7 +131,6 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	} else {
 		m_leds.blink(blinkPatterns.wound);
 	}
-	StateSaver::instance().saveState();
 }
 
 void HeadSensor::playerRespawn()
@@ -164,7 +172,8 @@ void HeadSensor::dieWeapons()
 	/// Notifying weapons
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		printf("Sending kill signal...\n");
+		printf("Sending kill signal to weapons...\n");
+		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie, false);
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie);
 	}
 }
@@ -216,13 +225,12 @@ void HeadSensor::setTeam(uint8_t teamId)
 	printf("Setting team id\n");
 	playerConfig.teamId = teamId;
 	m_leds.setColor(getTeamColor());
-	m_leds.blink(blinkPatterns.setTeam);
+	m_leds.blink(blinkPatterns.anyCommand);
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		printf("Changing weapon team id to %u\n", teamId);
 		RCSPStream::remotePullValue(*it, ConfigCodes::HeadSensor::Configuration::teamId);
 	}
-
 }
 
 void HeadSensor::addMaxHealth(int16_t delta)
@@ -240,7 +248,7 @@ void HeadSensor::addMaxHealth(int16_t delta)
 		return;
 	}
 	playerConfig.healthStart += delta;
-	m_leds.blink(blinkPatterns.healthChange);
+	m_leds.blink(blinkPatterns.anyCommand);
 }
 
 uint8_t HeadSensor::getTeamColor()

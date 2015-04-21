@@ -4,7 +4,7 @@ dir="Simple-irrc-debug"
 
 if [ "$1" == "release" ];
 then
-    dir="Simple-irrc-relase"
+    dir="Simple-irrc-release"
 fi
 
 st-flash write $dir/stm32f100cbt6b-device.bin 0x8000000

@@ -19,7 +19,7 @@
 
 using PackageId = uint16_t;
 
-using PackageSendingDoneCallback = std::function<void(PackageId /*package id*/, bool /*was successfully sent*/)>;
+using PackageSendingDoneCallback = std::function<void(PackageId /*package_id*/, bool /*was successfully sent*/)>;
 using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>;
 
 #pragma pack(push, 1)
@@ -127,6 +127,9 @@ public:
 
 	static RCSPModem& instance();
 
+
+	void init();
+
 	/**
 	 * Send package and optionaly wait for acknowledgement
 	 * @param target Target device address
@@ -136,8 +139,6 @@ public:
 	 * @param doneCallback Function to call after sending done
 	 * @return
 	 */
-	void init();
-
 	uint16_t send(
 		DeviceAddress target,
 		uint8_t* data,

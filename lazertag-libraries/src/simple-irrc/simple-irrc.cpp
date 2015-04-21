@@ -53,7 +53,7 @@ void SimpleIRRC::init()
 	m_resetToDefaultButton = ButtonsPool::instance().getButtonManager(resetToDefaultButtonPort, resetToDefaultButtonPin);
 	m_resetToDefaultButton->setAutoRepeat(false);
 	m_resetToDefaultButton->setRepeatPeriod(buttonsRepeatPeriod);
-	m_resetToDefaultButton->setCallback(std::bind(&SimpleIRRC::increaseHPButtonCb, this, std::placeholders::_1));
+	m_resetToDefaultButton->setCallback(std::bind(&SimpleIRRC::resetToDefaultButtonCb, this, std::placeholders::_1));
 	m_resetToDefaultButton->turnOn();
 
 	m_mt2.init();

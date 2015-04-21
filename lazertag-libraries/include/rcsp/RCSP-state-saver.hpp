@@ -39,6 +39,7 @@ private:
 
     std::string m_file[2];
     std::string m_fileLock[2];
+    std::string m_fileCurrent[2];
     uint8_t m_current = 0, m_next = 1;
 
     TaskId m_savingTask = 0;

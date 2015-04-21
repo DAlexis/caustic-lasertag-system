@@ -9,6 +9,7 @@
 #include "rifle/packages-timings.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "rcsp/broadcast.hpp"
+#include "rcsp/RCSP-state-saver.hpp"
 #include "core/string-utils.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/console.hpp"
@@ -176,8 +177,17 @@ void Rifle::configure()
 	//loadConfig();
 	RCSPAggregator::instance().readIni("config.ini");
 
+	printf("- Restoring state\n");
+	/// @todo Chack that rife is turned on/off correctly anway
+	if (StateSaver::instance().tryRestore())
+	{
+		printf("  restored\n");
+	} else {
+		printf("  restoring failed\n");
+	}
+
 	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::print, &playerDisplayable), false, 3000000, 0, 1000);
-	Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 1000000, 0, 1000000);
+	//Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 3000000, 0, 1000000);
 
 	// Line for DEBUG purpose only
 	//rifleTurnOn();
@@ -188,11 +198,17 @@ void Rifle::configure()
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.rifles);
 
+	rifleTurnOff();
 	rifleReset();
 	// Registering at head sensor's weapons list
+	/// @todo Add this call to scheduler for updating weapon state
 	registerWeapon();
+	StateSaver::instance().runSaver(10000000);
+
+	updatePlayerState();
 
 	printf("Rifle ready to use\n");
+
 }
 
 void Rifle::loadConfig()
@@ -289,16 +305,16 @@ bool Rifle::isReloading()
 	return (systemClock->getTime() - state.lastReloadTime < config.reloadingTime);
 }
 
-
 void Rifle::updatePlayerState()
 {
 	playerDisplayable.syncAll();
+	/*
 	if (isEnabled && playerDisplayable.healthCurrent == 0)
 		rifleTurnOff();
 
 	if (!isEnabled && playerDisplayable.healthCurrent != 0)
 		rifleTurnOn();
-
+*/
 	//playerDisplayable.print();
 }
 
@@ -326,31 +342,35 @@ void Rifle::rifleReset()
 void Rifle::rifleRespawn()
 {
 	rifleReset();
+	rifleTurnOn();
+	updatePlayerState();
 	m_respawnSound.play();
 }
 
 void Rifle::rifleDie()
 {
+	if (!isEnabled)
+		return;
+
 	rifleTurnOff();
 	m_dieSound.play();
 }
 
 void Rifle::registerWeapon()
 {
+	if (m_registerWeaponPAckageId != 0)
+		return;
+
 	printf("Registering weapon...\n");
-	RCSPStream::remoteCall(
+	m_registerWeaponPAckageId = RCSPStream::remoteCall(
 			config.headSensorAddr,
 			ConfigCodes::HeadSensor::Functions::registerWeapon,
 			RCSPModem::instance().devAddr,
 			true,
-			nullptr,
+			[this](PackageId packageId, bool result) -> void
+			{
+				m_registerWeaponPAckageId = 0;
+			},
 			std::forward<PackageTimings>(riflePackageTimings.registration)
-			/*
-			[this](PackageId packageId, bool isSuccess) {
-				if (!isSuccess) {
-					printf("No response from head sensor\n");
-					registerWeapon();
-				}
-			}*/
 	);
 }

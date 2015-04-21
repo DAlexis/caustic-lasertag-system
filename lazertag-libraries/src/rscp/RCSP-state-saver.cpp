@@ -25,7 +25,6 @@ StateSaver& StateSaver::instance()
 
 void StateSaver::addValue(OperationCode code)
 {
-	printf("Registering to state saver: %u\n", code);
 	m_codes.push_back(code);
 }
 
@@ -35,6 +34,9 @@ void StateSaver::setFilename(const std::string& filename)
 	m_file[1] = filename + "_2.bin";
 	m_fileLock[0] = filename + "_1.lock";
 	m_fileLock[1] = filename + "_1.lock";
+	m_fileCurrent[0] = filename + "_1.current";
+	m_fileCurrent[1] = filename + "_1.current";
+
 }
 
 void StateSaver::saveState()
@@ -70,6 +72,16 @@ void StateSaver::saveState()
 
 	// Removing lock file
 	f_unlink(m_fileLock[m_current].c_str());
+	// Deleting old .current file
+	f_unlink(m_fileCurrent[m_next].c_str());
+	// Creating new .current file
+	res = f_open(&file, m_fileCurrent[m_current].c_str(), FA_CREATE_NEW);
+	if (res != FR_OK)
+	{
+		printf("Cannot create .current file: %d!\n", (int)res);
+		return;
+	}
+	f_close(&file);
 
 	std::swap(m_current, m_next);
 }
@@ -120,7 +132,11 @@ bool StateSaver::tryRestore(uint8_t variant)
 
 bool StateSaver::tryRestore()
 {
-	return tryRestore(0) ? true : tryRestore(1);
+	if (f_stat(m_fileCurrent[0].c_str(), nullptr) == FR_OK)
+	{
+		return tryRestore(0) ? true : tryRestore(1);
+	}
+	return tryRestore(1) ? true : tryRestore(0);
 }
 
 void StateSaver::runSaver(uint32_t period)

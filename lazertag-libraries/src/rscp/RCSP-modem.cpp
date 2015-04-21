@@ -21,7 +21,7 @@ STATIC_DEINITIALIZER_IN_CPP_FILE(RCSPModem, m_RCSPModem)
 
 
 ///////////////////////
-//
+// DeviceAddress
 
 void DeviceAddress::convertFromString(const char* str)
 {
@@ -73,7 +73,7 @@ void RCSPModem::init()
 	);
 	nrf.printStatus();
 	//nrf.enableDebug();
-	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 10, 10);
+	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 0);
 }
 
 void RCSPModem::registerBroadcast(const DeviceAddress& address)
