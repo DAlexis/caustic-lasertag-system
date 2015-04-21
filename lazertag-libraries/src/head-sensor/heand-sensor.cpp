@@ -50,9 +50,9 @@ void HeadSensor::configure()
 		playerConfig.setDefault();
 	}
 
+	printf("- Restoring state\n");
 	StateSaver::instance().setFilename("state-save");
 	// State restoring is always after config reading, so not stored data will be default
-	printf("- Restoring state\n");
 	if (StateSaver::instance().tryRestore())
 	{
 		printf("  restored\n");

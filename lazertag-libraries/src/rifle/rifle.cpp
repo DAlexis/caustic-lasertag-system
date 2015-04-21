@@ -178,12 +178,14 @@ void Rifle::configure()
 	RCSPAggregator::instance().readIni("config.ini");
 
 	printf("- Restoring state\n");
+	StateSaver::instance().setFilename("state-save");
 	/// @todo Chack that rife is turned on/off correctly anway
 	if (StateSaver::instance().tryRestore())
 	{
 		printf("  restored\n");
 	} else {
 		printf("  restoring failed\n");
+		rifleReset();
 	}
 
 	Scheduler::instance().addTask(std::bind(&PlayerDisplayableData::print, &playerDisplayable), false, 3000000, 0, 1000);
@@ -199,7 +201,6 @@ void Rifle::configure()
 	RCSPModem::instance().registerBroadcast(broadcast.rifles);
 
 	rifleTurnOff();
-	rifleReset();
 	// Registering at head sensor's weapons list
 	/// @todo Add this call to scheduler for updating weapon state
 	registerWeapon();

@@ -50,9 +50,9 @@ public:
 
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset);
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn);
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);
+	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset);    ///< Make rifle absolutely new
+	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn);  ///< Do all things than needed on respawn (+play sound)
+	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);      ///< Say to rifle that player was killed
 
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;

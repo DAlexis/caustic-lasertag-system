@@ -96,7 +96,7 @@ public:
 	void reset();
 	PAR_ST_R(ConfigCodes::Rifle::State, UintParameter, bulletsInMagazineCurrent);
 	PAR_ST_R(ConfigCodes::Rifle::State, UintParameter, magazinesCountCurrent);
-	PAR_ST(ConfigCodes::Rifle::State, UintParameter, heatnessCurrent);
+	PAR_ST_R(ConfigCodes::Rifle::State, UintParameter, heatnessCurrent);
 
 	uint32_t lastReloadTime;
 
