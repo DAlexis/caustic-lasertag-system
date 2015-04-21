@@ -37,8 +37,8 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
-LibName17=../components/pin-arr-large-pads-2,5mm
-LibName18=../components/RGB-led
+LibName17=../../components/pin-arr-large-pads-2,5mm
+LibName18=../../components/RGB-led
 LibDir=
 [general]
 version=1
@@ -81,10 +81,10 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=../tsop4856
+LibName31=../../tsop4856
 LibName32=led_rgb
 LibName33=led
-LibName34=../rgb-led
+LibName34=../../rgb-led
 [cvpcb]
 version=1
 NetIExt=net
