@@ -9,6 +9,7 @@
 #include "rcsp/RCSP-stream.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
 #include "core/string-utils.hpp"
+#include "core/logging.hpp"
 #include "hal/ff/ff.h"
 #include <stdio.h>
 
@@ -25,6 +26,7 @@ RCSPAggregator& RCSPAggregator::instance()
 
 void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor, bool restorable)
 {
+	ScopedTag tag("reg-accessor");
 	//printf("Accepted %u: %s\n", code - (1<<14), textName);
 	m_accessorsByOpCode[code] = accessor;
 	m_accessorsByOpText[textName] = accessor;
@@ -32,7 +34,7 @@ void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, 
 	{
 		if (!isObjectOC(code))
 		{
-			printf("Only parameter\'s values can save states!\n");
+			error << "Only parameter\'s values can save states!\n";
 			return;
 		}
 		StateSaver::instance().addValue(code);
@@ -58,6 +60,7 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 
 bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream)
 {
+	ScopedTag tag("dispatch-op");
 	if (isObjectRequestOC(*code))
 	{
 		if (answerStream)
@@ -71,18 +74,18 @@ bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code,
 				answerStream->addValue(parameterCode);
 				return true;
 			} else {
-				printf("Unknown request code: %u\n", *code);
+				warning << "Unknown request code: " << *code << "\n";
 				return false;
 			}
 		} else {
-			printf("No answer stream, skipping request\n");
+			debug << "No answer stream, skipping request\n";
 			return false;
 		}
 	} else {
 		auto it = m_accessorsByOpCode.find(*code);
 		if (it != m_accessorsByOpCode.end())
 		{
-			//printf("Dispatched opcode: %u\n", *code);
+			trace << "Dispatched opcode: " << *code << "\n";
 			if (*size == 0)
 				it->second->deserialize(nullptr, 0);
 			else

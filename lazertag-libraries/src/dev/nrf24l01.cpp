@@ -8,6 +8,7 @@
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
 #include "tests/utils.hpp"
+#include "core/logging.hpp"
 #include <stdio.h>
 #include <string.h>
 /*
@@ -155,7 +156,7 @@ NRF24L01Manager::NRF24L01Manager()
 
 void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, IExternalInterruptManager* IRQexti, ISPIManager* spi)
 {
-    printf("Radio module initialization...\n");
+    debug << "Radio module initialization...\n";
     m_chipEnablePin = chipEnablePin;
     m_chipSelectPin = chipSelectPin;
     m_IRQPin = IRQPin;
@@ -203,6 +204,11 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     setupRetransmission(2, 15);
     switchToRX();
     initInterrupts();
+    if (m_TXAdress[0] == 0xff)
+	{
+		error << "Radio module seems to be not connected! Details:\n";
+		printStatus();
+	}
 }
 
 void NRF24L01Manager::setDataReceiveCallback(DataReceiveCallback callback)

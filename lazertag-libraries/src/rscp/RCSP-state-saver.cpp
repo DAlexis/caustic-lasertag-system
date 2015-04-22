@@ -8,6 +8,7 @@
 #include "rcsp/RCSP-state-saver.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "core/scheduler.hpp"
+#include "core/logging.hpp"
 #include "dev/sdcard-fs.hpp"
 #include "hal/ff/ff.h"
 
@@ -42,7 +43,7 @@ void StateSaver::setFilename(const std::string& filename)
 
 void StateSaver::saveState()
 {
-	printf("Saving state\n");
+	info << "Saving state\n";
 	if (SDCardFS::instance().isLocked())
 	{
 		printf("State saver: sd-card is locked\n");
@@ -95,17 +96,10 @@ void StateSaver::saveState()
 
 bool StateSaver::tryRestore(uint8_t variant)
 {
-	if (SDCardFS::instance().isLocked())
-	{
-		printf("State saver: sd-card is locked\n");
-		return false;
-	}
-	SDCardFS::ScopedLocker sdLocker;
-	printf("In state restoring func\n");
 	// Check if we have not deleted lock file
 	if (f_stat(m_fileLock[variant].c_str(), nullptr) == FR_OK)
 	{
-		printf("Lock file detected, clearing\n");
+		warning << "Lock file detected, clearing\n";
 		f_unlink(m_fileLock[m_current].c_str());
 		f_unlink(m_file[m_current].c_str());
 		return false;
@@ -118,7 +112,7 @@ bool StateSaver::tryRestore(uint8_t variant)
 		res = f_open(&file, m_file[m_current].c_str(), FA_READ);
 		if (res != FR_OK)
 		{
-			printf("Cannot open state file!\n");
+			error << "Cannot open state file!\n";
 			return false;
 		}
 		uint8_t* buffer = new uint8_t[RCSPStream::defaultLength];
@@ -129,7 +123,7 @@ bool StateSaver::tryRestore(uint8_t variant)
 			res = f_read(&file, buffer, RCSPStream::defaultLength, &readed);
 			if (res == FR_OK && readed != 0)
 			{
-				printf("Dispatching restored parameters chunk...\n");
+				//trace << "Dispatching restored parameters chunk...\n";
 				RCSPAggregator::instance().dispatchStream(buffer, readed);
 			}
 			else
@@ -139,7 +133,7 @@ bool StateSaver::tryRestore(uint8_t variant)
 		f_close(&file);
 		return true;
 	}
-	printf("%s does not exists\n", m_file[variant].c_str());
+	warning << m_file[variant].c_str() << " does not exists\n";
 	return false;
 }
 

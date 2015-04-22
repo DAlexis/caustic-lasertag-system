@@ -9,6 +9,7 @@
 #include "rcsp/RCSP-stream.hpp"
 
 #include "core/scheduler.hpp"
+#include "core/logging.hpp"
 
 #include "dev/random.hpp"
 
@@ -25,37 +26,38 @@ STATIC_DEINITIALIZER_IN_CPP_FILE(RCSPModem, m_RCSPModem)
 
 void DeviceAddress::convertFromString(const char* str)
 {
-		/// @todo Improve parcer to be absolutely stable
-		//printf("Parsing address %s\n", str);
-		const char* pos = str;
-		constexpr unsigned int tmpSize = 20;
-		char tmp[tmpSize];
-		for (int i=0; i<size; i++)
+	ScopedTag tag("dev-addr-parcer");
+	/// @todo Improve parcer to be absolutely stable
+	trace << "Parsing address " << str << "\n";
+	const char* pos = str;
+	constexpr unsigned int tmpSize = 20;
+	char tmp[tmpSize];
+	for (int i=0; i<size; i++)
+	{
+		unsigned int cursor = 0;
+
+		while (*pos != '\0' && *pos != '.')
+			tmp[cursor++] = *pos++;
+
+		if (cursor == tmpSize)
 		{
-			unsigned int cursor = 0;
-
-			while (*pos != '\0' && *pos != '.')
-				tmp[cursor++] = *pos++;
-
-			if (cursor == tmpSize)
-			{
-				printf("Parsing failed: too long line\n");
-				return;
-			}
-
-			if (pos == '\0' && i != size-1)
-			{
-				printf("Parsing failed: inconsistent address\n");
-				return;
-			}
-
-			tmp[cursor] = '\0';
-
-			address[i] = atoi(tmp);
-			pos++;
+			error << "Parsing failed: too long line\n";
+			return;
 		}
-		printf("Parsed: %u-%u-%u\n", address[0], address[1], address[2]);
+
+		if (pos == '\0' && i != size-1)
+		{
+			error << "Parsing failed: inconsistent address\n";
+			return;
+		}
+
+		tmp[cursor] = '\0';
+
+		address[i] = atoi(tmp);
+		pos++;
 	}
+	trace << "Parsed: " << address[0] << "-" << address[1] << "-" << address[2] << "\n";
+}
 ///////////////////////
 // RCSPModem
 void RCSPModem::init()
@@ -71,7 +73,7 @@ void RCSPModem::init()
 		exti,
 		SPIs->getSPI(1)
 	);
-	nrf.printStatus();
+	//nrf.printStatus();
 	//nrf.enableDebug();
 	Scheduler::instance().addTask(std::bind(&RCSPModem::interrogate, this), false, 0);
 }
@@ -99,9 +101,10 @@ uint16_t RCSPModem::send(
 	PackageTimings timings
 )
 {
+	ScopedTag tag("modem-send");
 	if (size > Package::payloadLength)
 	{
-		printf("Error: too long payload!\n");
+		error << "Error: too long payload!\n";
 		return 0;
 	}
 	PackageDetails details;
@@ -123,7 +126,7 @@ uint16_t RCSPModem::send(
 		waitingPackage.package.target = target;
 		waitingPackage.package.details = details;
 		memcpy(waitingPackage.package.payload, data, size);
-		//printf("Ack-using package queued\n");
+		//trace << "Ack-using package queued\n";
 		return details.packageId;
 	} else {
 		m_packagesNoAck.push_back(Package());
@@ -133,7 +136,7 @@ uint16_t RCSPModem::send(
 		memcpy(m_packagesNoAck.back().payload, data, size);
 		if (size<Package::payloadLength)
 			memset(m_packagesNoAck.back().payload+size, 0, size-Package::payloadLength);
-		//printf("No-ack package queued\n");
+		//trace << "No-ack package queued\n";
 		return 0;
 	}
 }
@@ -145,6 +148,7 @@ void RCSPModem::TXDoneCallback()
 
 void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 {
+	ScopedTag tag("rx-cb");
 	Package received;
 	memcpy(&received, data, sizeof(Package));
 
@@ -158,7 +162,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(received.payload);
 	if (ackDispatcher->isAck())
 	{
-		printf("Ack for %u\n", ackDispatcher->packageId);
+		radio << "Ack for " << ackDispatcher->packageId << "\n";
 		auto it = m_packages.find(ackDispatcher->packageId);
 		if (it == m_packages.end())
 		{
@@ -167,7 +171,6 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 		}
 		PackageSendingDoneCallback callback = it->second.callback;
 		m_packages.erase(it);
-		//printf("Package removed from queue\n");
 		if (callback)
 			callback(ackDispatcher->packageId, true);
 		return;
@@ -193,7 +196,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 
 	if (checkIfIdStoredAndStore(received.details.packageId))
 	{
-		printf("== Package %u repetition detected\n", received.details.packageId);
+		radio << "!! Package " << received.details.packageId << "%u repetition detected\n";
 	} else {
 		// Putting received package to list
 		m_incoming.push_back(received);
@@ -217,6 +220,7 @@ bool RCSPModem::checkIfIdStoredAndStore(uint16_t id)
 
 void RCSPModem::interrogate()
 {
+	ScopedTag tag("radio-interrogate");
 	sendNext();
 	nrf.interrogate();
 	while (!m_incoming.empty())
@@ -224,7 +228,7 @@ void RCSPModem::interrogate()
 		/// @todo [Refactoring] Remove stream from there
 		RCSPMultiStream answerStream;
 		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
-		printf("Dispatched %u\n", m_incoming.front().details.packageId);
+		radio << "Dispatched package " << m_incoming.front().details.packageId << "\n";
 		if (!answerStream.empty())
 		{
 			answerStream.send(m_incoming.front().sender, true);
@@ -235,13 +239,14 @@ void RCSPModem::interrogate()
 
 void RCSPModem::sendNext()
 {
+	ScopedTag tag("radio-send-next");
 	if (!isTranslationAllowed())
 		return;
 
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
 	{
-		printf("Sending package with NO ack needed %u\n", m_packagesNoAck.front().details.packageId);
+		radio << "Sending package " << m_packagesNoAck.front().details.packageId << " with NO ack needed\n";
 		nrf.sendData(Package::packageLength, (uint8_t*) &(m_packagesNoAck.front()));
 		m_packagesNoAck.pop_front();
 		isSendingNow = true;
@@ -257,7 +262,7 @@ void RCSPModem::sendNext()
 		{
 			PackageSendingDoneCallback callback = it->second.callback;
 			uint16_t timeoutedPackageId = it->second.package.details.packageId;
-			printf("Package %u timeouted\n", timeoutedPackageId);
+			radio << "Package " << timeoutedPackageId << " timeouted\n";
 			m_packages.erase(it);
 			if (callback)
 				callback(timeoutedPackageId, false);
@@ -269,7 +274,7 @@ void RCSPModem::sendNext()
 		// If it is time to (re)send package
 		if (it->second.nextTransmission < time)
 		{
-			printf("Sending package id=%u\n", it->second.package.details.packageId);
+			radio << "Transmitting " << it->second.package.details.packageId << "\n";
 			currentlySendingPackageId = it->first;
 			isSendingNow = true;
 			it->second.nextTransmission = time + it->second.timings.resendTime + Random::random(it->second.timings.resendTimeDelta);

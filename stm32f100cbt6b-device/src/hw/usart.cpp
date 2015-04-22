@@ -166,6 +166,16 @@ int USARTManager::syncWrite(const char* ptr, int len)
 	return len;
 }
 
+int USARTManager::syncWrite(const char* ptr)
+{
+	waitForTransmitionEnd();
+	int i = 0;
+	for (; ptr[i] != '\0'; i++) {
+		putChar( (uint8_t) ptr[i]);
+	}
+	return i;
+}
+
 void USARTManager::asyncRead(char* buffer, char stop_char, int maxlen, USARTReadingDoneCallback callback, uint8_t _need_echo)
 {
 	if (io_status & USART_IO_STATUS_RECEIVING)

@@ -10,6 +10,7 @@
 #include "rcsp/RCSP-stream.hpp"
 #include "dev/console.hpp"
 #include "core/scheduler.hpp"
+#include "core/logging.hpp"
 #include "hal/ext-interrupts.hpp"
 #include "dev/sdcard-fs.hpp"
 
@@ -22,6 +23,7 @@ HeadSensor::HeadSensor()
 
 void HeadSensor::configure()
 {
+	ScopedTag tag("head-init");
 	IExternalInterruptManager *exti = EXTIS->getEXTI(0);
 	exti->init(0);
 	exti->turnOn();
@@ -30,60 +32,61 @@ void HeadSensor::configure()
 	m_mainSensor.init(exti);
 	//m_mainSensor.enableDebug(true);
 
-	printf("- Mounting sd-card\n");
+	info << "Mounting sd-card\n";
 	if (!SDCardFS::instance().init())
-		printf("Error during mounting sd-card!\n");
+		error << "Error during mounting sd-card!\n";
 
 	RCSPModem::instance().init();
 
-	printf("- Creating console commands for head sensor\n");
+	info << "Creating console commands for head sensor\n";
 	Console::instance().registerCommand(
 		"die",
 		"kill player",
 		std::bind(&HeadSensor::testDie, this, std::placeholders::_1)
 	);
 
-	printf("- Parsing config file\n");
+	info << "Parsing config file\n";
 	if (!RCSPAggregator::instance().readIni("config.ini"))
 	{
-		printf("Cannot read config file, so setting default values");
+		error << "Cannot read config file, so setting default values\n";
 		playerConfig.setDefault();
 	}
 
-	printf("- Restoring state\n");
+	info << "Restoring state\n";
 	StateSaver::instance().setFilename("state-save");
 	// State restoring is always after config reading, so not stored data will be default
 	if (StateSaver::instance().tryRestore())
 	{
-		printf("  restored\n");
+		info << "  restored\n";
 	} else {
-		printf("  restored failed\n");
+		error << "  restoring failed\n";
 		// setting player state to default
 		playerState.reset();
 	}
 
-	printf("- Initializing visual effects");
+	info << "Initializing visual effects\n";
 	m_leds.init(IOPins->getIOPin(1, 0), IOPins->getIOPin(0, 7), IOPins->getIOPin(0, 6));
 	m_leds.setColor(getTeamColor());
 	m_leds.blink(blinkPatterns.init);
 
 
-	printf("- Other initialization\n");
+	info << "Other initialization\n";
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.headSensors);
 
 	StateSaver::instance().runSaver(10000000);
 
-	printf("Head sensor ready to use\n");
+	info << "Head sensor ready to use\n";
 }
 
 void HeadSensor::resetToDefaults()
 {
-	printf("Resetting player configuration\n");
+	ScopedTag tag("reset");
+	info << "Resetting configuration to default\n";
 	m_leds.blink(blinkPatterns.anyCommand);
 	if (!RCSPAggregator::instance().readIni("config.ini"))
 	{
-		printf("Cannot read config file, so setting default values");
+		error << "Cannot read config file, so setting default values\ns";
 		playerConfig.setDefault();
 	}
 	playerState.reset();
@@ -93,7 +96,8 @@ void HeadSensor::resetToDefaults()
 
 void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
-	printf("Cought a shot: team %d, player %d, damage: %d\n", teamId, playerId, damage);
+	ScopedTag tag("shot-cb");
+	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage << "\n";
 	if (playerState.isAlive()) {
 
 		if (playerId == playerConfig.plyerMT2Id)
@@ -106,7 +110,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		}
 
 		playerState.damage(damage);
-		printf("health: %u, armor: %u\n", playerState.healthCurrent, playerState.armorCurrent);
+		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent << "\n";
 
 		// If it was last shoot
 		if (!playerState.isAlive())
@@ -124,9 +128,9 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		}
 	}
 	if (!playerState.isAlive()) {
-		printf("Player died\n");
+		info << "Player died\n";
 		m_leds.blink(blinkPatterns.death);
-		/// Notifying weapons
+		// Notifying weapons - do I need it here?
 		turnOffWeapons();
 	} else {
 		m_leds.blink(blinkPatterns.wound);
@@ -135,10 +139,11 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 
 void HeadSensor::playerRespawn()
 {
+	ScopedTag tag("respawn");
 	playerState.respawn();
 	m_leds.blink(blinkPatterns.respawn);
 	respawnWeapons();
-	printf("Player spawned\n");
+	info << "Player spawned\n";
 /*
 	std::function<void(void)> respawnFunction = [this] {
 		playerState.respawn();
@@ -151,28 +156,30 @@ void HeadSensor::playerRespawn()
 
 void HeadSensor::playerReset()
 {
+	ScopedTag tag("reset");
 	playerState.reset();
 	respawnWeapons();
-	printf("Player reseted\n");
+	info << "Player reseted\n";
 }
 
 void HeadSensor::playerKill()
 {
-	printf("Player killed\n");
+	ScopedTag tag("kill");
 	if (!playerState.isAlive())
 		return;
 	playerState.kill();
 	shotCallback(0, 0, 0);
 	dieWeapons();
-	//dieWeapons();
+	info << "Player killed\n";
 }
 
 void HeadSensor::dieWeapons()
 {
+	ScopedTag tag("die-weapons");
 	/// Notifying weapons
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		printf("Sending kill signal to weapons...\n");
+		info << "Sending kill signal to weapon...\n";
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie, false);
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie);
 	}
@@ -181,25 +188,28 @@ void HeadSensor::dieWeapons()
 void HeadSensor::respawnWeapons()
 {
 	/// Notifying weapons
+	ScopedTag tag("reset-weapons");
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		printf("Resetting weapon...\n");
+		info << "Resetting weapon...\n";
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleRespawn);
 	}
 }
 
 void HeadSensor::turnOffWeapons()
 {
+	ScopedTag tag("turn-off");
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		printf("Turning off weapon\n");
+		info << "Turning off weapon...";
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleTurnOff);
 	}
 }
 
 void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 {
-	printf("Registering weapon\n");
+	ScopedTag tag("register-weapon");
+	info << "Registering weapon\n";
 	weaponAddress.print();
 	auto it = playerState.weaponsList.weapons.find(weaponAddress);
 	if (it == playerState.weaponsList.weapons.end())
@@ -222,29 +232,31 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 
 void HeadSensor::setTeam(uint8_t teamId)
 {
-	printf("Setting team id\n");
+	ScopedTag tag("set-team");
+	info << "Setting team id\n";
 	playerConfig.teamId = teamId;
 	m_leds.setColor(getTeamColor());
 	m_leds.blink(blinkPatterns.anyCommand);
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		printf("Changing weapon team id to %u\n", teamId);
+		info << "Changing weapon team id to" << teamId << "\n";
 		RCSPStream::remotePullValue(*it, ConfigCodes::HeadSensor::Configuration::teamId);
 	}
 }
 
 void HeadSensor::addMaxHealth(int16_t delta)
 {
-	printf("Adding health: %d\n", delta);
+	ScopedTag tag("set-team");
+	info << "Adding health: " << delta << "\n";
 	if (delta < 0 && playerConfig.healthMax < -delta)
 	{
-		printf("Max health is %u, so can not add %d\n", playerConfig.healthMax, delta);
+		debug << "Max health is " << playerConfig.healthMax << ", so can not add " << delta << "\n";
 		return;
 	}
 	playerConfig.healthMax += delta;
 	if (delta < 0 && playerConfig.healthStart < -delta)
 	{
-		printf("Start health is %u, so can not add %d\n", playerConfig.healthStart, delta);
+		debug << "Start health is " << playerConfig.healthStart << ", so can not add " << delta << "\n";
 		return;
 	}
 	playerConfig.healthStart += delta;

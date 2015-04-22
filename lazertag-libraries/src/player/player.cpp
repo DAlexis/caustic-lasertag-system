@@ -7,18 +7,19 @@
 
 #include "logic/player-config-and-state.hpp"
 #include "head-sensor/parameters.hpp"
+#include "core/logging.hpp"
+
 //////////////////////
 // ConnectedWeaponsList
-
 void ConnectedWeaponsList::deserialize(void* source, OperationSize size)
 {
-	printf("Weapons list deserializing\n");
+	trace << "Weapons list deserializing\n";
 	void* cursor = source;
 	uint8_t newSize = 0;
 	deserializeAndInc(cursor, newSize);
 	if (size != sizeof(newSize) + newSize*sizeof(DeviceAddress))
 	{
-		printf("Deserializing weapons list: invalid data size\n");
+		error << "Deserializing weapons list: invalid data size\n";
 		return;
 	}
 	weapons.clear();
@@ -32,7 +33,7 @@ void ConnectedWeaponsList::deserialize(void* source, OperationSize size)
 
 void ConnectedWeaponsList::serialize(void* destination)
 {
-	printf("Weapons list serializing\n");
+	trace << "Weapons list serializing\n";
 	void* cursor = destination;
 	uint8_t size = weapons.size();
 

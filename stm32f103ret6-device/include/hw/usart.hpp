@@ -19,6 +19,7 @@ public:
 	void init(uint32_t baudrate);
 	void putChar(uint8_t ch);
 	int syncWrite(const char* ptr, int len);
+	int syncWrite(const char* ptr);
 	void asyncRead(char* buffer, char stop_char, int maxlen, USARTReadingDoneCallback callback, uint8_t need_echo);
 
 private:

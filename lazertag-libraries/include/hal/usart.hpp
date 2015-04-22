@@ -22,6 +22,7 @@ public:
 	virtual void init(uint32_t baudrate) = 0;
 	virtual void putChar(uint8_t ch) = 0;
 	virtual int syncWrite(const char* ptr, int len) = 0;
+	virtual int syncWrite(const char* ptr) = 0;
 	virtual void asyncRead(char* buffer, char stop_char, int maxlen, USARTReadingDoneCallback callback, uint8_t need_echo) = 0;
 };
 

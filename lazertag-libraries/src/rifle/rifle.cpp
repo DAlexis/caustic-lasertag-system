@@ -11,6 +11,7 @@
 #include "rcsp/broadcast.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
 #include "core/string-utils.hpp"
+#include "core/logging.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/console.hpp"
 #include "dev/sdcard-fs.hpp"

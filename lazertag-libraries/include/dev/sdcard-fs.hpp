@@ -28,7 +28,6 @@ public:
 	inline bool isLocked() const { return m_isLocked; }
 private:
 
-	//bool m_isMounted = false;
 	FATFS m_fatfs;
 	bool m_isLocked = false;
 
