@@ -52,7 +52,7 @@ public:
 			for (auto it = Loggers::tags.begin(); it != Loggers::tags.end(); it++)
 			{
 				Loggers::getUsart()->syncWrite(*it);
-				Loggers::getUsart()->syncWrite("/");
+				Loggers::getUsart()->syncWrite("|");
 			}
 			Loggers::getUsart()->syncWrite(" ");
 		}

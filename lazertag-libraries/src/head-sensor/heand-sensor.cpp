@@ -112,12 +112,10 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		playerState.damage(damage);
 		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent << "\n";
 
-		// If it was last shoot
-		if (!playerState.isAlive())
+		// If still is alive
+		if (playerState.isAlive())
 		{
-			dieWeapons();
-			StateSaver::instance().saveState();
-		} else {
+			m_leds.blink(blinkPatterns.wound);
 			for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 			{
 				RCSPStream stream;
@@ -125,15 +123,13 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 				stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
 				stream.send(*it, true, nullptr);
 			}
+		} else {
+			//Player was killed
+			info << "xx Player died\n";
+			dieWeapons();
+			m_leds.blink(blinkPatterns.death);
+			Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 500000);
 		}
-	}
-	if (!playerState.isAlive()) {
-		info << "Player died\n";
-		m_leds.blink(blinkPatterns.death);
-		// Notifying weapons - do I need it here?
-		turnOffWeapons();
-	} else {
-		m_leds.blink(blinkPatterns.wound);
 	}
 }
 
