@@ -5,8 +5,8 @@
  *      Author: alexey
  */
 
-#ifndef INCLUDE_HEAD_SENSOR_PARAMETERS_HPP_
-#define INCLUDE_HEAD_SENSOR_PARAMETERS_HPP_
+#ifndef INCLUDE_HEAD_SENSOR_RESOURCES_HPP_
+#define INCLUDE_HEAD_SENSOR_RESOURCES_HPP_
 
 #include "rcsp/RCSP-modem.hpp"
 #include "dev/rgb-leds.hpp"
@@ -65,4 +65,4 @@ struct HeadSensorPinoutMapping
 extern HeadSensorPackageTimings headSensorPackageTimings;
 extern BlinkPatterns blinkPatterns;
 
-#endif /* INCLUDE_HEAD_SENSOR_PARAMETERS_HPP_ */
+#endif /* INCLUDE_HEAD_SENSOR_RESOURCES_HPP_ */

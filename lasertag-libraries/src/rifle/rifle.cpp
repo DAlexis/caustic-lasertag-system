@@ -5,8 +5,8 @@
  *      Author: alexey
  */
 
+#include "rifle/resources.hpp"
 #include "rifle/rifle.hpp"
-#include "rifle/packages-timings.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "rcsp/broadcast.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
@@ -132,12 +132,12 @@ Rifle::Rifle()
 {
 }
 
-void Rifle::configure()
+void Rifle::configure(RiflePinoutMapping& pinout)
 {
 	ScopedTag tag("rifle-configure");
 	info << "Configuring buttons";
-	m_fireButton = ButtonsPool::instance().getButtonManager(fireButtonPort, fireButtonPin);
-	ButtonsPool::instance().setExti(fireButtonPort, fireButtonPin, true);
+	m_fireButton = ButtonsPool::instance().getButtonManager(pinout.fireButtonPort, pinout.fireButtonPin);
+	ButtonsPool::instance().setExti(pinout.fireButtonPort, pinout.fireButtonPin, true);
 	m_fireButton->setAutoRepeat(config.automaticAllowed);
 	m_fireButton->setRepeatPeriod(config.firePeriod);
 	m_fireButton->setCallback(std::bind(&Rifle::makeShot, this, std::placeholders::_1));
@@ -145,7 +145,7 @@ void Rifle::configure()
 
 	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_fireButton), false, 5000);
 
-	m_reloadButton = ButtonsPool::instance().getButtonManager(reloadButtonPort, reloadButtonPin);
+	m_reloadButton = ButtonsPool::instance().getButtonManager(pinout.reloadButtonPort, pinout.reloadButtonPin);
 	m_reloadButton->setAutoRepeat(false);
 	m_reloadButton->setRepeatPeriod(2*config.firePeriod);
 	m_reloadButton->setCallback(std::bind(&Rifle::reload, this, std::placeholders::_1));
@@ -153,16 +153,16 @@ void Rifle::configure()
 
 	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
 
-	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(automaticButtonPort, automaticButtonPin);
+	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.automaticButtonPort, pinout.automaticButtonPin);
 	m_automaticFireSwitch->turnOff();
 
-	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(semiAutomaticButtonPort, semiAutomaticButtonPin);
+	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.semiAutomaticButtonPort, pinout.semiAutomaticButtonPin);
 	m_semiAutomaticFireSwitch->turnOff();
 
 	m_mt2Transmitter.init();
 	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
 	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
-	m_mt2Transmitter.setChannel(3);
+	m_mt2Transmitter.setChannel(pinout.fireChannel);
 
 
 	info << "Mounting sd-card\n";

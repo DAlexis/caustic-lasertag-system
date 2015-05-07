@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include <head-sensor/parameters.hpp>
+#include "head-sensor/resources.hpp"
 #include "head-sensor/head-sensor.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "dev/console.hpp"

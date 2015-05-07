@@ -8,6 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 
+#include <head-sensor/resources.hpp>
 #include "logic/player-config-and-state.hpp"
 #include "logic/device.hpp"
 #include "head-sensor/kill-zones.hpp"
@@ -15,8 +16,6 @@
 #include "rcsp/RCSP-state-saver.hpp"
 #include "rcsp/broadcast.hpp"
 #include "dev/rgb-leds.hpp"
-#include "head-sensor/parameters.hpp"
-
 #include <set>
 
 class HeadSensor

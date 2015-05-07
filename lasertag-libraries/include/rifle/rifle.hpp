@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 
 #include "rifle/rifle-config-and-state.hpp"
+#include "rifle/resources.hpp"
 #include "logic/device.hpp"
 #include "rcsp/RCSP-modem.hpp"
 #include "dev/buttons.hpp"
@@ -45,7 +46,7 @@ class Rifle
 public:
 	Rifle();
 
-	void configure();
+	void configure(RiflePinoutMapping& pinout);
 	void registerWeapon();
 
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
@@ -60,21 +61,6 @@ public:
 	//DeviceParameters device;
 
 	PlayerDisplayableData playerDisplayable{config.headSensorAddr};
-
-	/////////
-	// Buttons mapping
-	// Default (rifle-rev.1)
-	uint8_t fireButtonPort   =   0;
-	uint8_t fireButtonPin    =   0;
-
-	uint8_t reloadButtonPort =   1;
-	uint8_t reloadButtonPin  =   2;
-
-	uint8_t automaticButtonPort      =   2;
-	uint8_t automaticButtonPin       =   7;
-
-	uint8_t semiAutomaticButtonPort  =   1;
-	uint8_t semiAutomaticButtonPin   =   9;
 
 
 private:

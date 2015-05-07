@@ -5,6 +5,6 @@
  *      Author: alexey
  */
 
-#include "rifle/packages-timings.hpp"
+#include "rifle/resources.hpp"
 
 RiflePackageTimings riflePackageTimings;

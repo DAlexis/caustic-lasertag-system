@@ -88,8 +88,9 @@ int main(int argc, char* argv[])
 
 #if defined(DEVICE_RIFLE)
 	Rifle *rifle = nullptr;
+	RiflePinoutMapping pinout;
 	rifle = new Rifle;
-	rifle->configure();
+	rifle->configure(pinout);
 #elif defined(DEVICE_HEAD_SENSOR)
 	HeadSensor *headSensor = nullptr;
 	HeadSensorPinoutMapping pinout;

@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include "head-sensor/parameters.hpp"
+#include "head-sensor/resources.hpp"
 
 HeadSensorPackageTimings headSensorPackageTimings;
 BlinkPatterns blinkPatterns;

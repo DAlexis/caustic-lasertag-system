@@ -5,8 +5,8 @@
  *      Author: alexey
  */
 
+#include "head-sensor/resources.hpp"
 #include "logic/player-config-and-state.hpp"
-#include "head-sensor/parameters.hpp"
 #include "core/logging.hpp"
 
 //////////////////////
