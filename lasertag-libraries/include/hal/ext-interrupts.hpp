@@ -22,6 +22,14 @@ public:
 	virtual void init(uint8_t portNumber) = 0;
 };
 
+class IEXTISPool
+{
+public:
+	virtual ~IEXTISPool() {}
+	virtual IExternalInterruptManager* getEXTI(uint8_t pinNumber) = 0;
+	virtual IExternalInterruptManager* getEXTI(uint8_t portNumber, uint8_t pinNumber) = 0;
+};
+
 class ExternalInterruptManagerBase : public IExternalInterruptManager
 {
 public:
@@ -38,11 +46,17 @@ protected:
 	uint8_t m_portNumber, m_pinNumber;
 };
 
-class IEXTISPool
+
+class EXTISPoolBase : public IEXTISPool
 {
 public:
-	virtual ~IEXTISPool() {}
-	virtual ExternalInterruptManagerBase* getEXTI(uint8_t pinNumber) = 0;
+	virtual IExternalInterruptManager* getEXTI(uint8_t pinNumber) = 0;
+	IExternalInterruptManager* getEXTI(uint8_t portNumber, uint8_t pinNumber)
+	{
+		IExternalInterruptManager* exti = getEXTI(pinNumber);
+		exti->init(portNumber);
+		return exti;
+	}
 };
 
 extern IEXTISPool* EXTIS;

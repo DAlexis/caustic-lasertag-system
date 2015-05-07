@@ -15,6 +15,7 @@
 #include "rcsp/RCSP-state-saver.hpp"
 #include "rcsp/broadcast.hpp"
 #include "dev/rgb-leds.hpp"
+#include "head-sensor/parameters.hpp"
 
 #include <set>
 
@@ -22,7 +23,7 @@ class HeadSensor
 {
 public:
 	HeadSensor();
-	void configure();
+	void configure(HeadSensorPinoutMapping& pinout);
 
 	PlayerConfiguration playerConfig;
 	PlayerState playerState{&playerConfig};

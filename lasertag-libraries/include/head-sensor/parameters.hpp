@@ -27,6 +27,41 @@ public:
 	const RGBLeds::BlinkPattern respawn{100000, 100000, 2};
 };
 
+struct HeadSensorPinoutMapping
+{
+	bool zone1Enabled = true;
+	uint8_t zone1Port = 0;
+	uint8_t zone1Pin = 0;
+
+	bool zone2Enabled = true;
+	uint8_t zone2Port = 0;
+	uint8_t zone2Pin = 1;
+
+	bool zone3Enabled = true;
+	uint8_t zone3Port = 0;
+	uint8_t zone3Pin = 2;
+
+	bool zone4Enabled = true;
+	uint8_t zone4Port = 0;
+	uint8_t zone4Pin = 3;
+
+	bool zone5Enabled = true;
+	uint8_t zone5Port = 0;
+	uint8_t zone5Pin = 4;
+
+	bool zone6Enabled = true;
+	uint8_t zone6Port = 0;
+	uint8_t zone6Pin = 5;
+
+	bool ledsEnabled = true;
+	uint8_t redPort = 1;
+	uint8_t redPin = 0;
+	uint8_t greenPort = 0;
+	uint8_t greenPin = 7;
+	uint8_t bluePort = 0;
+	uint8_t bluePin = 6;
+};
+
 extern HeadSensorPackageTimings headSensorPackageTimings;
 extern BlinkPatterns blinkPatterns;
 

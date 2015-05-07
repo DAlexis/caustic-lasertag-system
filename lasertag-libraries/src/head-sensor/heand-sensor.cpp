@@ -21,14 +21,13 @@ HeadSensor::HeadSensor()
 	//m_weapons.insert({1,1,1});
 }
 
-void HeadSensor::configure()
+void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 {
 	ScopedTag tag("head-init");
-	IExternalInterruptManager *exti = EXTIS->getEXTI(0);
-	exti->init(0);
-	exti->turnOn();
 
-	debug.enable();
+	//debug.enable();
+
+	info << "Configuring kill zones\n";
 	m_killZonesManager.setCallback(std::bind(
 			&HeadSensor::shotCallback,
 			this,
@@ -37,7 +36,19 @@ void HeadSensor::configure()
 			std::placeholders::_3,
 			nullptr
 		));
-	m_killZonesManager.enableKillZone(0, exti);
+
+	if (pinout.zone1Enabled)
+		m_killZonesManager.enableKillZone(0, EXTIS->getEXTI(pinout.zone1Port, pinout.zone1Pin));
+	if (pinout.zone2Enabled)
+		m_killZonesManager.enableKillZone(1, EXTIS->getEXTI(pinout.zone2Port, pinout.zone2Pin));
+	if (pinout.zone3Enabled)
+		m_killZonesManager.enableKillZone(2, EXTIS->getEXTI(pinout.zone3Port, pinout.zone3Pin));
+	if (pinout.zone4Enabled)
+		m_killZonesManager.enableKillZone(3, EXTIS->getEXTI(pinout.zone4Port, pinout.zone4Pin));
+	if (pinout.zone5Enabled)
+		m_killZonesManager.enableKillZone(4, EXTIS->getEXTI(pinout.zone5Port, pinout.zone5Pin));
+	if (pinout.zone6Enabled)
+		m_killZonesManager.enableKillZone(5, EXTIS->getEXTI(pinout.zone6Port, pinout.zone6Pin));
 	//m_mainSensor.enableDebug(true);
 
 	info << "Mounting sd-card\n";
@@ -73,7 +84,11 @@ void HeadSensor::configure()
 	}
 
 	info << "Initializing visual effects\n";
-	m_leds.init(IOPins->getIOPin(1, 0), IOPins->getIOPin(0, 7), IOPins->getIOPin(0, 6));
+	m_leds.init(
+			IOPins->getIOPin(pinout.redPort, pinout.redPin),
+			IOPins->getIOPin(pinout.greenPort, pinout.greenPin),
+			IOPins->getIOPin(pinout.bluePort, pinout.bluePin)
+			);
 	m_leds.setColor(getTeamColor());
 	m_leds.blink(blinkPatterns.init);
 

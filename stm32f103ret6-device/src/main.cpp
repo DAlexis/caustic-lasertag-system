@@ -92,8 +92,9 @@ int main(int argc, char* argv[])
 	rifle->configure();
 #elif defined(DEVICE_HEAD_SENSOR)
 	HeadSensor *headSensor = nullptr;
+	HeadSensorPinoutMapping pinout;
 	headSensor = new HeadSensor;
-	headSensor->configure();
+	headSensor->configure(pinout);
 #else
 	#error "Device type not selected!"
 #endif
