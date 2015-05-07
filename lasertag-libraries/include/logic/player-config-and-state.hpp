@@ -29,7 +29,7 @@ class PlayerConfiguration
 public:
 	PlayerConfiguration();
 	void setDefault();
-	/// @todo [Refactor!] Add this values to another state saveror any other way
+	/// @todo [Refactor!] Add this values to another state saver or any other way
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, healthMax);
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, armorMax);
 
@@ -53,11 +53,18 @@ public:
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, uint8_t, plyerMT2Id);
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, uint8_t, teamId);
 
-	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot1MaxWeight);
-	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot2MaxWeight);
-	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot3MaxWeight);
-	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot4MaxWeight);
-	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, slot5MaxWeight);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, slot1MaxWeight);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, slot2MaxWeight);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, slot3MaxWeight);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, slot4MaxWeight);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, slot5MaxWeight);
+
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, FloatParameter, zone1DamageCoeff);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, FloatParameter, zone2DamageCoeff);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, FloatParameter, zone3DamageCoeff);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, FloatParameter, zone4DamageCoeff);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, FloatParameter, zone5DamageCoeff);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, FloatParameter, zone6DamageCoeff);
 };
 
 class PlayerState

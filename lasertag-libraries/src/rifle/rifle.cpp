@@ -134,6 +134,8 @@ Rifle::Rifle()
 
 void Rifle::configure()
 {
+	ScopedTag tag("rifle-configure");
+	info << "Configuring buttons";
 	m_fireButton = ButtonsPool::instance().getButtonManager(fireButtonPort, fireButtonPin);
 	ButtonsPool::instance().setExti(fireButtonPort, fireButtonPin, true);
 	m_fireButton->setAutoRepeat(config.automaticAllowed);
@@ -163,29 +165,29 @@ void Rifle::configure()
 	m_mt2Transmitter.setChannel(3);
 
 
-	printf("- Mounting sd-card\n");
+	info << "Mounting sd-card\n";
 	if (!SDCardFS::instance().init())
-		printf("Error during mounting sd-card!\n");
+		error << "Error during mounting sd-card!\n";
 
 
-	printf("- Wav player initialization\n");
+	info << "Wav player initialization\n";
 	WavPlayer::instance().init();
 
-	printf("- Package sender initialization\n");
+	info << "Package sender initialization\n";
 	RCSPModem::instance().init();
 
-	printf("- Loading default config\n");
+	info << "Loading default config\n";
 	//loadConfig();
 	RCSPAggregator::instance().readIni("config.ini");
 
-	printf("- Restoring state\n");
+	info << "Restoring state\n";
 	StateSaver::instance().setFilename("state-save");
 	/// @todo Chack that rife is turned on/off correctly anway
 	if (StateSaver::instance().tryRestore())
 	{
-		printf("  restored\n");
+		info  << "  restored\n";
 	} else {
-		printf("  restoring failed\n");
+		error << "  restoring failed\n";
 		rifleReset();
 	}
 
@@ -194,10 +196,10 @@ void Rifle::configure()
 
 	// Line for DEBUG purpose only
 	//rifleTurnOn();
-	printf("- Looking for sound files...\n");
+	info << "Looking for sound files...\n";
 	initSounds();
 
-	printf("- Other initialization\n");
+	info << "Other initialization\n";
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.rifles);
 
@@ -209,8 +211,7 @@ void Rifle::configure()
 
 	updatePlayerState();
 
-	printf("Rifle ready to use\n");
-
+	info << "Rifle ready to use\n";
 }
 
 void Rifle::loadConfig()
@@ -236,6 +237,7 @@ void Rifle::initSounds()
 
 void Rifle::makeShot(bool isFirst)
 {
+	ScopedTag tag("shot");
 	/// @todo Add support of absolutely non-automatic devices
 	if (isSafeSwitchSelected())
 		return;
@@ -259,10 +261,10 @@ void Rifle::makeShot(bool isFirst)
 		return;
 
 	state.bulletsInMagazineCurrent--;
+	info << "<----<< Sending bullet with damage " << config.damageMin << "\n";
 	m_mt2Transmitter.shot(config.damageMin);
 	m_shootingSound.play();
 
-	printf("--- shot --->\n");
 
 	if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
 		m_fireButton->setAutoRepeat(false);
@@ -273,6 +275,7 @@ void Rifle::makeShot(bool isFirst)
 
 void Rifle::reload(bool)
 {
+	ScopedTag tag("reload");
 	uint32_t time = systemClock->getTime();
 	// Preventing reloading while reloading (for those who very like reloading)
 	/// @todo [low] Do someting to prevent second reloading if user pressed reload key and after much time released with contact bounce
@@ -282,13 +285,14 @@ void Rifle::reload(bool)
 	if (state.magazinesCountCurrent == 0)
 	{
 		m_noMagazines.play();
-		printf("No magazines!\n");
+		info << "No magazines left\n";
 		return;
 	}
 
 	state.lastReloadTime = time;
 
 	m_reloadingSound.play();
+	info << "reloading\n";
 	printf("Reloading...\n");
 	// So reloading
 	state.magazinesCountCurrent--;
@@ -322,7 +326,8 @@ void Rifle::updatePlayerState()
 
 void Rifle::rifleTurnOff()
 {
-	printf("Rifle disabled\n");
+	ScopedTag tag("rifle-turn-off");
+	info << "Rifle turned OFF\n";
 	isEnabled = false;
 	m_fireButton->turnOff();
 	m_reloadButton->turnOff();
@@ -330,7 +335,8 @@ void Rifle::rifleTurnOff()
 
 void Rifle::rifleTurnOn()
 {
-	printf("Rifle enabled\n");
+	ScopedTag tag("rifle-turn-on");
+	info << "Rifle turned ON\n";
 	isEnabled = true;
 	m_fireButton->turnOn();
 	m_reloadButton->turnOn();
@@ -338,19 +344,25 @@ void Rifle::rifleTurnOn()
 
 void Rifle::rifleReset()
 {
+	ScopedTag tag("rifle-reset");
 	state.reset();
+	info << "Rifle resetted\n";
 }
 
 void Rifle::rifleRespawn()
 {
+	ScopedTag tag("rifle-respawn");
 	rifleReset();
 	rifleTurnOn();
 	updatePlayerState();
 	m_respawnSound.play();
+	info << "Rifle respawned\n";
 }
 
 void Rifle::rifleDie()
 {
+	ScopedTag tag("rifle-die");
+	info << "\'Rifle die\' activated\n";
 	if (!isEnabled)
 		return;
 
@@ -360,10 +372,12 @@ void Rifle::rifleDie()
 
 void Rifle::registerWeapon()
 {
+	ScopedTag tag("rifle-register");
+
 	if (m_registerWeaponPAckageId != 0)
 		return;
 
-	printf("Registering weapon...\n");
+	info << "Registering weapon...\n";
 	m_registerWeaponPAckageId = RCSPStream::remoteCall(
 			config.headSensorAddr,
 			ConfigCodes::HeadSensor::Functions::registerWeapon,

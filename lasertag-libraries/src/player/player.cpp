@@ -84,6 +84,13 @@ void PlayerConfiguration::setDefault()
 	slot3MaxWeight = UINT16_MAX;
 	slot4MaxWeight = UINT16_MAX;
 	slot5MaxWeight = UINT16_MAX;
+
+	zone1DamageCoeff = 1.0;
+	zone2DamageCoeff = 1.0;
+	zone3DamageCoeff = 1.0;
+	zone4DamageCoeff = 1.0;
+	zone5DamageCoeff = 1.0;
+	zone6DamageCoeff = 1.0;
 }
 
 bool PlayerState::damage(uint8_t damage)

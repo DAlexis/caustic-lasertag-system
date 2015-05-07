@@ -10,10 +10,10 @@
 
 #include "logic/player-config-and-state.hpp"
 #include "logic/device.hpp"
+#include "head-sensor/kill-zones.hpp"
 #include "rcsp/RCSP-modem.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
 #include "rcsp/broadcast.hpp"
-#include "dev/miles-tag-2.hpp"
 #include "dev/rgb-leds.hpp"
 
 #include <set>
@@ -43,14 +43,24 @@ private:
 
 	uint8_t getTeamColor();
 
-	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage);
+	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage, const float* pZoneModifier = nullptr);
 	void dieWeapons();
 	void respawnWeapons();
 	void turnOffWeapons();
 
 	RGBLeds m_leds;
 
-	MilesTag2Receiver m_mainSensor;
+	//MilesTag2Receiver m_killZone1;
+
+	KillZonesManager m_killZonesManager{
+		playerConfig.zone1DamageCoeff,
+		playerConfig.zone2DamageCoeff,
+		playerConfig.zone3DamageCoeff,
+		playerConfig.zone4DamageCoeff,
+		playerConfig.zone5DamageCoeff,
+		playerConfig.zone6DamageCoeff
+	};
+
 };
 
 

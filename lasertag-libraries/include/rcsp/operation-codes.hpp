@@ -27,6 +27,7 @@
 
 
 using UintParameter = uint16_t;
+using FloatParameter = float;
 using PlayerId = uint8_t[3];
 
 namespace ConfigCodes
@@ -140,6 +141,14 @@ namespace ConfigCodes
 			PAR_CODE(slot3MaxWeight,    1043)
 			PAR_CODE(slot4MaxWeight,    1044)
 			PAR_CODE(slot5MaxWeight,    1045)
+
+
+			PAR_CODE(zone1DamageCoeff,    1500)
+			PAR_CODE(zone2DamageCoeff,    1501)
+			PAR_CODE(zone3DamageCoeff,    1502)
+			PAR_CODE(zone4DamageCoeff,    1503)
+			PAR_CODE(zone5DamageCoeff,    1504)
+			PAR_CODE(zone6DamageCoeff,    1505)
 		}
 
 		namespace State

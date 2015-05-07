@@ -28,8 +28,16 @@ void HeadSensor::configure()
 	exti->init(0);
 	exti->turnOn();
 
-	m_mainSensor.setShortMessageCallback(std::bind(&HeadSensor::shotCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-	m_mainSensor.init(exti);
+	debug.enable();
+	m_killZonesManager.setCallback(std::bind(
+			&HeadSensor::shotCallback,
+			this,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			nullptr
+		));
+	m_killZonesManager.enableKillZone(0, exti);
 	//m_mainSensor.enableDebug(true);
 
 	info << "Mounting sd-card\n";
@@ -94,9 +102,10 @@ void HeadSensor::resetToDefaults()
 }
 
 
-void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage)
+void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage, const float* pZoneModifier)
 {
 	ScopedTag tag("shot-cb");
+	float zoneModifier = pZoneModifier ? *pZoneModifier : 1.0;
 	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage << "\n";
 	if (playerState.isAlive()) {
 
@@ -128,7 +137,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 			info << "xx Player died\n";
 			dieWeapons();
 			m_leds.blink(blinkPatterns.death);
-			Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 500000);
+			Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
 		}
 	}
 }
