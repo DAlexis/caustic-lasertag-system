@@ -24,6 +24,8 @@ KillZonesManager::KillZonesManager(
 	m_zoneDamageCoeff[3] = &zone4DamageCoeff;
 	m_zoneDamageCoeff[4] = &zone5DamageCoeff;
 	m_zoneDamageCoeff[5] = &zone6DamageCoeff;
+	for (int i=0; i<killZonesMaxCount; i++)
+		m_vibro[i] = nullptr;
 }
 
 void KillZonesManager::setCallback(DamageCallback callback)
@@ -31,8 +33,15 @@ void KillZonesManager::setCallback(DamageCallback callback)
 	m_callback = callback;
 }
 
-void KillZonesManager::enableKillZone(uint8_t zone, IExternalInterruptManager *exti)
+void KillZonesManager::enableKillZone(uint8_t zone, IExternalInterruptManager *exti, IIOPin* vibro)
 {
+	if (vibro)
+	{
+		vibro->switchToOutput();
+		vibro->reset();
+	}
+	m_vibro[zone] = vibro;
+
 	m_killZone[zone].setShortMessageCallback(std::bind(
 			&KillZonesManager::IRReceiverShotCallback,
 			this,
@@ -71,4 +80,21 @@ void KillZonesManager::callDamageCallback()
 		return;
 	}
 	m_callback(m_teamId, m_playerId, m_maxDamage);
+}
+
+void KillZonesManager::vibrate(uint8_t zone)
+{
+	if (!m_vibro[zone])
+		return;
+
+	m_vibro[zone]->set();
+	Scheduler::instance().addTask(
+		[this, zone]() {
+			m_vibro[zone]->reset();
+		},
+		true,
+		0,
+		0,
+		vibroPeriod
+	);
 }

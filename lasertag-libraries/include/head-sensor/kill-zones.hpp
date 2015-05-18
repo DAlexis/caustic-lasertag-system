@@ -9,6 +9,7 @@
 #define INCLUDE_HEAD_SENSOR_KILL_ZONES_HPP_
 
 #include "dev/miles-tag-2.hpp"
+#include "hal/io-pins.hpp"
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
 
@@ -19,6 +20,7 @@ class KillZonesManager
 public:
 	constexpr static uint8_t killZonesMaxCount = 6;
 	constexpr static uint8_t callbackDelay = 50000;
+	constexpr static uint32_t vibroPeriod = 500000;
 	KillZonesManager(const FloatParameter& zone1DamageCoeff,
 		const FloatParameter& zone2DamageCoeff,
 		const FloatParameter& zone3DamageCoeff,
@@ -27,15 +29,17 @@ public:
 		const FloatParameter& zone6DamageCoeff
 	);
 	KillZonesManager(const KillZonesManager&) = delete;
-	void enableKillZone(uint8_t zone, IExternalInterruptManager *exti);
+	void enableKillZone(uint8_t zone, IExternalInterruptManager *exti, IIOPin* vibro = nullptr);
 	void setCallback(DamageCallback callback);
 
 private:
 	void callDamageCallback();
 	void IRReceiverShotCallback(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage);
+	void vibrate(uint8_t zone);
 
 	const FloatParameter* m_zoneDamageCoeff[killZonesMaxCount];
 	MilesTag2Receiver m_killZone[killZonesMaxCount];
+	IIOPin* m_vibro[killZonesMaxCount];
 	DamageCallback m_callback = nullptr;
 
 	bool m_damageCbScheduled = false;
