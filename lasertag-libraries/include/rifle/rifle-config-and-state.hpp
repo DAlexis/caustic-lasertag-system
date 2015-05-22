@@ -29,33 +29,8 @@ public:
 	RifleConfiguration();
 
 	void setDefault();
-
-	struct ReloadAction
-	{
-		constexpr static uint8_t shutterOnly        = 0;  ///< Disort the shutter
-		constexpr static uint8_t magazineAndShutter = 1;  ///< Changing magazine (depends on RifleMagazineType) and disort the shutter
-	};
-
-	struct ReloadMode
-	{
-		constexpr static uint8_t manual = 0;
-		constexpr static uint8_t automatic = 1;
-	};
-
-	struct MagazineType
-	{
-		constexpr static uint8_t unchangeable   = 0;    ///< Magazine does not really exists
-		constexpr static uint8_t oneReplaceable = 1;    ///< One magazine that can be disconnected
-		constexpr static uint8_t twoReplaceable = 2;    ///< Two magazines that should be swapped
-		constexpr static uint8_t intellectual   = 3;    ///< Magazines contains MCU and interface
-	};
-
-	struct FireMode
-	{
-		constexpr static uint8_t single        = 0;     ///< Disort the shutter after every shot
-		constexpr static uint8_t semiAutomatic = 1;     ///< One press - one shot and no more
-		constexpr static uint8_t Automatic     = 2;     ///< One press - many shots
-	};
+	bool isAutoReloading();
+	bool isReloadingByDistortingTheBolt();
 
 	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, slot);
 	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, weightInSlot);
@@ -71,9 +46,12 @@ public:
 	PAR_ST(ConfigCodes::Rifle::Configuration, bool, semiAutomaticAllowed);
 	PAR_ST_R(ConfigCodes::Rifle::Configuration, bool, automaticAllowed);
 
-	PAR_ST(ConfigCodes::Rifle::Configuration, uint8_t, magazineType);
-	PAR_ST(ConfigCodes::Rifle::Configuration, uint8_t, reloadAction);
-	PAR_ST(ConfigCodes::Rifle::Configuration, uint8_t, autoReload);
+	
+	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadIsMagazineSmart);
+	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadNeedMagDisconnect);
+	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadNeedMagChange);
+	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadNeedBolt);
+	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadPlaySound);
 
 	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountStart);
 	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountMax);

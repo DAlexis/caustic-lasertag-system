@@ -55,21 +55,26 @@ void ButtonManager::turnOff()
 	m_isEnabled = false;
 }
 
+void ButtonManager::setPressedState(bool pressedState)
+{
+	m_pressedState = pressedState;
+}
+
 bool ButtonManager::state()
 {
-	return !m_inputInterrogator->state();
+	return m_pressedState ? m_inputInterrogator->state() : !m_inputInterrogator->state();
 }
 
 void ButtonManager::extiCallback(bool state)
 {
 	if (wasBounce()) return;
 	uint32_t time = systemClock->getTime();
-	if (state == false && m_lastState == true && time - m_lastPressTime >= m_repeatPeriod) {
+	if (state == m_pressedState && m_isFirst == !m_pressedState && time - m_lastPressTime >= m_repeatPeriod) {
 		m_extiDetected = true;
 	}
-	if (state == true) {
+	if (state == !m_pressedState) {
 		// Button depressed
-		m_lastState = true;
+		m_isFirst = !m_pressedState;
 	}
 }
 
@@ -78,7 +83,7 @@ void ButtonManager::interrogate()
 	if (!m_isEnabled) return;
 	if (wasBounce()) return;
 
-	if (m_inputInterrogator->state() == false || m_extiDetected == true)
+	if (m_inputInterrogator->state() == m_pressedState || m_extiDetected == true)
 	{
 		// Button is pressed
 		uint32_t time = systemClock->getTime();
@@ -89,25 +94,32 @@ void ButtonManager::interrogate()
 			{
 				// It was enough time since last call
 				m_lastPressTime = time;
-				m_callback(m_lastState);
-				m_lastState = false;
+				m_callback(m_isFirst);
+				m_pressedAndNotDepressed = true;
+				m_isFirst = false;
 			}
 			// It was NOT enough time since last call
 		} else {
 			// Auto-repeating is disabled
-			if (time - m_lastPressTime >= m_repeatPeriod && m_lastState == true)
+			if (time - m_lastPressTime >= m_repeatPeriod && m_isFirst == true)
 			{
 				// It was enough time since last call
 				// Button was suddenly pressed
-				m_lastState = false;
+				m_isFirst = false;
 				m_lastPressTime = time;
 				m_callback(true);
+				m_pressedAndNotDepressed = true;
 			}
 		}
 	}
-	if (m_inputInterrogator->state() == true) {
+	if (m_inputInterrogator->state() == !m_pressedState) {
 		// Button depressed
-		m_lastState = true;
+		m_isFirst = true;
+		if (m_pressedAndNotDepressed) {
+			m_pressedAndNotDepressed = false;
+			if (m_depressCallback)
+				m_depressCallback();
+		}
 	}
 	m_extiDetected = false;
 }

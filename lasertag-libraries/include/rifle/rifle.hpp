@@ -64,10 +64,25 @@ public:
 
 
 private:
+	struct WeaponState
+	{
+		constexpr static uint8_t magazineEmpty = 0;
+		constexpr static uint8_t magazineRemoved = 1;
+		constexpr static uint8_t magazineReturned = 2;
+		constexpr static uint8_t otherMagazineInserted = 3;
+		constexpr static uint8_t reloading = 4;
+		constexpr static uint8_t ready = 5;
+
+	};
+
 	void loadConfig();
 	void initSounds();
 	void makeShot(bool isFirst);
-	void reload(bool isFirst);
+	void distortBolt(bool isFirst);
+	void magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst);
+	uint8_t getCurrentMagazineNumber();
+
+	void reloadAndPlay();
 
 	bool isReloading();
 	bool isSafeSwitchSelected();
@@ -80,6 +95,8 @@ private:
 	ButtonManager* m_reloadButton = nullptr;
 	ButtonManager* m_automaticFireSwitch = nullptr;
 	ButtonManager* m_semiAutomaticFireSwitch = nullptr;
+	ButtonManager* m_magazine1Sensor = nullptr;
+	ButtonManager* m_magazine2Sensor = nullptr;
 
 	MilesTag2Transmitter m_mt2Transmitter;
 
@@ -91,6 +108,9 @@ private:
 	SoundPlayer m_dieSound;
 
 	PackageId m_registerWeaponPAckageId = 0;
+
+	uint8_t m_state = WeaponState::ready;
+	uint8_t m_currentMagazineNumber = 0; ///< zero means no magazine
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

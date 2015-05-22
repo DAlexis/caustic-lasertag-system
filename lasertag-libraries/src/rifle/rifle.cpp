@@ -81,6 +81,21 @@ RifleConfiguration::RifleConfiguration()
 	setDefault();
 }
 
+bool RifleConfiguration::isAutoReloading()
+{
+	return (!reloadIsMagazineSmart
+			&& !reloadNeedMagDisconnect
+			&& !reloadNeedMagChange
+			&& !reloadNeedBolt);
+}
+
+bool RifleConfiguration::isReloadingByDistortingTheBolt()
+{
+	return (!reloadNeedMagDisconnect
+			&& !reloadNeedMagChange
+			&& reloadNeedBolt);
+}
+
 void RifleConfiguration::setDefault()
 {
 	slot = 1;
@@ -98,9 +113,11 @@ void RifleConfiguration::setDefault()
 	semiAutomaticAllowed = true;
 	automaticAllowed = true;
 
-	magazineType = MagazineType::unchangeable;
-	reloadAction = ReloadAction::shutterOnly;
-	autoReload = ReloadMode::automatic;
+	reloadIsMagazineSmart = false;
+	reloadNeedMagDisconnect = false;
+	reloadNeedMagChange = false;
+	reloadNeedBolt = false;
+	reloadPlaySound = true;
 
 	magazinesCountMax = 10;
 	magazinesCountStart = magazinesCountMax;
@@ -135,7 +152,7 @@ Rifle::Rifle()
 void Rifle::configure(RiflePinoutMapping& pinout)
 {
 	ScopedTag tag("rifle-configure");
-	info << "Configuring buttons";
+	info << "Configuring buttons" << "\n";
 	m_fireButton = ButtonsPool::instance().getButtonManager(pinout.fireButtonPort, pinout.fireButtonPin);
 	ButtonsPool::instance().setExti(pinout.fireButtonPort, pinout.fireButtonPin, true);
 	m_fireButton->setAutoRepeat(config.automaticAllowed);
@@ -148,7 +165,7 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	m_reloadButton = ButtonsPool::instance().getButtonManager(pinout.reloadButtonPort, pinout.reloadButtonPin);
 	m_reloadButton->setAutoRepeat(false);
 	m_reloadButton->setRepeatPeriod(2*config.firePeriod);
-	m_reloadButton->setCallback(std::bind(&Rifle::reload, this, std::placeholders::_1));
+	m_reloadButton->setCallback(std::bind(&Rifle::distortBolt, this, std::placeholders::_1));
 	m_reloadButton->turnOn();
 
 	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
@@ -158,6 +175,28 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 
 	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.semiAutomaticButtonPort, pinout.semiAutomaticButtonPin);
 	m_semiAutomaticFireSwitch->turnOff();
+
+	/// @todo Add magazineSensor1,2Enabled field to pinout
+	m_magazine1Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine1SensorPort, pinout.magazine1SensorPin);
+	m_magazine1Sensor->setAutoRepeat(false);
+	m_magazine1Sensor->setRepeatPeriod(config.firePeriod);
+	m_magazine1Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 1, std::placeholders::_1));
+	m_magazine1Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 1, true));
+	m_magazine1Sensor->turnOn();
+	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_magazine1Sensor), false, 50000);
+
+	m_magazine2Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine2SensorPort, pinout.magazine2SensorPin);
+	m_magazine2Sensor->setAutoRepeat(false);
+	m_magazine2Sensor->setRepeatPeriod(config.firePeriod);
+	m_magazine2Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 2, std::placeholders::_1));
+	m_magazine2Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 2, true));
+	m_magazine2Sensor->turnOn();
+	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_magazine2Sensor), false, 50000);
+
+	m_currentMagazineNumber = getCurrentMagazineNumber();
+	info << "Magazine inserted: " << m_currentMagazineNumber << "\n";
+	if (m_currentMagazineNumber == 0)
+		m_state = WeaponState::magazineRemoved;
 
 	m_mt2Transmitter.init();
 	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
@@ -238,66 +277,177 @@ void Rifle::initSounds()
 void Rifle::makeShot(bool isFirst)
 {
 	ScopedTag tag("shot");
-	/// @todo Add support of absolutely non-automatic devices
-	if (isSafeSwitchSelected())
-		return;
-
-	// Preventing reloading while reloading (for those who very like reloading)
-	if (isReloading())
-		return;
-
-	// Check remaining bullets
-	if (state.bulletsInMagazineCurrent == 0)
+	switch(m_state)
 	{
+	case WeaponState::magazineReturned:
+	case WeaponState::ready:
+		if (isSafeSwitchSelected())
+			return;
+
+		if (!isFirst && !config.automaticAllowed)
+			return;
+
+		if (state.bulletsInMagazineCurrent != 0)
+		{
+			state.bulletsInMagazineCurrent--;
+			info << "<----<< Sending bullet with damage " << config.damageMin << "\n";
+			m_mt2Transmitter.shot(config.damageMin);
+			m_shootingSound.play();
+		}
+
+		if (state.bulletsInMagazineCurrent == 0)
+		{
+			m_state = WeaponState::magazineEmpty;
+			m_fireButton->setAutoRepeat(false);
+			m_noAmmoSound.play();
+			info << "Magazine is empty\n";
+			return;
+		}
+
+
+
+		if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
+			m_fireButton->setAutoRepeat(false);
+
+		if (m_automaticFireSwitch->state() && config.automaticAllowed)
+			m_fireButton->setAutoRepeat(true);
+		break;
+
+	case WeaponState::magazineRemoved:
+	case WeaponState::otherMagazineInserted:
+	case WeaponState::magazineEmpty:
 		m_noAmmoSound.play();
-		printf("Magazine is empty\n");
-		// Disabling auto repeating if automatic mode
-		m_fireButton->setAutoRepeat(false);
+		info << "Magazine is empty\n";
+		return;
+
+	case WeaponState::reloading:
+	default:
 		return;
 	}
 
-	// Check fire mode
-	if (!isFirst && !config.automaticAllowed)
-		return;
-
-	state.bulletsInMagazineCurrent--;
-	info << "<----<< Sending bullet with damage " << config.damageMin << "\n";
-	m_mt2Transmitter.shot(config.damageMin);
-	m_shootingSound.play();
-
-
-	if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
-		m_fireButton->setAutoRepeat(false);
-
-	if (m_automaticFireSwitch->state() && config.automaticAllowed)
-		m_fireButton->setAutoRepeat(true);
 }
 
-void Rifle::reload(bool)
+void Rifle::distortBolt(bool)
 {
 	ScopedTag tag("reload");
-	uint32_t time = systemClock->getTime();
-	// Preventing reloading while reloading (for those who very like reloading)
-	/// @todo [low] Do someting to prevent second reloading if user pressed reload key and after much time released with contact bounce
-	if (time - state.lastReloadTime < config.reloadingTime)
-		return;
-
-	if (state.magazinesCountCurrent == 0)
+	switch(m_state)
 	{
-		m_noMagazines.play();
-		info << "No magazines left\n";
-		return;
+	case WeaponState::magazineEmpty:
+		if (config.isReloadingByDistortingTheBolt())
+		{
+			reloadAndPlay();
+		}
+		break;
+	case WeaponState::magazineReturned:
+		if (!config.reloadNeedMagChange)
+		{
+			reloadAndPlay();
+		}
+		break;
+	case WeaponState::otherMagazineInserted:
+		reloadAndPlay();
+		break;
+	case WeaponState::ready:
+		if (config.isReloadingByDistortingTheBolt())
+		{
+			reloadAndPlay();
+		} else {
+			/// @todo Add here removing of one shell
+		}
+		break;
+	case WeaponState::reloading:
+	default:
+		break;
+
 	}
 
-	state.lastReloadTime = time;
+}
 
-	m_reloadingSound.play();
+void Rifle::magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst)
+{
+	info << "Sensor cb for  " << sensorNumber << "\n";
+	if (!isConnected)
+	{
+		m_state = WeaponState::magazineRemoved;
+		m_fireButton->setAutoRepeat(false);
+	} else {
+		switch(m_state)
+		{
+
+		case WeaponState::magazineRemoved:
+			if (config.reloadNeedMagChange)
+			{
+				if (sensorNumber != m_currentMagazineNumber) // even if m_currentMagazineNumber == 0
+				{
+					// So NEW magazine was inserted
+					m_state = WeaponState::otherMagazineInserted;
+					if (!config.reloadNeedBolt)
+					{
+						m_currentMagazineNumber = sensorNumber;
+						reloadAndPlay();
+					}
+				} else {
+					// Old magazine was inserted
+					m_state = WeaponState::magazineReturned;
+					m_fireButton->setAutoRepeat(true);
+				}
+			} else {
+				m_state = WeaponState::otherMagazineInserted;
+				if (!config.reloadNeedBolt)
+				{
+					m_currentMagazineNumber = sensorNumber;
+					reloadAndPlay();
+				}
+			}
+			break;
+		case WeaponState::magazineReturned:
+		case WeaponState::magazineEmpty:
+		case WeaponState::otherMagazineInserted:
+		case WeaponState::ready:
+		case WeaponState::reloading:
+			warning << "Double magazine inserting...\n";
+			break;
+		default:
+			break;
+		}
+	}
+	info << "State: " << m_state << "\n";
+}
+
+uint8_t Rifle::getCurrentMagazineNumber()
+{
+	if (m_magazine1Sensor->state())
+		return 1;
+	else if (m_magazine2Sensor->state())
+		return 2;
+	else
+		return 0;
+}
+
+void Rifle::reloadAndPlay()
+{
+	m_state = WeaponState::reloading;
+	if (state.magazinesCountCurrent == 0)
+	{
+		info << "No more magazines!\n";
+		/// @todo Add sound "no magazines"
+		return;
+	}
+	Scheduler::instance().addTask(
+			[this]() {
+				m_state = WeaponState::ready;
+				state.magazinesCountCurrent--;
+				state.bulletsInMagazineCurrent = config.bulletsInMagazineMax;
+			},
+			true,
+			0,
+			0,
+			config.reloadingTime
+	);
+	m_fireButton->setAutoRepeat(true);
 	info << "reloading\n";
-	printf("Reloading...\n");
-	// So reloading
-	state.magazinesCountCurrent--;
-	state.bulletsInMagazineCurrent = config.bulletsInMagazineMax;
-	m_fireButton->setAutoRepeat(false);
+	if (config.reloadPlaySound)
+		m_reloadingSound.play();
 }
 
 bool Rifle::isSafeSwitchSelected()
@@ -305,11 +455,11 @@ bool Rifle::isSafeSwitchSelected()
 	return !(m_automaticFireSwitch->state() || m_semiAutomaticFireSwitch->state());
 }
 
-
+/*
 bool Rifle::isReloading()
 {
 	return (systemClock->getTime() - state.lastReloadTime < config.reloadingTime);
-}
+}*/
 
 void Rifle::updatePlayerState()
 {

@@ -15,19 +15,22 @@
 #include <functional>
 #include <map>
 
-using ButtonCallback = std::function<void(bool/* is first press if serial */)>;
+using ButtonPressCallback = std::function<void(bool/* is first press if serial */)>;
+using ButtonDepressCallback = std::function<void(void)>;
 
 class ButtonManager
 {
 public:
 	ButtonManager(IIOPin* inputInterrogator);
 	~ButtonManager() {}
-	ButtonManager& setCallback(ButtonCallback callback) { m_callback = callback; return *this; }
+	ButtonManager& setCallback(ButtonPressCallback callback) { m_callback = callback; return *this; }
+	ButtonManager& setDepressCallback(ButtonDepressCallback callback) { m_depressCallback = callback; return *this; }
 	ButtonManager& setAutoRepeat(bool autoRepeat);
 	ButtonManager& setRepeatPeriod(uint32_t repeatPeriod);
 	void setExti(IExternalInterruptManager* extiManager);
 	void turnOn();
 	void turnOff();
+	void setPressedState(bool pressedState = false);
 	bool useExti() { return m_extiManager ? true : false; }
 	bool state();   /// @return true if pressed, false if depressed
 
@@ -40,7 +43,8 @@ private:
 
 	uint32_t m_lastBounceTestTime = 0;
 
-	ButtonCallback m_callback = nullptr;
+	ButtonPressCallback m_callback = nullptr;
+	ButtonDepressCallback m_depressCallback = nullptr;
 	IExternalInterruptManager* m_extiManager = nullptr;
 	IIOPin* m_inputInterrogator = nullptr;
 
@@ -48,9 +52,11 @@ private:
 	uint32_t m_lastPressTime = 0;
 	bool m_autoRepeat = false;
 	bool m_extiDetected = false;
-	bool m_lastState = false;           /// Last detected button state (pressed or not)
+	bool m_isFirst = false;           /// Last detected button state (pressed or not)
 	bool m_isFirstPress = true;
 	bool m_isEnabled = true;
+	bool m_pressedState = false;
+	bool m_pressedAndNotDepressed = false;
 };
 
 class ButtonsPool

@@ -33,6 +33,12 @@ struct RiflePinoutMapping
 	uint8_t semiAutomaticButtonPort  =   1;
 	uint8_t semiAutomaticButtonPin   =   9;
 
+	uint8_t magazine1SensorPort = 0;
+	uint8_t magazine1SensorPin  = 11;
+
+	uint8_t magazine2SensorPort = 0;
+	uint8_t magazine2SensorPin  = 12;
+
 	uint8_t fireChannel = 3;
 };
 

@@ -15,7 +15,7 @@ ButtonsManagerBase::ButtonsManagerBase()
         m_callbackObjects[i] = nullptr;
     }
 }
-void ButtonsManagerBase::setButtonCallback(unsigned int button, ButtonCallback callback, void* callbackObject)
+void ButtonsManagerBase::setButtonCallback(unsigned int button, ButtonPressCallback callback, void* callbackObject)
 {
     m_callbackObjects[button] = callbackObject;
     m_callbacks[button] = callback;

@@ -60,23 +60,28 @@ namespace ConfigCodes
 			PAR_CODE(criticalProb,   10)
 			PAR_CODE(criticalCoeff,  11)
 
-			PAR_CODE(semiAutomaticAllowed, 11)
-			PAR_CODE(automaticAllowed,     12)
+			PAR_CODE(semiAutomaticAllowed, 12) ///< Is no need in bolt disorting between shots
+			PAR_CODE(automaticAllowed,     13)
 
-			PAR_CODE(magazineType,         15)
-			PAR_CODE(reloadAction,         16)
-			PAR_CODE(autoReload,           17)
+			// Reload cycle control
+			PAR_CODE(reloadIsMagazineSmart,   15) ///< Is magazine smart (with MCU)?
 
-			PAR_CODE(magazinesCountStart,      20)
-			PAR_CODE(magazinesCountMax,        21)
+			PAR_CODE(reloadNeedMagDisconnect, 16) ///< 1. Should the magazine be disconnected?
+			PAR_CODE(reloadNeedMagChange,     17) ///< 2. Should the magazine be changed?
+			PAR_CODE(reloadNeedBolt,          18) ///< 3. Should the bolt be distorted?
 
-			PAR_CODE(bulletsInMagazineStart,   22)
-			PAR_CODE(bulletsInMagazineMax,     23)
+			PAR_CODE(reloadPlaySound,         20) ///< Should reloading sound be played?
 
-			PAR_CODE(reloadingTime,            24)
+			PAR_CODE(magazinesCountStart,      30)
+			PAR_CODE(magazinesCountMax,        31)
 
-			PAR_CODE(heatPerShot,              30)
-			PAR_CODE(heatLossPerSec,           31)
+			PAR_CODE(bulletsInMagazineStart,   32)
+			PAR_CODE(bulletsInMagazineMax,     33)
+
+			PAR_CODE(reloadingTime,            34)
+
+			PAR_CODE(heatPerShot,              40)
+			PAR_CODE(heatLossPerSec,           41)
 
 			PAR_CODE(headSensorAddr,           100)
 		}
