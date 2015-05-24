@@ -152,6 +152,21 @@ bool StateSaver::tryRestore()
 	return tryRestore(1) ? true : tryRestore(0);
 }
 
+void StateSaver::resetSaves()
+{
+	if (SDCardFS::instance().isLocked())
+	{
+		printf("State saver: sd-card is locked\n");
+		Scheduler::instance().addTask(std::bind(&StateSaver::resetSaves, this), true, 0, 0, 100000);
+		return;
+	}
+	SDCardFS::ScopedLocker sdLocker;
+	f_unlink(m_fileLock[0].c_str());
+	f_unlink(m_file[0].c_str());
+	f_unlink(m_fileLock[1].c_str());
+	f_unlink(m_file[1].c_str());
+}
+
 void StateSaver::runSaver(uint32_t period)
 {
 	stopSaver();

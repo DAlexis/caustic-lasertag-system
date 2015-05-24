@@ -113,6 +113,7 @@ void HeadSensor::resetToDefaults()
 		playerConfig.setDefault();
 	}
 	playerState.reset();
+	StateSaver::instance().resetSaves();
 	StateSaver::instance().saveState();
 }
 

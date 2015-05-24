@@ -69,6 +69,7 @@ private:
 		LoggerUnnamed& operator<<(unsigned int d);
 		LoggerUnnamed& operator<<(float f);
 		LoggerUnnamed& operator<<(double f);
+		LoggerUnnamed& operator<<(bool b);
 		bool enabled = false;
 	};
 

@@ -62,7 +62,7 @@ struct DeviceAddress
 		for(int i=0; i<size; i++)
 			if (address[i] != other.address[i])
 				return false;
-			else return true;
+		return true;
 	}
 
 	inline bool operator!=(const DeviceAddress& other) const

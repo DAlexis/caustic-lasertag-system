@@ -33,6 +33,7 @@ public:
     void saveState();
 
     bool tryRestore();
+    void resetSaves();
 
 private:
     bool tryRestore(uint8_t variant);

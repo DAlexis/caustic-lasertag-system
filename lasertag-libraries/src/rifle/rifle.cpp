@@ -152,57 +152,7 @@ Rifle::Rifle()
 void Rifle::configure(RiflePinoutMapping& pinout)
 {
 	ScopedTag tag("rifle-configure");
-	info << "Configuring buttons" << "\n";
-	m_fireButton = ButtonsPool::instance().getButtonManager(pinout.fireButtonPort, pinout.fireButtonPin);
-	ButtonsPool::instance().setExti(pinout.fireButtonPort, pinout.fireButtonPin, true);
-	m_fireButton->setAutoRepeat(config.automaticAllowed);
-	m_fireButton->setRepeatPeriod(config.firePeriod);
-	m_fireButton->setCallback(std::bind(&Rifle::makeShot, this, std::placeholders::_1));
-	m_fireButton->turnOn();
-
-	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_fireButton), false, 5000);
-
-	m_reloadButton = ButtonsPool::instance().getButtonManager(pinout.reloadButtonPort, pinout.reloadButtonPin);
-	m_reloadButton->setAutoRepeat(false);
-	m_reloadButton->setRepeatPeriod(2*config.firePeriod);
-	m_reloadButton->setCallback(std::bind(&Rifle::distortBolt, this, std::placeholders::_1));
-	m_reloadButton->turnOn();
-
-	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
-
-	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.automaticButtonPort, pinout.automaticButtonPin);
-	m_automaticFireSwitch->turnOff();
-
-	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.semiAutomaticButtonPort, pinout.semiAutomaticButtonPin);
-	m_semiAutomaticFireSwitch->turnOff();
-
-	/// @todo Add magazineSensor1,2Enabled field to pinout
-	m_magazine1Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine1SensorPort, pinout.magazine1SensorPin);
-	m_magazine1Sensor->setAutoRepeat(false);
-	m_magazine1Sensor->setRepeatPeriod(config.firePeriod);
-	m_magazine1Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 1, std::placeholders::_1));
-	m_magazine1Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 1, true));
-	m_magazine1Sensor->turnOn();
-	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_magazine1Sensor), false, 50000);
-
-	m_magazine2Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine2SensorPort, pinout.magazine2SensorPin);
-	m_magazine2Sensor->setAutoRepeat(false);
-	m_magazine2Sensor->setRepeatPeriod(config.firePeriod);
-	m_magazine2Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 2, std::placeholders::_1));
-	m_magazine2Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 2, true));
-	m_magazine2Sensor->turnOn();
-	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_magazine2Sensor), false, 50000);
-
-	m_currentMagazineNumber = getCurrentMagazineNumber();
-	info << "Magazine inserted: " << m_currentMagazineNumber << "\n";
-	if (m_currentMagazineNumber == 0)
-		m_state = WeaponState::magazineRemoved;
-
-	m_mt2Transmitter.init();
-	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
-	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
-	m_mt2Transmitter.setChannel(pinout.fireChannel);
-
+	//trace.enable();
 
 	info << "Mounting sd-card\n";
 	if (!SDCardFS::instance().init())
@@ -235,6 +185,69 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 
 	// Line for DEBUG purpose only
 	//rifleTurnOn();
+
+	info << "Configuring buttons" << "\n";
+	m_fireButton = ButtonsPool::instance().getButtonManager(pinout.fireButtonPort, pinout.fireButtonPin);
+	ButtonsPool::instance().setExti(pinout.fireButtonPort, pinout.fireButtonPin, true);
+	m_fireButton->setAutoRepeat(config.automaticAllowed);
+	m_fireButton->setRepeatPeriod(config.firePeriod);
+	m_fireButton->setCallback(std::bind(&Rifle::makeShot, this, std::placeholders::_1));
+	m_fireButton->turnOn();
+
+	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_fireButton), false, 5000);
+
+	m_reloadButton = ButtonsPool::instance().getButtonManager(pinout.reloadButtonPort, pinout.reloadButtonPin);
+	m_reloadButton->setAutoRepeat(false);
+	m_reloadButton->setRepeatPeriod(2*config.firePeriod);
+	m_reloadButton->setCallback(std::bind(&Rifle::distortBolt, this, std::placeholders::_1));
+	m_reloadButton->turnOn();
+
+	Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_reloadButton), false, 10000);
+
+	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.automaticButtonPort, pinout.automaticButtonPin);
+	m_automaticFireSwitch->turnOff();
+
+	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.semiAutomaticButtonPort, pinout.semiAutomaticButtonPin);
+	m_semiAutomaticFireSwitch->turnOff();
+
+	/// @todo automaic reload support
+	info << config.reloadNeedMagDisconnect << " " << config.reloadNeedMagChange << " " << config.reloadNeedBolt << "\n";
+	if (config.isReloadingByDistortingTheBolt())
+	{
+		m_state = WeaponState::ready;
+	} else	{
+		m_magazine1Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine1SensorPort, pinout.magazine1SensorPin);
+		m_magazine1Sensor->setAutoRepeat(false);
+		m_magazine1Sensor->setRepeatPeriod(config.firePeriod);
+		m_magazine1Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 1, std::placeholders::_1));
+		m_magazine1Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 1, true));
+		m_magazine1Sensor->turnOn();
+		Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_magazine1Sensor), false, 50000);
+
+		m_magazine2Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine2SensorPort, pinout.magazine2SensorPin);
+		m_magazine2Sensor->setAutoRepeat(false);
+		m_magazine2Sensor->setRepeatPeriod(config.firePeriod);
+		m_magazine2Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 2, std::placeholders::_1));
+		m_magazine2Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 2, true));
+		m_magazine2Sensor->turnOn();
+		Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_magazine2Sensor), false, 50000);
+
+		m_currentMagazineNumber = getCurrentMagazineNumber();
+		info << "Magazine inserted: " << m_currentMagazineNumber << "\n";
+		if (m_currentMagazineNumber == 0)
+		{
+			m_state = WeaponState::magazineRemoved;
+			m_fireButton->setAutoRepeat(false);
+		}
+	}
+
+	info << "Configuring MT2 transmitter\n";
+	m_mt2Transmitter.init();
+	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
+	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
+	m_mt2Transmitter.setChannel(pinout.fireChannel);
+
+
 	info << "Looking for sound files...\n";
 	initSounds();
 
@@ -282,10 +295,10 @@ void Rifle::makeShot(bool isFirst)
 	case WeaponState::magazineReturned:
 	case WeaponState::ready:
 		if (isSafeSwitchSelected())
-			return;
+			break;
 
 		if (!isFirst && !config.automaticAllowed)
-			return;
+			break;
 
 		if (state.bulletsInMagazineCurrent != 0)
 		{
@@ -301,9 +314,8 @@ void Rifle::makeShot(bool isFirst)
 			m_fireButton->setAutoRepeat(false);
 			m_noAmmoSound.play();
 			info << "Magazine is empty\n";
-			return;
+			break;
 		}
-
 
 
 		if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
@@ -318,13 +330,13 @@ void Rifle::makeShot(bool isFirst)
 	case WeaponState::magazineEmpty:
 		m_noAmmoSound.play();
 		info << "Magazine is empty\n";
-		return;
+		break;
 
 	case WeaponState::reloading:
 	default:
-		return;
+		break;
 	}
-
+	trace << "State: " << m_state << "\n";
 }
 
 void Rifle::distortBolt(bool)
@@ -360,7 +372,7 @@ void Rifle::distortBolt(bool)
 		break;
 
 	}
-
+	trace << "State: " << m_state << "\n";
 }
 
 void Rifle::magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst)
@@ -528,6 +540,7 @@ void Rifle::registerWeapon()
 		return;
 
 	info << "Registering weapon...\n";
+	//config.headSensorAddr.print();
 	m_registerWeaponPAckageId = RCSPStream::remoteCall(
 			config.headSensorAddr,
 			ConfigCodes::HeadSensor::Functions::registerWeapon,

@@ -65,6 +65,14 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(double f)
 	return *this << buffer;
 }
 
+Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(bool b)
+{
+	if (b)
+		return *this << "true";
+	else
+		return *this << "false";
+}
+
 //////////////////////
 // Logger
 void Logger::enable(bool enabled)

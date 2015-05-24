@@ -64,7 +64,7 @@ public:
 	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
 	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
 
-	PAR_CL_R(ConfigCodes::Rifle::Configuration, DeviceAddress, headSensorAddr);
+	PAR_CL(ConfigCodes::Rifle::Configuration, DeviceAddress, headSensorAddr);
 };
 
 class RifleState
