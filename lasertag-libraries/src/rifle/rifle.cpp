@@ -210,12 +210,10 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.semiAutomaticButtonPort, pinout.semiAutomaticButtonPin);
 	m_semiAutomaticFireSwitch->turnOff();
 
-	/// @todo automaic reload support
-	info << config.reloadNeedMagDisconnect << " " << config.reloadNeedMagChange << " " << config.reloadNeedBolt << "\n";
-	if (config.isReloadingByDistortingTheBolt())
+	if (config.isAutoReloading() || config.isReloadingByDistortingTheBolt())
 	{
 		m_state = WeaponState::ready;
-	} else	{
+	} else {
 		m_magazine1Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine1SensorPort, pinout.magazine1SensorPin);
 		m_magazine1Sensor->setAutoRepeat(false);
 		m_magazine1Sensor->setRepeatPeriod(config.firePeriod);
@@ -314,6 +312,8 @@ void Rifle::makeShot(bool isFirst)
 			m_fireButton->setAutoRepeat(false);
 			m_noAmmoSound.play();
 			info << "Magazine is empty\n";
+			if (config.isAutoReloading())
+				reloadAndPlay();
 			break;
 		}
 
