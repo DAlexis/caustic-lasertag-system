@@ -31,7 +31,7 @@ private:
 	void IRQHandler();
 };
 
-class EXTISPool : public IEXTISPool
+class EXTISPool : public EXTISPoolBase
 {
 public:
 	EXTISPool();

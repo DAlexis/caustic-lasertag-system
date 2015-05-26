@@ -212,7 +212,7 @@ EXTISPool::~EXTISPool()
 			delete m_EXTIS[i];
 }
 
-ExternalInterruptManagerBase* EXTISPool::getEXTI(uint8_t pinNumber)
+IExternalInterruptManager* EXTISPool::getEXTI(uint8_t pinNumber)
 {
 	if (!m_EXTIS[pinNumber]) {
 		m_EXTIS[pinNumber] = new ExternalInterruptManager(pinNumber);

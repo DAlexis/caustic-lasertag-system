@@ -20,6 +20,7 @@
 #include "hal/leds.hpp"
 #include "core/scheduler.hpp"
 #include "core/memory-utils.h"
+#include "core/logging.hpp"
 
 #include "tests/console-tester.hpp"
 #include <functional>
@@ -74,7 +75,9 @@ int main(int argc, char* argv[])
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
 
 	Console::instance().init(0);
-
+	Loggers::initLoggers(0);
+	radio.enable();
+	info << "Test: float: " << 3.14 << " int: " << (int) -21 << " uint: " << (uint8_t) 254 << ". Do you like it?\n";
 #ifdef DEBUG
 	// Creating console tester
 	ConsoleTester tester;
@@ -85,12 +88,14 @@ int main(int argc, char* argv[])
 
 #if defined(DEVICE_RIFLE)
 	Rifle *rifle = nullptr;
+	RiflePinoutMapping pinout;
 	rifle = new Rifle;
-	rifle->configure();
+	rifle->configure(pinout);
 #elif defined(DEVICE_HEAD_SENSOR)
 	HeadSensor *headSensor = nullptr;
+	HeadSensorPinoutMapping pinout;
 	headSensor = new HeadSensor;
-	headSensor->configure();
+	headSensor->configure(pinout);
 #else
 	#error "Device type not selected!"
 #endif

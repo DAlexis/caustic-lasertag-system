@@ -31,12 +31,12 @@ private:
 	void IRQHandler();
 };
 
-class EXTISPool : public IEXTISPool
+class EXTISPool : public EXTISPoolBase
 {
 public:
 	EXTISPool();
 	~EXTISPool();
-	ExternalInterruptManagerBase* getEXTI(uint8_t pinNumber);
+	IExternalInterruptManager* getEXTI(uint8_t pinNumber);
 
 private:
 	ExternalInterruptManager* m_EXTIS[EXTI_LINES_COUNT];

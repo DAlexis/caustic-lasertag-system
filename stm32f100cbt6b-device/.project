@@ -3,7 +3,7 @@
 	<name>stm32f100cbt6b-device</name>
 	<comment></comment>
 	<projects>
-		<project>lazertag-libraries</project>
+		<project>lasertag-libraries</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

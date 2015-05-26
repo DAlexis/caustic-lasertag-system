@@ -12,6 +12,7 @@
 #include "hal/system-clock.hpp"
 #include "dev/console.hpp"
 #include "simple-irrc/simple-irrc.hpp"
+#include "core/logging.hpp"
 #include <functional>
 #include <vector>
 
@@ -62,6 +63,7 @@ int main(int argc, char* argv[])
 	trace_printf("\n\nStarting system...\n");
 
 	Console::instance().init(0);
+	Loggers::initLoggers(0);
 
 	SimpleIRRC *sirrc = new SimpleIRRC;
 	sirrc->init();
