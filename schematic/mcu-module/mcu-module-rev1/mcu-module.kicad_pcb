@@ -13,6 +13,11 @@
   )
 
   (page A3)
+  (title_block 
+    (title "Caustic LT MCU board")
+    (rev 1.0)
+  )
+
   (layers
     (15 F.Cu signal)
     (0 B.Cu signal)
