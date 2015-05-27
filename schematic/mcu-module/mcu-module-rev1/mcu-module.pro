@@ -1,6 +1,6 @@
-update=Вт 26 май 2015 21:01:03
+update=Ср 27 май 2015 21:56:12
 version=1
-last_client=cvpcb
+last_client=eeschema
 [pcbnew]
 version=1
 LastNetListRead=
@@ -37,14 +37,19 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
-LibName17=../../lqfp64
+LibName17=../../components/lqfp64
 LibName18=crystal
 LibName19=../../components/micro-sd3-cd
-LibName20=../../pin-arr-2mm-horiz
-LibName21=../../pin-array-10x2
+LibName20=../../components/pin-arr-2mm-horiz
+LibName21=../../components/pin-array-10x2
 LibDir=
 [general]
 version=1
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -86,8 +91,4 @@ LibName29=contrib
 LibName30=valves
 LibName31=../../components/stm32
 LibName32=../../components/microsd-sdio-cd
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
+LibName33=../../components/MCU-board-connectors
