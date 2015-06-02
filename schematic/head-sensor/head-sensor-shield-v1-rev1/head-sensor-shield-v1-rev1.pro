@@ -1,4 +1,4 @@
-update=Пн 01 июн 2015 16:10:48
+update=Вт 02 июн 2015 15:44:20
 version=1
 last_client=eeschema
 [cvpcb]
@@ -87,5 +87,4 @@ LibName30=valves
 LibName31=../../components/linStab-(1-GND,Adj,2-Out,3-in)
 LibName32=../../components/MCU-board-connectors
 LibName33=../../components/nrf24l01
-LibName34=../../components/pam8610
-LibName35=../../components/rfid-rc522-module
+LibName34=../../components/rfid-rc522-module
