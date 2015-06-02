@@ -12,6 +12,7 @@
 #include "hal/io-pins.hpp"
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
+#include "core/scheduler.hpp"
 
 using DamageCallback = std::function<void(unsigned int /*teamId*/, unsigned int /*playerId*/, unsigned int /*damage*/)>;
 
@@ -20,7 +21,7 @@ class KillZonesManager
 public:
 	constexpr static uint8_t killZonesMaxCount = 6;
 	constexpr static uint32_t callbackDelay = 50000;
-	constexpr static uint32_t vibroPeriod = 500000;
+	constexpr static uint32_t vibroPeriod = 200000;
 	KillZonesManager(const FloatParameter& zone1DamageCoeff,
 		const FloatParameter& zone2DamageCoeff,
 		const FloatParameter& zone3DamageCoeff,
@@ -47,6 +48,7 @@ private:
 	unsigned int m_maxDamage = 0;
 	unsigned int m_teamId = 0;
 	unsigned int m_playerId = 0;
+	TaskId m_vibrationStopTask = 0;
 };
 
 

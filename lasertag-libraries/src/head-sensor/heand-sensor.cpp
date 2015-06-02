@@ -37,18 +37,48 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 			nullptr
 		));
 
+	IIOPin* zone1vibroPin = pinout.zone1VibroEnabled ? IOPins->getIOPin(pinout.zone1VibroPort, pinout.zone1VibroPin) : nullptr;
 	if (pinout.zone1Enabled)
-		m_killZonesManager.enableKillZone(0, EXTIS->getEXTI(pinout.zone1Port, pinout.zone1Pin));
+		m_killZonesManager.enableKillZone(
+				0,
+				EXTIS->getEXTI(pinout.zone1Port, pinout.zone1Pin),
+				zone1vibroPin
+				);
+
 	if (pinout.zone2Enabled)
-		m_killZonesManager.enableKillZone(1, EXTIS->getEXTI(pinout.zone2Port, pinout.zone2Pin));
+		m_killZonesManager.enableKillZone(
+				1,
+				EXTIS->getEXTI(pinout.zone2Port, pinout.zone2Pin),
+				pinout.zone2VibroEnabled ? IOPins->getIOPin(pinout.zone2VibroPort, pinout.zone2VibroPin) : zone1vibroPin
+				);
+
 	if (pinout.zone3Enabled)
-		m_killZonesManager.enableKillZone(2, EXTIS->getEXTI(pinout.zone3Port, pinout.zone3Pin));
+		m_killZonesManager.enableKillZone(
+				2,
+				EXTIS->getEXTI(pinout.zone3Port, pinout.zone3Pin),
+				pinout.zone3VibroEnabled ? IOPins->getIOPin(pinout.zone3VibroPort, pinout.zone3VibroPin) : zone1vibroPin
+				);
+
 	if (pinout.zone4Enabled)
-		m_killZonesManager.enableKillZone(3, EXTIS->getEXTI(pinout.zone4Port, pinout.zone4Pin));
+		m_killZonesManager.enableKillZone(
+				3,
+				EXTIS->getEXTI(pinout.zone4Port, pinout.zone4Pin),
+				pinout.zone4VibroEnabled ? IOPins->getIOPin(pinout.zone4VibroPort, pinout.zone4VibroPin) : zone1vibroPin
+				);
+
 	if (pinout.zone5Enabled)
-		m_killZonesManager.enableKillZone(4, EXTIS->getEXTI(pinout.zone5Port, pinout.zone5Pin));
+		m_killZonesManager.enableKillZone(
+				4,
+				EXTIS->getEXTI(pinout.zone5Port, pinout.zone5Pin),
+				pinout.zone5VibroEnabled ? IOPins->getIOPin(pinout.zone5VibroPort, pinout.zone5VibroPin) : zone1vibroPin
+				);
+
 	if (pinout.zone6Enabled)
-		m_killZonesManager.enableKillZone(5, EXTIS->getEXTI(pinout.zone6Port, pinout.zone6Pin));
+		m_killZonesManager.enableKillZone(
+				5,
+				EXTIS->getEXTI(pinout.zone6Port, pinout.zone6Pin),
+				pinout.zone6VibroEnabled ? IOPins->getIOPin(pinout.zone6VibroPort, pinout.zone6VibroPin) : zone1vibroPin
+				);
 	//m_mainSensor.enableDebug(true);
 
 	info << "Mounting sd-card\n";

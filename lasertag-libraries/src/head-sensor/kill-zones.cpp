@@ -57,6 +57,7 @@ void KillZonesManager::enableKillZone(uint8_t zone, IExternalInterruptManager *e
 void KillZonesManager::IRReceiverShotCallback(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
 	damage *= *(m_zoneDamageCoeff[zoneId]);
+	vibrate(zoneId);
 	if (!m_damageCbScheduled || damage > m_maxDamage)
 	{
 		m_maxDamage = damage;
@@ -88,8 +89,12 @@ void KillZonesManager::vibrate(uint8_t zone)
 		return;
 
 	m_vibro[zone]->set();
-	Scheduler::instance().addTask(
+	if (m_vibrationStopTask)
+		Scheduler::instance().stopTask(m_vibrationStopTask);
+
+	m_vibrationStopTask = Scheduler::instance().addTask(
 		[this, zone]() {
+			m_vibrationStopTask = 0;
 			m_vibro[zone]->reset();
 		},
 		true,
