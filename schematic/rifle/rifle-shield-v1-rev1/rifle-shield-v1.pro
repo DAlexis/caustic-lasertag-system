@@ -1,4 +1,4 @@
-update=Пн 01 июн 2015 16:10:48
+update=Ср 03 июн 2015 11:14:20
 version=1
 last_client=eeschema
 [cvpcb]
@@ -89,3 +89,4 @@ LibName32=../../components/MCU-board-connectors
 LibName33=../../components/nrf24l01
 LibName34=../../components/pam8610
 LibName35=../../components/rfid-rc522-module
+LibName36=../../components/pam8403
