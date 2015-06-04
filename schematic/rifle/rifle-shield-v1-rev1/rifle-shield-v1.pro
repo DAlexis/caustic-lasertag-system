@@ -1,11 +1,6 @@
-update=Ср 03 июн 2015 11:14:20
+update=Ср 03 июн 2015 22:59:09
 version=1
-last_client=eeschema
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
+last_client=cvpcb
 [pcbnew]
 version=1
 LastNetListRead=
@@ -26,7 +21,6 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.100000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -43,6 +37,12 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
+LibName17=/home/alexey/Projects/lazertag/schematic/components/pin-arr-2mm-horiz
+LibName18=/home/alexey/Projects/lazertag/schematic/components/pin-array-10x2
+LibName19=/home/alexey/Projects/lazertag/schematic/components/pin-arr-large-pads-2,5mm
+LibName20=/home/alexey/Projects/lazertag/schematic/components/pin-arr-large-pads-3,5mm
+LibName21=/home/alexey/Projects/lazertag/schematic/components/terminals
+LibDir=
 [general]
 version=1
 [eeschema]
@@ -90,3 +90,8 @@ LibName33=../../components/nrf24l01
 LibName34=../../components/pam8610
 LibName35=../../components/rfid-rc522-module
 LibName36=../../components/pam8403
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
