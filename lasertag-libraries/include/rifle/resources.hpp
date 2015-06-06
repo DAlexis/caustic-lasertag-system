@@ -39,6 +39,14 @@ struct RiflePinoutMapping
 	uint8_t magazine2SensorPort = 0;
 	uint8_t magazine2SensorPin  = 12;
 
+	bool enableFlash = true;
+	uint8_t flashPort = 1;
+	uint8_t flashPin  = 11;
+
+	bool enableVibro = true;
+	uint8_t vibroPort = 0;
+	uint8_t vibroPin  = 1;
+
 	uint8_t fireChannel = 3;
 };
 

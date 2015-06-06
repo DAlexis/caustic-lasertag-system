@@ -45,7 +45,6 @@ public:
 
 	PAR_ST(ConfigCodes::Rifle::Configuration, bool, semiAutomaticAllowed);
 	PAR_ST_R(ConfigCodes::Rifle::Configuration, bool, automaticAllowed);
-
 	
 	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadIsMagazineSmart);
 	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadNeedMagDisconnect);
@@ -63,6 +62,9 @@ public:
 
 	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
 	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
+
+	PAR_ST(ConfigCodes::Rifle::Configuration, uint32_t, fireFlashPeriod);
+	PAR_ST(ConfigCodes::Rifle::Configuration, uint32_t, fireVibroPeriod);
 
 	PAR_CL(ConfigCodes::Rifle::Configuration, DeviceAddress, headSensorAddr);
 };

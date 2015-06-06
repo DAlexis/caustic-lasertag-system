@@ -97,6 +97,9 @@ private:
 	ButtonManager* m_semiAutomaticFireSwitch = nullptr;
 	ButtonManager* m_magazine1Sensor = nullptr;
 	ButtonManager* m_magazine2Sensor = nullptr;
+	IIOPin* m_vibroEngine = nullptr;
+	IIOPin* m_fireFlash = nullptr;
+
 
 	MilesTag2Transmitter m_mt2Transmitter;
 

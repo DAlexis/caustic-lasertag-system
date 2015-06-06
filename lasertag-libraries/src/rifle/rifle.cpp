@@ -16,6 +16,7 @@
 #include "dev/console.hpp"
 #include "dev/sdcard-fs.hpp"
 #include "dev/wav-player.hpp"
+#include "dev/io-pin-utils.hpp"
 #include "hal/system-clock.hpp"
 
 //#include "res/buttons-mapping.h"
@@ -128,6 +129,9 @@ void RifleConfiguration::setDefault()
 
 	heatPerShot = 0;
 	heatLossPerSec = 0;
+
+	fireFlashPeriod = 100000;
+	fireVibroPeriod = 100000;
 }
 
 RifleState::RifleState(RifleConfiguration* config) :
@@ -209,6 +213,19 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 
 	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.semiAutomaticButtonPort, pinout.semiAutomaticButtonPin);
 	m_semiAutomaticFireSwitch->turnOff();
+
+	if (pinout.enableFlash)
+	{
+		m_fireFlash = IOPins->getIOPin(pinout.flashPort, pinout.flashPin);
+		m_fireFlash->switchToOutput();
+		m_fireFlash->reset();
+	}
+	if (pinout.enableVibro)
+	{
+		m_vibroEngine = IOPins->getIOPin(pinout.vibroPort, pinout.vibroPin);
+		m_vibroEngine->switchToOutput();
+		m_vibroEngine->reset();
+	}
 
 	if (config.isAutoReloading() || config.isReloadingByDistortingTheBolt())
 	{
@@ -303,20 +320,30 @@ void Rifle::makeShot(bool isFirst)
 			state.bulletsInMagazineCurrent--;
 			info << "<----<< Sending bullet with damage " << config.damageMin << "\n";
 			m_mt2Transmitter.shot(config.damageMin);
+			if (m_fireFlash)
+			{
+				m_fireFlash->set();
+				delayedSwitchPin(m_fireFlash, false, config.fireFlashPeriod);
+			}
+			if (m_vibroEngine)
+			{
+				m_vibroEngine->set();
+				delayedSwitchPin(m_vibroEngine, false, config.fireVibroPeriod);
+			}
 			m_shootingSound.play();
-		}
-
-		if (state.bulletsInMagazineCurrent == 0)
-		{
-			m_state = WeaponState::magazineEmpty;
-			m_fireButton->setAutoRepeat(false);
+			if (state.bulletsInMagazineCurrent == 0)
+			{
+				m_state = WeaponState::magazineEmpty;
+				m_fireButton->setAutoRepeat(false);
+				if (config.isAutoReloading())
+					reloadAndPlay();
+				break;
+			}
+		} else {
 			m_noAmmoSound.play();
 			info << "Magazine is empty\n";
-			if (config.isAutoReloading())
-				reloadAndPlay();
 			break;
 		}
-
 
 		if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
 			m_fireButton->setAutoRepeat(false);
