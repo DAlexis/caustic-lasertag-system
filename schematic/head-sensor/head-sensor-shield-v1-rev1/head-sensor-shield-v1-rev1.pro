@@ -1,11 +1,6 @@
-update=Вт 02 июн 2015 15:44:20
+update=Сб 06 июн 2015 22:35:37
 version=1
-last_client=eeschema
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
+last_client=cvpcb
 [pcbnew]
 version=1
 LastNetListRead=
@@ -26,7 +21,6 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.100000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -43,6 +37,10 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
+LibName17=../../components/pin-array-10x2
+LibName18=../../components/pin-arr-2mm-horiz
+LibName19=../../components/CR1220
+LibDir=
 [general]
 version=1
 [eeschema]
@@ -88,3 +86,8 @@ LibName31=../../components/linStab-(1-GND,Adj,2-Out,3-in)
 LibName32=../../components/MCU-board-connectors
 LibName33=../../components/nrf24l01
 LibName34=../../components/rfid-rc522-module
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
