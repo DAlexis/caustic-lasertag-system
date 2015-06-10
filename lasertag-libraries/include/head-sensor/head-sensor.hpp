@@ -16,6 +16,8 @@
 #include "rcsp/RCSP-state-saver.hpp"
 #include "rcsp/broadcast.hpp"
 #include "dev/rgb-leds.hpp"
+#include "logic/head-sensor-rifle-communication.hpp"
+
 #include <set>
 
 class HeadSensor
@@ -37,6 +39,8 @@ public:
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam, uint8_t);
 
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth, int16_t);
+
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager, DamageNotification);      ///< Feedback when player was damaged or killed
 private:
 	// Test functions
 	void testDie(const char*);
@@ -47,6 +51,7 @@ private:
 	void dieWeapons();
 	void respawnWeapons();
 	void turnOffWeapons();
+	void notifyDamager(PlayerMT2Id player, uint8_t damagerTeam, uint8_t state = 0);
 
 	RGBLeds m_leds;
 

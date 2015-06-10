@@ -178,10 +178,12 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 				stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
 				stream.send(*it, true, nullptr);
 			}
+			notifyDamager(playerId, teamId, DamageNotification::injured);
 		} else {
 			//Player was killed
 			info << "xx Player died\n";
 			dieWeapons();
+			notifyDamager(playerId, teamId, DamageNotification::killed);
 			m_leds.blink(blinkPatterns.death);
 			Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
 		}
@@ -312,6 +314,36 @@ void HeadSensor::addMaxHealth(int16_t delta)
 	}
 	playerConfig.healthStart += delta;
 	m_leds.blink(blinkPatterns.anyCommand);
+}
+
+void HeadSensor::notifyDamager(PlayerMT2Id damager, uint8_t damagerTeam, uint8_t state)
+{
+	ScopedTag tag("notify-damager");
+	DamageNotification notification;
+	notification.damager = damager;
+	notification.damagedTeam = playerConfig.teamId;
+	notification.state = state;
+	notification.target = playerConfig.plyerMT2Id;
+	info << "Notifying damager" << "\n";
+	RCSPStream::remoteCall(broadcast.headSensors, ConfigCodes::HeadSensor::Functions::notifyIsDamager, notification, false);
+}
+
+void HeadSensor::notifyIsDamager(DamageNotification notification)
+{
+	ScopedTag tag("notify-damaged");
+	info << "By the time " << notification.damager << " damaged " << notification.target << "\n";
+	if (notification.damager != playerConfig.plyerMT2Id)
+		return;
+
+	if (!playerState.weaponsList.weapons.empty())
+	{
+		uint8_t sound =
+			notification.damagedTeam == playerConfig.teamId ?
+				NotificationSoundCase::friendInjured :
+				notification.state;
+		RCSPStream::remoteCall(*(playerState.weaponsList.weapons.begin()), ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged, sound);
+	}
+
 }
 
 uint8_t HeadSensor::getTeamColor()

@@ -93,7 +93,10 @@ bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code,
 			return true;
 		}
 		else
+		{
+			warning << "Unknown request code: " << *code << "\n";
 			return false;
+		}
 	}
 }
 

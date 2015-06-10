@@ -16,6 +16,7 @@
 #include "dev/miles-tag-2.hpp"
 #include "dev/wav-player.hpp"
 #include "core/scheduler.hpp"
+#include "logic/head-sensor-rifle-communication.hpp"
 
 #include <stdint.h>
 
@@ -55,6 +56,7 @@ public:
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn);  ///< Do all things than needed on respawn (+play sound)
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);      ///< Say to rifle that player was killed
 
+	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged, uint8_t);      ///< Play enemy damaged sound
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;
 	RifleState state{&config};
@@ -83,13 +85,17 @@ private:
 	uint8_t getCurrentMagazineNumber();
 
 	void reloadAndPlay();
+	void detectRifleState();
 
 	bool isReloading();
 	bool isSafeSwitchSelected();
 
 	void updatePlayerState();
 
-	bool isEnabled = true;
+	void playDamagerNotification(uint8_t state);
+	void scheduleDamageNotification(uint8_t state);
+
+	bool m_isEnabled = true;
 
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;
@@ -109,6 +115,10 @@ private:
 	SoundPlayer m_noMagazines;
 	SoundPlayer m_respawnSound;
 	SoundPlayer m_dieSound;
+	SoundPlayer m_enemyDamaged;
+	SoundPlayer m_enemyKilled;
+	SoundPlayer m_friendDamaged;
+
 
 	PackageId m_registerWeaponPAckageId = 0;
 
