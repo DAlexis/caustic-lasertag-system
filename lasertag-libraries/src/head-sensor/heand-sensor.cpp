@@ -152,7 +152,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 {
 	ScopedTag tag("shot-cb");
 	float zoneModifier = pZoneModifier ? *pZoneModifier : 1.0;
-	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage << "\n";
+	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage;
 	if (playerState.isAlive()) {
 
 		if (playerId == playerConfig.plyerMT2Id)
@@ -165,7 +165,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		}
 
 		playerState.damage(damage);
-		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent << "\n";
+		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent;
 
 		// If still is alive
 		if (playerState.isAlive())
@@ -292,7 +292,7 @@ void HeadSensor::setTeam(uint8_t teamId)
 	m_leds.blink(blinkPatterns.anyCommand);
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		info << "Changing weapon team id to" << teamId << "\n";
+		info << "Changing weapon team id to" << teamId;
 		RCSPStream::remotePullValue(*it, ConfigCodes::HeadSensor::Configuration::teamId);
 	}
 }
@@ -300,16 +300,16 @@ void HeadSensor::setTeam(uint8_t teamId)
 void HeadSensor::addMaxHealth(int16_t delta)
 {
 	ScopedTag tag("set-team");
-	info << "Adding health: " << delta << "\n";
+	info << "Adding health: " << delta;
 	if (delta < 0 && playerConfig.healthMax < -delta)
 	{
-		debug << "Max health is " << playerConfig.healthMax << ", so can not add " << delta << "\n";
+		debug << "Max health is " << playerConfig.healthMax << ", so can not add " << delta;
 		return;
 	}
 	playerConfig.healthMax += delta;
 	if (delta < 0 && playerConfig.healthStart < -delta)
 	{
-		debug << "Start health is " << playerConfig.healthStart << ", so can not add " << delta << "\n";
+		debug << "Start health is " << playerConfig.healthStart << ", so can not add " << delta;
 		return;
 	}
 	playerConfig.healthStart += delta;
@@ -324,14 +324,14 @@ void HeadSensor::notifyDamager(PlayerMT2Id damager, uint8_t damagerTeam, uint8_t
 	notification.damagedTeam = playerConfig.teamId;
 	notification.state = state;
 	notification.target = playerConfig.plyerMT2Id;
-	info << "Notifying damager" << "\n";
+	info << "Notifying damager";
 	RCSPStream::remoteCall(broadcast.headSensors, ConfigCodes::HeadSensor::Functions::notifyIsDamager, notification, false);
 }
 
 void HeadSensor::notifyIsDamager(DamageNotification notification)
 {
 	ScopedTag tag("notify-damaged");
-	info << "By the time " << notification.damager << " damaged " << notification.target << "\n";
+	info << "By the time " << notification.damager << " damaged " << notification.target;
 	if (notification.damager != playerConfig.plyerMT2Id)
 		return;
 

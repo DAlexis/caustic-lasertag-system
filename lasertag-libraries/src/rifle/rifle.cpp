@@ -190,7 +190,7 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	// Line for DEBUG purpose only
 	//rifleTurnOn();
 
-	info << "Configuring buttons" << "\n";
+	info << "Configuring buttons";
 	m_fireButton = ButtonsPool::instance().getButtonManager(pinout.fireButtonPort, pinout.fireButtonPin);
 	ButtonsPool::instance().setExti(pinout.fireButtonPort, pinout.fireButtonPin, true);
 	m_fireButton->setAutoRepeat(config.automaticAllowed);
@@ -279,7 +279,7 @@ void Rifle::detectRifleState()
 		m_state = WeaponState::ready;
 	} else {
 		m_currentMagazineNumber = getCurrentMagazineNumber();
-		info << "Magazine inserted: " << m_currentMagazineNumber << "\n";
+		info << "Magazine inserted: " << m_currentMagazineNumber;
 		if (m_currentMagazineNumber != 0)
 		{
 			m_state = WeaponState::ready;
@@ -330,7 +330,7 @@ void Rifle::makeShot(bool isFirst)
 		if (state.bulletsInMagazineCurrent != 0)
 		{
 			state.bulletsInMagazineCurrent--;
-			info << "<----<< Sending bullet with damage " << config.damageMin << "\n";
+			info << "<----<< Sending bullet with damage " << config.damageMin;
 			m_mt2Transmitter.shot(config.damageMin);
 			if (m_fireFlash)
 			{
@@ -375,7 +375,7 @@ void Rifle::makeShot(bool isFirst)
 	default:
 		break;
 	}
-	trace << "State: " << m_state << "\n";
+	trace << "State: " << m_state;
 }
 
 void Rifle::distortBolt(bool)
@@ -411,12 +411,12 @@ void Rifle::distortBolt(bool)
 		break;
 
 	}
-	trace << "State: " << m_state << "\n";
+	trace << "State: " << m_state;
 }
 
 void Rifle::magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst)
 {
-	info << "Sensor cb for  " << sensorNumber << "\n";
+	info << "Sensor cb for  " << sensorNumber;
 	if (!isConnected)
 	{
 		m_state = WeaponState::magazineRemoved;
@@ -462,7 +462,7 @@ void Rifle::magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst)
 			break;
 		}
 	}
-	info << "State: " << m_state << "\n";
+	info << "State: " << m_state;
 }
 
 uint8_t Rifle::getCurrentMagazineNumber()
@@ -611,7 +611,7 @@ void Rifle::scheduleDamageNotification(uint8_t state)
 void Rifle::riflePlayEnemyDamaged(uint8_t state)
 {
 	ScopedTag tag("notify-damaged");
-	info << "Player damaged with state: " << state << "\n";
+	info << "Player damaged with state: " << state;
 	playDamagerNotification(state);
 }
 

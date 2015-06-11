@@ -46,7 +46,7 @@ public:
 	{
 		if (m_enabled)
 		{
-			Loggers::getUsart()->syncWrite("[");
+			Loggers::getUsart()->syncWrite("\n[");
 			Loggers::getUsart()->syncWrite(m_loggerName);
 			Loggers::getUsart()->syncWrite("] ");
 			for (auto it = Loggers::tags.begin(); it != Loggers::tags.end(); it++)
