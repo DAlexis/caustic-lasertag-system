@@ -38,6 +38,10 @@ _estack = 0x2000FFFF;    /* end of RAM */
 _Min_Heap_Size = 0;      /* required amount of heap  */
 _Min_Stack_Size = 0; /* required amount of stack */
 
+__Main_Stack_Size = 1024 ;
+PROVIDE ( _Heap_Begin = _end ) ;
+PROVIDE ( _Heap_Limit = _estack - __Main_Stack_Size ) ;
+
 /* Specify the memory areas */
 MEMORY
 {

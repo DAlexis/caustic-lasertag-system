@@ -44,6 +44,8 @@
 SD_HandleTypeDef hsd;
 HAL_SD_CardInfoTypedef SDCardInfo;
 
+UART_HandleTypeDef huart1;
+
 osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
@@ -54,6 +56,7 @@ osThreadId defaultTaskHandle;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SDIO_SD_Init(void);
+static void MX_USART1_UART_Init(void);
 void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
@@ -61,6 +64,24 @@ void StartDefaultTask(void const * argument);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+/*
+class TestBase
+{
+public:
+	virtual ~TestBase() {}
+	virtual uint8_t* getText() = 0;
+};
+
+class TestChild : public TestBase
+{
+public:
+	uint8_t* getText()
+	{
+		return (uint8_t*) "C++ test\n";
+	}
+};
+*/
+//TestBase* tb = new TestChild;
 
 /* USER CODE END 0 */
 
@@ -82,6 +103,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SDIO_SD_Init();
+  MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
 
@@ -112,7 +134,7 @@ int main(void)
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
  
-
+  char *q = malloc(100);
   /* Start scheduler */
   osKernelStart();
   
@@ -174,6 +196,22 @@ void MX_SDIO_SD_Init(void)
 
 }
 
+/* USART1 init function */
+void MX_USART1_UART_Init(void)
+{
+
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 921600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  HAL_UART_Init(&huart1);
+
+}
+
 /** Configure pins as 
         * Analog 
         * Input 
@@ -187,6 +225,7 @@ void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __GPIOD_CLK_ENABLE();
   __GPIOC_CLK_ENABLE();
+  __GPIOA_CLK_ENABLE();
 
 }
 
@@ -204,7 +243,8 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	HAL_UART_Transmit(&huart1, (uint8_t*)"Hello\n", 6, 100000);
+    osDelay(1000);
   }
   /* USER CODE END 5 */ 
 }
