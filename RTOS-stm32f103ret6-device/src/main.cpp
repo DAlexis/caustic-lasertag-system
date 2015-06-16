@@ -35,6 +35,8 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 #include "fatfs.h"
+#include <string.h>
+#include <functional>
 
 /* USER CODE BEGIN Includes */
 
@@ -134,7 +136,11 @@ int main(void)
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
  
-  char *q = malloc(100);
+  //char *q = malloc(100);
+  char *q = new char[10000];
+  memset(q, 0, 10000);
+
+  delete q;
   /* Start scheduler */
   osKernelStart();
   
@@ -238,12 +244,12 @@ void StartDefaultTask(void const * argument)
 {
   /* init code for FATFS */
   MX_FATFS_Init();
-
+  std::function<void(void)> func= [] () { HAL_UART_Transmit(&huart1, (uint8_t*)"Hello\n", 6, 100000); };
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-	HAL_UART_Transmit(&huart1, (uint8_t*)"Hello\n", 6, 100000);
+	  func();
     osDelay(1000);
   }
   /* USER CODE END 5 */ 
