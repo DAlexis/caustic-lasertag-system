@@ -32,21 +32,22 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "core/logging.hpp"
+#include "device-initializer.hpp"
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 #include "fatfs.h"
 #include <string.h>
 #include <functional>
+#include <stdio.h>
 
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
-SD_HandleTypeDef hsd;
-HAL_SD_CardInfoTypedef SDCardInfo;
 
-UART_HandleTypeDef huart1;
+
 
 osThreadId defaultTaskHandle;
 
@@ -55,11 +56,8 @@ osThreadId defaultTaskHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_SDIO_SD_Init(void);
-static void MX_USART1_UART_Init(void);
-void StartDefaultTask(void const * argument);
+
+extern "C" void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -87,6 +85,11 @@ public:
 
 /* USER CODE END 0 */
 
+DeviceInitializer deviceInitializer;
+
+FIL fl;
+FATFS m_fatfs;
+
 int main(void)
 {
 
@@ -97,15 +100,11 @@ int main(void)
   /* MCU Configuration----------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	deviceInitializer.initDevice();
+	info << "Device initialized";
+	//HAL_Delay(1000);
 
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_SDIO_SD_Init();
-  MX_USART1_UART_Init();
+	//Loggers::initLoggers(1);
 
   /* USER CODE BEGIN 2 */
 
@@ -125,7 +124,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 512);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -137,11 +136,13 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
  
   //char *q = malloc(100);
+  /*
   char *q = new char[10000];
   memset(q, 0, 10000);
 
-  delete q;
+  delete q;*/
   /* Start scheduler */
+  info << "Starting kernel";
   osKernelStart();
   
   /* We should never get here as control is now taken by the scheduler */
@@ -159,98 +160,111 @@ int main(void)
 
 }
 
-/** System Clock Configuration
-*/
-void SystemClock_Config(void)
-{
-
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
-  HAL_RCC_OscConfig(&RCC_OscInitStruct);
-
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
-
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-}
-
-/* SDIO init function */
-void MX_SDIO_SD_Init(void)
-{
-
-  hsd.Instance = SDIO;
-  hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
-  hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
-  hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
-  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
-  hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-  hsd.Init.ClockDiv = 0;
-
-}
-
-/* USART1 init function */
-void MX_USART1_UART_Init(void)
-{
-
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 921600;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  HAL_UART_Init(&huart1);
-
-}
-
-/** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-*/
-void MX_GPIO_Init(void)
-{
-
-  /* GPIO Ports Clock Enable */
-  __GPIOD_CLK_ENABLE();
-  __GPIOC_CLK_ENABLE();
-  __GPIOA_CLK_ENABLE();
-
-}
-
 /* USER CODE BEGIN 4 */
 
-/* USER CODE END 4 */
 
+
+typedef struct QueueDefinition
+{
+	int8_t *pcHead;					/*< Points to the beginning of the queue storage area. */
+	int8_t *pcTail;					/*< Points to the byte at the end of the queue storage area.  Once more byte is allocated than necessary to store the queue items, this is used as a marker. */
+	int8_t *pcWriteTo;				/*< Points to the free next place in the storage area. */
+
+	union							/* Use of a union is an exception to the coding standard to ensure two mutually exclusive structure members don't appear simultaneously (wasting RAM). */
+	{
+		int8_t *pcReadFrom;			/*< Points to the last place that a queued item was read from when the structure is used as a queue. */
+		UBaseType_t uxRecursiveCallCount;/*< Maintains a count of the number of times a recursive mutex has been recursively 'taken' when the structure is used as a mutex. */
+	} u;
+
+	List_t xTasksWaitingToSend;		/*< List of tasks that are blocked waiting to post onto this queue.  Stored in priority order. */
+	List_t xTasksWaitingToReceive;	/*< List of tasks that are blocked waiting to read from this queue.  Stored in priority order. */
+
+	volatile UBaseType_t uxMessagesWaiting;/*< The number of items currently in the queue. */
+	UBaseType_t uxLength;			/*< The length of the queue defined as the number of items it will hold, not the number of bytes. */
+	UBaseType_t uxItemSize;			/*< The size of each items that the queue will hold. */
+
+	volatile BaseType_t xRxLock;	/*< Stores the number of items received from the queue (removed from the queue) while the queue was locked.  Set to queueUNLOCKED when the queue is not locked. */
+	volatile BaseType_t xTxLock;	/*< Stores the number of items transmitted to the queue (added to the queue) while the queue was locked.  Set to queueUNLOCKED when the queue is not locked. */
+
+	#if ( configUSE_TRACE_FACILITY == 1 )
+		UBaseType_t uxQueueNumber;
+		uint8_t ucQueueType;
+	#endif
+
+	#if ( configUSE_QUEUE_SETS == 1 )
+		struct QueueDefinition *pxQueueSetContainer;
+	#endif
+
+} xQUEUE;
+
+void printQueue(xQUEUE* target)
+{
+	printf("pcHead = %x, pcTail = %x, pcWriteTo = %x\n", target->pcHead, target->pcTail, target->pcWriteTo);
+	printf("uxLength = %x, uxItemSize = %x\n", target->uxLength, target->uxItemSize);
+}
+
+/* USER CODE END 4 */
+char buf[10];
+
+
+//extern FATFS *FatFs[_VOLUMES];
 /* StartDefaultTask function */
-void StartDefaultTask(void const * argument)
+extern "C" void StartDefaultTask(void const * argument)
 {
   /* init code for FATFS */
-  MX_FATFS_Init();
-  std::function<void(void)> func= [] () { HAL_UART_Transmit(&huart1, (uint8_t*)"Hello\n", 6, 100000); };
+  //std::function<void(void)> func= [] () { HAL_UART_Transmit(&huart1, (uint8_t*)"Hello\n", 6, 100000); };
+	info << "Mounting FatFS";
+//	printf("************* &m_fatfs = %x\n", &m_fatfs);
+	FRESULT res = f_mount(&m_fatfs, "", 1);
+	fl.fs = &m_fatfs;
+	//xQUEUE *queue = (xQUEUE *)m_fatfs.sobj;
+	//printQueue(queue);
+	info << "Done, res = " << (int) res;
+
+	//printf("..... m_fatfs = %x, m_fatfs.sobj = %x\n", &m_fatfs, m_fatfs.sobj);
+  //f_mount(&m_fatfs, SD_Path, 1);
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-	  func();
+	  static int counter = 0;
+	  info << "Os works: " << counter << "\n";
+	  counter++;
+
+	  FRESULT res = f_open(&fl, "config.ini", FA_OPEN_EXISTING | FA_READ);
+	  //printf("After f_open: fl.fs = %x\n", fl.fs);
+	  //fl.fs = &m_fatfs;
+	  /*xQUEUE *fQueue = (xQUEUE *)fl.fs->sobj;
+	  printQueue(fQueue);
+	  xQUEUE *queue = (xQUEUE *)m_fatfs.sobj;
+	  printQueue(queue);*/
+	  //fl.fs->sobj = queue;
+
+	  // if _FS_REENTRANT is 0, this test is OK, else - not.
+	  if (fl.fs != &m_fatfs)
+		  info << "||| File descriptor has no pointer to fs!";
+	  info << "f_open done";
+	  if (res != 0)
+		  error << "Error :(\n" << res;
+	  else
+	  {
+		  info << "res == 0";
+		  UINT br=0;
+		  info << "f_read";
+		  res = f_read(&fl, buf, 9, &br);
+		  info << "f_read done";
+		  buf[9] = '\0';
+		  if (res == 0)
+			  info << "Readed " << br << " byes: " << buf;
+		  else
+			  error << "file reading error: " << res;
+	  }
+	  info << "f_close";
+	  f_close(&fl);
+	  info << "f_close done";
+	  //func();
     osDelay(1000);
+    info << "delay done";
   }
   /* USER CODE END 5 */ 
 }
@@ -266,9 +280,11 @@ void StartDefaultTask(void const * argument)
    */
 void assert_failed(uint8_t* file, uint32_t line)
 {
+	//error << "Called assert_failed at " << (char*)file << ":" << (int)line;
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	printf("Wrong parameters value: file %s on line %d\r\n", file, line);
   /* USER CODE END 6 */
 
 }
