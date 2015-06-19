@@ -76,6 +76,8 @@ void DeviceInitializer::initClock()
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
 	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
+
+	// HAL_Init already done this thing
 /*
 	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
