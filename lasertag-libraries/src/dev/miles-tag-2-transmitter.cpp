@@ -46,7 +46,7 @@ void MilesTag2Transmitter::shot(uint8_t damage)
     // Forming data package
     m_length = MT2Extended::shotLength;
     m_data[0] = *m_playerId & 0b01111111;
-    m_data[1] = (*m_teamId << 6) | ( (damage & 0b00001111) << 2);
+    m_data[1] = (*m_teamId << 6) | ( (encodeDamage(damage) & 0b00001111) << 2);
     beginTransmission();
 }
 

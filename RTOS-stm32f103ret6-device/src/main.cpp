@@ -33,7 +33,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "core/logging.hpp"
-#include "core/scheduler.hpp"
+#include "core/os-wrappers.hpp"
 #include "device-initializer.hpp"
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
@@ -49,7 +49,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 osThreadId defaultTaskHandle;
-osThreadId otherTaskHandle;
 
 /* USER CODE BEGIN PV */
 
@@ -57,7 +56,7 @@ osThreadId otherTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 
-extern "C" void StartDefaultTask(void const * argument);
+void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -72,23 +71,33 @@ DeviceInitializer deviceInitializer;
 FIL fl;
 FATFS m_fatfs;
 
-
-extern "C" void StartOtherTask(void const * argument)
-{
-	osDelay(3000);
-	info << "Hello!!! Hello!!! Hello!!! Hello!!! Hello!!!";
-	vTaskDelete(NULL);
-  /* USER CODE END 5 */
-}
+TaskOnce defaultTask(
+		[]()
+		{
+			StartDefaultTask(nullptr);
+		}
+		);
 
 TaskOnce t(
 		[]()
 			{
+
+
 				info << "I'm task!! I'm task!! I'm task!! I'm task!! I'm task!! ";
 				info << "I'm task!! I'm task!! I'm task!! I'm task!! I'm task!! ";
 				info << "I'm task!! I'm task!! I'm task!! I'm task!! I'm task!! ";
 			}
   	  	);
+
+int q=0;
+
+TaskCycled tc(
+		[]()
+			{
+				info << "Cycled" << q++;
+			}
+  	  	);
+
 
 int main(void)
 {
@@ -113,14 +122,10 @@ int main(void)
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
 
-	osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 512);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
-  osThreadDef(otherTask, StartOtherTask, osPriorityNormal, 0, 512);
-  otherTaskHandle = osThreadCreate(osThread(otherTask), NULL);
-
-
+  defaultTask.setStackSize(300);
+  defaultTask.run();
   t.run(2000);
+  tc.run(0, 519, 0, 10);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -147,15 +152,22 @@ int main(void)
 /* USER CODE END 4 */
 char buf[10];
 
-extern "C" void StartDefaultTask(void const * argument)
+void StartDefaultTask(void const * argument)
 {
+	(void)argument;
 	info << "Mounting FatFS";
 	FRESULT res = f_mount(&m_fatfs, "", 1);
 	fl.fs = &m_fatfs;
 	info << "Done, res = " << (int) res;
-	t.safelyStop();
+	Mutex mutex;
+	info << "Locked: " << mutex.isLocked();
+	info << "Locked: " << mutex.isLocked();
 	for(;;)
 	{
+		info << "Now Locked: " << mutex.isLocked();
+		ScopedLock lck(mutex);
+		info << "And now Locked: " << mutex.isLocked();
+		//mutex.lock();
 		static int counter = 0;
 		info << "Os works: " << counter << "\n";
 		counter++;
@@ -176,6 +188,7 @@ extern "C" void StartDefaultTask(void const * argument)
 		}
 		f_close(&fl);
 		osDelay(1000);
+		//mutex.unlock();
 	}
   /* USER CODE END 5 */ 
 }
