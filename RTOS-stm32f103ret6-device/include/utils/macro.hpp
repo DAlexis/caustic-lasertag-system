@@ -26,6 +26,6 @@
 #define ADD_BITS(where, what)		(where) |= (what)
 #define REMOVE_BITS(where, what)	(where) &= ~(what)
 
-
+#define UNUSED_ARG(x)		( (void) x )
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_CORE_MACRO_UTILS_HPP_ */

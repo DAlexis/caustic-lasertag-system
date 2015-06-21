@@ -34,6 +34,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
+#include "hal/io-pins.hpp"
 #include "device-initializer.hpp"
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
@@ -99,6 +100,31 @@ TaskCycled tc(
   	  	);
 
 
+
+IIOPin* pin;
+
+void pinTest()
+{
+	info << "Getting pin";
+	pin = IOPins->getIOPin(0, 0);
+
+	pin->setExtiCallback(
+		[] (bool state)
+		{
+			info << "EXTI callback: state is " << state;
+		}
+	);
+	pin->enableExti(true);
+
+	for (;;)
+	{
+		info << "pin status: " << pin->state();
+		osDelay(100);
+	}
+}
+
+TaskOnce pinTestTask(pinTest);
+
 int main(void)
 {
 	deviceInitializer.initDevice();
@@ -122,8 +148,9 @@ int main(void)
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
 
-  defaultTask.setStackSize(300);
-  defaultTask.run();
+  /*defaultTask.setStackSize(300);
+  defaultTask.run();*/
+  pinTestTask.run();
   t.run(2000);
   tc.run(0, 519, 0, 10);
 
@@ -152,6 +179,7 @@ int main(void)
 /* USER CODE END 4 */
 char buf[10];
 
+
 void StartDefaultTask(void const * argument)
 {
 	(void)argument;
@@ -160,13 +188,9 @@ void StartDefaultTask(void const * argument)
 	fl.fs = &m_fatfs;
 	info << "Done, res = " << (int) res;
 	Mutex mutex;
-	info << "Locked: " << mutex.isLocked();
-	info << "Locked: " << mutex.isLocked();
 	for(;;)
 	{
-		info << "Now Locked: " << mutex.isLocked();
 		ScopedLock lck(mutex);
-		info << "And now Locked: " << mutex.isLocked();
 		//mutex.lock();
 		static int counter = 0;
 		info << "Os works: " << counter << "\n";
@@ -193,6 +217,9 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END 5 */ 
 }
 
+
+
+
 #ifdef USE_FULL_ASSERT
 
 /**
@@ -208,7 +235,7 @@ void assert_failed(uint8_t* file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-	printf("Wrong parameters value: file %s on line %d\r\n", file, line);
+	printf("Wrong parameters value: file %s on line %lu\r\n", file, line);
   /* USER CODE END 6 */
 
 }

@@ -121,3 +121,44 @@ bool TaskCycled::run(STime firstRunDelay, STime periodMin, STime periodMax, uint
 	}
 	return true;
 }
+
+bool TaskDeferredFromISR::isPlanned()
+{
+	return (m_task != nullptr);
+}
+
+
+bool TaskDeferredFromISR::run(STask&& task)
+{
+	if (m_task != nullptr)
+		return false;
+
+	m_task = task;
+
+
+	/* The actual processing is to be deferred to a task.  Request the
+	vProcessInterface() callback function is executed, passing in the
+	number of the interface that needs processing.  The interface to
+	service is passed in the second parameter.  The first parameter is
+	not used in this case. */
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	xTimerPendFunctionCallFromISR( &TaskDeferredFromISR::taskBody,
+							   this,
+							   sizeof(TaskDeferredFromISR),
+							   &xHigherPriorityTaskWoken );
+
+	/* If xHigherPriorityTaskWoken is now set to pdTRUE then a context
+	switch should be requested.  The macro used is port specific and will
+	be either portYIELD_FROM_ISR() or portEND_SWITCHING_ISR() - refer to
+	the documentation page for the port being used. */
+	portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+	return true;
+}
+
+void TaskDeferredFromISR::taskBody(void* arg, uint32_t argSize)
+{
+	UNUSED_ARG(argSize);
+	TaskDeferredFromISR* object = reinterpret_cast<TaskDeferredFromISR*>(arg);
+	object->m_task();
+	object->m_task = 0;
+}

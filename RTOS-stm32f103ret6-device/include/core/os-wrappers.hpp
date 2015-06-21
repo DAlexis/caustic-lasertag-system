@@ -24,6 +24,7 @@ public:
 	TaskBase(const STask& task = nullptr) :
 		m_task(task)
 	{ }
+
 	inline bool isRunning() const { return m_state & runningNow; }
 	inline void deleteAfterRun(bool doDelete = true)
 	{
@@ -61,8 +62,7 @@ class TaskOnce : public TaskBase
 public:
 	TaskOnce(const STask& task = nullptr) :
 		TaskBase(task)
-	{
-	}
+	{ }
 	bool run(STime delay = 0);
 
 private:
@@ -75,8 +75,7 @@ class TaskCycled : public TaskBase
 public:
 	TaskCycled(const STask& task = nullptr) :
 			TaskBase(task)
-	{
-	}
+	{ }
 
 	bool run(STime firstRunDelay = 0, STime periodMin = 0, STime periodMax = 0, uint32_t cyclesCount = 0);
 
@@ -86,6 +85,27 @@ private:
 	STime m_periodMax = 0;
 	uint32_t m_cyclesCount = 0;
 	static void runTaskInCycle(void const* pTask);
+};
+
+class TaskDeferredFromISR
+{
+public:
+	/**
+	 * Check if task is already waiting to run
+	 * @return true if is waiting
+	 */
+	bool isPlanned();
+	/**
+	* Defer task runing from ISR using Free RTOS mechanism.
+	* Calls yeld so would stop the ISR
+	* @param task
+	* @return false if task is already planned
+	*/
+	bool run(STask&& task);
+
+private:
+	static void taskBody(void* arg, uint32_t argSize);
+	STask m_task = nullptr;
 };
 
 class Mutex
