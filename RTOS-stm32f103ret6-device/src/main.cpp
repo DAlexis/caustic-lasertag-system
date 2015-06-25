@@ -35,6 +35,7 @@
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
 #include "hal/io-pins.hpp"
+#include "dev/nrf24l01.hpp"
 #include "device-initializer.hpp"
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
@@ -125,10 +126,39 @@ void pinTest()
 
 TaskOnce pinTestTask(pinTest);
 
+NRF24L01Manager nrf;
+
+void NRFTest()
+{
+
+	nrf.enableDebug();
+	nrf.init(
+		IOPins->getIOPin(1, 7),
+		IOPins->getIOPin(1, 12),
+		IOPins->getIOPin(1, 8),
+		2,
+		false
+	);
+	nrf.printStatus();
+}
+
+TaskOnce interrogateRadio([]()
+{
+	//nrf.printStatus();
+
+	for (;;)
+	{
+
+		osDelay(1000);
+		nrf.printStatus();
+	}
+}
+);
+
 int main(void)
 {
 	deviceInitializer.initDevice();
-	info << "Device initialized";
+	info << "=============== Device initialized ===============";
 	//HAL_Delay(1000);
 
 	//Loggers::initLoggers(1);
@@ -148,11 +178,15 @@ int main(void)
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
 
-  /*defaultTask.setStackSize(300);
-  defaultTask.run();*/
-  pinTestTask.run();
-  t.run(2000);
-  tc.run(0, 519, 0, 10);
+  //defaultTask.setStackSize(300);
+  //defaultTask.run();
+  //pinTestTask.run();
+  //t.run(2000);
+  //tc.run(0, 519, 0, 10);
+	//NRFTest();
+	NRFTest();
+	interrogateRadio.setStackSize(500);
+	interrogateRadio.run(100);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -162,6 +196,8 @@ int main(void)
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
  
+
+
   info << "Starting kernel";
   osKernelStart();
   

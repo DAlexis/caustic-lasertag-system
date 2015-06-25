@@ -8,6 +8,8 @@
 #ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_DEV_NRF24L01_HPP_
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_DEV_NRF24L01_HPP_
 
+#include "hal/spi.hpp"
+#include "hal/io-pins.hpp"
 
 #define RADIO_ADDRESS_SIZE  5
 #define RADIO_CHANNEL       1
@@ -15,7 +17,7 @@
 using DataReceiveCallback = std::function<void(uint8_t/* channel*/, uint8_t*/* data*/)>;
 using TXMaxRetriesCallback = std::function<void(void)>;
 using TXDoneCallback = std::function<void(void)>;
-/*
+
 class NRF24L01Manager
 {
 public:
@@ -29,7 +31,7 @@ public:
 
     NRF24L01Manager();
 
-    void init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, IExternalInterruptManager* IRQexti, ISPIManager* spi);
+    void init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, uint8_t SPIIndex, bool useInterrupts);
     void printStatus();
     void setDataReceiveCallback(DataReceiveCallback callback);
     void setTXMaxRetriesCallback(TXMaxRetriesCallback callback);
@@ -191,10 +193,10 @@ private:
 	IIOPin* m_chipEnablePin = nullptr;
 	IIOPin* m_chipSelectPin = nullptr;
 	IIOPin* m_IRQPin = nullptr;
-	IExternalInterruptManager* m_IRQexti = nullptr;
-
-	IExternalInterruptManager* m_extiManager = nullptr;
+	IIOPin* m_NSSPin = nullptr;
 	ISPIManager* m_spi = nullptr;
+
+	bool m_useInterrupts = false;
 
 	bool m_needInterrogation = false;
 
@@ -215,10 +217,6 @@ private:
 
 	bool m_debug = false;
 };
-
-
-
-*/
 
 
 
