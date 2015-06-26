@@ -9,6 +9,7 @@
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/string-utils.hpp"
+#include "hal/system-clock.hpp"
 #include <stdio.h>
 #include <string.h>
 /*
@@ -272,14 +273,18 @@ void NRF24L01Manager::chipDeselect()
 {
 	m_chipSelectPin->set();
 }
-/*
+
 
 void NRF24L01Manager::CEImpulse()
 {
-    chipEnableOn();
-    systemClock->wait_us(15);
-    chipEnableOff();
-}*/
+	taskENTER_CRITICAL();
+	{
+		chipEnableOn();
+		systemClock->wait_us(15);
+		chipEnableOff();
+	}
+	taskEXIT_CRITICAL();
+}
 
 void NRF24L01Manager::writeReg(unsigned char reg, unsigned char size, unsigned char *data)
 {

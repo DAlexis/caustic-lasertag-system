@@ -46,7 +46,10 @@ void TaskCycled::runTaskInCycle(void const* pTask)
 				task->stopThread();
 				return;
 			}
-			osDelay(task->m_periodMin);
+			if (task->m_periodMin == 0)
+				taskYIELD();
+			else
+				osDelay(task->m_periodMin);
 		}
 	} else {
 		for (uint32_t i=0; i<task->m_cyclesCount;i++)
@@ -59,7 +62,10 @@ void TaskCycled::runTaskInCycle(void const* pTask)
 				task->stopThread();
 				return;
 			}
-			osDelay(task->m_periodMin);
+			if (task->m_periodMin == 0)
+				taskYIELD();
+			else
+				osDelay(task->m_periodMin);
 		}
 		task->stopThread();
 	}
@@ -161,4 +167,33 @@ void TaskDeferredFromISR::taskBody(void* arg, uint32_t argSize)
 	TaskDeferredFromISR* object = reinterpret_cast<TaskDeferredFromISR*>(arg);
 	object->m_task();
 	object->m_task = 0;
+}
+
+Interrogator::Interrogator()
+{
+	m_task.setTask(std::bind(&Interrogator::interrogateAll, this));
+}
+
+void Interrogator::registerObject(IInterrogatable* object)
+{
+	m_objects.push_back(object);
+}
+
+void Interrogator::run(uint32_t period)
+{
+	m_task.run(0, period, period, 0);
+}
+
+void Interrogator::setStackSize(uint32_t stackSize)
+{
+	m_task.setStackSize(stackSize);
+}
+
+void Interrogator::interrogateAll()
+{
+	for (auto it = m_objects.begin(); it != m_objects.end(); it++)
+	{
+		(*it)->interrogate();
+	}
+	taskYIELD();
 }

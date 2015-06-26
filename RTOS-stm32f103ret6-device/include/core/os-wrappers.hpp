@@ -13,6 +13,7 @@
 #include "utils/macro.hpp"
 #include "cmsis_os.h"
 #include <functional>
+#include <vector>
 
 using STask = std::function<void(void)>;
 using STime = uint32_t;
@@ -167,6 +168,14 @@ public:
 class Interrogator
 {
 public:
+	Interrogator();
+	void registerObject(IInterrogatable* object);
+	void run(uint32_t period = 0);
+	void setStackSize(uint32_t stackSize);
 
+private:
+	void interrogateAll();
+	TaskCycled m_task;
+	std::vector<IInterrogatable*> m_objects;
 };
 #endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SHEDULER_HPP_ */

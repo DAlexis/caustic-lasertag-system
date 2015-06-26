@@ -9,9 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_
 
 #include "hal/fire-emitter.hpp"
-
-//#include "hal/ext-interrupts.hpp"
-
+#include "hal/io-pins.hpp"
 #include <functional>
 #include <stdint.h>
 
@@ -21,7 +19,7 @@
 using MilesTag2ShotCallback = std::function<void(unsigned int /*teamId*/, unsigned int /*playerId*/, unsigned int /*damage*/)>;
 
 using PlayerMT2Id = uint8_t;
-/*
+
 class MilesTag2Transmitter
 {
 public:
@@ -99,7 +97,7 @@ class MilesTag2Receiver
 public:
     ~MilesTag2Receiver() {}
     void setShortMessageCallback(MilesTag2ShotCallback callback);
-    void init(IExternalInterruptManager* exti);
+    void init(IIOPin* input);
     void turnOn();
     void turnOff();
     void interrogate();
@@ -139,8 +137,9 @@ private:
 	uint8_t m_currentBit;
 	uint32_t m_dtime = 0;
 	uint32_t m_lastDtime = 0;
-    IExternalInterruptManager* m_exti = nullptr;
+	IIOPin* m_input = nullptr;
+    //IExternalInterruptManager* m_exti = nullptr;
     OnNextInterrogationCallback m_nextInterrogationCallback = nullptr;
 };
-*/
+
 #endif /* LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_ */

@@ -4,36 +4,37 @@
  *  Created on: 23 янв. 2015 г.
  *      Author: alexey
  */
-/*
+
 #include "dev/miles-tag-details.hpp"
-#include "core/scheduler.hpp"
-#include "rcsp/RCSP-aggregator.hpp"
-#include "rcsp/RCSP-stream.hpp"
+//#include "core/scheduler.hpp"
+//#include "rcsp/RCSP-aggregator.hpp"
+//#include "rcsp/RCSP-stream.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "hal/system-clock.hpp"
 #include <stdio.h>
+
 
 void MilesTag2Receiver::setShortMessageCallback(MilesTag2ShotCallback callback)
 {
 	m_shotCallback = callback;
 }
 
-void MilesTag2Receiver::init(IExternalInterruptManager* exti)
+void MilesTag2Receiver::init(IIOPin* input)
 {
-	m_exti = exti;
-	m_exti->setCallback(std::bind(&MilesTag2Receiver::interruptHandler, this, std::placeholders::_1));
+	m_input = input;
+	m_input->setExtiCallback(std::bind(&MilesTag2Receiver::interruptHandler, this, std::placeholders::_1));
 	resetReceiver();
-	Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, this), false, 5000, 2000);
+	//Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, this), false, 5000, 2000);
 }
 
 void MilesTag2Receiver::turnOn()
 {
-	m_exti->turnOn();
+	m_input->enableExti(true);
 }
 
 void MilesTag2Receiver::turnOff()
 {
-	m_exti->turnOff();
+	m_input->enableExti(false);
 }
 
 void MilesTag2Receiver::interrogate()
@@ -137,18 +138,18 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		switch(m_data[1])
 		{
 		case MT2Extended::Commands::adminKill:
-			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerKill);
+			//RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerKill);
 			break;
 		case MT2Extended::Commands::pauseOrUnpause:
 			break;
 		case MT2Extended::Commands::startGame:
-			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerReset);
+			//RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerReset);
 			break;
 		case MT2Extended::Commands::restoreDefaults:
-			RCSPAggregator::instance().doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults);
+			//RCSPAggregator::instance().doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults);
 			break;
 		case MT2Extended::Commands::respawn:
-			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn);
+			//RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn);
 			break;
 		case MT2Extended::Commands::newGameImmediate:
 			break;
@@ -186,7 +187,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		printf("Add health with health code %u detected\n", m_data[1]);
 		int16_t healthDelta = MT2Extended::decodeAddHealth(m_data[1]);
 
-		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::addMaxHealth, healthDelta);
+		//RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::addMaxHealth, healthDelta);
 	}
 	else if (getCurrentLength() == MT2Extended::messageLength
 		&& m_data[0] == MT2Extended::Byte1::setTeam)
@@ -195,7 +196,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		printf("IR: Set team id to %u\n", teamId);
 		if (m_data[1] & ~(0x03))
 			printf("Warning: team id byte contains non-zero upper bits\n");
-		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::setTeam, m_data[1]);
+		//RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::setTeam, m_data[1]);
 	}
 	else
 		return false;
@@ -326,7 +327,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 }
 
 
-
+/*
 bool MilesTag2Receiver::parseVariableSizeMessage()
 {
 	unsigned int time = systemClock->getTime();
@@ -346,5 +347,5 @@ bool MilesTag2Receiver::parseVariableSizeMessage()
 	}
 	resetReceiver();
 	return false;
-}
-*/
+}*/
+

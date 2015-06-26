@@ -9,9 +9,8 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_WAV_PLAYER_HPP_
 
 #include "hal/fragment-player.hpp"
-/*
-#include "hal/ff/ff.h"
-#include "core/singleton-macro.hpp"
+#include "fatfs.h"
+#include "utils/macro.hpp"
 #include <vector>
 #include <string>
 
@@ -21,7 +20,6 @@ public:
 	constexpr static uint32_t audioBufferSize = 1000;
 	WavPlayer();
 	~WavPlayer();
-	static WavPlayer& instance();
 	void init();
 
 	void loadAndPlay(const char* fileName);
@@ -29,6 +27,7 @@ public:
 	inline bool isPlaying() { return m_isPlaying; }
 	void setVerbose(bool verbose = true);
 
+	SIGLETON_IN_CLASS(WavPlayer)
 private:
 	struct WavHeader {
 		char riff[4];
@@ -63,8 +62,7 @@ private:
 	bool m_fileIsOpened = false;
 	SoundSample *m_buffer1 = nullptr, *m_buffer2 = nullptr;
 
-	static WavPlayer* m_wavPlayer;
-	STATIC_DEINITIALIZER_IN_CLASS_DECLARATION;
+
 };
 
 class SoundPlayer
@@ -80,5 +78,5 @@ private:
 	std::vector<std::string> m_variants;
 };
 
-*/
+
 #endif /* LAZERTAG_RIFLE_INCLUDE_DEV_WAV_PLAYER_HPP_ */

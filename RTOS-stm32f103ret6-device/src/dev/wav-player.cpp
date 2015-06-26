@@ -6,15 +6,12 @@
  */
 
 #include "dev/wav-player.hpp"
-/*
 #include "dev/random.hpp"
-#include "dev/sdcard-fs.hpp"
 #include "core/logging.hpp"
 #include <stdio.h>
 #include <string.h>
 
-WavPlayer* WavPlayer::m_wavPlayer = nullptr;
-STATIC_DEINITIALIZER_IN_CPP_FILE(WavPlayer, m_wavPlayer);
+SINGLETON_IN_CPP(WavPlayer)
 
 WavPlayer::WavPlayer()
 {
@@ -41,13 +38,6 @@ WavPlayer::~WavPlayer()
 void WavPlayer::init()
 {
 	fragmentPlayer->setFragmentDoneCallback(std::bind(&WavPlayer::fragmentDoneCallback, this, std::placeholders::_1));
-}
-
-WavPlayer& WavPlayer::instance()
-{
-	if (!m_wavPlayer)
-		m_wavPlayer = new WavPlayer;
-	return *m_wavPlayer;
 }
 
 void WavPlayer::setVerbose(bool verbose)
@@ -249,15 +239,17 @@ void WavPlayer::closeFile()
 	{
 		f_close(&m_fil);
 		m_fileIsOpened = false;
-		SDCardFS::instance().unlock();
+		//SDCardFS::instance().unlock();
 	}
 }
 
 void WavPlayer::loadAndPlay(const char* fileName)
 {
+	/*
 	// If SD-card is busy
 	if (SDCardFS::instance().isLocked() && !m_isPlaying)
 		return;
+		*/
 	/// @todo Add here deferred call
 
 	if (m_isPlaying)
@@ -265,11 +257,11 @@ void WavPlayer::loadAndPlay(const char* fileName)
 		stop();
 	}
 
-	SDCardFS::instance().lock();
+	//SDCardFS::instance().lock();
 	if (loadFile(fileName))
 		play();
-	else
-		SDCardFS::instance().unlock();
+	//else
+	//	SDCardFS::instance().unlock();
 }
 
 /////////////////////////
@@ -320,4 +312,3 @@ void SoundPlayer::play()
 	WavPlayer::instance().loadAndPlay(m_variants[rnd].c_str());
 }
 
-*/
