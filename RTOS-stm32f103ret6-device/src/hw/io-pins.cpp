@@ -109,8 +109,15 @@ void IOPin::enableExti(bool enable)
 
 void IOPin::extiInterrupt()
 {
+	//info << "In listener";
 	if (m_callback)
 	{
+		/*
+		info << "Running cb directly";
+		m_callback(state());
+		*/
+
+		//info << "Deferred task planned";
 		m_deferredTask.run(
 			std::bind(m_callback, state())
 		);
@@ -188,8 +195,10 @@ IIOPin* IOPinsPool::getIOPin(uint8_t portNumber, uint8_t pinNumber)
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t pinMask)
 {
 	uint8_t pinNumber = IOPin::maskToPinNumber(pinMask);
+	//info << "HAL_GPIO_EXTI_Callback, pn=" << pinNumber;
 	if (nullptr != extisListeners[pinNumber])
 	{
+		//info << "Going to listener";
 		extisListeners[pinNumber]->extiInterrupt();
 	}
 }

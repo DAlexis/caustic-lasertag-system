@@ -43,6 +43,11 @@ public:
 	 * @return is task executing after this call
 	 */
 	bool safelyStop();
+	/**
+	 * Call vTaskDelete. Attention! This operation immediately stop the task
+	 * without calling any destructors
+	 */
+	void stopUnsafe();
 
 protected:
 	constexpr static uint8_t runningNow = 1;

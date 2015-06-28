@@ -20,8 +20,8 @@ void DeviceInitializer::initDevice()
 	initClock();
 	initGPIO();
 	initSDIO();
-	MX_FATFS_Init();
 	Loggers::initLoggers(1);
+	initFatFS();
 	info << "Base HW initialization done";
 	printf("\nprintf works()\n");
 	//__HAL_SD_SDIO_DISABLE(&hsd);
@@ -29,7 +29,7 @@ void DeviceInitializer::initDevice()
 
 void DeviceInitializer::startOS()
 {
-
+	info << "Starting FreeRTOS kernel...";
 	osKernelStart();
 }
 
@@ -54,7 +54,13 @@ void DeviceInitializer::initSDIO()
 
 void DeviceInitializer::initFatFS()
 {
-
+	MX_FATFS_Init();
+	info << "Mounting file system...";
+	FRESULT res = f_mount(&m_fatfs, "", 1);
+	if (res == FR_OK)
+		info << "File system succesfuly mounted";
+	else
+		error << "Error while mounting file system: " << res;
 }
 
 void DeviceInitializer::initClock()

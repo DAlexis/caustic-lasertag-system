@@ -32,181 +32,101 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "head-sensor/head-sensor.hpp"
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
-#include "hal/io-pins.hpp"
-#include "dev/nrf24l01.hpp"
 #include "device-initializer.hpp"
-#include "stm32f1xx_hal.h"
-#include "cmsis_os.h"
-#include "fatfs.h"
-#include <string.h>
 #include <functional>
 #include <stdio.h>
 
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private variables ---------------------------------------------------------*/
-
-osThreadId defaultTaskHandle;
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-
-void StartDefaultTask(void const * argument);
-
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 DeviceInitializer deviceInitializer;
 
-FIL fl;
-FATFS m_fatfs;
+TaskCycled test;
 
-TaskOnce defaultTask(
-		[]()
-		{
-			StartDefaultTask(nullptr);
-		}
-		);
-
-TaskOnce t(
-		[]()
-			{
-
-
-				info << "I'm task!! I'm task!! I'm task!! I'm task!! I'm task!! ";
-				info << "I'm task!! I'm task!! I'm task!! I'm task!! I'm task!! ";
-				info << "I'm task!! I'm task!! I'm task!! I'm task!! I'm task!! ";
-			}
-  	  	);
-
-int q=0;
-
-TaskCycled tc(
-		[]()
-			{
-				info << "Cycled" << q++;
-			}
-  	  	);
-
-
-
-IIOPin* pin;
-
-void pinTest()
+class Aaa
 {
-	info << "Getting pin";
-	pin = IOPins->getIOPin(0, 0);
-
-	pin->setExtiCallback(
-		[] (bool state)
-		{
-			info << "EXTI callback: state is " << state;
-		}
-	);
-	pin->enableExti(true);
-
-	for (;;)
+public:
+	void printHi()
 	{
-		info << "pin status: " << pin->state();
-		osDelay(100);
+		info << "Hi!";
 	}
-}
 
-TaskOnce pinTestTask(pinTest);
+};
 
-NRF24L01Manager nrf;
+TaskCycled t2([](){
+	info << "Hi!2";
+});
 
-void NRFTest()
-{
+TaskCycled t3([](){
+	info << "Hi!3";
+});
 
-	nrf.enableDebug();
-	nrf.init(
-		IOPins->getIOPin(1, 7),
-		IOPins->getIOPin(1, 12),
-		IOPins->getIOPin(1, 8),
-		2,
-		false
-	);
-	nrf.printStatus();
-}
+TaskCycled alive([](){
+	info << "I'm alive now";
+});
 
-TaskOnce interrogateRadio([]()
-{
-	//nrf.printStatus();
-
-	for (;;)
-	{
-
-		osDelay(1000);
-		nrf.printStatus();
-	}
-}
-);
+HeadSensor headSensor;
+HeadSensorPinoutMapping pinout;
 
 int main(void)
 {
 	deviceInitializer.initDevice();
+	debug.enable();
+	radio.enable();
+	trace.enable();
 	info << "=============== Device initialized ===============";
-	//HAL_Delay(1000);
+	// Wait for voltages stabilization
+	HAL_Delay(1000);
 
-	//Loggers::initLoggers(1);
+	/* USER CODE BEGIN RTOS_TIMERS */
+	/* start timers, add new ones, ... */
+	/* USER CODE END RTOS_TIMERS */
 
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
+	info << "Head sensor has size " << sizeof(headSensor);
+/*
+	HeadSensor *headSensor = nullptr;
+	HeadSensorPinoutMapping pinout;
+	headSensor = new HeadSensor;
+	if (!headSensor)
+	{
+		error << "Fatal error: cannot allocate HeadSensor object";
+		for(;;){}
+	}
+	headSensor->configure(pinout);*/
+	headSensor.configure(pinout);
+/*
+	Aaa a;
+	test.setTask(std::bind(&Aaa::printHi, &a));
+	test.setStackSize(1024);
+	test.run();
+	t2.setStackSize(128);
+	t2.run();
+	t3.setStackSize(128);
+	t3.run();*/
+	alive.setStackSize(128);
+	alive.run(0, 500, 500, 0);
+	HAL_Delay(1000);
+	// Turning on console
+	//Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
 
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
+	// Turning on memory checker
+	//Scheduler::instance().addTask(checkMemory, false, 500000);
 
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
+	// Printing console prompt
+	//Console::instance().prompt();
 
-  /* Create the thread(s) */
-  /* definition and creation of defaultTask */
+	// Running main loop of co-op scheduler
+	//Scheduler::instance().mainLoop();
+	info << "Starting kernel";
+	osKernelStart();
 
-  //defaultTask.setStackSize(300);
-  //defaultTask.run();
-  //pinTestTask.run();
-  //t.run(2000);
-  //tc.run(0, 519, 0, 10);
-	//NRFTest();
-	NRFTest();
-	interrogateRadio.setStackSize(500);
-	interrogateRadio.run(100);
+	// We should never get here as control is now taken by the scheduler
 
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
+	while (1)
+	{
 
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
- 
-
-
-  info << "Starting kernel";
-  osKernelStart();
-  
-  // We should never get here as control is now taken by the scheduler
-
-  while (1)
-  {
-
-  }
+	}
 
 }
 
@@ -214,46 +134,6 @@ int main(void)
 
 /* USER CODE END 4 */
 char buf[10];
-
-
-void StartDefaultTask(void const * argument)
-{
-	(void)argument;
-	info << "Mounting FatFS";
-	FRESULT res = f_mount(&m_fatfs, "", 1);
-	fl.fs = &m_fatfs;
-	info << "Done, res = " << (int) res;
-	Mutex mutex;
-	for(;;)
-	{
-		ScopedLock lck(mutex);
-		//mutex.lock();
-		static int counter = 0;
-		info << "Os works: " << counter << "\n";
-		counter++;
-
-		FRESULT res = f_open(&fl, "config.ini", FA_OPEN_EXISTING | FA_READ);
-
-		if (res != 0)
-			error << "Error :(\n" << res;
-		else
-		{
-			UINT br=0;
-			res = f_read(&fl, buf, 9, &br);
-			buf[9] = '\0';
-			if (res == 0)
-				info << "Readed " << br << " byes: " << buf;
-			else
-				error << "file reading error: " << res;
-		}
-		f_close(&fl);
-		osDelay(1000);
-		//mutex.unlock();
-	}
-  /* USER CODE END 5 */ 
-}
-
-
 
 
 #ifdef USE_FULL_ASSERT

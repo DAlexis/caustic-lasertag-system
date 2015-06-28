@@ -211,11 +211,11 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     if (m_useInterrupts)
 	{
     	IRQPin->setExtiCallback(std::bind(&NRF24L01Manager::extiHandler, this, std::placeholders::_1));
+		IRQPin->enableExti(true);
 		if (false == m_IRQPin->state())
 			m_needInterrogation = true;
 		else
 			m_needInterrogation = false;
-		IRQPin->enableExti(true);
 	}
 
     if (m_TXAdress[0] != 0xe7)
@@ -673,6 +673,8 @@ void NRF24L01Manager::resetAllIRQ()
 
 void NRF24L01Manager::interrogate()
 {
+	//info << "ri";
+	
 	if (m_useInterrupts)
 	{
 		if (!m_needInterrogation)
@@ -686,6 +688,7 @@ void NRF24L01Manager::interrogate()
     updateStatus();
     if (isRXDataReady())
     {
+    	//info << "RX data ready";
         unsigned char pipe = getPipeNumberAvaliableForRXFIFO();
         unsigned char data[payloadSize];
         while (!isRXEmpty())
@@ -695,10 +698,12 @@ void NRF24L01Manager::interrogate()
                 printf("Warning: Callback is not set! RX data from pipe %d: \n", pipe);
                 printf("%x %x %x %x %x\n", data[0], data[1], data[2], data[3], data[4]);
             } else {
+            	//info << "RX callback called";
                 m_RXcallback(pipe, data);
             }
         }
         chipEnableOn();
+        //info << "resetRXDataReady";
         resetRXDataReady();
     }
     if (isTXDataSent())
@@ -728,6 +733,7 @@ void NRF24L01Manager::interrogate()
 
 void NRF24L01Manager::extiHandler(bool state)
 {
+	//info << "NRF24l01 IRQ! state: " << state;
 	if (true == state)
 		return;
 

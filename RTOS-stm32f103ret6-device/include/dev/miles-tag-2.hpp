@@ -10,6 +10,7 @@
 
 #include "hal/fire-emitter.hpp"
 #include "hal/io-pins.hpp"
+#include "core/os-wrappers.hpp"
 #include <functional>
 #include <stdint.h>
 
@@ -95,6 +96,7 @@ private:
 class MilesTag2Receiver
 {
 public:
+	MilesTag2Receiver();
     ~MilesTag2Receiver() {}
     void setShortMessageCallback(MilesTag2ShotCallback callback);
     void init(IIOPin* input);
@@ -140,6 +142,7 @@ private:
 	IIOPin* m_input = nullptr;
     //IExternalInterruptManager* m_exti = nullptr;
     OnNextInterrogationCallback m_nextInterrogationCallback = nullptr;
+    TaskCycled m_interrogateTask;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_ */

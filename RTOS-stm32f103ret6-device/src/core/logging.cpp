@@ -13,6 +13,8 @@ UART_HandleTypeDef Loggers::huart;
 //const char* Loggers::tag = nullptr;
 std::list<const char*> Loggers::tags;
 
+Mutex Loggers::loggersMutex;
+
 Logger error  ("ERROR");
 Logger warning("warn ");
 Logger info   ("info ");
@@ -42,6 +44,7 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(const char* str)
 {
 	if (enabled)
 	{
+		ScopedLock lock(Loggers::loggersMutex);
 		HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)str, strlen(str), 100000);
 	}
 	return *this;
@@ -98,13 +101,13 @@ ScopedTag::ScopedTag(const char* newTag)
 	/*
 	m_oldTag = Loggers::tag;
 	Loggers::tag = newTag;*/
-	Loggers::tags.push_back(newTag);
+	//Loggers::tags.push_back(newTag);
 }
 
 ScopedTag::~ScopedTag()
 {
 	//Loggers::tag = m_oldTag;
-	Loggers::tags.pop_back();
+	//Loggers::tags.pop_back();
 }
 
 
@@ -112,6 +115,7 @@ extern "C" ssize_t
 _write (int fd __attribute__((unused)), const char* buf __attribute__((unused)),
 	size_t nbyte __attribute__((unused)))
 {
+	//ScopedLock lock(Loggers::loggersMutex);
 	HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)buf, nbyte, 100000);
 	return nbyte;
 }

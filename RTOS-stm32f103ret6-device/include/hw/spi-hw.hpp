@@ -11,7 +11,7 @@
 #include "hal/spi.hpp"
 #include "hal/io-pins.hpp"
 
-//#define USE_STDPERIPH_SPI
+#define USE_STDPERIPH_SPI
 
 #ifdef USE_STDPERIPH_SPI
 	#include "stm32f10x.h"

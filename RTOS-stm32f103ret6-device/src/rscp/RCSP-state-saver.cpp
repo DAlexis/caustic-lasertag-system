@@ -16,6 +16,12 @@
 
 SINGLETON_IN_CPP(StateSaver)
 
+StateSaver::StateSaver()
+{
+	m_savingTask.setTask(std::bind(&StateSaver::saveState, this));
+	m_savingTask.setStackSize(256);
+}
+
 void StateSaver::addValue(OperationCode code)
 {
 	m_codes.push_back(code);
@@ -160,10 +166,8 @@ void StateSaver::resetSaves()
 
 void StateSaver::runSaver(uint32_t period)
 {
-	/*
-	stopSaver();
-	m_savingTask = Scheduler::instance().addTask(std::bind(&StateSaver::saveState, this), false, period, 0, period);
-	*/
+
+	//m_savingTask.run(period, period, period, 0);
 }
 
 void StateSaver::stopSaver()

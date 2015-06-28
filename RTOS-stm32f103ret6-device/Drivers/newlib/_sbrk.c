@@ -21,6 +21,7 @@ _sbrk(int incr);
 caddr_t
 _sbrk(int incr)
 {
+//  _write (1, "_sbrk\n", 6);
   extern char _Heap_Begin; // Defined by the linker.
   extern char _Heap_Limit; // Defined by the linker.
   //extern char isMemoryCorrupted;

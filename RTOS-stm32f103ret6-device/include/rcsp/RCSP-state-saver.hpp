@@ -24,7 +24,7 @@
 class StateSaver
 {
 public:
-	StateSaver() {}
+	StateSaver();
     void addValue(OperationCode code);
     void setFilename(const std::string& filename);
 
@@ -47,9 +47,8 @@ private:
     std::string m_fileCurrent[2];
     uint8_t m_current = 0, m_next = 1;
 
-    STaskId m_savingTask = 0;
-
     std::list<OperationCode> m_codes;
+    TaskCycled m_savingTask;
 };
 
 #endif /* INCLUDE_RCSP_RCSP_STATE_SAVER_HPP_ */

@@ -89,6 +89,16 @@ bool TaskBase::safelyStop()
 	}
 }
 
+void TaskBase::stopUnsafe()
+{
+	if (m_taskId)
+	{
+		vTaskDelete(m_taskId);
+		m_taskId = nullptr;
+	}
+}
+
+
 void TaskBase::stopThread()
 {
 	REMOVE_BITS(m_state, runningNow);
@@ -99,6 +109,7 @@ void TaskBase::stopThread()
 
 bool TaskOnce::run(STime delay)
 {
+	info << "Running new task, stack: " << (int)m_stackSize;
 	ADD_BITS(m_state, runningNow);
 	m_firstRunDelay = delay;
 	osThreadDef(newTask, runTaskOnce, osPriorityNormal, 0, m_stackSize);
@@ -106,13 +117,16 @@ bool TaskOnce::run(STime delay)
 	if (m_taskId == NULL)
 	{
 		REMOVE_BITS(m_state, runningNow);
+		error << "Running new task failed!";
 		return false;
 	}
+	info << "Running new task ok";
 	return true;
 }
 
 bool TaskCycled::run(STime firstRunDelay, STime periodMin, STime periodMax, uint32_t cyclesCount)
 {
+	info << "Running new task, stack: " << (int)m_stackSize;
 	ADD_BITS(m_state, runningNow);
 	m_firstRunDelay = firstRunDelay;
 	m_periodMin = periodMin;
@@ -123,8 +137,10 @@ bool TaskCycled::run(STime firstRunDelay, STime periodMin, STime periodMax, uint
 	if (m_taskId == NULL)
 	{
 		REMOVE_BITS(m_state, runningNow);
+		error << "Running new task failed!";
 		return false;
 	}
+	info << "Running new task ok";
 	return true;
 }
 
@@ -165,6 +181,7 @@ void TaskDeferredFromISR::taskBody(void* arg, uint32_t argSize)
 {
 	UNUSED_ARG(argSize);
 	TaskDeferredFromISR* object = reinterpret_cast<TaskDeferredFromISR*>(arg);
+	//info << "Deferred task running";
 	object->m_task();
 	object->m_task = 0;
 }

@@ -27,7 +27,7 @@ void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, 
 	{
 		if (!isObjectOC(code))
 		{
-			error << "Only parameter\'s values can save states!\n";
+			error << "Only parameter\'s values can save states!";
 			return;
 		}
 		StateSaver::instance().addValue(code);
@@ -67,18 +67,18 @@ bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code,
 				answerStream->addValue(parameterCode);
 				return true;
 			} else {
-				warning << "Unknown request code: " << *code << "\n";
+				warning << "Unknown request code: " << *code;
 				return false;
 			}
 		} else {
-			debug << "No answer stream, skipping request\n";
+			debug << "No answer stream, skipping request";
 			return false;
 		}
 	} else {
 		auto it = m_accessorsByOpCode.find(*code);
 		if (it != m_accessorsByOpCode.end())
 		{
-			trace << "Dispatched opcode: " << *code << "\n";
+			trace << "Dispatched opcode: " << *code ;
 			if (*size == 0)
 				it->second->deserialize(nullptr, 0);
 			else
@@ -87,7 +87,7 @@ bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code,
 		}
 		else
 		{
-			warning << "Unknown request code: " << *code << "\n";
+			warning << "Unknown request code: " << *code;
 			return false;
 		}
 	}

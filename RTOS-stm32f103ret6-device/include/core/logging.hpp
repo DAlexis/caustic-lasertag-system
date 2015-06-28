@@ -8,6 +8,7 @@
 #ifndef INCLUDE_CORE_LOGGING_HPP_
 #define INCLUDE_CORE_LOGGING_HPP_
 
+#include "os-wrappers.hpp"
 #include "stm32f1xx_hal.h"
 #include <string.h>
 #include <list>
@@ -20,6 +21,7 @@ public:
 	static void initLoggers(uint8_t portNumber);
 	static UART_HandleTypeDef* __attribute__((always_inline)) getUsart() { return &huart; }
 
+	static Mutex loggersMutex;
 private:
 	static void infoOnOff(const char* arg);
 	static void debugOnOff(const char* arg);
@@ -46,6 +48,7 @@ public:
 	{
 		if (m_enabled)
 		{
+			ScopedLock lock(Loggers::loggersMutex);
 			HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)"\n[", 2, 100000);
 			HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)m_loggerName, strlen(m_loggerName), 100000);
 			HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)"] ", 2, 100000);

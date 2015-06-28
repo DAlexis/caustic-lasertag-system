@@ -9,6 +9,7 @@
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_DEVICE_INITIALIZER_HPP_
 
 #include "stm32f1xx_hal.h"
+#include "fatfs.h"
 
 class DeviceInitializer
 {
@@ -20,7 +21,7 @@ private:
 	void initSDIO();
 	void initFatFS();
 	void initClock();
-
+	FATFS m_fatfs;
 
 };
 
