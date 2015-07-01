@@ -66,9 +66,6 @@ TaskCycled alive([](){
 	info << "I'm alive now";
 });
 
-HeadSensor headSensor;
-HeadSensorPinoutMapping pinout;
-
 int main(void)
 {
 	deviceInitializer.initDevice();
@@ -83,8 +80,8 @@ int main(void)
 	/* start timers, add new ones, ... */
 	/* USER CODE END RTOS_TIMERS */
 
-	info << "Head sensor has size " << sizeof(headSensor);
-/*
+	info << "Head sensor has size " << sizeof(HeadSensor);
+
 	HeadSensor *headSensor = nullptr;
 	HeadSensorPinoutMapping pinout;
 	headSensor = new HeadSensor;
@@ -93,8 +90,8 @@ int main(void)
 		error << "Fatal error: cannot allocate HeadSensor object";
 		for(;;){}
 	}
-	headSensor->configure(pinout);*/
-	headSensor.configure(pinout);
+	headSensor->configure(pinout);
+
 /*
 	Aaa a;
 	test.setTask(std::bind(&Aaa::printHi, &a));

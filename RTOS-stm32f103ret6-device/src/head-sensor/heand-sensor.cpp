@@ -108,7 +108,13 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 		// setting player state to default
 		playerState.reset();
 	}
-
+/*
+	IIOPin* pin = IOPins->getIOPin(0,0);
+			pin->setExtiCallback([](bool state) {
+				info << "Callback! " << state;
+			});
+			pin->enableExti(true);
+*/
 	info << "Initializing visual effects";
 	m_leds.init(
 			IOPins->getIOPin(pinout.redPort, pinout.redPin),

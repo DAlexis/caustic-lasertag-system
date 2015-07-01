@@ -55,34 +55,25 @@ void IOPin::switchToInput()
 	GPIO_InitTypeDef GPIO_InitStructure;
 	zerify(GPIO_InitStructure);
 	GPIO_InitStructure.Pin = m_pinMask;
-	GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING_FALLING;
+	GPIO_InitStructure.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
 	GPIO_InitStructure.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(m_gpio, &GPIO_InitStructure);
 	isOutputMode = false;
 }
 
-void IOPin::setExtiCallback(const IOPinCallback& callback)
+void IOPin::setExtiCallback(const IOPinCallback& callback, bool direclyFromISR)
 {
 	m_callback = callback;
+	m_runDirectlyFromISR = direclyFromISR;
 }
 
 void IOPin::enableExti(bool enable)
 {
 	m_extiEnabled = enable;
-	IRQn_Type irq;
 
-	GPIO_InitTypeDef GPIO_InitStructure;
-	zerify(GPIO_InitStructure);
-	GPIO_InitStructure.Pin = m_pinMask;
-	GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING_FALLING;
-	GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-	GPIO_InitStructure.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(m_gpio, &GPIO_InitStructure);
-	/*
-	HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-	*/
+	// Determining irq channel
+	IRQn_Type irq;
 
 	switch(maskToPinNumber(m_pinMask))
 	{
@@ -97,14 +88,23 @@ void IOPin::enableExti(bool enable)
 		irq = EXTI15_10_IRQn; break;
 	}
 
-	HAL_NVIC_SetPriority(irq, 5, 0);
-	if (enable)
+	if (m_extiEnabled)
+	{
+		GPIO_InitTypeDef GPIO_InitStructure;
+		zerify(GPIO_InitStructure);
+		GPIO_InitStructure.Pin = m_pinMask;
+		GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING_FALLING;
+		GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+		GPIO_InitStructure.Pull = GPIO_PULLUP;
+		HAL_GPIO_Init(m_gpio, &GPIO_InitStructure);
+
+		HAL_NVIC_SetPriority(irq, 5, 0);
+		extisListeners[maskToPinNumber(m_pinMask)] = this;
 		HAL_NVIC_EnableIRQ(irq);
-	else
+	} else {
 		HAL_NVIC_DisableIRQ(irq);
-
-
-	extisListeners[maskToPinNumber(m_pinMask)] = this;
+		switchToInput();
+	}
 }
 
 void IOPin::extiInterrupt()
@@ -112,15 +112,12 @@ void IOPin::extiInterrupt()
 	//info << "In listener";
 	if (m_callback)
 	{
-		/*
-		info << "Running cb directly";
-		m_callback(state());
-		*/
-
-		//info << "Deferred task planned";
-		m_deferredTask.run(
-			std::bind(m_callback, state())
-		);
+		if (m_runDirectlyFromISR)
+		{
+			m_callback(state());
+		} else {
+			m_deferredTask.run(std::bind(m_callback, state()));
+		}
 	}
 }
 
@@ -138,6 +135,7 @@ GPIO_TypeDef* IOPin::parsePortNumber(uint8_t portNumber)
 	case 3:
 		return GPIOD;
 	default:
+		error << "Invalid GPIO port requested";
 		return nullptr;
 	}
 }
@@ -163,6 +161,7 @@ uint8_t IOPin::maskToPinNumber(uint16_t pinMask)
 	case GPIO_PIN_14: return 14;
 	case GPIO_PIN_15: return 15;
 	default:
+		error << "Invalid pin number requested";
 		return 0xFF;
 	}
 }

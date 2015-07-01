@@ -29,7 +29,7 @@ public:
 	void switchToOutput();
 	void switchToInput();
 
-	void setExtiCallback(const IOPinCallback& callback);
+	void setExtiCallback(const IOPinCallback& callback, bool direclyFromISR = false);
 	void enableExti(bool enable = true);
 	void extiInterrupt();
 
@@ -43,6 +43,7 @@ private:
 	uint16_t m_pinMask;
 	bool m_extiEnabled = false;
 	bool isOutputMode = false;
+	bool m_runDirectlyFromISR = false;
 };
 
 class IOPinsPool : public IIOPinsPool

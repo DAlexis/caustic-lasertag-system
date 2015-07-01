@@ -25,7 +25,7 @@ public:
 
 	virtual void switchToOutput() = 0;
 	virtual void switchToInput() = 0;
-	virtual void setExtiCallback(const IOPinCallback& callback) = 0;
+	virtual void setExtiCallback(const IOPinCallback& callback, bool direclyFromISR = false) = 0;
 	virtual void enableExti(bool enable = true) = 0;
 
 };

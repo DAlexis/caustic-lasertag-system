@@ -6,6 +6,7 @@
  */
 
 #include "dev/miles-tag-details.hpp"
+#include "core/logging.hpp"
 //#include "core/scheduler.hpp"
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/RCSP-stream.hpp"
@@ -27,7 +28,8 @@ void MilesTag2Receiver::setShortMessageCallback(MilesTag2ShotCallback callback)
 void MilesTag2Receiver::init(IIOPin* input)
 {
 	m_input = input;
-	m_input->setExtiCallback(std::bind(&MilesTag2Receiver::interruptHandler, this, std::placeholders::_1));
+	/// @todo change directlyFromISR flag to true
+	m_input->setExtiCallback(std::bind(&MilesTag2Receiver::interruptHandler, this, std::placeholders::_1), false);
 	resetReceiver();
 	/// @todo remove this interrogator: deferred run from ISR may be enough
 	m_interrogateTask.run(0, 1, 1);
