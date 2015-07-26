@@ -47,11 +47,12 @@ private:
 
 	uint8_t getTeamColor();
 
-	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage, const float* pZoneModifier = nullptr);
+	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage);
 	void dieWeapons();
 	void respawnWeapons();
 	void turnOffWeapons();
 	void notifyDamager(PlayerMT2Id player, uint8_t damagerTeam, uint8_t state = 0);
+	void weaponShock();
 
 	RGBLeds m_leds;
 
@@ -66,6 +67,7 @@ private:
 		playerConfig.zone6DamageCoeff
 	};
 
+	Time m_shockDelayBegin = 0;
 };
 
 

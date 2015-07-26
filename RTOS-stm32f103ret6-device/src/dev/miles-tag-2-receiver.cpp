@@ -193,6 +193,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		default:
 			return false;
 		}
+		return true;
 	}
 	else if (getCurrentLength() == MT2Extended::messageLength
 			&& m_data[0] == MT2Extended::Byte1::addHealth)
@@ -201,6 +202,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		int16_t healthDelta = MT2Extended::decodeAddHealth(m_data[1]);
 
 		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::addMaxHealth, healthDelta);
+		return true;
 	}
 	else if (getCurrentLength() == MT2Extended::messageLength
 		&& m_data[0] == MT2Extended::Byte1::setTeam)
@@ -210,6 +212,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		if (m_data[1] & ~(0x03))
 			printf("Warning: team id byte contains non-zero upper bits\n");
 		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::setTeam, m_data[1]);
+		return true;
 	}
 	else
 		return false;
@@ -232,7 +235,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 	// Inverted input:
 	state = !state;
 	if (m_debug) {
-		printf("dt=%u ",  m_dtime );
+		printf("dt=%lu ",  m_dtime );
 		if (state)
 			printf("1\n");
 		else

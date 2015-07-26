@@ -30,8 +30,7 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 			this,
 			std::placeholders::_1,
 			std::placeholders::_2,
-			std::placeholders::_3,
-			nullptr
+			std::placeholders::_3
 		));
 
 	IIOPin* zone1vibroPin = pinout.zone1VibroEnabled ? IOPins->getIOPin(pinout.zone1VibroPort, pinout.zone1VibroPin) : nullptr;
@@ -41,7 +40,7 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 				IOPins->getIOPin(pinout.zone1Port, pinout.zone1Pin),
 				zone1vibroPin
 				);
-/*
+
 	if (pinout.zone2Enabled)
 		m_killZonesManager.enableKillZone(
 				1,
@@ -77,17 +76,9 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 				pinout.zone6VibroEnabled ? IOPins->getIOPin(pinout.zone6VibroPort, pinout.zone6VibroPin) : zone1vibroPin
 				);
 	//m_mainSensor.enableDebug(true);
-*/
+
 	RCSPModem::instance().init();
 
-/*
-	info << "Creating console commands for head sensor";
-	Console::instance().registerCommand(
-		"die",
-		"kill player",
-		std::bind(&HeadSensor::testDie, this, std::placeholders::_1)
-	);
-*/
 	info << "Parsing config file";
 
 	if (!RCSPAggregator::instance().readIni("config.ini"))
@@ -107,14 +98,9 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 		error << "  restoring failed";
 		// setting player state to default
 		playerState.reset();
+		StateSaver::instance().saveState();
 	}
-/*
-	IIOPin* pin = IOPins->getIOPin(0,0);
-			pin->setExtiCallback([](bool state) {
-				info << "Callback! " << state;
-			});
-			pin->enableExti(true);
-*/
+
 	info << "Initializing visual effects";
 	m_leds.init(
 			IOPins->getIOPin(pinout.redPort, pinout.redPin),
@@ -129,7 +115,7 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.headSensors);
 
-	//StateSaver::instance().runSaver(10000000);
+	StateSaver::instance().runSaver(2000);
 
 	info << "Head sensor ready to use";
 }
@@ -150,12 +136,16 @@ void HeadSensor::resetToDefaults()
 }
 
 
-void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage, const float* pZoneModifier)
+void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
 	//ScopedTag tag("shot-cb");
-	float zoneModifier = pZoneModifier ? *pZoneModifier : 1.0;
 	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage;
-	if (playerState.isAlive()) {
+	Time currentTime = systemClock->getTime();
+	if (currentTime - m_shockDelayBegin < playerConfig.shockDelay)
+	{
+		info << "!! Shock time";
+	}
+	else if (playerState.isAlive()) {
 
 		if (playerId == playerConfig.plyerMT2Id)
 		{
@@ -167,6 +157,11 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		}
 
 		playerState.damage(damage);
+		if (damage != 0)
+		{
+			m_shockDelayBegin = systemClock->getTime();
+			weaponShock();
+		}
 		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent;
 
 		// If still is alive
@@ -262,6 +257,15 @@ void HeadSensor::turnOffWeapons()
 	}
 }
 
+void HeadSensor::weaponShock()
+{
+	info << "Weapons shock delay notification";
+	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+	{
+		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleShock, playerConfig.shockDelay);
+	}
+}
+
 void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 {
 	ScopedTag tag("register-weapon");
@@ -321,6 +325,7 @@ void HeadSensor::addMaxHealth(int16_t delta)
 
 void HeadSensor::notifyDamager(PlayerMT2Id damager, uint8_t damagerTeam, uint8_t state)
 {
+	UNUSED_ARG(damagerTeam);
 	ScopedTag tag("notify-damager");
 	DamageNotification notification;
 	notification.damager = damager;

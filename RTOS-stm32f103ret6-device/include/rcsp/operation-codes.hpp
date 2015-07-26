@@ -106,6 +106,7 @@ namespace ConfigCodes
 			FUNC_CODE(rifleReset,         203)
 			FUNC_CODE(rifleRespawn,       204)
 			FUNC_CODE(rifleDie,           205)
+			FUNC_CODE(rifleShock,         206)
 			FUNC_CODE(riflePlayEnemyDamaged,    210)
 		}
 	}

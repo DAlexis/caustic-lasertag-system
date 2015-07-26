@@ -17,20 +17,12 @@ KillZonesManager::KillZonesManager(
 		const FloatParameter& zone6DamageCoeff
 	)
 {
-	m_zoneDamageCoeff[0] = &zone1DamageCoeff;
-	m_zoneDamageCoeff[1] = &zone2DamageCoeff;
-	m_zoneDamageCoeff[2] = &zone3DamageCoeff;
-	m_zoneDamageCoeff[3] = &zone4DamageCoeff;
-	m_zoneDamageCoeff[4] = &zone5DamageCoeff;
-	m_zoneDamageCoeff[5] = &zone6DamageCoeff;
-	for (int i=0; i<killZonesMaxCount; i++)
-	{
-		m_vibro[i] = nullptr;
-		m_killZone[i] = nullptr;
-	}
-
-	m_vibrationStopTask.setStackSize(128);
-	m_vibrationStopTask.setTask(std::bind(&KillZonesManager::stopVibrate, this));
+	m_killZones[0].zoneDamageCoeff = &zone1DamageCoeff;
+	m_killZones[1].zoneDamageCoeff = &zone2DamageCoeff;
+	m_killZones[2].zoneDamageCoeff = &zone3DamageCoeff;
+	m_killZones[3].zoneDamageCoeff = &zone4DamageCoeff;
+	m_killZones[4].zoneDamageCoeff = &zone5DamageCoeff;
+	m_killZones[5].zoneDamageCoeff = &zone6DamageCoeff;
 
 	m_interrogateTask.setStackSize(1024);
 	m_interrogateTask.setTask(std::bind(&KillZonesManager::interrogate, this));
@@ -49,10 +41,10 @@ void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro
 		vibro->switchToOutput();
 		vibro->reset();
 	}
-	m_vibro[zone] = vibro;
-	m_killZone[zone] = new MilesTag2Receiver;
+	m_killZones[zone].vibro = vibro;
+	m_killZones[zone].killZone = new MilesTag2Receiver;
 
-	m_killZone[zone]->setShortMessageCallback(std::bind(
+	m_killZones[zone].killZone->setShortMessageCallback(std::bind(
 			&KillZonesManager::IRReceiverShotCallback_ISR,
 			this,
 			zone,
@@ -60,13 +52,13 @@ void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro
 			std::placeholders::_2,
 			std::placeholders::_3
 			));
-	m_killZone[zone]->init(input);
-	m_killZone[zone]->turnOn();
+	m_killZones[zone].killZone->init(input);
+	m_killZones[zone].killZone->turnOn();
 }
 
 void KillZonesManager::IRReceiverShotCallback_ISR(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
-	damage *= *(m_zoneDamageCoeff[zoneId]);
+	damage *= *(m_killZones[zoneId].zoneDamageCoeff);
 	if (m_lastDamageMoment == 0 || m_maxDamage < damage)
 	{
 		m_lastDamageMoment = systemClock->getTime();
@@ -75,7 +67,13 @@ void KillZonesManager::IRReceiverShotCallback_ISR(uint8_t zoneId, unsigned int t
 		m_playerId = playerId;
 	}
 
-	//vibrate(zoneId);
+	// Enabling vibroengine if exists
+	if (m_killZones[zoneId].vibro)
+	{
+		m_killZones[zoneId].vibro->set();
+		m_killZones[zoneId].vibrationStopTime = systemClock->getTime() + vibroPeriod;
+	}
+
 	//info << "Kill zone activated";
 }
 
@@ -83,9 +81,15 @@ void KillZonesManager::interrogate()
 {
 	for (int i=0; i<killZonesMaxCount; i++)
 	{
-		if (m_killZone[i])
+		if (m_killZones[i].killZone)
 		{
-			m_killZone[i]->interrogate();
+			m_killZones[i].killZone->interrogate();
+		}
+		// Stopping vibration
+		Time currentTime = systemClock->getTime();
+		if (m_killZones[i].vibrationStopTime >= currentTime)
+		{
+			m_killZones[i].vibro->reset();
 		}
 	}
 
@@ -103,20 +107,4 @@ void KillZonesManager::interrogate()
 		}
 		m_lastDamageMoment = 0;
 	}
-}
-
-void KillZonesManager::vibrate(uint8_t zone)
-{
-	if (!m_vibro[zone])
-		return;
-
-	m_vibro[zone]->set();
-	m_vibrationStopTask.stopUnsafe();
-	m_vibrationStopTask.run(vibroPeriod);
-}
-
-void KillZonesManager::stopVibrate()
-{
-	for (int zone=0; zone<killZonesMaxCount; zone++)
-		m_vibro[zone]->reset();
 }

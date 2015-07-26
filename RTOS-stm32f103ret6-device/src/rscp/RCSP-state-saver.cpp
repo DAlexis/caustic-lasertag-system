@@ -19,7 +19,7 @@ SINGLETON_IN_CPP(StateSaver)
 StateSaver::StateSaver()
 {
 	m_savingTask.setTask(std::bind(&StateSaver::saveState, this));
-	m_savingTask.setStackSize(256);
+	m_savingTask.setStackSize(1824);
 }
 
 void StateSaver::addValue(OperationCode code)
@@ -40,23 +40,18 @@ void StateSaver::setFilename(const std::string& filename)
 
 void StateSaver::saveState()
 {
-	info << "Saving state\n";
-	/*if (SDCardFS::instance().isLocked())
-	{
-		printf("State saver: sd-card is locked\n");
-		return;
-	}
-	SDCardFS::ScopedLocker sdLocker;*/
+	info << "Saving state";
 	FRESULT res = FR_OK;
 	// Creating lock file
+	/*
 	res = f_open(&m_fil, m_fileLock[m_current].c_str(), FA_CREATE_NEW);
 	if (res != FR_OK)
 	{
-		printf("Cannot create lock file: %d!\n", (int)res);
+		error << "Cannot create lock file: " << parseFRESULT(res);
 		return;
 	}
 
-	f_close(&m_fil);
+	f_close(&m_fil);*/
 
 	// Deleting old state file
 	f_unlink(m_file[m_current].c_str());
@@ -64,7 +59,7 @@ void StateSaver::saveState()
 	res = f_open(&m_fil, m_file[m_current].c_str(), FA_CREATE_NEW | FA_WRITE);
 	if (res != FR_OK)
 	{
-		printf("Cannot create state file: %d!\n", (int)res);
+		error << "Cannot create state file: " << parseFRESULT(res);
 		return;
 	}
 	// Putting data to state file
@@ -82,7 +77,7 @@ void StateSaver::saveState()
 	res = f_open(&m_fil, m_fileCurrent[m_current].c_str(), FA_CREATE_NEW);
 	if (res != FR_OK)
 	{
-		printf("Cannot create .current file: %d!\n", (int)res);
+		error << "Cannot create .current file: " << parseFRESULT(res);
 		return;
 	}
 	f_close(&m_fil);
@@ -134,13 +129,6 @@ bool StateSaver::tryRestore(uint8_t variant)
 
 bool StateSaver::tryRestore()
 {
-	/*
-	if (SDCardFS::instance().isLocked())
-	{
-		printf("State saver: sd-card is locked\n");
-		return false;
-	}
-	SDCardFS::ScopedLocker sdLocker;*/
 	if (f_stat(m_fileCurrent[0].c_str(), nullptr) == FR_OK)
 	{
 		return tryRestore(0) ? true : tryRestore(1);
@@ -150,14 +138,6 @@ bool StateSaver::tryRestore()
 
 void StateSaver::resetSaves()
 {
-	/*
-	if (SDCardFS::instance().isLocked())
-	{
-		printf("State saver: sd-card is locked\n");
-		Scheduler::instance().addTask(std::bind(&StateSaver::resetSaves, this), true, 0, 0, 100000);
-		return;
-	}
-	SDCardFS::ScopedLocker sdLocker;*/
 	f_unlink(m_fileLock[0].c_str());
 	f_unlink(m_file[0].c_str());
 	f_unlink(m_fileLock[1].c_str());
@@ -166,8 +146,7 @@ void StateSaver::resetSaves()
 
 void StateSaver::runSaver(uint32_t period)
 {
-
-	//m_savingTask.run(period, period, period, 0);
+	m_savingTask.run(period, period, period, 0);
 }
 
 void StateSaver::stopSaver()

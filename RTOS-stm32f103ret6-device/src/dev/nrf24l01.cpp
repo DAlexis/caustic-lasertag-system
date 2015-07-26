@@ -180,31 +180,31 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     //////////////////////
     // Configuring nrf24l01
     // Global settings
-    info << "setAdressWidth(AW_5BYTES);";
+    trace << "setAdressWidth(AW_5BYTES);";
     setAdressWidth(AW_5BYTES);
-    info << "etRFChannel(m_RFChannel);";
+    trace << "etRFChannel(m_RFChannel);";
     setRFChannel(m_RFChannel);
     //setupRetransmission(0, 0);
 
     // Reading addresses to local variables
-    info << "readRXAdresses";
+    trace << "readRXAdresses";
     readRXAdresses();
-    info << "readTXAdress";
+    trace << "readTXAdress";
     readTXAdress();
 
     // Setting up pipe 0
-    info << "setAutoACK";
+    trace << "setAutoACK";
     setAutoACK(0, DISABLE_OPTION);
-    info << "enablePipe";
+    trace << "enablePipe";
     enablePipe(0, ENABLE_OPTION);
-    info << "setRXPayloadLength";
+    trace << "setRXPayloadLength";
     setRXPayloadLength(0, payloadSize);
 
-    info << "setRXPayloadLength";
+    trace << "setRXPayloadLength";
     setRFSettings(BR_1MBIT, PW_0DB, LNA_ENABLE);
-    info << "setupRetransmission";
+    trace << "setupRetransmission";
     setupRetransmission(2, 15);
-    info << "switchToRX";
+    trace << "switchToRX";
     switchToRX();
 
     m_useInterrupts = useInterrupts;
