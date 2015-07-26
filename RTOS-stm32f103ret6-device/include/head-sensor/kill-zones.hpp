@@ -36,26 +36,21 @@ public:
 
 private:
 	void interrogate();
-	void callDamageCallback();
-	void IRReceiverShotCallback(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage);
+	void IRReceiverShotCallback_ISR(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage);
 	void vibrate(uint8_t zone);
 	void stopVibrate();
-
-	Time m_lastDamageMoment = 0;
 
 	const FloatParameter* m_zoneDamageCoeff[killZonesMaxCount];
 	MilesTag2Receiver* m_killZone[killZonesMaxCount];
 	IIOPin* m_vibro[killZonesMaxCount];
 	DamageCallback m_callback = nullptr;
 
-	bool m_damageCbScheduled = false;
-
+	Time m_lastDamageMoment = 0;
 	unsigned int m_maxDamage = 0;
 	unsigned int m_teamId = 0;
 	unsigned int m_playerId = 0;
-	//TaskId m_vibrationStopTask = 0;
+
 	TaskOnce m_vibrationStopTask;
-	TaskOnce m_callDamageCallbackTask;
 	TaskCycled m_interrogateTask;
 };
 

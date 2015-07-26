@@ -123,19 +123,20 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 	if (getCurrentLength() == MT2Extended::shotLength
 			&& getBit(0) == false)
 	{
-		//printf("--- Near to parse the shot\n");
-		// We have the shot
-		unsigned int playerId   = m_data[0] & ~(1 << 7);
-		unsigned int teamId     = m_data[1] >> 6;
-		unsigned int damageCode = (m_data[1] & 0b00111100) >> 2;
-		if (m_shotCallback)
-		{
-			m_nextInterrogationCallback = std::bind(m_shotCallback, teamId, playerId, decodeDamage(damageCode));
-			//m_shotCallback(teamId, playerId, decodeDamage(damageCode));
-		} else {
-			m_nextInterrogationCallback = nullptr;
-			printf("Shot callback not set!\n");
-		}
+		taskDISABLE_INTERRUPTS();
+			// We have the shot
+			unsigned int playerId   = m_data[0] & ~(1 << 7);
+			unsigned int teamId     = m_data[1] >> 6;
+			unsigned int damageCode = (m_data[1] & 0b00111100) >> 2;
+			if (m_shotCallback)
+			{
+				//m_nextInterrogationCallback = std::bind(m_shotCallback, teamId, playerId, decodeDamage(damageCode));
+				m_shotCallback(teamId, playerId, decodeDamage(damageCode));
+			} else {
+				m_nextInterrogationCallback = nullptr;
+				printf("Shot callback not set!\n");
+			}
+		taskENABLE_INTERRUPTS();
 		return true;
 	}
 	else if (getCurrentLength() == MT2Extended::commandLength

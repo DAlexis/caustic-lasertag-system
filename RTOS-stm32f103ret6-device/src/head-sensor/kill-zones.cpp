@@ -28,8 +28,6 @@ KillZonesManager::KillZonesManager(
 		m_vibro[i] = nullptr;
 		m_killZone[i] = nullptr;
 	}
-	m_callDamageCallbackTask.setStackSize(1024);
-	m_callDamageCallbackTask.setTask(std::bind(&KillZonesManager::callDamageCallback, this));
 
 	m_vibrationStopTask.setStackSize(128);
 	m_vibrationStopTask.setTask(std::bind(&KillZonesManager::stopVibrate, this));
@@ -55,7 +53,7 @@ void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro
 	m_killZone[zone] = new MilesTag2Receiver;
 
 	m_killZone[zone]->setShortMessageCallback(std::bind(
-			&KillZonesManager::IRReceiverShotCallback,
+			&KillZonesManager::IRReceiverShotCallback_ISR,
 			this,
 			zone,
 			std::placeholders::_1,
@@ -66,23 +64,19 @@ void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro
 	m_killZone[zone]->turnOn();
 }
 
-void KillZonesManager::IRReceiverShotCallback(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage)
+void KillZonesManager::IRReceiverShotCallback_ISR(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
 	damage *= *(m_zoneDamageCoeff[zoneId]);
-	//vibrate(zoneId);
-	info << "Kill zone activated";
-	/*
-	if (!m_damageCbScheduled || damage > m_maxDamage)
+	if (m_lastDamageMoment == 0 || m_maxDamage < damage)
 	{
+		m_lastDamageMoment = systemClock->getTime();
 		m_maxDamage = damage;
 		m_teamId = teamId;
 		m_playerId = playerId;
 	}
-	if (!m_damageCbScheduled)
-	{
-		m_damageCbScheduled = true;
-		m_callDamageCallbackTask.run(callbackDelay);
-	}*/
+
+	//vibrate(zoneId);
+	//info << "Kill zone activated";
 }
 
 void KillZonesManager::interrogate()
@@ -94,18 +88,21 @@ void KillZonesManager::interrogate()
 			m_killZone[i]->interrogate();
 		}
 	}
-}
 
-void KillZonesManager::callDamageCallback()
-{
-	m_damageCbScheduled = false;
-	if (!m_callback)
+	// If it is time to call shot callback
+	if (
+			m_lastDamageMoment != 0 // We have at least one shot
+			&& systemClock->getTime() - m_lastDamageMoment > callbackDelay // We have waited for enough time
+		)
 	{
-		ScopedTag tag("kill-zones-mgr");
-		error << "Zones manager callback not set!\n";
-		return;
+		if (!m_callback)
+		{
+			error << "Zones manager callback not set!\n";
+		} else {
+			m_callback(m_teamId, m_playerId, m_maxDamage);
+		}
+		m_lastDamageMoment = 0;
 	}
-	m_callback(m_teamId, m_playerId, m_maxDamage);
 }
 
 void KillZonesManager::vibrate(uint8_t zone)
