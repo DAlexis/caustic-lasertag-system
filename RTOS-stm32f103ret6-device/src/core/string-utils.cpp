@@ -68,8 +68,9 @@ Result IniParcer::parseFile(const char* filename)
 	if (!m_acceptKeyValueCallback)
 		return Result("Callback not set");
 
-	FIL file;
-	FRESULT fres = f_open(&file, filename, FA_OPEN_EXISTING | FA_READ);
+	FIL* m_file = new FIL;
+
+	FRESULT fres = f_open(m_file, filename, FA_OPEN_EXISTING | FA_READ);
 	if (fres != FR_OK)
 	{
 		return Result("Cannot open file\n");
@@ -81,11 +82,11 @@ Result IniParcer::parseFile(const char* filename)
 	unsigned int line = 1;
 	bool error = false;
 
-	while (!f_eof(&file) && !error)
+	while (!f_eof(m_file) && !error)
 	{
 		UINT readed = 0;
 		unsigned int cursor = 0;
-		f_read(&file, buffer, blockSize, &readed);
+		f_read(m_file, buffer, blockSize, &readed);
 		// Skipping spaces
 		while (cursor < readed && !error)
 		{
@@ -237,6 +238,7 @@ Result IniParcer::parseFile(const char* filename)
 			}
 		}
 	}
-	f_close(&file);
+	f_close(m_file);
+	delete m_file;
 	return result;
 }

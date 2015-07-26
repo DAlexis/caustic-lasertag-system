@@ -98,7 +98,7 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 		error << "  restoring failed";
 		// setting player state to default
 		playerState.reset();
-		StateSaver::instance().saveState();
+		//StateSaver::instance().saveState();
 	}
 
 	info << "Initializing visual effects";
