@@ -9,6 +9,7 @@
 #define INCLUDE_HEAD_SENSOR_KILL_ZONES_HPP_
 
 #include "dev/miles-tag-2.hpp"
+#include "hal/system-clock.hpp"
 #include "hal/io-pins.hpp"
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
@@ -34,13 +35,16 @@ public:
 	void setCallback(DamageCallback callback);
 
 private:
+	void interrogate();
 	void callDamageCallback();
 	void IRReceiverShotCallback(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage);
 	void vibrate(uint8_t zone);
 	void stopVibrate();
 
+	Time m_lastDamageMoment = 0;
+
 	const FloatParameter* m_zoneDamageCoeff[killZonesMaxCount];
-	MilesTag2Receiver m_killZone[killZonesMaxCount];
+	MilesTag2Receiver* m_killZone[killZonesMaxCount];
 	IIOPin* m_vibro[killZonesMaxCount];
 	DamageCallback m_callback = nullptr;
 
@@ -52,6 +56,7 @@ private:
 	//TaskId m_vibrationStopTask = 0;
 	TaskOnce m_vibrationStopTask;
 	TaskOnce m_callDamageCallbackTask;
+	TaskCycled m_interrogateTask;
 };
 
 

@@ -67,7 +67,7 @@ bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code,
 				answerStream->addValue(parameterCode);
 				return true;
 			} else {
-				warning << "Unknown request code: " << *code;
+				printWarningUnknownCode(*code);
 				return false;
 			}
 		} else {
@@ -87,10 +87,16 @@ bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code,
 		}
 		else
 		{
-			warning << "Unknown request code: " << *code;
+			printWarningUnknownCode(*code);
 			return false;
 		}
 	}
+}
+
+void RCSPAggregator::printWarningUnknownCode(OperationCode code)
+{
+	if (code != ConfigCodes::noOperation)
+		warning << "Unknown request code: " << code;
 }
 
 

@@ -600,7 +600,10 @@ bool NRF24L01Manager::isRXEmpty()
 void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 {
 	if (m_debug)
+	{
+		trace << "nrf24l01 package:" << "\n";
 		printHex(data, size);
+	}
     switchToTX();
     chipSelect();
     m_status = m_spi->TransmitReceive(W_TX_PAYLOAD);

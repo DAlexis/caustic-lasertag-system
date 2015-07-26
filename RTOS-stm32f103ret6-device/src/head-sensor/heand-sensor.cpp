@@ -136,7 +136,7 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 
 void HeadSensor::resetToDefaults()
 {
-	ScopedTag tag("reset");
+	//ScopedTag tag("reset");
 	info << "Resetting configuration to default";
 	m_leds.blink(blinkPatterns.anyCommand);
 	if (!RCSPAggregator::instance().readIni("config.ini"))
@@ -152,7 +152,7 @@ void HeadSensor::resetToDefaults()
 
 void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage, const float* pZoneModifier)
 {
-	ScopedTag tag("shot-cb");
+	//ScopedTag tag("shot-cb");
 	float zoneModifier = pZoneModifier ? *pZoneModifier : 1.0;
 	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage;
 	if (playerState.isAlive()) {

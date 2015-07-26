@@ -16,8 +16,7 @@
 
 MilesTag2Receiver::MilesTag2Receiver()
 {
-	m_interrogateTask.setStackSize(128);
-	m_interrogateTask.setTask(std::bind(&MilesTag2Receiver::interrogate, this));
+	//m_delayedTask.
 }
 
 void MilesTag2Receiver::setShortMessageCallback(MilesTag2ShotCallback callback)
@@ -32,7 +31,7 @@ void MilesTag2Receiver::init(IIOPin* input)
 	m_input->setExtiCallback(std::bind(&MilesTag2Receiver::interruptHandler, this, std::placeholders::_1), false);
 	resetReceiver();
 	/// @todo remove this interrogator: deferred run from ISR may be enough
-	m_interrogateTask.run(0, 1, 1);
+	//m_interrogateTask.run(0, 1, 1);
 	//Scheduler::instance().addTask(std::bind(&MilesTag2Receiver::interrogate, this), false, 5000, 2000);
 }
 
@@ -147,18 +146,22 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 		switch(m_data[1])
 		{
 		case MT2Extended::Commands::adminKill:
-			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerKill);
+			m_nextInterrogationCallback = []()
+				{ RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerKill); };
 			break;
 		case MT2Extended::Commands::pauseOrUnpause:
 			break;
 		case MT2Extended::Commands::startGame:
-			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerReset);
+			m_nextInterrogationCallback = []()
+				{ RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerReset); };
 			break;
 		case MT2Extended::Commands::restoreDefaults:
-			RCSPAggregator::instance().doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults);
+			m_nextInterrogationCallback = []()
+				{ RCSPAggregator::instance().doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults); };
 			break;
 		case MT2Extended::Commands::respawn:
-			RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn);
+			m_nextInterrogationCallback = []()
+				{ RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn); };
 			break;
 		case MT2Extended::Commands::newGameImmediate:
 			break;
@@ -227,7 +230,6 @@ void MilesTag2Receiver::interruptHandler(bool state)
 	m_dtime = time - m_lastTime;
 	// Inverted input:
 	state = !state;
-	m_debug = true;
 	if (m_debug) {
 		printf("dt=%u ",  m_dtime );
 		if (state)

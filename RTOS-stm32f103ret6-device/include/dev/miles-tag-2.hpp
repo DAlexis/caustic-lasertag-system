@@ -142,7 +142,7 @@ private:
 	IIOPin* m_input = nullptr;
     //IExternalInterruptManager* m_exti = nullptr;
     OnNextInterrogationCallback m_nextInterrogationCallback = nullptr;
-    TaskCycled m_interrogateTask;
+    TaskDeferredFromISR m_delayedTask;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_ */

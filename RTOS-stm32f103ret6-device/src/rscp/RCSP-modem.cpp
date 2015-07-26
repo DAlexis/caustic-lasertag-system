@@ -168,6 +168,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 		auto it = m_packages.find(ackDispatcher->packageId);
 		if (it == m_packages.end())
 		{
+			radio << "No package with id " << ackDispatcher->packageId << " in queue";
 			// No packages waiting this ack
 			return;
 		}

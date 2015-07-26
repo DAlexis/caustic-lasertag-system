@@ -24,12 +24,19 @@ KillZonesManager::KillZonesManager(
 	m_zoneDamageCoeff[4] = &zone5DamageCoeff;
 	m_zoneDamageCoeff[5] = &zone6DamageCoeff;
 	for (int i=0; i<killZonesMaxCount; i++)
+	{
 		m_vibro[i] = nullptr;
-	m_callDamageCallbackTask.setStackSize(256);
+		m_killZone[i] = nullptr;
+	}
+	m_callDamageCallbackTask.setStackSize(1024);
 	m_callDamageCallbackTask.setTask(std::bind(&KillZonesManager::callDamageCallback, this));
 
 	m_vibrationStopTask.setStackSize(128);
 	m_vibrationStopTask.setTask(std::bind(&KillZonesManager::stopVibrate, this));
+
+	m_interrogateTask.setStackSize(1024);
+	m_interrogateTask.setTask(std::bind(&KillZonesManager::interrogate, this));
+	m_interrogateTask.run(50, 2, 2);
 }
 
 void KillZonesManager::setCallback(DamageCallback callback)
@@ -45,8 +52,9 @@ void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro
 		vibro->reset();
 	}
 	m_vibro[zone] = vibro;
+	m_killZone[zone] = new MilesTag2Receiver;
 
-	m_killZone[zone].setShortMessageCallback(std::bind(
+	m_killZone[zone]->setShortMessageCallback(std::bind(
 			&KillZonesManager::IRReceiverShotCallback,
 			this,
 			zone,
@@ -54,14 +62,16 @@ void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro
 			std::placeholders::_2,
 			std::placeholders::_3
 			));
-	m_killZone[zone].init(input);
-	m_killZone[zone].turnOn();
+	m_killZone[zone]->init(input);
+	m_killZone[zone]->turnOn();
 }
 
 void KillZonesManager::IRReceiverShotCallback(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage)
 {
 	damage *= *(m_zoneDamageCoeff[zoneId]);
-	vibrate(zoneId);
+	//vibrate(zoneId);
+	info << "Kill zone activated";
+	/*
 	if (!m_damageCbScheduled || damage > m_maxDamage)
 	{
 		m_maxDamage = damage;
@@ -72,6 +82,17 @@ void KillZonesManager::IRReceiverShotCallback(uint8_t zoneId, unsigned int teamI
 	{
 		m_damageCbScheduled = true;
 		m_callDamageCallbackTask.run(callbackDelay);
+	}*/
+}
+
+void KillZonesManager::interrogate()
+{
+	for (int i=0; i<killZonesMaxCount; i++)
+	{
+		if (m_killZone[i])
+		{
+			m_killZone[i]->interrogate();
+		}
 	}
 }
 
