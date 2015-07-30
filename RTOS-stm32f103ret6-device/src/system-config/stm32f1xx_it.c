@@ -42,6 +42,14 @@
 
 /* External variables --------------------------------------------------------*/
 extern void xPortSysTickHandler(void);
+extern DMA_HandleTypeDef hdma_sdio;
+#ifndef USE_STDPERIPH_SDCARD
+	extern SD_HandleTypeDef hsd;
+#endif
+
+#ifdef USE_STDPERIPH_SDCARD
+	extern void SD_ProcessIRQSrc(void);
+#endif
 
 /******************************************************************************/
 /*            Cortex-M3 Processor Interruption and Exception Handlers         */ 
@@ -175,6 +183,45 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
+/**
+* @brief This function handles SDIO global interrupt.
+*/
+void SDIO_IRQHandler(void)
+{
+  /* USER CODE BEGIN SDIO_IRQn 0 */
+
+  /* USER CODE END SDIO_IRQn 0 */
+#ifdef USE_STDPERIPH_SDCARD
+	SD_ProcessIRQSrc();
+#else
+ //	printf("\nsdio int\n");
+	HAL_SD_IRQHandler(&hsd);
+ // printf("\nsdio int done\n");
+#endif
+  /* USER CODE BEGIN SDIO_IRQn 1 */
+
+  /* USER CODE END SDIO_IRQn 1 */
+}
+
+
+#ifndef USE_STDPERIPH_SDCARD
+/**
+* @brief This function handles DMA2 channel4 and channel5 global interrupts.
+*/
+void DMA2_Channel4_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Channel4_5_IRQn 0 */
+
+  /* USER CODE END DMA2_Channel4_5_IRQn 0 */
+	printf("\ndma int\n");
+  HAL_DMA_IRQHandler(&hdma_sdio);
+  printf("\ndma int done\n");
+  /* USER CODE BEGIN DMA2_Channel4_5_IRQn 1 */
+
+  /* USER CODE END DMA2_Channel4_5_IRQn 1 */
+}
+
+#endif // USE_STDPERIPH_SDCARD
 
 /* USER CODE BEGIN 1 */
 

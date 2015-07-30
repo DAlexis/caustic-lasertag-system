@@ -36,7 +36,9 @@
 #include "bsp_driver_sd.h"
 
 /* Extern variables ---------------------------------------------------------*/ 
-  
+
+#ifndef USE_STDPERIPH_SDCARD
+
 extern SD_HandleTypeDef hsd;
 extern HAL_SD_CardInfoTypedef SDCardInfo; 
 
@@ -166,11 +168,13 @@ uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint64_t ReadAddr, uint32_t Block
   {
     if(HAL_SD_CheckReadOperation(&hsd, (uint32_t)SD_DATATIMEOUT) != SD_OK)  
     {
+//    	printf("SD_state = MSD_ERROR\n");
       SD_state = MSD_ERROR;
     }
     else
     {
       SD_state = MSD_OK;
+//      printf("SD_state = MSD_OK\n");
     }
   }
   
@@ -188,22 +192,33 @@ uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint64_t ReadAddr, uint32_t Block
 uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint64_t WriteAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
 {
   uint8_t SD_state = SD_OK;
-  
+  //printf("In BSP_SD_WriteBlocks_DMA\n");
+
+  ///////////// My code
+  hsd.hdmatx->Init.Direction = DMA_MEMORY_TO_PERIPH;
+  HAL_DMA_Init(hsd.hdmatx);
+  ///////////// My code end
+
   /* Write block(s) in DMA transfer mode */
   if(HAL_SD_WriteBlocks_DMA(&hsd, pData, WriteAddr, BlockSize, NumOfBlocks) != SD_OK)  
   {
+//	  printf("Error1\n");
     SD_state = MSD_ERROR;
   }
   
   /* Wait until transfer is complete */
   if(SD_state == MSD_OK)
   {
-    if(HAL_SD_CheckWriteOperation(&hsd, (uint32_t)SD_DATATIMEOUT) != SD_OK)  
+	  /*printf("Ok2123456789123456789123456789123456789\n");
+	  printf("Ok2!\n");*/
+    if(HAL_SD_CheckWriteOperation(&hsd, (uint32_t)SD_DATATIMEOUT) != SD_OK)
     {
+  //  	printf("Error2\n");
       SD_state = MSD_ERROR;
     }
     else
     {
+//    	printf("Ok4\n");
       SD_state = MSD_OK;
     }
   }
@@ -305,4 +320,5 @@ uint8_t BSP_SD_IsDetected(void)
 /* user code can be inserted here */
 /* USER CODE END AdditionalCode */
 
+#endif // USE_STDPERIPH_SDCARD
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

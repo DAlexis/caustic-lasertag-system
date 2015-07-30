@@ -1162,16 +1162,17 @@ HAL_SD_ErrorTypedef HAL_SD_CheckReadOperation(SD_HandleTypeDef *hsd, uint32_t Ti
   */
 HAL_SD_ErrorTypedef HAL_SD_CheckWriteOperation(SD_HandleTypeDef *hsd, uint32_t Timeout)
 {
+	//printf("inside\n");
   HAL_SD_ErrorTypedef errorstate = SD_OK;
   uint32_t timeout = Timeout;
   uint32_t tmp1, tmp2;
   HAL_SD_ErrorTypedef tmp3;
-
+ // printf("inside2\n");
   /* Wait for DMA/SD transfer end or SD error variables to be in SD handle */
   tmp1 = hsd->DmaTransferCplt; 
   tmp2 = hsd->SdTransferCplt;
   tmp3 = (HAL_SD_ErrorTypedef)hsd->SdTransferErr;
-    
+    //printf("while1\n");
   while (((tmp1 & tmp2) == 0) && (tmp3 == SD_OK) && (timeout > 0))
   {
     tmp1 = hsd->DmaTransferCplt; 
@@ -1179,14 +1180,16 @@ HAL_SD_ErrorTypedef HAL_SD_CheckWriteOperation(SD_HandleTypeDef *hsd, uint32_t T
     tmp3 = (HAL_SD_ErrorTypedef)hsd->SdTransferErr;
     timeout--;
   }
+  //printf("done\n");
   
   timeout = Timeout;
-  
+  //printf("while2\n");
   /* Wait until the Tx transfer is no longer active */
   while((__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_TXACT))  && (timeout > 0))
   {
     timeout--;  
   }
+  //printf("done\n");
 
   /* Send stop command in multiblock write */
   if (hsd->SdOperation == SD_WRITE_MULTIPLE_BLOCK)
@@ -1207,11 +1210,12 @@ HAL_SD_ErrorTypedef HAL_SD_CheckWriteOperation(SD_HandleTypeDef *hsd, uint32_t T
   {
     return (HAL_SD_ErrorTypedef)(hsd->SdTransferErr);
   }
-  
+  //printf("while3\n");
   /* Wait until write is complete */
   while(HAL_SD_GetStatus(hsd) != SD_TRANSFER_OK)
   {    
   }
+  //printf("done\n");
 
   return errorstate; 
 }
@@ -1336,7 +1340,7 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef *hsd)
       
     /* SD transfer is complete */
     hsd->SdTransferCplt = 1;
-
+//    printf("hsd->SdTransferCplt = 1;\n");
     /* No transfer error */ 
     hsd->SdTransferErr  = SD_OK;
 
@@ -2267,12 +2271,16 @@ static void SD_DMA_TxCplt(DMA_HandleTypeDef *hdma)
   
   /* DMA transfer is complete */
   hsd->DmaTransferCplt = 1;
-  
+//  printf("SD_DMA_TxCplt while\n");
+  // This cycle freeze code when using DMA. This line tell is called from IRQ,
+  // so SDIO_IRQ must have higher priority than DMA_ISR to set this flag.
+  // But documentation says: "...DMA priority is superior to SDIO's priority..."
+  // (DM00154093, p. 459/655, top line)
   /* Wait until SD transfer is complete */
   while(hsd->SdTransferCplt == 0)
   {
   }
-  
+//  printf("SD_DMA_TxCplt while done\n");
   /* Transfer complete user callback */
   HAL_SD_DMA_TxCpltCallback(hsd->hdmatx);  
 }

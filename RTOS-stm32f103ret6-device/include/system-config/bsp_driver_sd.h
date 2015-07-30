@@ -36,6 +36,8 @@
 #ifndef __STM32F1XX_SD_H
 #define __STM32F1XX_SD_H
 
+#ifndef USE_STDPERIPH_SDCARD
+
 #ifdef __cplusplus
  extern "C" {
 #endif 
@@ -108,6 +110,8 @@ uint8_t BSP_SD_IsDetected(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // USE_STDPERIPH_SDCARD
 
 #endif /* __STM32F1XX_SD_H */
 

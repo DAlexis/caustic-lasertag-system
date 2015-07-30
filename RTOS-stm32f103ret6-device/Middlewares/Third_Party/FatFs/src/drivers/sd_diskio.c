@@ -25,14 +25,16 @@
   ******************************************************************************
   */ 
 
+/* Block Size in Bytes */
+#define BLOCK_SIZE                512
+
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
+#include "diskio.h"
 #include "ff_gen_drv.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-/* Block Size in Bytes */
-#define BLOCK_SIZE                512
 
 /* Private variables ---------------------------------------------------------*/
 /* Disk status */
@@ -64,6 +66,11 @@ Diskio_drvTypeDef  SD_Driver =
 };
 
 /* Private functions ---------------------------------------------------------*/
+#ifndef USE_STDPERIPH_SDCARD
+
+// ////////////////////////////////////////
+// SD-card driver using STM32 HAL //
+// ////////////////////////////////////////
 
 /**
   * @brief  Initializes a Drive
@@ -134,7 +141,7 @@ DRESULT SD_write(const BYTE *buff, DWORD sector, UINT count)
 {
   DRESULT res = RES_OK;
   
-  if(BSP_SD_WriteBlocks((uint32_t*)buff, 
+  if(BSP_SD_WriteBlocks((uint32_t*)buff,
                         (uint64_t)(sector * BLOCK_SIZE), 
                         BLOCK_SIZE, count) != MSD_OK)
   {
@@ -191,6 +198,157 @@ DRESULT SD_ioctl(BYTE cmd, void *buff)
   return res;
 }
 #endif /* _USE_IOCTL == 1 */
-  
+
+#else // USE_STDPERIPH_SDCARD
+
+// ////////////////////////////////////////
+// SD-card driver using STM32 HAL //
+// ////////////////////////////////////////
+
+
+#include "sdcard.h"
+#include <string.h>
+
+/* Disk drives */
+#define DRIVE_SDHC      0
+#define DRIVE_EHCI      1
+
+/* Disk constants */
+#define SECTOR_SZ(drv)          ((drv)==DRIVE_SDHC ? 512 :      \
+        ((drv)==DRIVE_EHCI ? usbstorage_GetSectorSize() : 0))
+
+extern SD_CardInfo SDCardInfo;
+
+/**
+  * @brief  Initializes a Drive
+  * @param  None
+  * @retval DSTATUS: Operation status
+  */
+DSTATUS SD_initialize(void)
+{
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	NVIC_InitStructure.NVIC_IRQChannel = SDIO_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	if (SD_Init() != SD_OK)
+		return RES_ERROR;
+	return 0;
+}
+
+/**
+  * @brief  Gets Disk Status
+  * @param  None
+  * @retval DSTATUS: Operation status
+  */
+DSTATUS SD_status(void)
+{
+	return SD_OK;
+}
+
+/**
+  * @brief  Reads Sector(s)
+  * @param  *buff: Data buffer to store read data
+  * @param  sector: Sector address (LBA)
+  * @param  count: Number of sectors to read (1..128)
+  * @retval DRESULT: Operation result
+  */
+DRESULT SD_read(BYTE *buff, DWORD sector, UINT count)
+{
+	if(count==1)
+	{
+		SD_ReadBlock(buff, sector*512, 512);
+		SD_WaitReadOperation();
+		while(SD_GetStatus() != SD_TRANSFER_OK);
+	}
+	else
+	{
+		SD_ReadMultiBlocks(buff, sector*512, 512, count);
+		SD_WaitReadOperation();
+		while(SD_GetStatus() != SD_TRANSFER_OK);
+	}
+	return RES_OK;
+}
+
+/**
+  * @brief  Writes Sector(s)
+  * @param  *buff: Data to be written
+  * @param  sector: Sector address (LBA)
+  * @param  count: Number of sectors to write (1..128)
+  * @retval DRESULT: Operation result
+  */
+#if _USE_WRITE == 1
+DRESULT SD_write(const BYTE *buff, DWORD sector, UINT count)
+{
+	if(count==1)
+	{
+		SD_WriteBlock((BYTE*)buff, sector*512, 512);
+		SD_WaitWriteOperation();
+		while(SD_GetStatus() != SD_TRANSFER_OK);
+	}
+	else
+	{
+		SD_WriteMultiBlocks((BYTE*)buff, sector*512, 512, count);
+		SD_WaitWriteOperation();
+		while(SD_GetStatus() != SD_TRANSFER_OK);
+	}
+	return RES_OK;
+}
+#endif /* _USE_WRITE == 1 */
+
+/**
+  * @brief  I/O control operation
+  * @param  cmd: Control code
+  * @param  *buff: Buffer to send/receive control data
+  * @retval DRESULT: Operation result
+  */
+#if _USE_IOCTL == 1
+DRESULT SD_ioctl(BYTE cmd, void *buff)
+{
+	DRESULT res;
+
+	switch(cmd)
+	{
+	case CTRL_SYNC:
+
+		while(SDIO_GetResponse(SDIO_RESP1)==0);//(SD_WaitReady
+//        {
+			res = RES_OK;
+//        }
+//        else
+//        {
+//            res = RES_ERROR;
+//        }
+		break;
+	case GET_SECTOR_SIZE:
+		*(WORD*)buff = 512;
+		res = RES_OK;
+		break;
+	case GET_SECTOR_COUNT:
+		if((SDCardInfo.CardType == SDIO_STD_CAPACITY_SD_CARD_V1_1) || (SDCardInfo.CardType == SDIO_STD_CAPACITY_SD_CARD_V2_0))
+			*(DWORD*)buff = SDCardInfo.CardCapacity >> 9;
+		else if(SDCardInfo.CardType == SDIO_HIGH_CAPACITY_SD_CARD)
+			*(DWORD*)buff = (SDCardInfo.SD_csd.DeviceSize+1)*1024;
+		//else;////SD_GetCapacity();
+		res = RES_OK;
+		break;
+	case GET_BLOCK_SIZE:
+		//*(WORD*)buff = SDCardInfo.CardBlockSize;
+		*(WORD*)buff = 512;//SDCardInfo.CardBlockSize;
+		res = RES_OK;
+		break;
+
+	default:
+		res = RES_PARERR;
+		break;
+	}
+	return res;
+}
+#endif /* _USE_IOCTL == 1 */
+
+#endif // USE_STDPERIPH_SDCARD
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

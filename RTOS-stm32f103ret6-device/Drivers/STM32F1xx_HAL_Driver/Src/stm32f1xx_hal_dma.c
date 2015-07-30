@@ -599,7 +599,9 @@ void HAL_DMA_IRQHandler(DMA_HandleTypeDef *hdma)
       if(hdma->XferCpltCallback != NULL)
       {       
         /* Transfer complete callback */
+//    	  printf("\nNow we will freeze if using DMA\n");
         hdma->XferCpltCallback(hdma);
+//        printf("\nFreeze is upper\n");
       }
     }
   }

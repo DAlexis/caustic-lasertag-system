@@ -40,8 +40,25 @@ void StateSaver::setFilename(const std::string& filename)
 
 void StateSaver::saveState()
 {
+	taskENTER_CRITICAL();
 	info << "Saving state";
 	FRESULT res = FR_OK;
+	info << "Fake state saving";
+	res = f_open(&m_fil, "test.txt", /*FA_CREATE_NEW | */FA_WRITE);
+	if (res)
+	{
+		error << "Error f_open: " << parseFRESULT(res);
+		return;
+	}
+	UINT bw = 0;
+	res = f_write(&m_fil, "Test!11", 7, &bw);
+	if (res)
+	{
+		error << "Error f_write: " << parseFRESULT(res);
+		return;
+	}
+	f_close(&m_fil);
+	taskEXIT_CRITICAL();
 	// Creating lock file
 	/*
 	res = f_open(&m_fil, m_fileLock[m_current].c_str(), FA_CREATE_NEW);
@@ -52,7 +69,7 @@ void StateSaver::saveState()
 	}
 
 	f_close(&m_fil);*/
-
+/*
 	// Deleting old state file
 	f_unlink(m_file[m_current].c_str());
 	// Creating new state file
@@ -82,7 +99,8 @@ void StateSaver::saveState()
 	}
 	f_close(&m_fil);
 
-	std::swap(m_current, m_next);
+	std::swap(m_current, m_next);*/
+
 }
 
 bool StateSaver::tryRestore(uint8_t variant)

@@ -11,8 +11,13 @@
 #include "fatfs.h"
 #include <stdio.h>
 
-SD_HandleTypeDef hsd;
-HAL_SD_CardInfoTypedef SDCardInfo;
+#ifndef USE_STDPERIPH_SDCARD
+	SD_HandleTypeDef hsd;
+	HAL_SD_CardInfoTypedef SDCardInfo;
+#endif // USE_STDPERIPH_SDCARD
+DMA_HandleTypeDef hdma_sdio;
+DMA_HandleTypeDef hdmatx;
+DMA_HandleTypeDef hdmarx;
 
 void DeviceInitializer::initDevice()
 {
@@ -43,6 +48,7 @@ void DeviceInitializer::initGPIO()
 
 void DeviceInitializer::initSDIO()
 {
+#ifndef USE_STDPERIPH_SDCARD
 	hsd.Instance = SDIO;
 	hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
 	hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
@@ -50,6 +56,7 @@ void DeviceInitializer::initSDIO()
 	hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
 	hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
 	hsd.Init.ClockDiv = 3;
+#endif // USE_STDPERIPH_SDCARD
 }
 
 void DeviceInitializer::initFatFS()
