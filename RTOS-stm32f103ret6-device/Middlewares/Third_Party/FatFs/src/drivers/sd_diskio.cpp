@@ -208,6 +208,9 @@ DRESULT SD_ioctl(BYTE cmd, void *buff)
 
 #include "sdcard.h"
 #include <string.h>
+#include "core/os-wrappers.hpp"
+
+Mutex SDCardBusy;
 
 /* Disk drives */
 #define DRIVE_SDHC      0
@@ -258,17 +261,30 @@ DSTATUS SD_status(void)
   */
 DRESULT SD_read(BYTE *buff, DWORD sector, UINT count)
 {
+	ScopedLock lck(SDCardBusy);
 	if(count==1)
 	{
-		SD_ReadBlock(buff, sector*512, 512);
-		SD_WaitReadOperation();
-		while(SD_GetStatus() != SD_TRANSFER_OK);
+		if (SD_OK != SD_ReadBlock(buff, sector*512, 512))
+			return RES_ERROR;
 	}
 	else
 	{
-		SD_ReadMultiBlocks(buff, sector*512, 512, count);
-		SD_WaitReadOperation();
-		while(SD_GetStatus() != SD_TRANSFER_OK);
+		if (SD_OK != SD_ReadMultiBlocks(buff, sector*512, 512, count))
+			return RES_ERROR;
+	}
+
+	// First step waiting
+	if (SD_OK != SD_WaitReadOperation())
+		return RES_ERROR;
+
+	// Second step waiting
+	SDTransferState transferState = SD_GetStatus();
+	while(transferState != SD_TRANSFER_OK)
+	{
+		if (SD_TRANSFER_ERROR == transferState)
+			return RES_ERROR;
+		Kernel::yeld();//taskYIELD();
+		transferState = SD_GetStatus();
 	}
 	return RES_OK;
 }
@@ -283,17 +299,30 @@ DRESULT SD_read(BYTE *buff, DWORD sector, UINT count)
 #if _USE_WRITE == 1
 DRESULT SD_write(const BYTE *buff, DWORD sector, UINT count)
 {
+	ScopedLock lck(SDCardBusy);
 	if(count==1)
 	{
-		SD_WriteBlock((BYTE*)buff, sector*512, 512);
-		SD_WaitWriteOperation();
-		while(SD_GetStatus() != SD_TRANSFER_OK);
+		if (SD_OK != SD_WriteBlock((BYTE*)buff, sector*512, 512))
+			return RES_ERROR;
 	}
 	else
 	{
-		SD_WriteMultiBlocks((BYTE*)buff, sector*512, 512, count);
-		SD_WaitWriteOperation();
-		while(SD_GetStatus() != SD_TRANSFER_OK);
+		if (SD_OK != SD_WriteMultiBlocks((BYTE*)buff, sector*512, 512, count))
+			return RES_ERROR;
+	}
+
+	// First step waiting
+	if (SD_OK != SD_WaitWriteOperation())
+		return RES_ERROR;
+
+	// Second step waiting
+	SDTransferState transferState = SD_GetStatus();
+	while(transferState != SD_TRANSFER_OK)
+	{
+		if (SD_TRANSFER_ERROR == transferState)
+			return RES_ERROR;
+		Kernel::yeld();//taskYIELD();
+		transferState = SD_GetStatus();
 	}
 	return RES_OK;
 }
@@ -313,15 +342,17 @@ DRESULT SD_ioctl(BYTE cmd, void *buff)
 	switch(cmd)
 	{
 	case CTRL_SYNC:
-
-		while(SDIO_GetResponse(SDIO_RESP1)==0);//(SD_WaitReady
-//        {
-			res = RES_OK;
-//        }
-//        else
-//        {
-//            res = RES_ERROR;
-//        }
+		{
+			ScopedLock lck(SDCardBusy);
+			while(SDIO_GetResponse(SDIO_RESP1)==0);//(SD_WaitReady
+	//        {
+				res = RES_OK;
+	//        }
+	//        else
+	//        {
+	//            res = RES_ERROR;
+	//        }
+		}
 		break;
 	case GET_SECTOR_SIZE:
 		*(WORD*)buff = 512;

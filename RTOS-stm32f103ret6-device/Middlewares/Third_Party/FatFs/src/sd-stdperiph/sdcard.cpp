@@ -193,7 +193,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "sdcard.h"
 #include "sdcard-low-level.h"
-
+#include "core/os-wrappers.hpp"
 #include <stdio.h>
 /** @addtogroup Utilities
   * @{
@@ -1365,7 +1365,10 @@ SD_Error SD_WaitReadOperation(void)
   SD_Error errorstatus = SD_OK;
 
   while ((SD_DMAEndOfTransferStatus() == RESET) && (TransferEnd == 0) && (TransferError == SD_OK))
-  {}
+  {
+	  Kernel::yeld();
+	  //taskYIELD();
+  }
 
   if (TransferError != SD_OK)
   {
@@ -1599,7 +1602,10 @@ SD_Error SD_WaitWriteOperation(void)
   SD_Error errorstatus = SD_OK;
 
   while ((SD_DMAEndOfTransferStatus() == RESET) && (TransferEnd == 0) && (TransferError == SD_OK))
-  {}
+  {
+	  Kernel::yeld();
+	  //taskYIELD();
+  }
 
   if (TransferError != SD_OK)
   {

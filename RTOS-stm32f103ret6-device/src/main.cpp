@@ -115,8 +115,10 @@ int main(void)
 
 	// Running main loop of co-op scheduler
 	//Scheduler::instance().mainLoop();
-	info << "Starting kernel";
+	Kernel::instance().run();
+	/*info << "Starting kernel";
 	osKernelStart();
+	*/
 
 	// We should never get here as control is now taken by the scheduler
 

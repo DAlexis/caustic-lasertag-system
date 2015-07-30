@@ -9,7 +9,20 @@
 #include "core/logging.hpp"
 #include "cmsis_os.h"
 
-//SINGLETON_IN_CPP(Scheduler)
+SINGLETON_IN_CPP(Kernel)
+
+void Kernel::run()
+{
+	info << "Starting FreeRTOS kernel";
+	m_isRunning = true;
+	osKernelStart();
+}
+
+void Kernel::yeld()
+{
+	if (Kernel::instance().m_isRunning)
+		taskYIELD();
+}
 
 void TaskOnce::runTaskOnce(void const* pTask)
 {

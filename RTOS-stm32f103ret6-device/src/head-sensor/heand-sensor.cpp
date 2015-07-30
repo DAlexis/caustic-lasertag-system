@@ -88,17 +88,17 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 	}
 
 
-	info << "Restoring state";
+	info << "Restoring last state and config";
 	StateSaver::instance().setFilename("state-save");
 	// State restoring is always after config reading, so not stored data will be default
 	if (StateSaver::instance().tryRestore())
 	{
 		info << "  restored";
 	} else {
-		error << "  restoring failed";
+		error << "  restoring failed, using default config";
 		// setting player state to default
 		playerState.reset();
-		//StateSaver::instance().saveState();
+		StateSaver::instance().saveState();
 	}
 
 	info << "Initializing visual effects";

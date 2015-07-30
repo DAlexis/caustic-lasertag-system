@@ -19,6 +19,21 @@ using STask = std::function<void(void)>;
 using STime = uint32_t;
 using STaskId = osThreadId;
 
+class Kernel
+{
+public:
+	Kernel() {}
+
+	static void yeld();
+
+	void run();
+	inline bool isRunning() const { return m_isRunning; }
+	SIGLETON_IN_CLASS(Kernel);
+
+private:
+	bool m_isRunning = false;
+};
+
 class TaskBase
 {
 public:
