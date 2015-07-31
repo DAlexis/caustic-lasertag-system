@@ -59,7 +59,7 @@ void DeviceAddress::convertFromString(const char* str)
 // RCSPModem
 RCSPModem::RCSPModem()
 {
-	m_modemTask.setStackSize(256);
+	m_modemTask.setStackSize(512);
 	m_modemTask.setTask(std::bind(&RCSPModem::interrogate, this));
 }
 

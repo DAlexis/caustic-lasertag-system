@@ -115,7 +115,7 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.headSensors);
 
-	StateSaver::instance().runSaver(2000);
+	StateSaver::instance().runSaver(8000);
 
 	info << "Head sensor ready to use";
 }

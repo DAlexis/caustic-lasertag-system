@@ -22,7 +22,7 @@ class KillZonesManager
 public:
 	constexpr static uint8_t killZonesMaxCount = 6;
 	constexpr static uint32_t callbackDelay = 50;
-	constexpr static uint32_t vibroPeriod = 200;
+	constexpr static uint32_t vibroPeriod = 200000;
 	KillZonesManager(const FloatParameter& zone1DamageCoeff,
 		const FloatParameter& zone2DamageCoeff,
 		const FloatParameter& zone3DamageCoeff,

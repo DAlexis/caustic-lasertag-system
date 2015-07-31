@@ -42,26 +42,6 @@
 
 DeviceInitializer deviceInitializer;
 
-TaskCycled test;
-
-class Aaa
-{
-public:
-	void printHi()
-	{
-		info << "Hi!";
-	}
-
-};
-
-TaskCycled t2([](){
-	info << "Hi!2";
-});
-
-TaskCycled t3([](){
-	info << "Hi!3";
-});
-
 TaskCycled alive([](){
 	info << "I'm alive now";
 });
@@ -69,12 +49,14 @@ TaskCycled alive([](){
 int main(void)
 {
 	deviceInitializer.initDevice();
+#ifdef DEBUG
 	debug.enable();
 	radio.enable();
 	trace.enable();
+#endif
 	info << "=============== Device initialized ===============";
 	// Wait for voltages stabilization
-	HAL_Delay(1000);
+	HAL_Delay(100);
 
 	/* USER CODE BEGIN RTOS_TIMERS */
 	/* start timers, add new ones, ... */
@@ -92,41 +74,18 @@ int main(void)
 	}
 	headSensor->configure(pinout);
 
-/*
-	Aaa a;
-	test.setTask(std::bind(&Aaa::printHi, &a));
-	test.setStackSize(1024);
-	test.run();
-	t2.setStackSize(128);
-	t2.run();
-	t3.setStackSize(128);
-	t3.run();*/
 	alive.setStackSize(128);
 	alive.run(0, 500, 500, 0);
 	HAL_Delay(1000);
-	// Turning on console
-	//Scheduler::instance().addTask(std::bind(&Console::interrogate, &Console::instance()), false, 500000);
 
-	// Turning on memory checker
-	//Scheduler::instance().addTask(checkMemory, false, 500000);
-
-	// Printing console prompt
-	//Console::instance().prompt();
-
-	// Running main loop of co-op scheduler
-	//Scheduler::instance().mainLoop();
 	Kernel::instance().run();
-	/*info << "Starting kernel";
-	osKernelStart();
-	*/
 
 	// We should never get here as control is now taken by the scheduler
 
 	while (1)
 	{
-
+		printf("That's fail\n");
 	}
-
 }
 
 /* USER CODE BEGIN 4 */

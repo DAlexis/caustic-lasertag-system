@@ -35,7 +35,7 @@ __attribute__((weak))
 _exit(int code __attribute__((unused)))
 {
 #if !defined(DEBUG)
-  __reset_hardware();
+  //__reset_hardware();
 #endif
 
   // TODO: write on trace

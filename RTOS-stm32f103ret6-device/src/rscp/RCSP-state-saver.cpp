@@ -19,7 +19,7 @@ SINGLETON_IN_CPP(StateSaver)
 StateSaver::StateSaver()
 {
 	m_savingTask.setTask(std::bind(&StateSaver::saveState, this));
-	m_savingTask.setStackSize(1824);
+	m_savingTask.setStackSize(512);
 }
 
 void StateSaver::addValue(OperationCode code)
