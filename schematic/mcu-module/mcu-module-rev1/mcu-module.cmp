@@ -1,0 +1,157 @@
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вт 26 май 2015 21:01:16
+
+BeginCmp
+TimeStamp = /55643130;
+Reference = C1;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55642A50;
+Reference = C2;
+ValeurCmp = 100pF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55642A82;
+Reference = C3;
+ValeurCmp = 100pF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5564200D;
+Reference = C4;
+ValeurCmp = 20pF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55642035;
+Reference = C5;
+ValeurCmp = 20pF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55641DCE;
+Reference = C6;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55641DDD;
+Reference = C7;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55641DEC;
+Reference = C8;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55641DFB;
+Reference = C9;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55641E0A;
+Reference = C10;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55643F29;
+Reference = P1;
+ValeurCmp = MCU1;
+IdModule  = pin_array_10x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /55642FF5;
+Reference = P2;
+ValeurCmp = MICROSD-SDIO-CD;
+IdModule  = MICROSD-CD;
+EndCmp
+
+BeginCmp
+TimeStamp = /5564B13A;
+Reference = P3;
+ValeurCmp = SWD;
+IdModule  = PIN_ARRAY-4X1-2mm-horiz;
+EndCmp
+
+BeginCmp
+TimeStamp = /55643F38;
+Reference = P4;
+ValeurCmp = MCU2;
+IdModule  = pin_array_10x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /5564352C;
+Reference = R1;
+ValeurCmp = 47k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5564353B;
+Reference = R2;
+ValeurCmp = 47k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5564354A;
+Reference = R3;
+ValeurCmp = 47k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55643559;
+Reference = R4;
+ValeurCmp = 47k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55643978;
+Reference = R5;
+ValeurCmp = 47k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55641DBF;
+Reference = U1;
+ValeurCmp = STM32F103RE;
+IdModule  = LQFP64-0.254mm-pins;
+EndCmp
+
+BeginCmp
+TimeStamp = /55642A2B;
+Reference = X1;
+ValeurCmp = 32768Hz;
+IdModule  = crystal-TC26H;
+EndCmp
+
+BeginCmp
+TimeStamp = /55641FFE;
+Reference = X2;
+ValeurCmp = 8MHz;
+IdModule  = HC-49V;
+EndCmp
+
+EndListe

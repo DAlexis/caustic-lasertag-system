@@ -1,11 +1,6 @@
-update=Вт 26 май 2015 11:32:40
+update=Ср 27 май 2015 21:56:12
 version=1
 last_client=eeschema
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [pcbnew]
 version=1
 LastNetListRead=
@@ -26,7 +21,6 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.100000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -43,8 +37,19 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
+LibName17=../../components/lqfp64
+LibName18=crystal
+LibName19=../../components/micro-sd3-cd
+LibName20=../../components/pin-arr-2mm-horiz
+LibName21=../../components/pin-array-10x2
+LibDir=
 [general]
 version=1
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -84,5 +89,6 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=/home/alexey/Projects/lazertag/schematic/components/stm32
-LibName32=/home/alexey/Projects/lazertag/schematic/components/microsd-sdio-cd
+LibName31=../../components/stm32
+LibName32=../../components/microsd-sdio-cd
+LibName33=../../components/MCU-board-connectors

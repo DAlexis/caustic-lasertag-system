@@ -19,6 +19,8 @@
 // unsigned int teamId, unsigned int playerId, unsigned int damage
 using MilesTag2ShotCallback = std::function<void(unsigned int /*teamId*/, unsigned int /*playerId*/, unsigned int /*damage*/)>;
 
+using PlayerMT2Id = uint8_t;
+
 class MilesTag2Transmitter
 {
 public:
@@ -26,14 +28,14 @@ public:
 	~MilesTag2Transmitter() {}
 
 	void init(unsigned int fireEmitterNumber = 0);
-	void setPlayerIdReference(uint8_t& playerId);
+	void setPlayerIdReference(PlayerMT2Id& playerId);
 	void setTeamIdReference(uint8_t& teamId);
 
 	/// Set output power in percents. This function may conflict with setChannel()
 	void setPower(unsigned int percent);
 	/// Set output channel if supported by fire emitter. This function may conflict with setPower()
 	void setChannel(unsigned int channel);
-	uint8_t getPlayerId() { return *m_playerId; }
+	PlayerMT2Id getPlayerId() { return *m_playerId; }
 	uint8_t getTeamId() { return *m_teamId; }
 
 	// Standard commands
@@ -80,8 +82,8 @@ private:
 
 	void sendCommand(uint8_t commandCode);
 	uint8_t encodeDamage(uint8_t damage);
-	uint8_t m_playerIdStub = 1;
-	uint8_t *m_playerId = &m_playerIdStub;
+	PlayerMT2Id m_playerIdStub = 1;
+	PlayerMT2Id *m_playerId = &m_playerIdStub;
 
 	uint8_t m_teamIdStub = 0;
 	uint8_t *m_teamId = &m_teamIdStub;

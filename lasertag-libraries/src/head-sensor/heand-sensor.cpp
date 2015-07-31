@@ -37,18 +37,48 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 			nullptr
 		));
 
+	IIOPin* zone1vibroPin = pinout.zone1VibroEnabled ? IOPins->getIOPin(pinout.zone1VibroPort, pinout.zone1VibroPin) : nullptr;
 	if (pinout.zone1Enabled)
-		m_killZonesManager.enableKillZone(0, EXTIS->getEXTI(pinout.zone1Port, pinout.zone1Pin));
+		m_killZonesManager.enableKillZone(
+				0,
+				EXTIS->getEXTI(pinout.zone1Port, pinout.zone1Pin),
+				zone1vibroPin
+				);
+
 	if (pinout.zone2Enabled)
-		m_killZonesManager.enableKillZone(1, EXTIS->getEXTI(pinout.zone2Port, pinout.zone2Pin));
+		m_killZonesManager.enableKillZone(
+				1,
+				EXTIS->getEXTI(pinout.zone2Port, pinout.zone2Pin),
+				pinout.zone2VibroEnabled ? IOPins->getIOPin(pinout.zone2VibroPort, pinout.zone2VibroPin) : zone1vibroPin
+				);
+
 	if (pinout.zone3Enabled)
-		m_killZonesManager.enableKillZone(2, EXTIS->getEXTI(pinout.zone3Port, pinout.zone3Pin));
+		m_killZonesManager.enableKillZone(
+				2,
+				EXTIS->getEXTI(pinout.zone3Port, pinout.zone3Pin),
+				pinout.zone3VibroEnabled ? IOPins->getIOPin(pinout.zone3VibroPort, pinout.zone3VibroPin) : zone1vibroPin
+				);
+
 	if (pinout.zone4Enabled)
-		m_killZonesManager.enableKillZone(3, EXTIS->getEXTI(pinout.zone4Port, pinout.zone4Pin));
+		m_killZonesManager.enableKillZone(
+				3,
+				EXTIS->getEXTI(pinout.zone4Port, pinout.zone4Pin),
+				pinout.zone4VibroEnabled ? IOPins->getIOPin(pinout.zone4VibroPort, pinout.zone4VibroPin) : zone1vibroPin
+				);
+
 	if (pinout.zone5Enabled)
-		m_killZonesManager.enableKillZone(4, EXTIS->getEXTI(pinout.zone5Port, pinout.zone5Pin));
+		m_killZonesManager.enableKillZone(
+				4,
+				EXTIS->getEXTI(pinout.zone5Port, pinout.zone5Pin),
+				pinout.zone5VibroEnabled ? IOPins->getIOPin(pinout.zone5VibroPort, pinout.zone5VibroPin) : zone1vibroPin
+				);
+
 	if (pinout.zone6Enabled)
-		m_killZonesManager.enableKillZone(5, EXTIS->getEXTI(pinout.zone6Port, pinout.zone6Pin));
+		m_killZonesManager.enableKillZone(
+				5,
+				EXTIS->getEXTI(pinout.zone6Port, pinout.zone6Pin),
+				pinout.zone6VibroEnabled ? IOPins->getIOPin(pinout.zone6VibroPort, pinout.zone6VibroPin) : zone1vibroPin
+				);
 	//m_mainSensor.enableDebug(true);
 
 	info << "Mounting sd-card\n";
@@ -122,7 +152,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 {
 	ScopedTag tag("shot-cb");
 	float zoneModifier = pZoneModifier ? *pZoneModifier : 1.0;
-	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage << "\n";
+	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage;
 	if (playerState.isAlive()) {
 
 		if (playerId == playerConfig.plyerMT2Id)
@@ -135,7 +165,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		}
 
 		playerState.damage(damage);
-		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent << "\n";
+		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent;
 
 		// If still is alive
 		if (playerState.isAlive())
@@ -148,10 +178,12 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 				stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
 				stream.send(*it, true, nullptr);
 			}
+			notifyDamager(playerId, teamId, DamageNotification::injured);
 		} else {
 			//Player was killed
 			info << "xx Player died\n";
 			dieWeapons();
+			notifyDamager(playerId, teamId, DamageNotification::killed);
 			m_leds.blink(blinkPatterns.death);
 			Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
 		}
@@ -260,7 +292,7 @@ void HeadSensor::setTeam(uint8_t teamId)
 	m_leds.blink(blinkPatterns.anyCommand);
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		info << "Changing weapon team id to" << teamId << "\n";
+		info << "Changing weapon team id to" << teamId;
 		RCSPStream::remotePullValue(*it, ConfigCodes::HeadSensor::Configuration::teamId);
 	}
 }
@@ -268,20 +300,50 @@ void HeadSensor::setTeam(uint8_t teamId)
 void HeadSensor::addMaxHealth(int16_t delta)
 {
 	ScopedTag tag("set-team");
-	info << "Adding health: " << delta << "\n";
+	info << "Adding health: " << delta;
 	if (delta < 0 && playerConfig.healthMax < -delta)
 	{
-		debug << "Max health is " << playerConfig.healthMax << ", so can not add " << delta << "\n";
+		debug << "Max health is " << playerConfig.healthMax << ", so can not add " << delta;
 		return;
 	}
 	playerConfig.healthMax += delta;
 	if (delta < 0 && playerConfig.healthStart < -delta)
 	{
-		debug << "Start health is " << playerConfig.healthStart << ", so can not add " << delta << "\n";
+		debug << "Start health is " << playerConfig.healthStart << ", so can not add " << delta;
 		return;
 	}
 	playerConfig.healthStart += delta;
 	m_leds.blink(blinkPatterns.anyCommand);
+}
+
+void HeadSensor::notifyDamager(PlayerMT2Id damager, uint8_t damagerTeam, uint8_t state)
+{
+	ScopedTag tag("notify-damager");
+	DamageNotification notification;
+	notification.damager = damager;
+	notification.damagedTeam = playerConfig.teamId;
+	notification.state = state;
+	notification.target = playerConfig.plyerMT2Id;
+	info << "Notifying damager";
+	RCSPStream::remoteCall(broadcast.headSensors, ConfigCodes::HeadSensor::Functions::notifyIsDamager, notification, false);
+}
+
+void HeadSensor::notifyIsDamager(DamageNotification notification)
+{
+	ScopedTag tag("notify-damaged");
+	info << "By the time " << notification.damager << " damaged " << notification.target;
+	if (notification.damager != playerConfig.plyerMT2Id)
+		return;
+
+	if (!playerState.weaponsList.weapons.empty())
+	{
+		uint8_t sound =
+			notification.damagedTeam == playerConfig.teamId ?
+				NotificationSoundCase::friendInjured :
+				notification.state;
+		RCSPStream::remoteCall(*(playerState.weaponsList.weapons.begin()), ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged, sound);
+	}
+
 }
 
 uint8_t HeadSensor::getTeamColor()

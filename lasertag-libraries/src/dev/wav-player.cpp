@@ -8,6 +8,7 @@
 #include "dev/wav-player.hpp"
 #include "dev/random.hpp"
 #include "dev/sdcard-fs.hpp"
+#include "core/logging.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -16,16 +17,17 @@ STATIC_DEINITIALIZER_IN_CPP_FILE(WavPlayer, m_wavPlayer);
 
 WavPlayer::WavPlayer()
 {
-	printf("Creating audio buffers\n");
+	ScopedTag tag("wav-player-init");
+	debug << "Creating audio buffers";
 	m_buffer1 = new SoundSample[audioBufferSize];
 	m_buffer2 = new SoundSample[audioBufferSize];
-	printf("Testing audio buffers\n");
+	trace << "Testing audio buffers";
 	for (int i=0; i<audioBufferSize; i++)
 	{
 		m_buffer1[i] = 0xFFFF;
 		m_buffer2[i] = 0xFFFF;
 	}
-	printf("Done\n");
+	debug << "Done";
 }
 
 WavPlayer::~WavPlayer()
@@ -54,9 +56,10 @@ void WavPlayer::setVerbose(bool verbose)
 
 bool WavPlayer::loadFile(const char* fileName)
 {
+	ScopedTag tag("wav-loading");
 	fragmentPlayer->stop();
 	FRESULT res;
-	printf("Opening file...\n");
+	debug << "Opening file...";
 	m_totalReaded = 0;
 	m_fileIsOpened = false;
 	res = f_open(&m_fil, fileName, FA_OPEN_EXISTING | FA_READ);
@@ -72,20 +75,18 @@ bool WavPlayer::loadFile(const char* fileName)
 	}
 
 	if (m_verbose)
-		printf("File loaded\n");
+		debug << "File loaded";
 
 	if (!loadFragment(m_buffer1))
 	{
-		if (m_verbose)
-			printf("Cannot load first fragment from audio file\n");
+		error << "Cannot load first fragment from audio file";
 		f_close(&m_fil);
 		return false;
 	}
 
 	if (!loadFragment(m_buffer2))
 	{
-		if (m_verbose)
-			printf("Cannot load second fragment from audio file\n");
+		error << "Cannot load second fragment from audio file";
 		f_close(&m_fil);
 		return false;
 	}
@@ -98,7 +99,7 @@ void WavPlayer::play()
 {
 	if (!m_fileIsOpened)
 	{
-		printf("Cannot play, file wasn't opened\n");
+		error << "Cannot play, file wasn't opened";
 		return;
 	}
 	fragmentPlayer->stop();
@@ -135,18 +136,19 @@ void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 
 bool WavPlayer::readHeader()
 {
+	ScopedTag tag("wav-header-reading");
 	FRESULT res;
 	UINT readed = 0;
 	res = f_read (&m_fil, &m_header, sizeof(m_header), &readed);
 	if (res != FR_OK)
 	{
-		if (m_verbose) printf("Cannot read header from file.\n");
+		error << "Cannot read header from file";
 		return false;
 	}
 
 	if (readed != sizeof(m_header))
 	{
-		if (m_verbose) printf("Incomplete wav file.\n");
+		error << "Incomplete wav file";
 		return false;
 	}
 
@@ -155,22 +157,22 @@ bool WavPlayer::readHeader()
 	// Validating m_header
 	if (strncmp(m_header.riff, "RIFF", 4) != 0)
 	{
-		if (m_verbose) printf("Invalid format: not RIFF\n");
+		error << "Invalid format: not RIFF";
 		return false;
 	}
 	if (m_header.audio_format != 1)
 	{
-		if (m_verbose) printf("Invalid audio format: %u; Only PCM audio supported\n", m_header.audio_format);
+		error << "Invalid audio format: " << m_header.audio_format << " Only PCM audio supported";
 		return false;
 	}
 	if (m_header.num_channels != 1)
 	{
-		if (m_verbose) printf("Invalid channels count: %u; Only mono sound supported\n", m_header.num_channels);
+		error << "Invalid channels count: " << m_header.num_channels << " Only mono sound supported";
 		return false;
 	}
 	if (m_header.bits_per_sample != 16)
 	{
-		if (m_verbose) printf("Invalid bits per sample rate: %u; Only 16 supported\n", m_header.bits_per_sample);
+		error << "Invalid bits per sample rate: " << m_header.bits_per_sample << "Only 16 supported";
 		return false;
 	}
 	return true;
@@ -288,6 +290,7 @@ void SoundPlayer::addVariant(std::string&& filename)
 
 void SoundPlayer::readVariants(const char* filenamePrefix, const char* filenameSuffix)
 {
+	ScopedTag tag("sp-scan-sounds");
 	unsigned int number = 0;
 	char buff[10];
 	FRESULT res = FR_OK;
@@ -300,18 +303,19 @@ void SoundPlayer::readVariants(const char* filenamePrefix, const char* filenameS
 			addVariant(nextFilename);
 		}
 	} while (res == FR_OK);
-	printf("%sN%s - %u found\n", filenamePrefix, filenameSuffix, number-1);
+	debug << filenamePrefix << "X" << filenameSuffix << " - " << number-1 << "found";
 }
 
 void SoundPlayer::play()
 {
+	ScopedTag tag("play-sound");
 	if (m_variants.empty())
 	{
-		printf("No sound set\n");
+		warning << "No sound set";
 		return;
 	}
 	unsigned int rnd = Random::random(m_variants.size()-1);
-	printf("Random sound %u\n", rnd);
+	debug << "Playing variant " << rnd;
 	WavPlayer::instance().loadAndPlay(m_variants[rnd].c_str());
 }
 

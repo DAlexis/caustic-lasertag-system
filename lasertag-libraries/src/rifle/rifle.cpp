@@ -16,6 +16,7 @@
 #include "dev/console.hpp"
 #include "dev/sdcard-fs.hpp"
 #include "dev/wav-player.hpp"
+#include "dev/io-pin-utils.hpp"
 #include "hal/system-clock.hpp"
 
 //#include "res/buttons-mapping.h"
@@ -128,6 +129,9 @@ void RifleConfiguration::setDefault()
 
 	heatPerShot = 0;
 	heatLossPerSec = 0;
+
+	fireFlashPeriod = 100000;
+	fireVibroPeriod = 100000;
 }
 
 RifleState::RifleState(RifleConfiguration* config) :
@@ -186,7 +190,7 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	// Line for DEBUG purpose only
 	//rifleTurnOn();
 
-	info << "Configuring buttons" << "\n";
+	info << "Configuring buttons";
 	m_fireButton = ButtonsPool::instance().getButtonManager(pinout.fireButtonPort, pinout.fireButtonPin);
 	ButtonsPool::instance().setExti(pinout.fireButtonPort, pinout.fireButtonPin, true);
 	m_fireButton->setAutoRepeat(config.automaticAllowed);
@@ -210,10 +214,21 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.semiAutomaticButtonPort, pinout.semiAutomaticButtonPin);
 	m_semiAutomaticFireSwitch->turnOff();
 
-	if (config.isAutoReloading() || config.isReloadingByDistortingTheBolt())
+	if (pinout.enableFlash)
 	{
-		m_state = WeaponState::ready;
-	} else {
+		m_fireFlash = IOPins->getIOPin(pinout.flashPort, pinout.flashPin);
+		m_fireFlash->switchToOutput();
+		m_fireFlash->reset();
+	}
+	if (pinout.enableVibro)
+	{
+		m_vibroEngine = IOPins->getIOPin(pinout.vibroPort, pinout.vibroPin);
+		m_vibroEngine->switchToOutput();
+		m_vibroEngine->reset();
+	}
+
+	if (!config.isAutoReloading() && !config.isReloadingByDistortingTheBolt())
+	{
 		m_magazine1Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine1SensorPort, pinout.magazine1SensorPin);
 		m_magazine1Sensor->setAutoRepeat(false);
 		m_magazine1Sensor->setRepeatPeriod(config.firePeriod);
@@ -229,15 +244,8 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 		m_magazine2Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 2, true));
 		m_magazine2Sensor->turnOn();
 		Scheduler::instance().addTask(std::bind(&ButtonManager::interrogate, m_magazine2Sensor), false, 50000);
-
-		m_currentMagazineNumber = getCurrentMagazineNumber();
-		info << "Magazine inserted: " << m_currentMagazineNumber << "\n";
-		if (m_currentMagazineNumber == 0)
-		{
-			m_state = WeaponState::magazineRemoved;
-			m_fireButton->setAutoRepeat(false);
-		}
 	}
+	detectRifleState();
 
 	info << "Configuring MT2 transmitter\n";
 	m_mt2Transmitter.init();
@@ -264,6 +272,24 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	info << "Rifle ready to use\n";
 }
 
+void Rifle::detectRifleState()
+{
+	if (config.isAutoReloading() || config.isReloadingByDistortingTheBolt())
+	{
+		m_state = WeaponState::ready;
+	} else {
+		m_currentMagazineNumber = getCurrentMagazineNumber();
+		info << "Magazine inserted: " << m_currentMagazineNumber;
+		if (m_currentMagazineNumber != 0)
+		{
+			m_state = WeaponState::ready;
+		} else {
+			m_state = WeaponState::magazineRemoved;
+			m_fireButton->setAutoRepeat(false);
+		}
+	}
+}
+
 void Rifle::loadConfig()
 {
 	IniParcer *parcer = new IniParcer;
@@ -283,6 +309,9 @@ void Rifle::initSounds()
 	m_noMagazines.readVariants("sound/no-magazines-", ".wav");
 	m_respawnSound.readVariants("sound/respawn-", ".wav");
 	m_dieSound.readVariants("sound/die-", ".wav");
+	m_enemyDamaged.readVariants("sound/enemy-injured-", ".wav");
+	m_enemyKilled.readVariants("sound/enemy-killed-", ".wav");;
+	m_friendDamaged.readVariants("sound/friend-injured-", ".wav");;
 }
 
 void Rifle::makeShot(bool isFirst)
@@ -301,22 +330,32 @@ void Rifle::makeShot(bool isFirst)
 		if (state.bulletsInMagazineCurrent != 0)
 		{
 			state.bulletsInMagazineCurrent--;
-			info << "<----<< Sending bullet with damage " << config.damageMin << "\n";
+			info << "<----<< Sending bullet with damage " << config.damageMin;
 			m_mt2Transmitter.shot(config.damageMin);
+			if (m_fireFlash)
+			{
+				m_fireFlash->set();
+				delayedSwitchPin(m_fireFlash, false, config.fireFlashPeriod);
+			}
+			if (m_vibroEngine)
+			{
+				m_vibroEngine->set();
+				delayedSwitchPin(m_vibroEngine, false, config.fireVibroPeriod);
+			}
 			m_shootingSound.play();
-		}
-
-		if (state.bulletsInMagazineCurrent == 0)
-		{
-			m_state = WeaponState::magazineEmpty;
-			m_fireButton->setAutoRepeat(false);
+			if (state.bulletsInMagazineCurrent == 0)
+			{
+				m_state = WeaponState::magazineEmpty;
+				m_fireButton->setAutoRepeat(false);
+				if (config.isAutoReloading())
+					reloadAndPlay();
+				break;
+			}
+		} else {
 			m_noAmmoSound.play();
 			info << "Magazine is empty\n";
-			if (config.isAutoReloading())
-				reloadAndPlay();
 			break;
 		}
-
 
 		if (m_semiAutomaticFireSwitch->state() && config.semiAutomaticAllowed)
 			m_fireButton->setAutoRepeat(false);
@@ -336,7 +375,7 @@ void Rifle::makeShot(bool isFirst)
 	default:
 		break;
 	}
-	trace << "State: " << m_state << "\n";
+	trace << "State: " << m_state;
 }
 
 void Rifle::distortBolt(bool)
@@ -372,12 +411,12 @@ void Rifle::distortBolt(bool)
 		break;
 
 	}
-	trace << "State: " << m_state << "\n";
+	trace << "State: " << m_state;
 }
 
 void Rifle::magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst)
 {
-	info << "Sensor cb for  " << sensorNumber << "\n";
+	info << "Sensor cb for  " << sensorNumber;
 	if (!isConnected)
 	{
 		m_state = WeaponState::magazineRemoved;
@@ -423,7 +462,7 @@ void Rifle::magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst)
 			break;
 		}
 	}
-	info << "State: " << m_state << "\n";
+	info << "State: " << m_state;
 }
 
 uint8_t Rifle::getCurrentMagazineNumber()
@@ -438,16 +477,17 @@ uint8_t Rifle::getCurrentMagazineNumber()
 
 void Rifle::reloadAndPlay()
 {
-	m_state = WeaponState::reloading;
 	if (state.magazinesCountCurrent == 0)
 	{
 		info << "No more magazines!\n";
 		/// @todo Add sound "no magazines"
 		return;
 	}
+	m_state = WeaponState::reloading;
 	Scheduler::instance().addTask(
 			[this]() {
 				m_state = WeaponState::ready;
+				m_fireButton->setAutoRepeat(true);
 				state.magazinesCountCurrent--;
 				state.bulletsInMagazineCurrent = config.bulletsInMagazineMax;
 			},
@@ -456,7 +496,6 @@ void Rifle::reloadAndPlay()
 			0,
 			config.reloadingTime
 	);
-	m_fireButton->setAutoRepeat(true);
 	info << "reloading\n";
 	if (config.reloadPlaySound)
 		m_reloadingSound.play();
@@ -490,7 +529,7 @@ void Rifle::rifleTurnOff()
 {
 	ScopedTag tag("rifle-turn-off");
 	info << "Rifle turned OFF\n";
-	isEnabled = false;
+	m_isEnabled = false;
 	m_fireButton->turnOff();
 	m_reloadButton->turnOff();
 }
@@ -499,15 +538,17 @@ void Rifle::rifleTurnOn()
 {
 	ScopedTag tag("rifle-turn-on");
 	info << "Rifle turned ON\n";
-	isEnabled = true;
+	m_isEnabled = true;
 	m_fireButton->turnOn();
 	m_reloadButton->turnOn();
+	detectRifleState();
 }
 
 void Rifle::rifleReset()
 {
 	ScopedTag tag("rifle-reset");
 	state.reset();
+	detectRifleState();
 	info << "Rifle resetted\n";
 }
 
@@ -525,11 +566,53 @@ void Rifle::rifleDie()
 {
 	ScopedTag tag("rifle-die");
 	info << "\'Rifle die\' activated\n";
-	if (!isEnabled)
+	if (!m_isEnabled)
 		return;
 
 	rifleTurnOff();
 	m_dieSound.play();
+}
+
+void Rifle::playDamagerNotification(uint8_t state)
+{
+	if (WavPlayer::instance().isPlaying())
+	{
+		scheduleDamageNotification(state);
+		return;
+	}
+
+	switch (state)
+	{
+	default:
+	case NotificationSoundCase::enemyInjured:
+		m_enemyDamaged.play();
+		break;
+	case NotificationSoundCase::enemyKilled:
+		m_enemyKilled.play();
+		break;
+	case NotificationSoundCase::friendInjured:
+		m_friendDamaged.play();
+		break;
+	}
+}
+
+void Rifle::scheduleDamageNotification(uint8_t state)
+{
+	Scheduler::instance().addTask(
+			std::bind(&Rifle::playDamagerNotification, this, state),
+			true,
+			0,
+			0,
+			100000
+	);
+}
+
+
+void Rifle::riflePlayEnemyDamaged(uint8_t state)
+{
+	ScopedTag tag("notify-damaged");
+	info << "Player damaged with state: " << state;
+	playDamagerNotification(state);
 }
 
 void Rifle::registerWeapon()

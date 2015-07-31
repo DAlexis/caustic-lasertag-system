@@ -83,7 +83,11 @@ namespace ConfigCodes
 			PAR_CODE(heatPerShot,              40)
 			PAR_CODE(heatLossPerSec,           41)
 
-			PAR_CODE(headSensorAddr,           100)
+			PAR_CODE(fireFlashPeriod,          50)
+			PAR_CODE(fireVibroPeriod,          51)
+
+			PAR_CODE(headSensorAddr,           80)
+
 		}
 
 		namespace State
@@ -102,6 +106,7 @@ namespace ConfigCodes
 			FUNC_CODE(rifleReset,         203)
 			FUNC_CODE(rifleRespawn,       204)
 			FUNC_CODE(rifleDie,           205)
+			FUNC_CODE(riflePlayEnemyDamaged,    210)
 		}
 	}
 
@@ -185,6 +190,7 @@ namespace ConfigCodes
 			FUNC_CODE(setTeam,            1221)
 
 			FUNC_CODE(registerWeapon,     1300)
+			FUNC_CODE(notifyIsDamager,      1400)
 		}
 	}
 }
