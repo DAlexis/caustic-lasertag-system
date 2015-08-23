@@ -5,8 +5,10 @@
  *      Author: alexey
  */
 
-#include "device-initializer.hpp"
+#include "core/device-initializer.hpp"
 #include "core/logging.hpp"
+#include "core/string-utils.hpp"
+#include "head-sensor/head-sensor.hpp"
 #include "cmsis_os.h"
 #include "fatfs.h"
 #include <stdio.h>
@@ -19,7 +21,53 @@ DMA_HandleTypeDef hdma_sdio;
 DMA_HandleTypeDef hdmatx;
 DMA_HandleTypeDef hdmarx;
 
-void DeviceInitializer::initDevice()
+
+///////////////////
+//
+
+Result Pinout::readIni(const char* filename)
+{
+	IniParcer* parcer = new IniParcer;
+	parcer->setCallback(std::bind(&Pinout::readConfigLine, this, std::placeholders::_1, std::placeholders::_2));
+	Result res = parcer->parseFile(filename);
+	delete parcer;
+	return res;
+}
+
+void Pinout::readConfigLine(const char* key, const char* value)
+{
+	static const char portText[] = "_port";
+	static const char pinText[] = "_pin";
+	static uint8_t portTextLen = strlen(portText);
+	static uint8_t pinTextLen = strlen(pinText);
+	uint8_t keyLen = strlen(key);
+	if (checkSuffix(key, portText))
+	{
+		std::string name = std::string(key).substr(0, keyLen-portTextLen);
+		auto it = m_pins.find(name);
+		/// @todo [stability] replace atoi by ananlog without undefined behavior
+		uint8_t portNumber = atoi(value);
+		if (it != m_pins.end())
+			it->second.port = portNumber;
+		else
+			m_pins[name] = PinDescr(portNumber, 0);
+	} else if (checkSuffix(key, pinText))
+	{
+		std::string name = std::string(key).substr(0, keyLen-pinTextLen);
+		auto it = m_pins.find(name);
+		/// @todo [stability] replace atoi by ananlog without undefined behavior
+		uint8_t pinNumber = atoi(value);
+		if (it != m_pins.end())
+			it->second.pin = pinNumber;
+		else
+			m_pins[name] = PinDescr(0, pinNumber);
+	} else {
+		error << "Invalid pinout configuration variable: " << key;
+	}
+}
+
+
+void DeviceInitializer::initHW()
 {
 	HAL_Init();
 	initClock();
@@ -29,7 +77,51 @@ void DeviceInitializer::initDevice()
 	initFatFS();
 	info << "Base HW initialization done";
 	printf("\nprintf works()\n");
-	//__HAL_SD_SDIO_DISABLE(&hsd);
+}
+
+IAnyDevice* DeviceInitializer::initDevice(const char* filename)
+{
+	IniParcer* parcer = new IniParcer;
+	IAnyDevice* resultDevice = nullptr;
+	parcer->setCallback(
+		[&resultDevice] (const char* key, const char* value)
+		{
+			trace << "Key: " << key << "; value: " << value;
+			if (0 == strcmp(key, "device_type"))
+			{
+				if (0 == strcmp(value, "head_sensor"))
+					resultDevice = new HeadSensor;
+				else
+					resultDevice = nullptr;
+			}
+		}
+	);
+	Result res = parcer->parseFile(filename);
+	if (!res)
+	{
+		error << "Error while reading " << filename << ": " << res.errorText;
+	}
+	delete parcer;
+
+	if (resultDevice == nullptr)
+	{
+		error << "Fatal error: unknown device type, aborting...";
+		for (;;);
+	}
+
+	info << "Reading device pinout...";
+	Pinout* pinout = new Pinout;
+	if (!pinout->readIni("pinout.ini"))
+	{
+		error << "Cannot read device pinout, setting to default";
+		resultDevice->setDafaultPinout(*pinout);
+	}
+
+	info << "Initializing device...";
+	resultDevice->init(*pinout);
+	delete pinout;
+	return resultDevice;
+	//resultDevice->
 }
 
 void DeviceInitializer::startOS()

@@ -17,14 +17,17 @@
 #include "rcsp/broadcast.hpp"
 #include "dev/rgb-leds.hpp"
 #include "logic/head-sensor-rifle-communication.hpp"
+#include "core/device-initializer.hpp"
 
 #include <set>
 
-class HeadSensor
+class HeadSensor : public IAnyDevice
 {
 public:
 	HeadSensor();
-	void configure(HeadSensorPinoutMapping& pinout);
+	void configure(const Pinout &_pinout);
+	void init(const Pinout &pinout);
+	void setDafaultPinout(Pinout& pinout);
 
 	PlayerConfiguration playerConfig;
 	PlayerState playerState{&playerConfig};
@@ -42,6 +45,7 @@ public:
 
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager, DamageNotification);      ///< Feedback when player was damaged or killed
 private:
+
 	// Test functions
 	void testDie(const char*);
 

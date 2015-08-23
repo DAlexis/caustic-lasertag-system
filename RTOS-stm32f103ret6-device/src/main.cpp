@@ -35,7 +35,7 @@
 #include "head-sensor/head-sensor.hpp"
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
-#include "device-initializer.hpp"
+#include "core/device-initializer.hpp"
 #include <functional>
 #include <stdio.h>
 
@@ -48,35 +48,25 @@ TaskCycled alive([](){
 
 int main(void)
 {
-	deviceInitializer.initDevice();
+	deviceInitializer.initHW();
+	// Wait for voltages stabilization
+	HAL_Delay(10);
 #ifdef DEBUG
 	debug.enable();
 	radio.enable();
 	trace.enable();
 #endif
-	info << "=============== Device initialized ===============";
-	// Wait for voltages stabilization
-	HAL_Delay(100);
+	info << "=============== Device initialization ===============";
 
 	/* USER CODE BEGIN RTOS_TIMERS */
 	/* start timers, add new ones, ... */
 	/* USER CODE END RTOS_TIMERS */
 
-	info << "Head sensor has size " << sizeof(HeadSensor);
-
-	HeadSensor *headSensor = nullptr;
-	HeadSensorPinoutMapping pinout;
-	headSensor = new HeadSensor;
-	if (!headSensor)
-	{
-		error << "Fatal error: cannot allocate HeadSensor object";
-		for(;;){}
-	}
-	headSensor->configure(pinout);
+	IAnyDevice* device = deviceInitializer.initDevice("device.ini");
 
 	alive.setStackSize(128);
 	alive.run(0, 500, 500, 0);
-	HAL_Delay(1000);
+	HAL_Delay(10);
 
 	Kernel::instance().run();
 

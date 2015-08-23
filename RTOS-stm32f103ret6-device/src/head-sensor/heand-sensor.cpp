@@ -10,6 +10,7 @@
 #include "rcsp/RCSP-stream.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
+#include "core/device-initializer.hpp"
 
 #include <stdio.h>
 
@@ -18,7 +19,12 @@ HeadSensor::HeadSensor()
 	//m_weapons.insert({1,1,1});
 }
 
-void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
+void HeadSensor::init(const Pinout &pinout)
+{
+	configure(pinout);
+}
+
+void HeadSensor::configure(const Pinout &_pinout)
 {
 	ScopedTag tag("head-init");
 
@@ -33,48 +39,61 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 			std::placeholders::_3
 		));
 
-	IIOPin* zone1vibroPin = pinout.zone1VibroEnabled ? IOPins->getIOPin(pinout.zone1VibroPort, pinout.zone1VibroPin) : nullptr;
-	if (pinout.zone1Enabled)
+	const Pinout::PinDescr& zone1 = _pinout["zone1"];
+	const Pinout::PinDescr& zone1vibro = _pinout["zone1_vibro"];
+	IIOPin* zone1vibroPin = zone1vibro ? IOPins->getIOPin(zone1vibro.port, zone1vibro.pin) : nullptr;
+	if (zone1)
 		m_killZonesManager.enableKillZone(
 				0,
-				IOPins->getIOPin(pinout.zone1Port, pinout.zone1Pin),
+				IOPins->getIOPin(zone1.port, zone1.pin),
 				zone1vibroPin
 				);
 
-	if (pinout.zone2Enabled)
+	const Pinout::PinDescr& zone2 = _pinout["zone2"];
+	const Pinout::PinDescr& zone2vibro = _pinout["zone2_vibro"];
+	if (zone2)
 		m_killZonesManager.enableKillZone(
 				1,
-				IOPins->getIOPin(pinout.zone2Port, pinout.zone2Pin),
-				pinout.zone2VibroEnabled ? IOPins->getIOPin(pinout.zone2VibroPort, pinout.zone2VibroPin) : zone1vibroPin
+				IOPins->getIOPin(zone2.port, zone2.pin),
+				zone2vibro ? IOPins->getIOPin(zone2vibro.port, zone2vibro.pin) : zone1vibroPin
 				);
 
-	if (pinout.zone3Enabled)
+	const Pinout::PinDescr& zone3 = _pinout["zone3"];
+	const Pinout::PinDescr& zone3vibro = _pinout["zone3_vibro"];
+	if (zone3)
 		m_killZonesManager.enableKillZone(
 				2,
-				IOPins->getIOPin(pinout.zone3Port, pinout.zone3Pin),
-				pinout.zone3VibroEnabled ? IOPins->getIOPin(pinout.zone3VibroPort, pinout.zone3VibroPin) : zone1vibroPin
+				IOPins->getIOPin(zone3.port, zone3.pin),
+				zone3vibro ? IOPins->getIOPin(zone3vibro.port, zone3vibro.pin) : zone1vibroPin
 				);
 
-	if (pinout.zone4Enabled)
+	const Pinout::PinDescr& zone4 = _pinout["zone4"];
+	const Pinout::PinDescr& zone4vibro = _pinout["zone4_vibro"];
+	if (zone4)
 		m_killZonesManager.enableKillZone(
 				3,
-				IOPins->getIOPin(pinout.zone4Port, pinout.zone4Pin),
-				pinout.zone4VibroEnabled ? IOPins->getIOPin(pinout.zone4VibroPort, pinout.zone4VibroPin) : zone1vibroPin
+				IOPins->getIOPin(zone4.port, zone4.pin),
+				zone4vibro ? IOPins->getIOPin(zone4vibro.port, zone4vibro.pin) : zone1vibroPin
 				);
 
-	if (pinout.zone5Enabled)
+	const Pinout::PinDescr& zone5 = _pinout["zone5"];
+	const Pinout::PinDescr& zone5vibro = _pinout["zone5_vibro"];
+	if (zone5)
 		m_killZonesManager.enableKillZone(
 				4,
-				IOPins->getIOPin(pinout.zone5Port, pinout.zone5Pin),
-				pinout.zone5VibroEnabled ? IOPins->getIOPin(pinout.zone5VibroPort, pinout.zone5VibroPin) : zone1vibroPin
+				IOPins->getIOPin(zone5.port, zone5.pin),
+				zone5vibro ? IOPins->getIOPin(zone5vibro.port, zone5vibro.pin) : zone1vibroPin
 				);
 
-	if (pinout.zone6Enabled)
+	const Pinout::PinDescr& zone6 = _pinout["zone6"];
+	const Pinout::PinDescr& zone6vibro = _pinout["zone6_vibro"];
+	if (zone6)
 		m_killZonesManager.enableKillZone(
 				5,
-				IOPins->getIOPin(pinout.zone6Port, pinout.zone6Pin),
-				pinout.zone6VibroEnabled ? IOPins->getIOPin(pinout.zone6VibroPort, pinout.zone6VibroPin) : zone1vibroPin
+				IOPins->getIOPin(zone6.port, zone6.pin),
+				zone6vibro ? IOPins->getIOPin(zone6vibro.port, zone6vibro.pin) : zone1vibroPin
 				);
+
 	//m_mainSensor.enableDebug(true);
 
 	RCSPModem::instance().init();
@@ -102,10 +121,11 @@ void HeadSensor::configure(HeadSensorPinoutMapping& pinout)
 	}
 
 	info << "Initializing visual effects";
+	/// @todo Add support for only red (and LED-less) devices
 	m_leds.init(
-			IOPins->getIOPin(pinout.redPort, pinout.redPin),
-			IOPins->getIOPin(pinout.greenPort, pinout.greenPin),
-			IOPins->getIOPin(pinout.bluePort, pinout.bluePin)
+			IOPins->getIOPin(_pinout["red"].port, _pinout["red"].pin),
+			IOPins->getIOPin(_pinout["green"].port, _pinout["green"].pin),
+			IOPins->getIOPin(_pinout["blue"].port, _pinout["blue"].pin)
 			);
 	m_leds.setColor(getTeamColor());
 	m_leds.blink(blinkPatterns.init);
@@ -352,6 +372,25 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 		RCSPStream::remoteCall(*(playerState.weaponsList.weapons.begin()), ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged, sound);
 	}
 
+}
+
+void HeadSensor::setDafaultPinout(Pinout& pinout)
+{
+	pinout.set("zone1", 0, 0);
+	pinout.set("zone1Vibro", 2, 0);
+	pinout.set("zone2", 0, 1);
+	pinout.set("zone2Vibro", 2, 1);
+	pinout.set("zone3", 0, 2);
+	pinout.set("zone3Vibro", 2, 2);
+	pinout.set("zone4", 0, 3);
+	pinout.set("zone4Vibro", 2, 3);
+	pinout.set("zone5", 0, 4);
+	pinout.set("zone5Vibro", 2, 4);
+	pinout.set("zone6", 0, 5);
+	pinout.set("zone6Vibro", 2, 5);
+	pinout.set("red", 1, 0);
+	pinout.set("green", 0, 7);
+	pinout.set("blue", 0, 6);
 }
 
 uint8_t HeadSensor::getTeamColor()

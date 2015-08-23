@@ -32,7 +32,7 @@ inline bool isSpace(char c)
 
 inline bool isCharacter(char c)
 {
-    return ((c >= 0x41 && c <= 0x5A) || (c >= 0x61 && c <= 0x7A));
+    return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '-');
 }
 
 inline bool isNumber(char c)
@@ -41,6 +41,7 @@ inline bool isNumber(char c)
 }
 
 void printBar(int barLength, int filled);
+bool checkSuffix(const char* where, const char* what);
 
 class IniParcer
 {

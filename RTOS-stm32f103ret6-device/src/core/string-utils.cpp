@@ -7,6 +7,7 @@
 
 #include "core/string-utils.hpp"
 #include "fatfs.h"
+#include <string.h>
 
 void printHex(uint8_t* buffer, size_t size)
 {
@@ -57,6 +58,21 @@ void printBar(int barLength, int filled)
 		printf(" ");
 	printf("]");
 }
+
+bool checkSuffix(const char* where, const char* what)
+{
+	int whereLen = strlen(where);
+	int whatLen = strlen(what);
+	if (whereLen < whatLen)
+		return false;
+
+	for (int i=0; i<whatLen; i++)
+		if (what[i] != where[whereLen-whatLen+i])
+			return false;
+
+	return true;
+}
+
 
 void IniParcer::setCallback(AcceptKeyValueCallback callback)
 {
