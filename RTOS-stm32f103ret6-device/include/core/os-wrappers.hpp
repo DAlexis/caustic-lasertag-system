@@ -12,8 +12,10 @@
 
 #include "utils/macro.hpp"
 #include "cmsis_os.h"
+#include "hal/system-clock.hpp"
 #include <functional>
 #include <vector>
+#include <list>
 
 using STask = std::function<void(void)>;
 using STime = uint32_t;
@@ -190,7 +192,7 @@ class Interrogator
 public:
 	Interrogator();
 	void registerObject(IInterrogatable* object);
-	void run(uint32_t period = 0);
+	void run(uint32_t period = 1);
 	void setStackSize(uint32_t stackSize);
 
 private:
@@ -198,4 +200,34 @@ private:
 	TaskCycled m_task;
 	std::vector<IInterrogatable*> m_objects;
 };
+
+/// Pool of tasks that should be called once with delay
+class DeferredTasksPool
+{
+public:
+	void scheduleMainLoop();
+	void add(STask task, uint32_t delay);
+
+	SIGLETON_IN_CLASS(DeferredTasksPool);
+
+private:
+	DeferredTasksPool();
+	void poolTaskBody();
+
+	struct DeferredTask
+	{
+		DeferredTask(STask _task, Time _timeToRun) :
+			task(_task), timeToRun(_timeToRun)
+		{}
+
+		STask task;
+		Time timeToRun;
+	};
+	std::list<DeferredTask> m_tasks;
+	Mutex m_tasksMutex;
+
+	TaskCycled m_poolTask;
+};
+
+
 #endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SHEDULER_HPP_ */

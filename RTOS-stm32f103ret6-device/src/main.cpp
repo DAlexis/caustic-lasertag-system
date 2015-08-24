@@ -36,6 +36,7 @@
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/device-initializer.hpp"
+#include "dev/wav-player.hpp"
 #include <functional>
 #include <stdio.h>
 
@@ -46,11 +47,18 @@ TaskCycled alive([](){
 	info << "I'm alive now";
 });
 
+TaskOnce sound([](){
+	info << "Sound here";
+
+
+	WavPlayer::instance().loadAndPlay("sine.wav");
+});
+
 int main(void)
 {
 	deviceInitializer.initHW();
 	// Wait for voltages stabilization
-	HAL_Delay(10);
+	HAL_Delay(100);
 #ifdef DEBUG
 	debug.enable();
 	radio.enable();
@@ -62,7 +70,14 @@ int main(void)
 	/* start timers, add new ones, ... */
 	/* USER CODE END RTOS_TIMERS */
 
-	IAnyDevice* device = deviceInitializer.initDevice("device.ini");
+	info << "Wav player initialization";
+	WavPlayer::instance().init();
+
+	//info << configMAX_SYSCALL_INTERRUPT_PRIORITY;
+	sound.setStackSize(256);
+	sound.run(1000);
+
+	//IAnyDevice* device = deviceInitializer.initDevice("device.ini");
 
 	alive.setStackSize(128);
 	alive.run(0, 500, 500, 0);
@@ -70,11 +85,11 @@ int main(void)
 
 	Kernel::instance().run();
 
-	// We should never get here as control is now taken by the scheduler
 
+	// We should never get here as control is now taken by the scheduler
 	while (1)
 	{
-		printf("That's fail\n");
+		//printf("That's fail\n");
 	}
 }
 

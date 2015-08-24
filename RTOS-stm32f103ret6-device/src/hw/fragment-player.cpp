@@ -6,6 +6,7 @@
  */
 
 #include "hw/fragment-player.hpp"
+//#include "core/logging.hpp"
 
 #include <stdio.h>
 
@@ -15,6 +16,10 @@ FragmentPlayer fragmentPlayerInstance;
 IFragmentPlayer *fragmentPlayer = &fragmentPlayerInstance;
 
 FragmentPlayer::FragmentPlayer()
+{
+}
+
+void FragmentPlayer::init()
 {
 	// Initialization example can be found at
 	// STM32F10x_StdPeriph_Lib_V3.5.0/Project/STM32F10x_StdPeriph_Examples/DAC/OneChannelDMA_Escalator
@@ -72,7 +77,7 @@ FragmentPlayer::FragmentPlayer()
 
 	NVIC_InitTypeDef NVIC_InitStructure;
 	NVIC_InitStructure.NVIC_IRQChannel = DMA2_Channel3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);

@@ -16,6 +16,7 @@ class FragmentPlayer : public FragmentPlayerBase
 public:
 	FragmentPlayer();
 	void playFragment(SoundSample* buffer);
+	void init();
 	void DMAInterruptionHandler();
 	void stop();
 

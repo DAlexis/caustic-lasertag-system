@@ -10,11 +10,13 @@
 #include "cmsis_os.h"
 
 SINGLETON_IN_CPP(Kernel)
+SINGLETON_IN_CPP(DeferredTasksPool)
 
 void Kernel::run()
 {
 	info << "Starting FreeRTOS kernel";
 	m_isRunning = true;
+	DeferredTasksPool::instance().scheduleMainLoop();
 	osKernelStart();
 }
 
@@ -37,10 +39,8 @@ void TaskOnce::runTaskOnce(void const* pTask)
 		delete task;
 		vTaskDelete(NULL);
 	} else {
-		REMOVE_BITS(task->m_state, executingNow);
 		task->stopThread();
 	}
-
 }
 
 void TaskCycled::runTaskInCycle(void const* pTask)
@@ -192,11 +192,13 @@ bool TaskDeferredFromISR::run(STask&& task)
 
 void TaskDeferredFromISR::taskBody(void* arg, uint32_t argSize)
 {
+	info << "From ISR";
+	/*
 	UNUSED_ARG(argSize);
 	TaskDeferredFromISR* object = reinterpret_cast<TaskDeferredFromISR*>(arg);
 	//info << "Deferred task running";
 	object->m_task();
-	object->m_task = 0;
+	object->m_task = 0;*/
 }
 
 Interrogator::Interrogator()
@@ -226,4 +228,37 @@ void Interrogator::interrogateAll()
 		(*it)->interrogate();
 	}
 	taskYIELD();
+}
+
+//////////////////////
+// DeferredTasksPool
+DeferredTasksPool::DeferredTasksPool()
+{
+	m_poolTask.setStackSize(256);
+	m_poolTask.setTask(std::bind(&DeferredTasksPool::poolTaskBody, this));
+}
+
+void DeferredTasksPool::scheduleMainLoop()
+{
+	m_poolTask.run();
+}
+
+void DeferredTasksPool::add(STask task, uint32_t delay)
+{
+	ScopedLock lck(m_tasksMutex);
+	m_tasks.push_back(DeferredTask(task, systemClock->getTime() + delay));
+}
+
+void DeferredTasksPool::poolTaskBody()
+{
+	ScopedLock lck(m_tasksMutex);
+	for (auto it = m_tasks.begin(); it != m_tasks.end(); it++)
+	{
+		Time time = systemClock->getTime();
+		if (time >= it->timeToRun)
+		{
+			it->task();
+			it = m_tasks.erase(it);
+		}
+	}
 }

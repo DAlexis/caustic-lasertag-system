@@ -9,6 +9,7 @@
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
 #include "head-sensor/head-sensor.hpp"
+#include "rifle/rifle.hpp"
 #include "cmsis_os.h"
 #include "fatfs.h"
 #include <stdio.h>
@@ -86,11 +87,12 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 	parcer->setCallback(
 		[&resultDevice] (const char* key, const char* value)
 		{
-			trace << "Key: " << key << "; value: " << value;
 			if (0 == strcmp(key, "device_type"))
 			{
 				if (0 == strcmp(value, "head_sensor"))
 					resultDevice = new HeadSensor;
+				else if (0 == strcmp(value, "rifle"))
+					resultDevice = new Rifle;
 				else
 					resultDevice = nullptr;
 			}

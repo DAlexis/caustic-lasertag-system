@@ -37,6 +37,7 @@ WavPlayer::~WavPlayer()
 
 void WavPlayer::init()
 {
+	fragmentPlayer->init();
 	fragmentPlayer->setFragmentDoneCallback(std::bind(&WavPlayer::fragmentDoneCallback, this, std::placeholders::_1));
 }
 
@@ -109,19 +110,24 @@ void WavPlayer::stop()
 
 void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 {
+	//info << "qqqqqqqq";
 	if (m_lastBufferSize == 0)
 	{
 		m_isPlaying = false;
 		closeFile();
 		return;
 	}
+	//fragmentPlayer->playFragment(oldBuffer);
+
 	fragmentPlayer->setFragmentSize(m_lastBufferSize);
 	if (oldBuffer == m_buffer1) {
 		fragmentPlayer->playFragment(m_buffer2);
-		loadFragment(m_buffer1);
+		m_deferredLoadFragment.run(std::bind(&WavPlayer::loadFragment, this, m_buffer1));
+		//loadFragment(m_buffer1);
 	} else {
 		fragmentPlayer->playFragment(m_buffer1);
-		loadFragment(m_buffer2);
+		//loadFragment(m_buffer2);
+		m_deferredLoadFragment.run(std::bind(&WavPlayer::loadFragment, this, m_buffer2));
 	}
 }
 
@@ -198,6 +204,7 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 		res = f_read(&m_fil, curs, blockSize, &readedNow);
 		if (res != FR_OK)
 		{
+			info <<  res ;
 			m_lastBufferSize = 0;
 			closeFile();
 			return false;
@@ -207,6 +214,7 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 		if (blockSize != readedNow)
 			break;
 	}
+	info << "loaing fragment";
 
 	if (tail != 0 && blockSize == readedNow) {
 		res = f_read(&m_fil, curs, tail, &readedNow);

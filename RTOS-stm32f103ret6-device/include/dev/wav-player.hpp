@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_WAV_PLAYER_HPP_
 
 #include "hal/fragment-player.hpp"
+#include "core/os-wrappers.hpp"
 #include "fatfs.h"
 #include "utils/macro.hpp"
 #include <vector>
@@ -62,7 +63,7 @@ private:
 	bool m_fileIsOpened = false;
 	SoundSample *m_buffer1 = nullptr, *m_buffer2 = nullptr;
 
-
+	TaskDeferredFromISR m_deferredLoadFragment;
 };
 
 class SoundPlayer

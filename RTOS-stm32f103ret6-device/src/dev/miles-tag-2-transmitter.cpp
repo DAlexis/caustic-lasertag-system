@@ -9,7 +9,7 @@
 #include "dev/miles-tag-2.hpp"
 #include <stdio.h>
 
-/*
+
 
 /////////////////////
 // Transmitter
@@ -318,4 +318,4 @@ void MilesTag2Transmitter::fireCallback(bool wasOnState)
 	}
 }
 
-*/
+

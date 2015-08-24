@@ -7,6 +7,7 @@
 
 #include "dev/buttons.hpp"
 #include "hal/system-clock.hpp"
+#include "core/logging.hpp"
 
 SINGLETON_IN_CPP(ButtonsPool)
 
