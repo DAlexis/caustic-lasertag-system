@@ -51,7 +51,8 @@ TaskOnce sound([](){
 	info << "Sound here";
 
 
-	WavPlayer::instance().loadAndPlay("piknik.wav");
+	WavPlayer::instance().play("piknik.wav", 1);
+	//WavPlayer::instance().play("sine.wav", 0);
 });
 
 int main(void)
@@ -70,12 +71,9 @@ int main(void)
 	/* start timers, add new ones, ... */
 	/* USER CODE END RTOS_TIMERS */
 
-	//info << "Wav player initialization";
-	//WavPlayer::instance().init();
 
-	//info << configMAX_SYSCALL_INTERRUPT_PRIORITY;
 	sound.setStackSize(256);
-	sound.run(1000);
+	//sound.run(2000);
 
 	IAnyDevice* device = deviceInitializer.initDevice("device.ini");
 
@@ -89,7 +87,7 @@ int main(void)
 	// We should never get here as control is now taken by the scheduler
 	while (1)
 	{
-		//printf("That's fail\n");
+		printf("That's fail\n");
 	}
 }
 

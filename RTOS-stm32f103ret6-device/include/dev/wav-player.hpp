@@ -10,6 +10,7 @@
 
 #include "hal/fragment-player.hpp"
 #include "core/os-wrappers.hpp"
+#include "core/result-code.hpp"
 #include "fatfs.h"
 #include "utils/macro.hpp"
 #include <vector>
@@ -18,15 +19,13 @@
 class WavPlayer
 {
 public:
-	constexpr static uint32_t audioBufferSize = 2000;
+	constexpr static uint32_t audioBufferSize = 500;
+	constexpr static uint8_t channelsCount = 2;
 	WavPlayer();
 	~WavPlayer();
 	void init();
 
-	void loadAndPlay(const char* fileName);
-	void stop();
-	inline bool isPlaying() { return m_isPlaying; }
-	void setVerbose(bool verbose = true);
+	Result play(const char* fileName, uint8_t channel);
 
 	SIGLETON_IN_CLASS(WavPlayer)
 private:
@@ -51,42 +50,48 @@ private:
 	{
 		bool isPlaying = false;
 		bool fileIsOpened = false;
+		const char* filename = nullptr;
 		FIL file;
 		Mutex fileMutex;
 		WavHeader header;
+		uint32_t totalReaded = 0;
+
+		bool readHeader();
 	};
 
-	bool loadFile(const char* fileName);
-	void play();
+	bool openFile(const char* fileName, uint8_t channel);
 	void fragmentDoneCallback(SoundSample* oldBuffer);
-	bool readHeader();
-	bool loadFragment(SoundSample* m_buffer);
-	void closeFile();
 
-	void loaderTask();
+	bool loadFragment(SoundSample* buffer, uint8_t channel);
 
-	FIL m_fil;
-	Mutex m_fileMutex;
-	uint32_t m_lastBufferSize;
-	WavHeader m_header;
-	uint32_t m_totalReaded;
-	bool m_verbose = true;
-	bool m_isPlaying = false;
-	bool m_fileIsOpened = false;
+	/** This function is a queue-listener. It perform sound fragments loading,
+	 *  buffer cleaning and any other job related to audio buffer prepairing
+	 */
+	void loader();
+	void silenceToBuffer(SoundSample* buffer);
+
 	SoundSample *m_buffer1 = nullptr, *m_buffer2 = nullptr;
+	SoundSample *m_currentBuffer, *m_nextBuffer;
+	SoundSample *m_tempBuffer = nullptr;
+	ChannelContext m_contexts[channelsCount];
 
-	TaskDeferredFromISR m_deferredLoadFragment;
+	bool m_fragmentPlayerReady = false;
 
 	struct LoadingTask
 	{
-		LoadingTask(SoundSample* _buffer = nullptr, uint8_t _channel = 0) :
-			buffer(_buffer), channel(_channel)
+		constexpr static uint8_t loadNextFragment = 0;
+		constexpr static uint8_t clearBuffer      = 1;
+		constexpr static uint8_t loadNewFile      = 2;
+
+		LoadingTask(SoundSample* _buffer = nullptr, uint8_t _channel = 0, uint8_t _task = loadNextFragment) :
+			buffer(_buffer), channel(_channel), task(_task)
 		{}
 		SoundSample* buffer;
 		uint8_t channel = 0;
+		uint8_t task = 0;
 	};
 
-	Queue<LoadingTask> m_loadQueue{4};
+	Queue<LoadingTask> m_loadQueue{7};
 	TaskOnce m_loadingTask;
 };
 

@@ -583,13 +583,13 @@ void Rifle::rifleDie()
 
 void Rifle::playDamagerNotification(uint8_t state)
 {
-
+/*
 	if (WavPlayer::instance().isPlaying())
 	{
 		/// @todo Fix it when sound mixing will be done
 		//scheduleDamageNotification(state);
 		return;
-	}
+	}*/
 
 	switch (state)
 	{

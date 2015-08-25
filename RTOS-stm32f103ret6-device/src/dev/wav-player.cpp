@@ -9,6 +9,7 @@
 #include "dev/random.hpp"
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
+#include "utils/fatfs-utils.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -20,15 +21,20 @@ WavPlayer::WavPlayer()
 	debug << "Creating audio buffers";
 	m_buffer1 = new SoundSample[audioBufferSize];
 	m_buffer2 = new SoundSample[audioBufferSize];
+	m_tempBuffer = new SoundSample[audioBufferSize];
 	trace << "Testing audio buffers";
-	for (int i=0; i<audioBufferSize; i++)
+	for (unsigned int i=0; i<audioBufferSize; i++)
 	{
 		m_buffer1[i] = 0xFFFF;
 		m_buffer2[i] = 0xFFFF;
+		m_tempBuffer[i] = 0xFFFF;
 	}
 	debug << "Done";
+	m_currentBuffer = m_buffer1;
+	m_nextBuffer = m_buffer2;
+
 	m_loadingTask.setStackSize(512);
-	m_loadingTask.setTask(std::bind(&WavPlayer::loaderTask, this));
+	m_loadingTask.setTask(std::bind(&WavPlayer::loader, this));
 
 }
 
@@ -36,6 +42,7 @@ WavPlayer::~WavPlayer()
 {
 	delete[] m_buffer1;
 	delete[] m_buffer2;
+	delete[] m_tempBuffer;
 }
 
 
@@ -44,133 +51,122 @@ void WavPlayer::init()
 	fragmentPlayer->init();
 	fragmentPlayer->setFragmentDoneCallback(std::bind(&WavPlayer::fragmentDoneCallback, this, std::placeholders::_1));
 	m_loadingTask.run(0);
+
+	// Prepairing buffers
+	silenceToBuffer(m_currentBuffer);
+	silenceToBuffer(m_nextBuffer);
+	// Starting infinite playback
+	fragmentPlayer->setFragmentSize(audioBufferSize);
 }
 
-void WavPlayer::setVerbose(bool verbose)
-{
-	m_verbose = verbose;
-}
-
-void WavPlayer::loaderTask()
+void WavPlayer::loader()
 {
 	LoadingTask task;
 
 	for(;;)
 	{
 		m_loadQueue.popFront(task);
-		//info << "Queue has task!";
-		loadFragment(task.buffer);
+		//info << "Queue has task: " << task.task;
+
+		switch (task.task)
+		{
+		case LoadingTask::clearBuffer:
+			silenceToBuffer(task.buffer);
+			break;
+		case LoadingTask::loadNewFile:
+			openFile(m_contexts[task.channel].filename, task.channel);
+			break;
+		case LoadingTask::loadNextFragment:
+			loadFragment(task.buffer, task.channel);
+			break;
+		default:
+			error << "Sound loader: unknown task " << task.task;
+		}
 	}
 }
 
-bool WavPlayer::loadFile(const char* fileName)
+void WavPlayer::silenceToBuffer(SoundSample* buffer)
 {
-	ScopedTag tag("wav-loading");
-	ScopedLock lck(m_fileMutex);
-	if (m_fileIsOpened)
+	for (unsigned int i=0; i<audioBufferSize; i++)
+		buffer[i] = INT16_MAX >> 4;
+	//buffer[0] = buffer[1] = INT16_MAX >> 4 + 1000;
+}
+
+bool WavPlayer::openFile(const char* fileName, uint8_t channel)
+{
+	// If we already playing on this channel
+	if (m_contexts[channel].fileIsOpened)
 	{
-		f_close(&m_fil);
-		m_fileIsOpened = false;
+		f_close(&m_contexts[channel].file);
+		m_contexts[channel].fileIsOpened = false;
 	}
-	fragmentPlayer->stop();
 	FRESULT res;
 	debug << "Opening file...";
-	m_totalReaded = 0;
-	res = f_open(&m_fil, fileName, FA_OPEN_EXISTING | FA_READ);
+	res = f_open(&m_contexts[channel].file, m_contexts[channel].filename, FA_OPEN_EXISTING | FA_READ);
 	if (res)
 	{
 		error << "f_open returned error " << parseFRESULT(res);
 		return false;
 	}
 
-	m_fileIsOpened = true;
+	//debug << "ok";
+	m_contexts[channel].fileIsOpened = true;
 
-	if (!readHeader())
+	if (!m_contexts[channel].readHeader())
 	{
-		f_close(&m_fil);
+		f_close(&m_contexts[channel].file);
 		error << "Invalid file header";
 		return false;
 	}
 
-	debug << "File header loaded";
+	//trace << "File header is ok";
+	m_contexts[channel].totalReaded = 0;
 
-	lck.unlock();
-	if (!loadFragment(m_buffer1))
-	{
-		error << "Cannot load first fragment from audio file";
-		f_close(&m_fil);
-		return false;
-	}
-
-	if (!loadFragment(m_buffer2))
-	{
-		error << "Cannot load second fragment from audio file";
-		f_close(&m_fil);
-		return false;
-	}
-
-	return true;
+	// Adding first fragment from file to next buffer
+	return loadFragment(m_nextBuffer, channel);
 }
 
-void WavPlayer::play()
+Result WavPlayer::play(const char* fileName, uint8_t channel)
 {
-	if (!m_fileIsOpened)
+	// To start playing we should add task to queue
+	if (!m_fragmentPlayerReady)
 	{
-		error << "Cannot play, file wasn't opened";
-		return;
+		m_fragmentPlayerReady = true;
+		fragmentPlayer->playFragment(m_currentBuffer);
 	}
-	fragmentPlayer->stop();
-	fragmentPlayer->setFragmentSize(audioBufferSize);
-	fragmentPlayer->playFragment(m_buffer1);
-	m_isPlaying = true;
-}
-
-void WavPlayer::stop()
-{
-	//SDCardFS::instance().unlock();
-	fragmentPlayer->stop();
-	m_isPlaying = false;
-	closeFile();
+	m_contexts[channel].filename = fileName;
+	m_loadQueue.pushBack(LoadingTask(nullptr, channel, LoadingTask::loadNewFile));
+	return Result();
 }
 
 void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 {
-	//info << "qqqqqqqq";
-	if (m_lastBufferSize == 0)
-	{
-		m_isPlaying = false;
-		closeFile();
-		return;
-	}
-	//fragmentPlayer->playFragment(oldBuffer);
+	UNUSED_ARG(oldBuffer);
+	std::swap(m_currentBuffer, m_nextBuffer);
+	fragmentPlayer->playFragment(m_currentBuffer);
 
-	fragmentPlayer->setFragmentSize(m_lastBufferSize);
-	if (oldBuffer == m_buffer1) {
-		fragmentPlayer->playFragment(m_buffer2);
-		m_loadQueue.pushBackFromISR(LoadingTask(m_buffer1, 0));
-		//m_deferredLoadFragment.run(std::bind(&WavPlayer::loadFragment, this, m_buffer1));
-		//loadFragment(m_buffer1);
-	} else {
-		fragmentPlayer->playFragment(m_buffer1);
-		m_loadQueue.pushBackFromISR(LoadingTask(m_buffer2, 0));
-		//loadFragment(m_buffer2);
-		//m_deferredLoadFragment.run(std::bind(&WavPlayer::loadFragment, this, m_buffer2));
+	// Telling to clear buffer
+	m_loadQueue.pushBackFromISR(LoadingTask(m_nextBuffer, 0, LoadingTask::clearBuffer));
+
+	// Telling to add sound from all channels to buffers
+	for (int i=0; i<channelsCount; i++)
+	{
+		m_loadQueue.pushBackFromISR(LoadingTask(m_nextBuffer, i, LoadingTask::loadNextFragment));
 	}
 }
 
-bool WavPlayer::readHeader()
+bool WavPlayer::ChannelContext::readHeader()
 {
-	ScopedTag tag("wav-header-reading");
 	FRESULT res;
 	UINT readed = 0;
-	res = f_read (&m_fil, &m_header, sizeof(m_header), &readed);
+	res = f_read (&file, &header, sizeof(header), &readed);
 	if (res != FR_OK)
 	{
 		error << "Cannot read header from file";
 		return false;
 	}
 
-	if (readed != sizeof(m_header))
+	if (readed != sizeof(header))
 	{
 		error << "Incomplete wav file";
 		return false;
@@ -179,131 +175,83 @@ bool WavPlayer::readHeader()
 	//if (m_verbose) printInfo();
 
 	// Validating m_header
-	if (strncmp(m_header.riff, "RIFF", 4) != 0)
+	if (strncmp(header.riff, "RIFF", 4) != 0)
 	{
 		error << "Invalid format: not RIFF";
 		return false;
 	}
-	if (m_header.audio_format != 1)
+	if (header.audio_format != 1)
 	{
-		error << "Invalid audio format: " << m_header.audio_format << " Only PCM audio supported";
+		error << "Invalid audio format: " << header.audio_format << " - Only PCM audio supported";
 		return false;
 	}
-	if (m_header.num_channels != 1)
+	if (header.num_channels != 1)
 	{
-		error << "Invalid channels count: " << m_header.num_channels << " Only mono sound supported";
+		error << "Invalid channels count: " << header.num_channels << " - Only mono sound supported";
 		return false;
 	}
-	if (m_header.bits_per_sample != 16)
+	if (header.bits_per_sample != 16)
 	{
-		error << "Invalid bits per sample rate: " << m_header.bits_per_sample << "Only 16 supported";
+		error << "Invalid bits per sample rate: " << header.bits_per_sample << " - Only 16 supported";
 		return false;
 	}
 	return true;
 }
 
-bool WavPlayer::loadFragment(SoundSample* m_buffer)
+bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 {
-	if (!m_fileIsOpened)
+	if (!m_contexts[channel].fileIsOpened)
 	{
-		error << "Attempt to load fragment from closed file";
+		//error << "Attempt to load fragment from closed file";
 		return false;
 	}
-	ScopedLock lck(m_fileMutex);
 
 	FRESULT res;
 	UINT readed = 0;
-	UINT readedNow = 0;
-	void* ptr = m_buffer;
-	int16_t *tmpPrt = (int16_t *)ptr;
-	bool needStop = false;
+	int16_t *tmpPrt = reinterpret_cast<int16_t *>(m_tempBuffer);
 
 	// For some unknown reason, f_read does not read more about 1k and crashes
 	/// @todo increase blockSize to maximum
-	uint8_t* curs = (uint8_t*) ptr;
+
 	uint16_t sizeToRead = audioBufferSize*sizeof(int16_t);
 
-	if (sizeToRead > (m_header.chunk_size - m_totalReaded))
+	if (sizeToRead > (m_contexts[channel].header.chunk_size - m_contexts[channel].totalReaded))
 	{
-		sizeToRead = m_header.chunk_size - m_totalReaded;
+		sizeToRead = m_contexts[channel].header.chunk_size - m_contexts[channel].totalReaded;
+		// For testing:
+		/// @todo Remove this next line!11
 		sizeToRead = 0;
 	}
 
-	constexpr uint16_t blockSize = 400;
-	uint16_t count = sizeToRead / blockSize;
-	uint16_t tail = sizeToRead % blockSize;
-
-	for (uint16_t i=0; i<count; i++)
+	res = f_read_huge(&m_contexts[channel].file, tmpPrt, sizeToRead, &readed);
+	if (res != FR_OK)
 	{
-		res = f_read(&m_fil, curs, blockSize, &readedNow);
-		if (res != FR_OK)
-		{
-			m_lastBufferSize = 0;
-			error << "f_read returned error " << parseFRESULT(res);
-			closeFile();
-			return false;
-		}
-		curs += readedNow;
-		readed += readedNow;
-		if (blockSize != readedNow)
-			break;
+		error << "Cannot read fragment from file: " << parseFRESULT(res);
+		f_close(&m_contexts[channel].file);
+		return false;
 	}
 
-	if (tail != 0 && blockSize == readedNow) {
-		res = f_read(&m_fil, curs, tail, &readedNow);
-		if (res != FR_OK)
-		{
-			m_lastBufferSize = 0;
-			error << "f_read returned error " << parseFRESULT(res);
-			closeFile();
-			return false;
-		}
-		// If file has metainformation or any other chunk
-		if (readedNow > tail)
-			readedNow = tail;
-		readed += readedNow;
+	if (readed < sizeToRead)
+	{
+		// We readed till file's end, so we can close it
+		trace << "file's end";
+		f_close(&m_contexts[channel].file);
+		m_contexts[channel].fileIsOpened = false;
+	}
+	readed /= sizeof(int16_t);
+	for (unsigned int i=readed; i<audioBufferSize; i++)
+	{
+		tmpPrt[i] = 0;
 	}
 
-	m_totalReaded += readed;
-	m_lastBufferSize = readed / sizeof(int16_t);
 
-	// Decoding int16_t 16 bit -> uint16_t 12 bit
-	for (unsigned int i=0; i<m_lastBufferSize; i++)
-		m_buffer[i] = (tmpPrt[i] + INT16_MAX) >> 4;
+	// Now we have array of int16 samples so we need to add it to buffer
+	for (unsigned int i=0; i<audioBufferSize; i++)
+	{
+		buffer[i] += tmpPrt[i] >> 4;
+	}
 
 	return true;
-}
-
-
-void WavPlayer::closeFile()
-{
-	if (m_fileIsOpened)
-	{
-		f_close(&m_fil);
-		m_fileIsOpened = false;
-		//SDCardFS::instance().unlock();
-	}
-}
-
-void WavPlayer::loadAndPlay(const char* fileName)
-{
-	/*
-	// If SD-card is busy
-	if (SDCardFS::instance().isLocked() && !m_isPlaying)
-		return;
-		*/
-	/// @todo Add here deferred call
-
-	if (m_isPlaying)
-	{
-		stop();
-	}
-
-	//SDCardFS::instance().lock();
-	if (loadFile(fileName))
-		play();
-	//else
-	//	SDCardFS::instance().unlock();
 }
 
 /////////////////////////
@@ -351,6 +299,6 @@ void SoundPlayer::play()
 	}
 	unsigned int rnd = Random::random(m_variants.size()-1);
 	debug << "Playing variant " << rnd;
-	WavPlayer::instance().loadAndPlay(m_variants[rnd].c_str());
+	WavPlayer::instance().play(m_variants[rnd].c_str(), 0);
 }
 
