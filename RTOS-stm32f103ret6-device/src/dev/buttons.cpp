@@ -14,7 +14,7 @@ SINGLETON_IN_CPP(ButtonsPool)
 ButtonManager::ButtonManager(IIOPin* inputInterrogator) :
     m_inputInterrogator(inputInterrogator)
 {
-	m_inputInterrogator->setExtiCallback(std::bind(&ButtonManager::extiCallback, this, std::placeholders::_1));
+	m_inputInterrogator->setExtiCallback(std::bind(&ButtonManager::extiCallback, this, std::placeholders::_1), true);
 }
 
 ButtonManager& ButtonManager::setAutoRepeat(bool autoRepeat)

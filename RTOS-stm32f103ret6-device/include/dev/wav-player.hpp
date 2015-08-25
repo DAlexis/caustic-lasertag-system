@@ -18,7 +18,7 @@
 class WavPlayer
 {
 public:
-	constexpr static uint32_t audioBufferSize = 1000;
+	constexpr static uint32_t audioBufferSize = 2000;
 	WavPlayer();
 	~WavPlayer();
 	void init();
@@ -47,6 +47,15 @@ private:
 		uint32_t subchunk2_size;
 	};
 
+	struct ChannelContext
+	{
+		bool isPlaying = false;
+		bool fileIsOpened = false;
+		FIL file;
+		Mutex fileMutex;
+		WavHeader header;
+	};
+
 	bool loadFile(const char* fileName);
 	void play();
 	void fragmentDoneCallback(SoundSample* oldBuffer);
@@ -54,7 +63,10 @@ private:
 	bool loadFragment(SoundSample* m_buffer);
 	void closeFile();
 
+	void loaderTask();
+
 	FIL m_fil;
+	Mutex m_fileMutex;
 	uint32_t m_lastBufferSize;
 	WavHeader m_header;
 	uint32_t m_totalReaded;
@@ -64,6 +76,18 @@ private:
 	SoundSample *m_buffer1 = nullptr, *m_buffer2 = nullptr;
 
 	TaskDeferredFromISR m_deferredLoadFragment;
+
+	struct LoadingTask
+	{
+		LoadingTask(SoundSample* _buffer = nullptr, uint8_t _channel = 0) :
+			buffer(_buffer), channel(_channel)
+		{}
+		SoundSample* buffer;
+		uint8_t channel = 0;
+	};
+
+	Queue<LoadingTask> m_loadQueue{4};
+	TaskOnce m_loadingTask;
 };
 
 class SoundPlayer

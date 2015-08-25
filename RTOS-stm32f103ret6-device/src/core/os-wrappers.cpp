@@ -192,13 +192,13 @@ bool TaskDeferredFromISR::run(STask&& task)
 
 void TaskDeferredFromISR::taskBody(void* arg, uint32_t argSize)
 {
-	info << "From ISR";
-	/*
+	//info << "From ISR";
+
 	UNUSED_ARG(argSize);
 	TaskDeferredFromISR* object = reinterpret_cast<TaskDeferredFromISR*>(arg);
 	//info << "Deferred task running";
 	object->m_task();
-	object->m_task = 0;*/
+	object->m_task = 0;
 }
 
 Interrogator::Interrogator()

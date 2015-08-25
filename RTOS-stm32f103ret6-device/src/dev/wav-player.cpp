@@ -8,6 +8,7 @@
 #include "dev/wav-player.hpp"
 #include "dev/random.hpp"
 #include "core/logging.hpp"
+#include "core/string-utils.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -26,6 +27,9 @@ WavPlayer::WavPlayer()
 		m_buffer2[i] = 0xFFFF;
 	}
 	debug << "Done";
+	m_loadingTask.setStackSize(512);
+	m_loadingTask.setTask(std::bind(&WavPlayer::loaderTask, this));
+
 }
 
 WavPlayer::~WavPlayer()
@@ -39,6 +43,7 @@ void WavPlayer::init()
 {
 	fragmentPlayer->init();
 	fragmentPlayer->setFragmentDoneCallback(std::bind(&WavPlayer::fragmentDoneCallback, this, std::placeholders::_1));
+	m_loadingTask.run(0);
 }
 
 void WavPlayer::setVerbose(bool verbose)
@@ -46,29 +51,50 @@ void WavPlayer::setVerbose(bool verbose)
 	m_verbose = verbose;
 }
 
+void WavPlayer::loaderTask()
+{
+	LoadingTask task;
+
+	for(;;)
+	{
+		m_loadQueue.popFront(task);
+		//info << "Queue has task!";
+		loadFragment(task.buffer);
+	}
+}
+
 bool WavPlayer::loadFile(const char* fileName)
 {
 	ScopedTag tag("wav-loading");
+	ScopedLock lck(m_fileMutex);
+	if (m_fileIsOpened)
+	{
+		f_close(&m_fil);
+		m_fileIsOpened = false;
+	}
 	fragmentPlayer->stop();
 	FRESULT res;
 	debug << "Opening file...";
 	m_totalReaded = 0;
-	m_fileIsOpened = false;
 	res = f_open(&m_fil, fileName, FA_OPEN_EXISTING | FA_READ);
 	if (res)
 	{
+		error << "f_open returned error " << parseFRESULT(res);
 		return false;
 	}
+
+	m_fileIsOpened = true;
 
 	if (!readHeader())
 	{
 		f_close(&m_fil);
+		error << "Invalid file header";
 		return false;
 	}
 
-	if (m_verbose)
-		debug << "File loaded";
+	debug << "File header loaded";
 
+	lck.unlock();
 	if (!loadFragment(m_buffer1))
 	{
 		error << "Cannot load first fragment from audio file";
@@ -83,7 +109,6 @@ bool WavPlayer::loadFile(const char* fileName)
 		return false;
 	}
 
-	m_fileIsOpened = true;
 	return true;
 }
 
@@ -122,12 +147,14 @@ void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 	fragmentPlayer->setFragmentSize(m_lastBufferSize);
 	if (oldBuffer == m_buffer1) {
 		fragmentPlayer->playFragment(m_buffer2);
-		m_deferredLoadFragment.run(std::bind(&WavPlayer::loadFragment, this, m_buffer1));
+		m_loadQueue.pushBackFromISR(LoadingTask(m_buffer1, 0));
+		//m_deferredLoadFragment.run(std::bind(&WavPlayer::loadFragment, this, m_buffer1));
 		//loadFragment(m_buffer1);
 	} else {
 		fragmentPlayer->playFragment(m_buffer1);
+		m_loadQueue.pushBackFromISR(LoadingTask(m_buffer2, 0));
 		//loadFragment(m_buffer2);
-		m_deferredLoadFragment.run(std::bind(&WavPlayer::loadFragment, this, m_buffer2));
+		//m_deferredLoadFragment.run(std::bind(&WavPlayer::loadFragment, this, m_buffer2));
 	}
 }
 
@@ -177,6 +204,13 @@ bool WavPlayer::readHeader()
 
 bool WavPlayer::loadFragment(SoundSample* m_buffer)
 {
+	if (!m_fileIsOpened)
+	{
+		error << "Attempt to load fragment from closed file";
+		return false;
+	}
+	ScopedLock lck(m_fileMutex);
+
 	FRESULT res;
 	UINT readed = 0;
 	UINT readedNow = 0;
@@ -204,8 +238,8 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 		res = f_read(&m_fil, curs, blockSize, &readedNow);
 		if (res != FR_OK)
 		{
-			info <<  res ;
 			m_lastBufferSize = 0;
+			error << "f_read returned error " << parseFRESULT(res);
 			closeFile();
 			return false;
 		}
@@ -214,13 +248,13 @@ bool WavPlayer::loadFragment(SoundSample* m_buffer)
 		if (blockSize != readedNow)
 			break;
 	}
-	info << "loaing fragment";
 
 	if (tail != 0 && blockSize == readedNow) {
 		res = f_read(&m_fil, curs, tail, &readedNow);
 		if (res != FR_OK)
 		{
 			m_lastBufferSize = 0;
+			error << "f_read returned error " << parseFRESULT(res);
 			closeFile();
 			return false;
 		}
@@ -304,7 +338,7 @@ void SoundPlayer::readVariants(const char* filenamePrefix, const char* filenameS
 			addVariant(nextFilename);
 		}
 	} while (res == FR_OK);
-	debug << filenamePrefix << "X" << filenameSuffix << " - " << number-1 << "found";
+	debug << filenamePrefix << "X" << filenameSuffix << " - " << number-1 << " found";
 }
 
 void SoundPlayer::play()

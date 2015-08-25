@@ -51,7 +51,7 @@ TaskOnce sound([](){
 	info << "Sound here";
 
 
-	WavPlayer::instance().loadAndPlay("sine.wav");
+	WavPlayer::instance().loadAndPlay("piknik.wav");
 });
 
 int main(void)
@@ -70,14 +70,14 @@ int main(void)
 	/* start timers, add new ones, ... */
 	/* USER CODE END RTOS_TIMERS */
 
-	info << "Wav player initialization";
-	WavPlayer::instance().init();
+	//info << "Wav player initialization";
+	//WavPlayer::instance().init();
 
 	//info << configMAX_SYSCALL_INTERRUPT_PRIORITY;
 	sound.setStackSize(256);
 	sound.run(1000);
 
-	//IAnyDevice* device = deviceInitializer.initDevice("device.ini");
+	IAnyDevice* device = deviceInitializer.initDevice("device.ini");
 
 	alive.setStackSize(128);
 	alive.run(0, 500, 500, 0);

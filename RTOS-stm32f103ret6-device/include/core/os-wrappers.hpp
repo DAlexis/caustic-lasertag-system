@@ -100,7 +100,7 @@ public:
 			TaskBase(task)
 	{ }
 
-	bool run(STime firstRunDelay = 0, STime periodMin = 0, STime periodMax = 0, uint32_t cyclesCount = 0);
+	bool run(STime firstRunDelay = 0, STime periodMin = 1, STime periodMax = 1, uint32_t cyclesCount = 0);
 
 private:
 	STime m_firstRunDelay = 0;
@@ -178,6 +178,60 @@ public:
 
 private:
 	Mutex& m_mutex;
+};
+
+template<typename T>
+class Queue
+{
+public:
+	Queue(unsigned int size = 10)
+	{
+		m_handle = xQueueCreate(size, sizeof(T));
+	}
+
+	void pushBack(T&& obj, TickType_t timeToWait = portMAX_DELAY)
+	{
+		xQueueSendToBack(m_handle, &obj, timeToWait);
+	}
+
+	void pushFront(T&& obj, TickType_t timeToWait = portMAX_DELAY)
+	{
+		xQueueSendToFront(m_handle, &obj, timeToWait);
+	}
+
+	void popFront(T& target, TickType_t timeToWait = portMAX_DELAY)
+	{
+		xQueueReceive(m_handle, &target, timeToWait);
+	}
+
+	void pushBackFromISR(T&& obj)
+	{
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xQueueSendToBackFromISR(m_handle, &obj, &xHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR (xHigherPriorityTaskWoken);
+	}
+
+	void pushFrontFromISR(T&& obj)
+	{
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xQueueSendToFrontFromISR(m_handle, &obj, xHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR (xHigherPriorityTaskWoken);
+	}
+
+	void popFrontFromISR(T& target)
+	{
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xQueueReceiveFromISR(m_handle, &target, xHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR (xHigherPriorityTaskWoken);
+	}
+
+	uint16_t size()
+	{
+		return uxQueueMessagesWaiting(m_handle);
+	}
+
+private:
+	xQueueHandle m_handle;
 };
 
 class IInterrogatable

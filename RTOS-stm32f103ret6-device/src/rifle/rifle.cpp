@@ -169,8 +169,6 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
 
-
-
 	info << "Loading default config";
 	RCSPAggregator::instance().readIni("config.ini");
 
@@ -184,10 +182,10 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 		error << "  restoring failed";
 		rifleReset();
 	}
-
+/*
 	m_updateDisplayTask.setStackSize(256);
 	m_updateDisplayTask.setTask(std::bind(&PlayerDisplayableData::print, &playerDisplayable));
-	m_updateDisplayTask.run(1000000, 3000000, 3000000);
+	m_updateDisplayTask.run(1000000, 3000000, 3000000);*/
 
 	//Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 3000000, 0, 1000000);
 
@@ -251,7 +249,7 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	}
 	detectRifleState();
 
-	m_buttonsInterrogator.setStackSize(512);
+	m_buttonsInterrogator.setStackSize(1024);
 	m_buttonsInterrogator.run(10);
 
 
