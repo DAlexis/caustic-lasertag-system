@@ -264,12 +264,19 @@ DRESULT SD_read(BYTE *buff, DWORD sector, UINT count)
 	ScopedLock lck(SDCardBusy);
 	if(count==1)
 	{
-		if (SD_OK != SD_ReadBlock(buff, sector*512, 512))
+		/// @todo [low] Put critical section deeper (all crit. sections below)
+		taskENTER_CRITICAL();
+			SD_Error res = SD_ReadBlock(buff, sector*512, 512);
+		taskEXIT_CRITICAL();
+		if (SD_OK != res)
 			return RES_ERROR;
 	}
 	else
 	{
-		if (SD_OK != SD_ReadMultiBlocks(buff, sector*512, 512, count))
+		taskENTER_CRITICAL();
+			SD_Error res = SD_ReadMultiBlocks(buff, sector*512, 512, count);
+		taskEXIT_CRITICAL();
+		if (SD_OK != res)
 			return RES_ERROR;
 	}
 
@@ -302,12 +309,18 @@ DRESULT SD_write(const BYTE *buff, DWORD sector, UINT count)
 	ScopedLock lck(SDCardBusy);
 	if(count==1)
 	{
-		if (SD_OK != SD_WriteBlock((BYTE*)buff, sector*512, 512))
+		taskENTER_CRITICAL();
+			SD_Error res = SD_WriteBlock((BYTE*)buff, sector*512, 512);
+		taskEXIT_CRITICAL();
+		if (SD_OK != res)
 			return RES_ERROR;
 	}
 	else
 	{
-		if (SD_OK != SD_WriteMultiBlocks((BYTE*)buff, sector*512, 512, count))
+		taskENTER_CRITICAL();
+			SD_Error res = SD_WriteMultiBlocks((BYTE*)buff, sector*512, 512, count);
+		taskEXIT_CRITICAL();
+		if (SD_OK != res)
 			return RES_ERROR;
 	}
 

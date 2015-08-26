@@ -19,7 +19,7 @@
 class WavPlayer
 {
 public:
-	constexpr static uint32_t audioBufferSize = 500;
+	constexpr static uint32_t audioBufferSize = 1000;
 	constexpr static uint8_t channelsCount = 2;
 	WavPlayer();
 	~WavPlayer();
@@ -59,7 +59,7 @@ private:
 		bool readHeader();
 	};
 
-	bool openFile(const char* fileName, uint8_t channel);
+	bool openFile(uint8_t channel);
 	void fragmentDoneCallback(SoundSample* oldBuffer);
 
 	bool loadFragment(SoundSample* buffer, uint8_t channel);
@@ -91,14 +91,14 @@ private:
 		uint8_t task = 0;
 	};
 
-	Queue<LoadingTask> m_loadQueue{7};
+	Queue<LoadingTask> m_loadQueue{10};
 	TaskOnce m_loadingTask;
 };
 
 class SoundPlayer
 {
 public:
-	void readVariants(const char* filenamePrexix, const char* filenameSuffix);
+	void readVariants(const char* filenamePrexix, const char* filenameSuffix, uint8_t channel = 0);
 	void addVariant(const char* filename);
 	void addVariant(std::string& filename);
 	void addVariant(std::string&& filename);
@@ -106,6 +106,7 @@ public:
 
 private:
 	std::vector<std::string> m_variants;
+	uint8_t m_channel;
 };
 
 

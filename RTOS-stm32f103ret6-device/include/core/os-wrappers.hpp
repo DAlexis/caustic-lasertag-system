@@ -86,7 +86,7 @@ public:
 	TaskOnce(const STask& task = nullptr) :
 		TaskBase(task)
 	{ }
-	bool run(STime delay = 0);
+	bool run(STime delay = 0, osPriority priority = osPriorityNormal);
 
 private:
 	STime m_firstRunDelay = 0;

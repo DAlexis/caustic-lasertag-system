@@ -120,12 +120,12 @@ void TaskBase::stopThread()
 	vTaskDelete(NULL);
 }
 
-bool TaskOnce::run(STime delay)
+bool TaskOnce::run(STime delay, osPriority priority)
 {
 	info << "Running new task, stack: " << (int)m_stackSize;
 	ADD_BITS(m_state, runningNow);
 	m_firstRunDelay = delay;
-	osThreadDef(newTask, runTaskOnce, osPriorityNormal, 0, m_stackSize);
+	osThreadDef(newTask, runTaskOnce, priority, 0, m_stackSize);
 	m_taskId = osThreadCreate(osThread(newTask), reinterpret_cast<void*>(this));
 	if (m_taskId == NULL)
 	{

@@ -74,7 +74,7 @@ void WavPlayer::loader()
 			silenceToBuffer(task.buffer);
 			break;
 		case LoadingTask::loadNewFile:
-			openFile(m_contexts[task.channel].filename, task.channel);
+			openFile(task.channel);
 			break;
 		case LoadingTask::loadNextFragment:
 			loadFragment(task.buffer, task.channel);
@@ -92,7 +92,7 @@ void WavPlayer::silenceToBuffer(SoundSample* buffer)
 	//buffer[0] = buffer[1] = INT16_MAX >> 4 + 1000;
 }
 
-bool WavPlayer::openFile(const char* fileName, uint8_t channel)
+bool WavPlayer::openFile(uint8_t channel)
 {
 	// If we already playing on this channel
 	if (m_contexts[channel].fileIsOpened)
@@ -200,6 +200,7 @@ bool WavPlayer::ChannelContext::readHeader()
 
 bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 {
+	//trace << "loadig fragment...";
 	if (!m_contexts[channel].fileIsOpened)
 	{
 		//error << "Attempt to load fragment from closed file";
@@ -220,7 +221,7 @@ bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 		sizeToRead = m_contexts[channel].header.chunk_size - m_contexts[channel].totalReaded;
 		// For testing:
 		/// @todo Remove this next line!11
-		sizeToRead = 0;
+		//sizeToRead = 0;
 	}
 
 	res = f_read_huge(&m_contexts[channel].file, tmpPrt, sizeToRead, &readed);
@@ -271,9 +272,9 @@ void SoundPlayer::addVariant(std::string&& filename)
 	m_variants.push_back(filename);
 }
 
-void SoundPlayer::readVariants(const char* filenamePrefix, const char* filenameSuffix)
+void SoundPlayer::readVariants(const char* filenamePrefix, const char* filenameSuffix, uint8_t channel)
 {
-	ScopedTag tag("sp-scan-sounds");
+	m_channel = channel;
 	unsigned int number = 0;
 	char buff[10];
 	FRESULT res = FR_OK;
@@ -299,6 +300,6 @@ void SoundPlayer::play()
 	}
 	unsigned int rnd = Random::random(m_variants.size()-1);
 	debug << "Playing variant " << rnd;
-	WavPlayer::instance().play(m_variants[rnd].c_str(), 0);
+	WavPlayer::instance().play(m_variants[rnd].c_str(), m_channel);
 }
 

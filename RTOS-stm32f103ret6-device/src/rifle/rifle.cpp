@@ -317,11 +317,11 @@ void Rifle::initSounds()
 	m_reloadingSound.readVariants("sound/reload-", ".wav");
 	m_noAmmoSound.readVariants("sound/no-ammo-", ".wav");
 	m_noMagazines.readVariants("sound/no-magazines-", ".wav");
-	m_respawnSound.readVariants("sound/respawn-", ".wav");
-	m_dieSound.readVariants("sound/die-", ".wav");
-	m_enemyDamaged.readVariants("sound/enemy-injured-", ".wav");
-	m_enemyKilled.readVariants("sound/enemy-killed-", ".wav");;
-	m_friendDamaged.readVariants("sound/friend-injured-", ".wav");;
+	m_respawnSound.readVariants("sound/respawn-", ".wav", 1);
+	m_dieSound.readVariants("sound/die-", ".wav", 1);
+	m_enemyDamaged.readVariants("sound/enemy-injured-", ".wav", 1);
+	m_enemyKilled.readVariants("sound/enemy-killed-", ".wav", 1);
+	m_friendDamaged.readVariants("sound/friend-injured-", ".wav", 1);
 }
 
 void Rifle::makeShot(bool isFirst)
