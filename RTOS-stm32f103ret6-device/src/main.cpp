@@ -72,12 +72,12 @@ int main(void)
 	/* USER CODE END RTOS_TIMERS */
 
 
-	sound.setStackSize(256);
+	sound.setStackSize(128);
 	//sound.run(2000);
 
 	IAnyDevice* device = deviceInitializer.initDevice("device.ini");
 
-	alive.setStackSize(128);
+	alive.setStackSize(64);
 	alive.run(0, 500, 500, 0);
 	HAL_Delay(10);
 

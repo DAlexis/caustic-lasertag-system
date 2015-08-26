@@ -210,7 +210,7 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     m_useInterrupts = useInterrupts;
     if (m_useInterrupts)
 	{
-    	IRQPin->setExtiCallback(std::bind(&NRF24L01Manager::extiHandler, this, std::placeholders::_1));
+    	IRQPin->setExtiCallback(std::bind(&NRF24L01Manager::extiHandler, this, std::placeholders::_1), false);
 		IRQPin->enableExti(true);
 		if (false == m_IRQPin->state())
 			m_needInterrogation = true;
@@ -670,14 +670,9 @@ void NRF24L01Manager::resetAllIRQ()
     resetMaxRetriesReached();
 }
 
-
-////////////////////
-// Interrupts handling
-
 void NRF24L01Manager::interrogate()
 {
 	//info << "ri";
-	
 	if (m_useInterrupts)
 	{
 		if (!m_needInterrogation)
@@ -734,6 +729,8 @@ void NRF24L01Manager::interrogate()
     //resetAllIRQ();
 }
 
+////////////////////
+// Interrupts handling
 void NRF24L01Manager::extiHandler(bool state)
 {
 	//info << "NRF24l01 IRQ! state: " << state;

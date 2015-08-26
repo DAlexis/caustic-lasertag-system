@@ -37,7 +37,6 @@ public:
 	static uint16_t pinNumberToMask(uint8_t pinNumber);
 	static uint8_t maskToPinNumber(uint16_t pinMask);
 private:
-	TaskDeferredFromISR m_deferredTask;
 	IOPinCallback m_callback = nullptr;
 	GPIO_TypeDef* m_gpio;
 	uint16_t m_pinMask;
@@ -48,13 +47,18 @@ private:
 
 class IOPinsPool : public IIOPinsPool
 {
+friend class IOPin;
 public:
 	IOPinsPool();
 	IIOPin* getIOPin(uint8_t portNumber, uint8_t pinNumber);
 
 private:
+	using QueueCallback = std::function<void(void)>;
 	void createIOPin(uint8_t portNumber, uint8_t pinNumber);
+	void listenQueue();
 	std::map<std::pair<uint8_t, uint8_t>, IIOPin*> m_interfaces;
+	TaskOnce m_queueListener;
+	Queue<QueueCallback> m_callbackQueue{5};
 };
 
 

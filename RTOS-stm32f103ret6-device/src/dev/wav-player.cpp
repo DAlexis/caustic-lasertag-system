@@ -33,7 +33,7 @@ WavPlayer::WavPlayer()
 	m_currentBuffer = m_buffer1;
 	m_nextBuffer = m_buffer2;
 
-	m_loadingTask.setStackSize(512);
+	m_loadingTask.setStackSize(256);
 	m_loadingTask.setTask(std::bind(&WavPlayer::loader, this));
 
 }

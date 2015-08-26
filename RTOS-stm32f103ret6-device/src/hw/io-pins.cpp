@@ -116,7 +116,10 @@ void IOPin::extiInterrupt()
 		{
 			m_callback(state());
 		} else {
-			m_deferredTask.run(std::bind(m_callback, state()));
+			pool.m_callbackQueue.pushBackFromISR(
+					//std::bind(m_callback, state()) //< This line does not work :(
+					[this]() { m_callback(state()); }
+			);
 		}
 	}
 }
@@ -171,8 +174,23 @@ uint8_t IOPin::maskToPinNumber(uint16_t pinMask)
 IOPinsPool::IOPinsPool()
 {
 	for (uint8_t i=0; i<pinsPerPort; i++)
-		extisListeners[i] = 0;
+		extisListeners[i] = nullptr;
+
+	m_queueListener.setStackSize(512);
+	m_queueListener.setTask(std::bind(&IOPinsPool::listenQueue, this));
+	m_queueListener.run(0);
 }
+
+void IOPinsPool::listenQueue()
+{
+	QueueCallback task;
+	for (;;)
+	{
+		m_callbackQueue.popFront(task);
+		task();
+	}
+}
+
 
 uint16_t IOPin::pinNumberToMask(uint8_t pinNumber)
 {

@@ -249,7 +249,7 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	}
 	detectRifleState();
 
-	m_buttonsInterrogator.setStackSize(1024);
+	m_buttonsInterrogator.setStackSize(256);
 	m_buttonsInterrogator.run(10);
 
 
