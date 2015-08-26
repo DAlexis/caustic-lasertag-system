@@ -208,23 +208,18 @@ bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 	}
 
 	FRESULT res;
-	UINT readed = 0;
+	UINT bytesReaded = 0;
 	int16_t *tmpPrt = reinterpret_cast<int16_t *>(m_tempBuffer);
 
 	// For some unknown reason, f_read does not read more about 1k and crashes
 	/// @todo increase blockSize to maximum
 
-	uint16_t sizeToRead = audioBufferSize*sizeof(int16_t);
+	uint16_t sizeToRead = std::min(
+			audioBufferSize*sizeof(int16_t),
+			m_contexts[channel].header.subchunk2_size - m_contexts[channel].totalReaded
+	);
 
-	if (sizeToRead > (m_contexts[channel].header.chunk_size - m_contexts[channel].totalReaded))
-	{
-		sizeToRead = m_contexts[channel].header.chunk_size - m_contexts[channel].totalReaded;
-		// For testing:
-		/// @todo Remove this next line!11
-		//sizeToRead = 0;
-	}
-
-	res = f_read_huge(&m_contexts[channel].file, tmpPrt, sizeToRead, &readed);
+	res = f_read_huge(&m_contexts[channel].file, tmpPrt, sizeToRead, &bytesReaded);
 	if (res != FR_OK)
 	{
 		error << "Cannot read fragment from file: " << parseFRESULT(res);
@@ -232,15 +227,21 @@ bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 		return false;
 	}
 
-	if (readed < sizeToRead)
+	m_contexts[channel].totalReaded += bytesReaded;
+
+	if (bytesReaded < sizeToRead)
 	{
 		// We readed till file's end, so we can close it
-		trace << "file's end";
+		//trace << "file's end: " << m_contexts[channel].totalReaded;
 		f_close(&m_contexts[channel].file);
 		m_contexts[channel].fileIsOpened = false;
 	}
-	readed /= sizeof(int16_t);
-	for (unsigned int i=readed; i<audioBufferSize; i++)
+
+
+
+	UINT samplesReaded = bytesReaded / sizeof(int16_t);
+
+	for (unsigned int i=samplesReaded; i<audioBufferSize; i++)
 	{
 		tmpPrt[i] = 0;
 	}

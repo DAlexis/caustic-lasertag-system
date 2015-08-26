@@ -70,6 +70,7 @@ private:
 		LoggerUnnamed& operator<<(const char* str);
 		LoggerUnnamed& operator<<(int d);
 		LoggerUnnamed& operator<<(unsigned int d);
+		LoggerUnnamed& operator<<(uint32_t d);
 		LoggerUnnamed& operator<<(float f);
 		LoggerUnnamed& operator<<(double f);
 		LoggerUnnamed& operator<<(bool b);

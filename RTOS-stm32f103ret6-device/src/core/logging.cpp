@@ -64,6 +64,14 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(unsigned int d)
 	return *this << buffer;
 }
 
+Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(uint32_t d)
+{
+	char buffer[numbersBufferSize];
+	// I'm not sure that %u is the best solution
+	sprintf(buffer, "%u", d);
+	return *this << buffer;
+}
+
 Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(float f)
 {
 	char buffer[numbersBufferSize];
