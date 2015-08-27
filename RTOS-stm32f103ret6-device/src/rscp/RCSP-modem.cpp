@@ -149,7 +149,6 @@ void RCSPModem::TXDoneCallback()
 
 void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 {
-	ScopedTag tag("rx-cb");
 	Package received;
 	memcpy(&received, data, sizeof(Package));
 
@@ -164,14 +163,15 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(received.payload);
 	if (ackDispatcher->isAck())
 	{
-		radio << "Ack for " << ackDispatcher->packageId;
+		radio << "<== Ack for " << ackDispatcher->packageId << " from " << ADDRESS_TO_STREAM(received.sender);
 		auto it = m_packages.find(ackDispatcher->packageId);
 		if (it == m_packages.end())
 		{
-			radio << "No package with id " << ackDispatcher->packageId << " in queue";
+			radio << "?=? No package with id " << ackDispatcher->packageId << " waiting ack";
 			// No packages waiting this ack
 			return;
 		}
+		radio << "|=| Ack for " << ackDispatcher->packageId << " accepted";
 		PackageSendingDoneCallback callback = it->second.callback;
 		m_packages.erase(it);
 		if (callback)
@@ -199,7 +199,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 
 	if (checkIfIdStoredAndStore(received.details.packageId))
 	{
-		radio << "!! Package " << received.details.packageId << "%u repetition detected";
+		radio << "?=? Package with id " << received.details.packageId << " repetition detected";
 	} else {
 		// Putting received package to list
 		m_incoming.push_back(received);
@@ -226,18 +226,7 @@ void RCSPModem::interrogate()
 	ScopedTag tag("radio-interrogate");
 	sendNext();
 	nrf.interrogate();
-	while (!m_incoming.empty())
-	{
-		/// @todo [Refactoring] Remove stream from there
-		RCSPMultiStream answerStream;
-		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
-		radio << "Dispatched package " << m_incoming.front().details.packageId;
-		if (!answerStream.empty())
-		{
-			answerStream.send(m_incoming.front().sender, true);
-		}
-		m_incoming.pop_front();
-	}
+	receiveIncoming();
 }
 
 void RCSPModem::sendNext()
@@ -249,7 +238,16 @@ void RCSPModem::sendNext()
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
 	{
-		radio << "Sending package " << m_packagesNoAck.front().details.packageId << " with NO ack needed";
+		// If it is ack (only for output, may be removed by #ifdef DEBUG later)
+		AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(m_packagesNoAck.front().payload);
+		if (ackDispatcher->isAck())
+		{
+			radio << "==> Ack to " << ackDispatcher->packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target);
+		} else {
+			radio << "==> No-ack package " << m_packagesNoAck.front().details.packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target);
+		}
+		//radio << "Sending package " << m_packagesNoAck.front().details.packageId << " with NO ack needed";
+
 		nrf.sendData(Package::packageLength, (uint8_t*) &(m_packagesNoAck.front()));
 		m_packagesNoAck.pop_front();
 		isSendingNow = true;
@@ -265,7 +263,7 @@ void RCSPModem::sendNext()
 		{
 			PackageSendingDoneCallback callback = it->second.callback;
 			uint16_t timeoutedPackageId = it->second.package.details.packageId;
-			radio << "Package " << timeoutedPackageId << " timeouted";
+			radio << "==| Package " << timeoutedPackageId << " timeouted";
 			m_packages.erase(it);
 			if (callback)
 				callback(timeoutedPackageId, false);
@@ -277,13 +275,34 @@ void RCSPModem::sendNext()
 		// If it is time to (re)send package
 		if (it->second.nextTransmission < time)
 		{
-			radio << "Transmitting " << it->second.package.details.packageId;
+			radio << "==> Need-ack package " << it->second.package.details.packageId << " for " << ADDRESS_TO_STREAM(it->second.package.target);
+			//radio << "Transmitting " << it->second.package.details.packageId;
 			currentlySendingPackageId = it->first;
 			isSendingNow = true;
 			it->second.nextTransmission = time + it->second.timings.resendTime + Random::random(it->second.timings.resendTimeDelta);
 			nrf.sendData(Package::packageLength, (uint8_t*) &(it->second.package));
 			return;
 		}
+	}
+}
+
+void RCSPModem::receiveIncoming()
+{
+	while (!m_incoming.empty())
+	{
+		/// @todo [Refactoring] Remove stream from there
+		RCSPMultiStream answerStream;
+		radio << "<== Incoming id " << m_incoming.front().details.packageId
+			<< " from " << ADDRESS_TO_STREAM(m_incoming.front().sender)
+			<< " need ack: " << m_incoming.front().details.needAck;
+		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
+		radio << "|=| Dispatched id " << m_incoming.front().details.packageId;
+		if (!answerStream.empty())
+		{
+			radio << "|=| Answer for " << m_incoming.front().details.packageId << "ready";
+			answerStream.send(m_incoming.front().sender, true);
+		}
+		m_incoming.pop_front();
 	}
 }
 

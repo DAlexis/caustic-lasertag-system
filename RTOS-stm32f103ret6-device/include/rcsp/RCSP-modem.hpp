@@ -14,6 +14,7 @@
 #include "hal/system-clock.hpp"
 #include "utils/macro.hpp"
 #include "core/os-wrappers.hpp"
+#include "core/string-utils.hpp"
 #include <list>
 #include <map>
 #include <set>
@@ -44,6 +45,7 @@ struct PackageDetails
 };
 #pragma pack(pop)
 
+#define ADDRESS_TO_STREAM(addr)      (addr).address[0] << "-" << (addr).address[1] << "-" << (addr).address[2]
 
 struct DeviceAddress
 {
@@ -187,6 +189,7 @@ private:
 	void TXDoneCallback();
 	void RXCallback(uint8_t channel, uint8_t* data);
 	void sendNext();
+	void receiveIncoming();
 	bool checkIfIdStoredAndStore(uint16_t id);
 	bool isTranslationAllowed();
 	void temproraryProhibitTransmission();

@@ -11,6 +11,7 @@
 #include "result-code.hpp"
 
 #include <functional>
+#include "string.h"
 #include <stdint.h>
 #include <stdlib.h>
 

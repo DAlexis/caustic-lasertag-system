@@ -27,6 +27,7 @@ void ConnectedWeaponsList::deserialize(void* source, OperationSize size)
 	{
 		DeviceAddress addr;
 		deserializeAndInc(cursor, addr);
+		info << "Weapon restored: " << ADDRESS_TO_STREAM(addr);
 		weapons.insert(addr);
 	}
 }
