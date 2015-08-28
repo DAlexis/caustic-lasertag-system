@@ -51,6 +51,7 @@ friend class IOPin;
 public:
 	IOPinsPool();
 	IIOPin* getIOPin(uint8_t portNumber, uint8_t pinNumber);
+	void resetAllPins();
 
 private:
 	using QueueCallback = std::function<void(void)>;

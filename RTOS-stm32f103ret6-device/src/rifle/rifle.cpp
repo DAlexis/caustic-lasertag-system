@@ -17,7 +17,6 @@
 #include "dev/io-pins-utils.hpp"
 #include "hal/system-clock.hpp"
 
-//#include "res/buttons-mapping.h"
 
 #include <stdio.h>
 #include <string>
@@ -151,17 +150,52 @@ Rifle::Rifle()
 {
 }
 
-void Rifle::init(const Pinout& pinout)
-{
-	RiflePinoutMapping p;
-	configure(p);
-}
-
 void Rifle::setDafaultPinout(Pinout& pinout)
 {
+	pinout.set(PinoutTexts::trigger, 0, 0);
+	pinout.set(PinoutTexts::reload, 1, 2);
+	pinout.set(PinoutTexts::automatic, 2, 7);
+	pinout.set(PinoutTexts::semiAutomatic, 1, 9);
+	pinout.set(PinoutTexts::mag1Sensor, 0, 11);
+	pinout.set(PinoutTexts::mag2Sensor, 0, 12);
+	pinout.set(PinoutTexts::flash, 1, 11);
+	pinout.set(PinoutTexts::vibro, 0, 1);
 }
 
-void Rifle::configure(RiflePinoutMapping& pinout)
+bool Rifle::checkPinout(const Pinout& pinout)
+{
+	bool result = true;
+	if (!pinout[PinoutTexts::trigger].exists())
+	{
+		error << "Trigger pin is not set";
+		result = false;
+	}
+
+	if (!pinout[PinoutTexts::reload].exists())
+	{
+		error << "Reload pin is not set";
+		result = false;
+	}
+
+
+	if (!pinout[PinoutTexts::automatic].exists())
+	{
+		error << "Aitomatic switch pin is not set";
+		result = false;
+	}
+
+
+	if (!pinout[PinoutTexts::semiAutomatic].exists())
+	{
+		error << "Semi-automatic switch pin is not set";
+		result = false;
+	}
+
+	return result;
+}
+
+
+void Rifle::init(const Pinout& pinout)
 {
 
 	ScopedTag tag("rifle-configure");
@@ -179,7 +213,7 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	{
 		info  << "  restored";
 	} else {
-		error << "  restoring failed";
+		warning << "  restoring failed";
 		rifleReset();
 	}
 /*
@@ -193,7 +227,12 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	//rifleTurnOn();
 
 	info << "Configuring buttons";
-	m_fireButton = ButtonsPool::instance().getButtonManager(pinout.fireButtonPort, pinout.fireButtonPin);
+	info << "Current pinout:";
+	pinout.printPinout();
+	m_fireButton = ButtonsPool::instance().getButtonManager(
+			pinout[PinoutTexts::trigger].port,
+			pinout[PinoutTexts::trigger].pin
+	);
 	m_fireButton->useEXTI(true);
 	m_fireButton->setAutoRepeat(config.automaticAllowed);
 	m_fireButton->setRepeatPeriod(config.firePeriod);
@@ -202,7 +241,10 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 
 	m_buttonsInterrogator.registerObject(m_fireButton);
 
-	m_reloadButton = ButtonsPool::instance().getButtonManager(pinout.reloadButtonPort, pinout.reloadButtonPin);
+	m_reloadButton = ButtonsPool::instance().getButtonManager(
+			pinout[PinoutTexts::reload].port,
+			pinout[PinoutTexts::reload].pin
+	);
 	m_reloadButton->setAutoRepeat(false);
 	m_reloadButton->setRepeatPeriod(2*config.firePeriod);
 	m_reloadButton->setCallback(std::bind(&Rifle::distortBolt, this, std::placeholders::_1));
@@ -210,28 +252,37 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 
 	m_buttonsInterrogator.registerObject(m_reloadButton);
 
-	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.automaticButtonPort, pinout.automaticButtonPin);
+	m_automaticFireSwitch = ButtonsPool::instance().getButtonManager(
+			pinout[PinoutTexts::automatic].port,
+			pinout[PinoutTexts::automatic].pin
+	);
 	m_automaticFireSwitch->turnOff();
 
-	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(pinout.semiAutomaticButtonPort, pinout.semiAutomaticButtonPin);
+	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(
+			pinout[PinoutTexts::semiAutomatic].port,
+			pinout[PinoutTexts::semiAutomatic].pin
+	);
 	m_semiAutomaticFireSwitch->turnOff();
 
-	if (pinout.enableFlash)
+	if (pinout[PinoutTexts::flash].exists())
 	{
-		m_fireFlash = IOPins->getIOPin(pinout.flashPort, pinout.flashPin);
+		m_fireFlash = IOPins->getIOPin(pinout[PinoutTexts::flash].port, pinout[PinoutTexts::flash].pin);
 		m_fireFlash->switchToOutput();
 		m_fireFlash->reset();
 	}
-	if (pinout.enableVibro)
+	if (pinout[PinoutTexts::vibro].exists())
 	{
-		m_vibroEngine = IOPins->getIOPin(pinout.vibroPort, pinout.vibroPin);
+		m_vibroEngine = IOPins->getIOPin(pinout[PinoutTexts::vibro].port, pinout[PinoutTexts::vibro].pin);
 		m_vibroEngine->switchToOutput();
 		m_vibroEngine->reset();
 	}
 
 	if (!config.isAutoReloading() && !config.isReloadingByDistortingTheBolt())
 	{
-		m_magazine1Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine1SensorPort, pinout.magazine1SensorPin);
+		m_magazine1Sensor = ButtonsPool::instance().getButtonManager(
+				pinout[PinoutTexts::mag1Sensor].port,
+				pinout[PinoutTexts::mag1Sensor].pin
+		);
 		m_magazine1Sensor->setAutoRepeat(false);
 		m_magazine1Sensor->setRepeatPeriod(config.firePeriod);
 		m_magazine1Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 1, std::placeholders::_1));
@@ -239,7 +290,10 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 		m_magazine1Sensor->turnOn();
 		m_buttonsInterrogator.registerObject(m_magazine1Sensor);
 
-		m_magazine2Sensor = ButtonsPool::instance().getButtonManager(pinout.magazine2SensorPort, pinout.magazine2SensorPin);
+		m_magazine2Sensor = ButtonsPool::instance().getButtonManager(
+				pinout[PinoutTexts::mag2Sensor].port,
+				pinout[PinoutTexts::mag2Sensor].pin
+		);
 		m_magazine2Sensor->setAutoRepeat(false);
 		m_magazine2Sensor->setRepeatPeriod(config.firePeriod);
 		m_magazine2Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 2, std::placeholders::_1));
@@ -257,7 +311,7 @@ void Rifle::configure(RiflePinoutMapping& pinout)
 	m_mt2Transmitter.init();
 	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
 	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
-	m_mt2Transmitter.setChannel(pinout.fireChannel);
+	m_mt2Transmitter.setChannel(3);
 
 	info << "RCSP modem initialization";
 	RCSPModem::instance().init();

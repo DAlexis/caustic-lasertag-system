@@ -170,7 +170,6 @@ uint8_t IOPin::maskToPinNumber(uint16_t pinMask)
 }
 
 
-
 IOPinsPool::IOPinsPool()
 {
 	for (uint8_t i=0; i<pinsPerPort; i++)
@@ -199,6 +198,8 @@ uint16_t IOPin::pinNumberToMask(uint8_t pinNumber)
 
 IIOPin* IOPinsPool::getIOPin(uint8_t portNumber, uint8_t pinNumber)
 {
+	if (portNumber >= 8 || pinNumber >= 17)
+		return nullptr;
 	auto it = m_interfaces.find(std::pair<uint8_t, uint8_t>(portNumber, pinNumber));
 	if (it == m_interfaces.end())
 	{
@@ -207,6 +208,32 @@ IIOPin* IOPinsPool::getIOPin(uint8_t portNumber, uint8_t pinNumber)
 		return newPin;
 	} else
 		return it->second;
+}
+
+void IOPinsPool::resetAllPins()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	zerify(GPIO_InitStructure);
+	uint16_t pinMask = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+			GPIO_PIN_4 | GPIO_PIN_5  | GPIO_PIN_6  | GPIO_PIN_7  | GPIO_PIN_8  |
+			GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 |
+			GPIO_PIN_14 | GPIO_PIN_15;
+	GPIO_InitStructure.Pin = pinMask;
+	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+	GPIO_InitStructure.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+	HAL_GPIO_WritePin(GPIOA, pinMask, GPIO_PIN_RESET);
+
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+	HAL_GPIO_WritePin(GPIOB, pinMask, GPIO_PIN_RESET);
+
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+	HAL_GPIO_WritePin(GPIOC, pinMask, GPIO_PIN_RESET);
+
+	GPIO_InitStructure.Pin = GPIO_PIN_2;
+	HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
 }
 
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t pinMask)

@@ -68,6 +68,7 @@ private:
 	{
 		constexpr static unsigned int numbersBufferSize = 20;
 		LoggerUnnamed& operator<<(const char* str);
+		LoggerUnnamed& operator<<(const std::string& str);
 		LoggerUnnamed& operator<<(int d);
 		LoggerUnnamed& operator<<(unsigned int d);
 		LoggerUnnamed& operator<<(uint32_t d);

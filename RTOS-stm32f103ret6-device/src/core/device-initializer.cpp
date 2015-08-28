@@ -8,6 +8,7 @@
 #include "core/device-initializer.hpp"
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
+#include "hal/io-pins.hpp"
 #include "head-sensor/head-sensor.hpp"
 #include "rifle/rifle.hpp"
 #include "cmsis_os.h"
@@ -67,6 +68,14 @@ void Pinout::readConfigLine(const char* key, const char* value)
 	}
 }
 
+void Pinout::printPinout() const
+{
+	info << "Pinout: ";
+	for (auto it = m_pins.begin(); it != m_pins.end(); it++)
+	{
+		info << it->first << " port:" << it->second.port << " pin:" << it->second.pin;
+	}
+}
 
 void DeviceInitializer::initHW()
 {
@@ -87,6 +96,11 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 	parcer->setCallback(
 		[&resultDevice] (const char* key, const char* value)
 		{
+			if (resultDevice != nullptr)
+			{
+				warning << "Config file should contain only ONE device_type record!";
+				return;
+			}
 			if (0 == strcmp(key, "device_type"))
 			{
 				if (0 == strcmp(value, "head_sensor"))
@@ -119,6 +133,12 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 		resultDevice->setDafaultPinout(*pinout);
 	}
 
+	if (!resultDevice->checkPinout(*pinout))
+	{
+		error << "!! Fatal error: invalid pinout for selected device, cannot initialize device !!";
+		return nullptr;
+	}
+
 	info << "Initializing device...";
 	resultDevice->init(*pinout);
 	delete pinout;
@@ -136,8 +156,10 @@ void DeviceInitializer::initGPIO()
 {
 	__GPIOA_CLK_ENABLE();
 	__GPIOB_CLK_ENABLE();
-	__GPIOD_CLK_ENABLE();
 	__GPIOC_CLK_ENABLE();
+	__GPIOD_CLK_ENABLE();
+	// This is to prevent random voltages at MCU pins if something go bad during device initialization
+	IOPins->resetAllPins();
 }
 
 void DeviceInitializer::initSDIO()

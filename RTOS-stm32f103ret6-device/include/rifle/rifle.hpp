@@ -48,10 +48,10 @@ class Rifle : public IAnyDevice
 public:
 	Rifle();
 
-	void configure(RiflePinoutMapping& pinout);
 	void registerWeapon();
 	void init(const Pinout& pinout);
 	void setDafaultPinout(Pinout& pinout);
+	bool checkPinout(const Pinout& pinout);
 
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);
@@ -69,6 +69,18 @@ public:
 
 
 private:
+	struct PinoutTexts
+	{
+		constexpr static const char *trigger = "fireButton";
+		constexpr static const char *reload = "reloadButton";
+		constexpr static const char *automatic = "automaticButton";
+		constexpr static const char *semiAutomatic = "semiAutomaticButton";
+		constexpr static const char *mag1Sensor = "magazine1Sensor";
+		constexpr static const char *mag2Sensor = "magazine2Sensor";
+		constexpr static const char *flash = "flash";
+		constexpr static const char *vibro = "vibro";
+	};
+
 	struct WeaponState
 	{
 		constexpr static uint8_t magazineEmpty = 0;
@@ -77,7 +89,6 @@ private:
 		constexpr static uint8_t otherMagazineInserted = 3;
 		constexpr static uint8_t reloading = 4;
 		constexpr static uint8_t ready = 5;
-
 	};
 
 	void loadConfig();

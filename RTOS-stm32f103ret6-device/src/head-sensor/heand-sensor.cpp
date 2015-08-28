@@ -393,6 +393,12 @@ void HeadSensor::setDafaultPinout(Pinout& pinout)
 	pinout.set("blue", 0, 6);
 }
 
+bool HeadSensor::checkPinout(const Pinout& pinout)
+{
+	/// @todo Add cheching here
+	return true;
+}
+
 uint8_t HeadSensor::getTeamColor()
 {
 	switch (playerConfig.teamId)

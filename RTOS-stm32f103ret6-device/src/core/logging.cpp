@@ -50,6 +50,12 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(const char* str)
 	return *this;
 }
 
+Logger::LoggerUnnamed&  Logger::LoggerUnnamed::operator<<(const std::string& str)
+{
+	*this << str.c_str();
+	return *this;
+}
+
 Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(int d)
 {
 	char buffer[numbersBufferSize];

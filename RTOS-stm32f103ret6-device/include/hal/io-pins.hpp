@@ -35,6 +35,7 @@ class IIOPinsPool
 public:
 	virtual ~IIOPinsPool() {}
 	virtual IIOPin* getIOPin(uint8_t portNumber, uint8_t pinNumber) = 0;
+	virtual void resetAllPins() = 0;
 };
 
 extern IIOPinsPool* IOPins;

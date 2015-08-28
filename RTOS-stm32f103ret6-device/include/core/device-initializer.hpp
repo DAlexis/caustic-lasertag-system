@@ -65,6 +65,7 @@ public:
 		}
 	}
 
+	void printPinout() const;
 private:
 	void readConfigLine(const char* key, const char* value);
 
@@ -78,6 +79,7 @@ public:
 	virtual ~IAnyDevice() {}
 	virtual void init(const Pinout& pinout) = 0;
 	virtual void setDafaultPinout(Pinout& pinout) = 0;
+	virtual bool checkPinout(const Pinout& pinout) = 0;
 };
 
 class DeviceInitializer

@@ -28,6 +28,7 @@ public:
 	void configure(const Pinout &_pinout);
 	void init(const Pinout &pinout);
 	void setDafaultPinout(Pinout& pinout);
+	bool checkPinout(const Pinout& pinout);
 
 	PlayerConfiguration playerConfig;
 	PlayerState playerState{&playerConfig};

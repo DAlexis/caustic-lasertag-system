@@ -14,6 +14,11 @@ SINGLETON_IN_CPP(ButtonsPool)
 ButtonManager::ButtonManager(IIOPin* inputInterrogator) :
     m_inputInterrogator(inputInterrogator)
 {
+	if (!inputInterrogator)
+	{
+		error << "Cannot initialize button: input interrogator is nullptr!";
+		return;
+	}
 	m_inputInterrogator->setExtiCallback(std::bind(&ButtonManager::extiCallback, this, std::placeholders::_1), true);
 }
 
@@ -51,6 +56,11 @@ void ButtonManager::setPressedState(bool pressedState)
 
 bool ButtonManager::state()
 {
+	if (!m_inputInterrogator)
+	{
+		error << "Cannot check buttons state: m_inputInterrogator == nullptr";
+		return false;
+	}
 	return m_pressedState ? m_inputInterrogator->state() : !m_inputInterrogator->state();
 }
 
@@ -69,6 +79,12 @@ void ButtonManager::extiCallback(bool state)
 
 void ButtonManager::interrogate()
 {
+	if (!m_inputInterrogator)
+	{
+		error << "Cannot interrogate button: m_inputInterrogator == nullptr";
+		return;
+	}
+
 	if (!m_isEnabled) return;
 	if (wasBounce()) return;
 
