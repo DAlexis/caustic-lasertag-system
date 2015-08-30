@@ -77,22 +77,7 @@ private:
 
 	bool m_fragmentPlayerReady = false;
 
-	struct LoadingTask
-	{
-		constexpr static uint8_t loadNextFragment = 0;
-		constexpr static uint8_t clearBuffer      = 1;
-		constexpr static uint8_t loadNewFile      = 2;
-
-		LoadingTask(SoundSample* _buffer = nullptr, uint8_t _channel = 0, uint8_t _task = loadNextFragment) :
-			buffer(_buffer), channel(_channel), task(_task)
-		{}
-		SoundSample* buffer;
-		uint8_t channel = 0;
-		uint8_t task = 0;
-	};
-
-	Queue<LoadingTask> m_loadQueue{10};
-	TaskOnce m_loadingTask;
+	Worker m_loader{10};
 };
 
 class SoundPlayer

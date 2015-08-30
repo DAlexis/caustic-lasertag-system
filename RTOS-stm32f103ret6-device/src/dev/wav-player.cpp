@@ -33,8 +33,7 @@ WavPlayer::WavPlayer()
 	m_currentBuffer = m_buffer1;
 	m_nextBuffer = m_buffer2;
 
-	m_loadingTask.setStackSize(256);
-	m_loadingTask.setTask(std::bind(&WavPlayer::loader, this));
+	m_loader.setStackSize(256);
 
 }
 
@@ -50,39 +49,13 @@ void WavPlayer::init()
 {
 	fragmentPlayer->init();
 	fragmentPlayer->setFragmentDoneCallback(std::bind(&WavPlayer::fragmentDoneCallback, this, std::placeholders::_1));
-	m_loadingTask.run(0);
+	m_loader.run();
 
 	// Prepairing buffers
 	silenceToBuffer(m_currentBuffer);
 	silenceToBuffer(m_nextBuffer);
 	// Starting infinite playback
 	fragmentPlayer->setFragmentSize(audioBufferSize);
-}
-
-void WavPlayer::loader()
-{
-	LoadingTask task;
-
-	for(;;)
-	{
-		m_loadQueue.popFront(task);
-		//info << "Queue has task: " << task.task;
-
-		switch (task.task)
-		{
-		case LoadingTask::clearBuffer:
-			silenceToBuffer(task.buffer);
-			break;
-		case LoadingTask::loadNewFile:
-			openFile(task.channel);
-			break;
-		case LoadingTask::loadNextFragment:
-			loadFragment(task.buffer, task.channel);
-			break;
-		default:
-			error << "Sound loader: unknown task " << task.task;
-		}
-	}
 }
 
 void WavPlayer::silenceToBuffer(SoundSample* buffer)
@@ -135,7 +108,11 @@ Result WavPlayer::play(const char* fileName, uint8_t channel)
 		fragmentPlayer->playFragment(m_currentBuffer);
 	}
 	m_contexts[channel].filename = fileName;
-	m_loadQueue.pushBack(LoadingTask(nullptr, channel, LoadingTask::loadNewFile));
+
+	// Adding task to open file
+	m_loader.add(
+			[this, channel](){ openFile(channel); }
+	);
 	return Result();
 }
 
@@ -146,12 +123,16 @@ void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 	fragmentPlayer->playFragment(m_currentBuffer);
 
 	// Telling to clear buffer
-	m_loadQueue.pushBackFromISR(LoadingTask(m_nextBuffer, 0, LoadingTask::clearBuffer));
+	m_loader.addFromISR(
+			[this]() { silenceToBuffer(m_nextBuffer); }
+	);
 
 	// Telling to add sound from all channels to buffers
 	for (int i=0; i<channelsCount; i++)
 	{
-		m_loadQueue.pushBackFromISR(LoadingTask(m_nextBuffer, i, LoadingTask::loadNextFragment));
+		m_loader.addFromISR(
+				[this, i] () { loadFragment(m_nextBuffer, i); }
+		);
 	}
 }
 

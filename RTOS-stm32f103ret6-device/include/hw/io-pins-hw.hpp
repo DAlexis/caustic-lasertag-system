@@ -56,10 +56,8 @@ public:
 private:
 	using QueueCallback = std::function<void(void)>;
 	void createIOPin(uint8_t portNumber, uint8_t pinNumber);
-	void listenQueue();
 	std::map<std::pair<uint8_t, uint8_t>, IIOPin*> m_interfaces;
-	TaskOnce m_queueListener;
-	Queue<QueueCallback> m_callbackQueue{5};
+	Worker m_callbackCaller{10};
 };
 
 

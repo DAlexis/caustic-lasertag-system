@@ -283,5 +283,31 @@ private:
 	TaskCycled m_poolTask;
 };
 
+class Worker
+{
+public:
+	using WTask = std::function<void(void)>;
+
+	Worker(uint8_t maxQueueSize);
+
+	void setStackSize(uint32_t stackSize);
+	void run();
+	inline void add(WTask task)
+	{
+		m_queue.pushBack(std::forward<WTask>(task));
+	}
+
+	inline void addFromISR(WTask task)
+	{
+		m_queue.pushBackFromISR(std::forward<WTask>(task));
+	}
+
+private:
+	void mainLoop();
+
+	TaskOnce m_workerThread;
+	Queue<WTask> m_queue;
+	WTask m_nextTask = nullptr;
+};
 
 #endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SHEDULER_HPP_ */

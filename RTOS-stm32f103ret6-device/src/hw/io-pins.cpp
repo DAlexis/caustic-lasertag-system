@@ -86,6 +86,8 @@ void IOPin::enableExti(bool enable)
 		irq = EXTI9_5_IRQn; break;
 	case 10: case 11: case 12: case 13: case 14: case 15:
 		irq = EXTI15_10_IRQn; break;
+	default:
+		error << "Attempt to enable EXTI on invalid IOPin object";
 	}
 
 	if (m_extiEnabled)
@@ -116,7 +118,7 @@ void IOPin::extiInterrupt()
 		{
 			m_callback(state());
 		} else {
-			pool.m_callbackQueue.pushBackFromISR(
+			pool.m_callbackCaller.addFromISR(
 					//std::bind(m_callback, state()) //< This line does not work :(
 					[this]() { m_callback(state()); }
 			);
@@ -175,21 +177,9 @@ IOPinsPool::IOPinsPool()
 	for (uint8_t i=0; i<pinsPerPort; i++)
 		extisListeners[i] = nullptr;
 
-	m_queueListener.setStackSize(512);
-	m_queueListener.setTask(std::bind(&IOPinsPool::listenQueue, this));
-	m_queueListener.run(0);
+	m_callbackCaller.setStackSize(512);
+	m_callbackCaller.run();
 }
-
-void IOPinsPool::listenQueue()
-{
-	QueueCallback task;
-	for (;;)
-	{
-		m_callbackQueue.popFront(task);
-		task();
-	}
-}
-
 
 uint16_t IOPin::pinNumberToMask(uint8_t pinNumber)
 {

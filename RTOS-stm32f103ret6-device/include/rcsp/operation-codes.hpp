@@ -107,7 +107,8 @@ namespace ConfigCodes
 			FUNC_CODE(rifleRespawn,       204)
 			FUNC_CODE(rifleDie,           205)
 			FUNC_CODE(rifleShock,         206)
-			FUNC_CODE(riflePlayEnemyDamaged,    210)
+			FUNC_CODE(riflePlayEnemyDamaged,      210)
+			FUNC_CODE(headSensorToRifleHeartbeat, 220)
 		}
 	}
 
@@ -190,8 +191,10 @@ namespace ConfigCodes
 			FUNC_CODE(addMaxHealth,       1220)
 			FUNC_CODE(setTeam,            1221)
 
-			FUNC_CODE(registerWeapon,     1300)
-			FUNC_CODE(notifyIsDamager,      1400)
+			FUNC_CODE(registerWeapon,             1300)
+			FUNC_CODE(notifyIsDamager,            1400)
+
+			FUNC_CODE(rifleToHeadSensorHeartbeat, 1500)
 		}
 	}
 }

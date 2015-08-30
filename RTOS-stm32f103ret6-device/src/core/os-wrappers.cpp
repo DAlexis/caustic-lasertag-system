@@ -262,3 +262,33 @@ void DeferredTasksPool::poolTaskBody()
 		}
 	}
 }
+
+//////////////////////
+// Worker
+Worker::Worker(uint8_t maxQueueSize) :
+	m_queue(maxQueueSize)
+{
+	m_workerThread.setTask([this](){ mainLoop(); });
+}
+
+void Worker::setStackSize(uint32_t stackSize)
+{
+	m_workerThread.setStackSize(stackSize);
+}
+
+void Worker::run()
+{
+	m_workerThread.run();
+}
+
+void Worker::mainLoop()
+{
+	for (;;)
+	{
+		m_queue.popFront(m_nextTask);
+		if (m_nextTask == nullptr)
+			break;
+		else
+			m_nextTask();
+	}
+}
