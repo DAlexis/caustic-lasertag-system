@@ -6,18 +6,18 @@
  */
 
 #include "dev/io-pins-utils.hpp"
-#include "core/os-wrappers.hpp"
 
-void delayedSwitchPin(IIOPin* pin, bool state, uint32_t delay)
+
+void delayedSwitchPin(TasksPool &pool, IIOPin* pin, bool state, uint32_t delay)
 {
 	if (true == state)
 		{
-			DeferredTasksPool::instance().add(
+			pool.addOnce(
 					std::bind(&IIOPin::set, pin),
 					delay
 			);
 		} else {
-			DeferredTasksPool::instance().add(
+			pool.addOnce(
 					std::bind(&IIOPin::reset, pin),
 					delay
 			);

@@ -10,13 +10,11 @@
 #include "cmsis_os.h"
 
 SINGLETON_IN_CPP(Kernel)
-SINGLETON_IN_CPP(DeferredTasksPool)
 
 void Kernel::run()
 {
 	info << "Starting FreeRTOS kernel";
 	m_isRunning = true;
-	DeferredTasksPool::instance().scheduleMainLoop();
 	osKernelStart();
 }
 
@@ -231,36 +229,104 @@ void Interrogator::interrogateAll()
 }
 
 //////////////////////
-// DeferredTasksPool
-DeferredTasksPool::DeferredTasksPool()
+// TasksPool
+TasksPool::TasksPool()
 {
-	m_poolTask.setStackSize(256);
-	m_poolTask.setTask(std::bind(&DeferredTasksPool::poolTaskBody, this));
+	m_poolThread.setTask([this](){ main(); });
 }
 
-void DeferredTasksPool::scheduleMainLoop()
+TasksPool::TaskId TasksPool::add(STask&& newTask, uint32_t period, uint32_t firstDelay, uint32_t count, uint32_t lifetime)
 {
-	m_poolTask.run();
+	TaskContext context;
+	Time time = systemClock->getTime();
+	context.taskId = m_nextTaskId++;
+	context.task = newTask;
+	context.period = period;
+	context.timeToRun = time + firstDelay;
+	if (lifetime != 0)
+	{
+		context.timeout = time + lifetime;
+	} else {
+		context.timeout = 0;
+	}
+
+	context.repetitionsCountMax = count;
+
+	ScopedLock lck(m_taskModifyMutex);
+	m_tasksToAdd.push_back(context);
+	return context.taskId;
 }
 
-void DeferredTasksPool::add(STask task, uint32_t delay)
+TasksPool::TaskId TasksPool::addOnce(STask&& newTask, uint32_t firstDelay)
 {
-	ScopedLock lck(m_tasksMutex);
-	m_tasks.push_back(DeferredTask(task, systemClock->getTime() + delay));
+	return add(std::forward<STask>(newTask), 0, firstDelay, 1);
 }
 
-void DeferredTasksPool::poolTaskBody()
+
+void TasksPool::setStackSize(uint16_t stackSize)
 {
-	ScopedLock lck(m_tasksMutex);
-	for (auto it = m_tasks.begin(); it != m_tasks.end(); it++)
+	m_poolThread.setStackSize(stackSize);
+}
+
+void TasksPool::run(uint32_t sleepTime)
+{
+	m_poolThread.run(0, sleepTime, sleepTime);
+}
+
+void TasksPool::stop(TaskId id)
+{
+	ScopedLock lck(m_taskModifyMutex);
+	m_idsToDelete.push_back(id);
+}
+
+void TasksPool::main()
+{
+	// Adding new tasks if exist
+	m_taskModifyMutex.lock();
+	for (auto it = m_tasksToAdd.begin(); it != m_tasksToAdd.end(); it = m_tasksToAdd.erase(it))
+	{
+		m_runningTasks.push_back(*it);
+	}
+	m_taskModifyMutex.unlock();
+
+	// Running current tasks
+	for (auto it = m_runningTasks.begin(); it != m_runningTasks.end(); )
 	{
 		Time time = systemClock->getTime();
 		if (time >= it->timeToRun)
 		{
 			it->task();
-			it = m_tasks.erase(it);
+			it->repetitionsCount++;
+			it->timeToRun = time + it->period;
+		}
+
+		time = systemClock->getTime();
+		if (
+				(it->repetitionsCountMax != 0 && it->repetitionsCount == it->repetitionsCountMax)
+				|| (it->timeout != 0 && time > it->timeout)
+			)
+		{
+			it = m_runningTasks.erase(it);
+		} else
+			it++;
+	}
+
+	// Removing deleted tasks
+	m_taskModifyMutex.lock();
+	for (auto it = m_idsToDelete.begin(); it != m_idsToDelete.end(); it++)
+	{
+		for (auto jt = m_runningTasks.begin(); jt != m_runningTasks.end(); )
+		{
+			if (jt->taskId == *it)
+			{
+				jt = m_runningTasks.erase(jt);
+			} else {
+				jt++;
+			}
 		}
 	}
+	m_idsToDelete.clear();
+	m_taskModifyMutex.unlock();
 }
 
 //////////////////////

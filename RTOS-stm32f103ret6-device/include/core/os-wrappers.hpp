@@ -255,32 +255,40 @@ private:
 	std::vector<IInterrogatable*> m_objects;
 };
 
-/// Pool of tasks that should be called once with delay
-class DeferredTasksPool
+/// Tasks pool with cooperative multitasking. One class instance = one OS thread
+class TasksPool
 {
 public:
-	void scheduleMainLoop();
-	void add(STask task, uint32_t delay);
-
-	SIGLETON_IN_CLASS(DeferredTasksPool);
+	using TaskId = uint16_t;
+	TasksPool();
+	TaskId add(STask&& newTask, uint32_t period, uint32_t firstDelay = 0, uint32_t count = 0, uint32_t lifetime = 0);
+	TaskId addOnce(STask&& newTask, uint32_t firstDelay);
+	void stop(TaskId id);
+	void setStackSize(uint16_t stackSize);
+	void run(uint32_t sleepTime = 1);
 
 private:
-	DeferredTasksPool();
-	void poolTaskBody();
+	void main();
 
-	struct DeferredTask
+	struct TaskContext
 	{
-		DeferredTask(STask _task, Time _timeToRun) :
-			task(_task), timeToRun(_timeToRun)
-		{}
-
-		STask task;
-		Time timeToRun;
+		TaskId taskId = 0;
+		STask task = nullptr;
+		Time timeToRun = 0;
+		Time timeout = 0;
+		uint32_t period = 100000;
+		uint32_t repetitionsCount = 0;
+		uint32_t repetitionsCountMax = 0;
 	};
-	std::list<DeferredTask> m_tasks;
-	Mutex m_tasksMutex;
 
-	TaskCycled m_poolTask;
+	std::list<TaskContext> m_runningTasks;
+	/// One mutex for both add and delete task lists, because actual adding and deleting operations are quick
+	Mutex m_taskModifyMutex;
+	std::list<TaskContext> m_tasksToAdd;
+	std::list<TaskId> m_idsToDelete;
+	TaskId m_nextTaskId = 1;
+
+	TaskCycled m_poolThread;
 };
 
 class Worker

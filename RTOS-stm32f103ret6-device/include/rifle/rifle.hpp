@@ -141,6 +141,7 @@ private:
 
 	TaskCycled m_updateDisplayTask;
 	Interrogator m_buttonsInterrogator;
+	TasksPool m_tasksPool;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

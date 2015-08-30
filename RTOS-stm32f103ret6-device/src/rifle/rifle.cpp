@@ -148,6 +148,7 @@ void RifleState::reset()
 
 Rifle::Rifle()
 {
+	m_tasksPool.setStackSize(256);
 }
 
 void Rifle::setDafaultPinout(Pinout& pinout)
@@ -323,6 +324,8 @@ void Rifle::init(const Pinout& pinout)
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.rifles);
 
+	m_tasksPool.run();
+
 	rifleTurnOff();
 	// Registering at head sensor's weapons list
 
@@ -399,12 +402,12 @@ void Rifle::makeShot(bool isFirst)
 			if (m_fireFlash)
 			{
 				m_fireFlash->set();
-				delayedSwitchPin(m_fireFlash, false, config.fireFlashPeriod);
+				delayedSwitchPin(m_tasksPool, m_fireFlash, false, config.fireFlashPeriod);
 			}
 			if (m_vibroEngine)
 			{
 				m_vibroEngine->set();
-				delayedSwitchPin(m_vibroEngine, false, config.fireVibroPeriod);
+				delayedSwitchPin(m_tasksPool, m_vibroEngine, false, config.fireVibroPeriod);
 			}
 			m_shootingSound.play();
 			if (state.bulletsInMagazineCurrent == 0)
@@ -548,7 +551,7 @@ void Rifle::reloadAndPlay()
 		return;
 	}
 	m_state = WeaponState::reloading;
-	DeferredTasksPool::instance().add(
+	m_tasksPool.addOnce(
 		[this]() {
 			m_state = WeaponState::ready;
 			m_fireButton->setAutoRepeat(true);
