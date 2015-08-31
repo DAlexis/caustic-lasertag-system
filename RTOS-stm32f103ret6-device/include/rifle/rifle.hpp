@@ -59,7 +59,11 @@ public:
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn);  ///< Do all things than needed on respawn (+play sound)
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);      ///< Say to rifle that player was killed
 
+	/// Heartbeat head sensor -> rifle
+	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
+
 	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged, uint8_t);      ///< Play enemy damaged sound
+
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;
 	RifleState state{&config};
@@ -69,6 +73,9 @@ public:
 
 
 private:
+
+	constexpr static uint32_t maxNoHeartbeatDelay = 6500000;
+
 	struct PinoutTexts
 	{
 		constexpr static const char *trigger = "fireButton";
@@ -108,6 +115,7 @@ private:
 
 	void playDamagerNotification(uint8_t state);
 	void scheduleDamageNotification(uint8_t state);
+	void checkHeartBeat();
 
 	bool m_isEnabled = true;
 
@@ -142,6 +150,7 @@ private:
 	TaskCycled m_updateDisplayTask;
 	Interrogator m_buttonsInterrogator;
 	TasksPool m_tasksPool;
+	Time m_lastHSHeartBeat = 0;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

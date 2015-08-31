@@ -16,6 +16,7 @@
 
 HeadSensor::HeadSensor()
 {
+	m_tasksPool.setStackSize(256);
 	//m_weapons.insert({1,1,1});
 }
 
@@ -135,6 +136,12 @@ void HeadSensor::configure(const Pinout &_pinout)
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.headSensors);
 
+	m_tasksPool.add(
+			[this]() { sendHeartbeat(); },
+			heartbeatPeriod
+	);
+
+	m_tasksPool.run();
 	StateSaver::instance().runSaver(8000);
 
 	info << "Head sensor ready to use";
@@ -283,6 +290,17 @@ void HeadSensor::weaponShock()
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleShock, playerConfig.shockDelay);
+	}
+}
+
+void HeadSensor::sendHeartbeat()
+{
+	if (!playerState.isAlive())
+		return;
+	trace << "Sending heartbeat";
+	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+	{
+		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat, false, nullptr);
 	}
 }
 

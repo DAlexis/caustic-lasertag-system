@@ -23,3 +23,9 @@ void delayedSwitchPin(TasksPool &pool, IIOPin* pin, bool state, uint32_t delay)
 			);
 		}
 }
+
+void blinkPin(TasksPool &pool, IIOPin* pin, uint32_t delay)
+{
+	pin->set();
+	delayedSwitchPin(pool, pin, false, delay);
+}

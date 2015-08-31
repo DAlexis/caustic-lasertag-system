@@ -324,18 +324,21 @@ void Rifle::init(const Pinout& pinout)
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.rifles);
 
-	m_tasksPool.run();
-
 	rifleTurnOff();
+
+	m_tasksPool.add(
+			[this](){ checkHeartBeat(); },
+			maxNoHeartbeatDelay/2,
+			maxNoHeartbeatDelay
+			);
+
 	// Registering at head sensor's weapons list
-
-
 	registerWeapon();
-
-	StateSaver::instance().runSaver(10000000);
 
 	updatePlayerState();
 
+	StateSaver::instance().runSaver(10000000);
+	m_tasksPool.run();
 	info << "Rifle ready to use\n";
 }
 
@@ -591,7 +594,6 @@ void Rifle::updatePlayerState()
 
 void Rifle::rifleTurnOff()
 {
-	ScopedTag tag("rifle-turn-off");
 	info << "Rifle turned OFF\n";
 	m_isEnabled = false;
 	m_fireButton->turnOff();
@@ -600,7 +602,6 @@ void Rifle::rifleTurnOff()
 
 void Rifle::rifleTurnOn()
 {
-	ScopedTag tag("rifle-turn-on");
 	info << "Rifle turned ON\n";
 	m_isEnabled = true;
 	m_fireButton->turnOn();
@@ -635,6 +636,11 @@ void Rifle::rifleDie()
 
 	rifleTurnOff();
 	m_dieSound.play();
+}
+
+void Rifle::headSensorToRifleHeartbeat()
+{
+	m_lastHSHeartBeat = systemClock->getTime();
 }
 
 
@@ -673,6 +679,24 @@ void Rifle::scheduleDamageNotification(uint8_t state)
 			0,
 			100000
 	);*/
+}
+
+void Rifle::checkHeartBeat()
+{
+	if (systemClock->getTime() - m_lastHSHeartBeat > maxNoHeartbeatDelay)
+	{
+		if (m_isEnabled)
+		{
+			info << "No heartbeat! Turning off";
+			rifleTurnOff();
+		}
+	} else {
+		if (!m_isEnabled)
+		{
+			info << "I listen heartbeat again! Turning on.";
+			rifleTurnOn();
+		}
+	}
 }
 
 

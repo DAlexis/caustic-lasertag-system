@@ -47,6 +47,7 @@ public:
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager, DamageNotification);      ///< Feedback when player was damaged or killed
 private:
 
+	constexpr static uint32_t heartbeatPeriod = 2000000;
 	// Test functions
 	void testDie(const char*);
 
@@ -58,6 +59,8 @@ private:
 	void turnOffWeapons();
 	void notifyDamager(PlayerMT2Id player, uint8_t damagerTeam, uint8_t state = 0);
 	void weaponShock();
+
+	void sendHeartbeat();
 
 	RGBLeds m_leds;
 
@@ -73,6 +76,7 @@ private:
 	};
 
 	Time m_shockDelayBegin = 0;
+	TasksPool m_tasksPool;
 };
 
 
