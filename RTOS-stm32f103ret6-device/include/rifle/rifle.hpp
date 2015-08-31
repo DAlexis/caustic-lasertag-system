@@ -140,7 +140,7 @@ private:
 	SoundPlayer m_enemyDamaged;
 	SoundPlayer m_enemyKilled;
 	SoundPlayer m_friendDamaged;
-
+	SoundPlayer m_noHeartbeat;
 
 	PackageId m_registerWeaponPAckageId = 0;
 

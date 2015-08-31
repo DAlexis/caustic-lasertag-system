@@ -382,6 +382,7 @@ void Rifle::initSounds()
 	m_enemyDamaged.readVariants("sound/enemy-injured-", ".wav", 1);
 	m_enemyKilled.readVariants("sound/enemy-killed-", ".wav", 1);
 	m_friendDamaged.readVariants("sound/friend-injured-", ".wav", 1);
+	m_noHeartbeat.readVariants("sound/no-heartbeat-", ".wav", 1);
 }
 
 void Rifle::makeShot(bool isFirst)
@@ -685,6 +686,7 @@ void Rifle::checkHeartBeat()
 {
 	if (systemClock->getTime() - m_lastHSHeartBeat > maxNoHeartbeatDelay)
 	{
+		m_noHeartbeat.play();
 		if (m_isEnabled)
 		{
 			info << "No heartbeat! Turning off";
