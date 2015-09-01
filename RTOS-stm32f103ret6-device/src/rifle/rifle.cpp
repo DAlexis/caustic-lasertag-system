@@ -217,15 +217,14 @@ void Rifle::init(const Pinout& pinout)
 		warning << "  restoring failed";
 		rifleReset();
 	}
-/*
-	m_updateDisplayTask.setStackSize(256);
-	m_updateDisplayTask.setTask(std::bind(&PlayerDisplayableData::print, &playerDisplayable));
-	m_updateDisplayTask.run(1000000, 3000000, 3000000);*/
 
-	//Scheduler::instance().addTask(std::bind(&Rifle::updatePlayerState, this), false, 3000000, 0, 1000000);
-
-	// Line for DEBUG purpose only
-	//rifleTurnOn();
+	m_tasksPool.add(
+			[this]() {
+				playerDisplayable.print();
+				updatePlayerState();
+			},
+			5000000
+	);
 
 	info << "Configuring buttons";
 	info << "Current pinout:";
@@ -328,7 +327,7 @@ void Rifle::init(const Pinout& pinout)
 
 	m_tasksPool.add(
 			[this](){ checkHeartBeat(); },
-			maxNoHeartbeatDelay/2,
+			maxNoHeartbeatDelay,
 			maxNoHeartbeatDelay
 			);
 
@@ -373,16 +372,18 @@ void Rifle::loadConfig()
 
 void Rifle::initSounds()
 {
-	m_shootingSound.readVariants("sound/shoot-", ".wav");
-	m_reloadingSound.readVariants("sound/reload-", ".wav");
-	m_noAmmoSound.readVariants("sound/no-ammo-", ".wav");
-	m_noMagazines.readVariants("sound/no-magazines-", ".wav");
+	m_shootingSound.readVariants("sound/shoot-", ".wav", 0);
+	m_reloadingSound.readVariants("sound/reload-", ".wav", 0);
+	m_noAmmoSound.readVariants("sound/no-ammo-", ".wav", 0);
+	m_noMagazines.readVariants("sound/no-magazines-", ".wav", 0);
 	m_respawnSound.readVariants("sound/respawn-", ".wav", 1);
 	m_dieSound.readVariants("sound/die-", ".wav", 1);
+	m_woundSound.readVariants("sound/wound-", ".wav", 1);
 	m_enemyDamaged.readVariants("sound/enemy-injured-", ".wav", 1);
 	m_enemyKilled.readVariants("sound/enemy-killed-", ".wav", 1);
 	m_friendDamaged.readVariants("sound/friend-injured-", ".wav", 1);
 	m_noHeartbeat.readVariants("sound/no-heartbeat-", ".wav", 1);
+	m_noShockedShooting.readVariants("sound/shocked-shooting", ".wav", 0);
 }
 
 void Rifle::makeShot(bool isFirst)
@@ -394,6 +395,13 @@ void Rifle::makeShot(bool isFirst)
 	case WeaponState::ready:
 		if (isSafeSwitchSelected())
 			break;
+
+		if (isShocked())
+		{
+			info << "Player shocked!";
+			m_noShockedShooting.play();
+			break;
+		}
 
 		if (!isFirst && !config.automaticAllowed)
 			break;
@@ -612,7 +620,6 @@ void Rifle::rifleTurnOn()
 
 void Rifle::rifleReset()
 {
-	ScopedTag tag("rifle-reset");
 	state.reset();
 	detectRifleState();
 	info << "Rifle resetted\n";
@@ -620,7 +627,6 @@ void Rifle::rifleReset()
 
 void Rifle::rifleRespawn()
 {
-	ScopedTag tag("rifle-respawn");
 	rifleReset();
 	rifleTurnOn();
 	updatePlayerState();
@@ -644,17 +650,13 @@ void Rifle::headSensorToRifleHeartbeat()
 	m_lastHSHeartBeat = systemClock->getTime();
 }
 
+void Rifle::rifleWound()
+{
+	m_woundSound.play();
+}
 
 void Rifle::playDamagerNotification(uint8_t state)
 {
-/*
-	if (WavPlayer::instance().isPlaying())
-	{
-		/// @todo Fix it when sound mixing will be done
-		//scheduleDamageNotification(state);
-		return;
-	}*/
-
 	switch (state)
 	{
 	default:
@@ -701,12 +703,24 @@ void Rifle::checkHeartBeat()
 	}
 }
 
+bool Rifle::isShocked()
+{
+	return systemClock->getTime() <= m_unshockTime;
+}
 
 void Rifle::riflePlayEnemyDamaged(uint8_t state)
 {
-	ScopedTag tag("notify-damaged");
 	info << "Player damaged with state: " << state;
 	playDamagerNotification(state);
+}
+
+
+void Rifle::rifleShock(uint32_t delay)
+{
+	if (delay == 0)
+		return; // May be head sensor mistaked?
+
+	m_unshockTime = systemClock->getTime() + delay;
 }
 
 void Rifle::registerWeapon()

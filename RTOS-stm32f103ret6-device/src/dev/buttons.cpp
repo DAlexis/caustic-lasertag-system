@@ -66,7 +66,7 @@ bool ButtonManager::state()
 
 void ButtonManager::extiCallback(bool state)
 {
-	if (wasBounce()) return;
+	if (wasBounce() || !m_isEnabled) return;
 	uint32_t time = systemClock->getTime();
 	if (state == m_pressedState && m_isFirst == !m_pressedState && time - m_lastPressTime >= m_repeatPeriod) {
 		m_extiDetected = true;

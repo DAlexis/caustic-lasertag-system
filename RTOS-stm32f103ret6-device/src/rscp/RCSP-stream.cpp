@@ -89,7 +89,7 @@ uint16_t RCSPStream::send(
 	DeviceAddress target,
 	bool waitForAck,
 	PackageSendingDoneCallback doneCallback,
-	PackageTimings timings
+	PackageTimings&& timings
 )
 {
 	return RCSPModem::instance().send(
@@ -165,12 +165,12 @@ RCSPAggregator::ResultType RCSPMultiStream::addCall(OperationCode code)
 void RCSPMultiStream::send(
 		DeviceAddress target,
 		bool waitForAck,
-		PackageTimings timings
+		PackageTimings&& timings
 	)
 {
 	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
 	{
-		(*it)->send(target, waitForAck, nullptr, timings);
+		(*it)->send(target, waitForAck, nullptr, std::forward<PackageTimings>(timings));
 	}
 }
 

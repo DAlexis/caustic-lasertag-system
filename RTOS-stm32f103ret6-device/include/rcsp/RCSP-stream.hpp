@@ -32,7 +32,7 @@ public:
 	{
 		RCSPStream stream;
 		stream.addCall(code);
-		return stream.send(target, waitForAck, callback, timings);
+		return stream.send(target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
 	template <typename Type>
@@ -47,7 +47,7 @@ public:
 	{
 		RCSPStream stream;
 		stream.addCall(code, argument);
-		return stream.send(target, waitForAck, callback, timings);
+		return stream.send(target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
 	static PackageId remotePullValue(
@@ -60,7 +60,7 @@ public:
 	{
 		RCSPStream stream;
 		stream.addValue(code);
-		return stream.send(target, waitForAck, callback, timings);
+		return stream.send(target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
 	uint8_t* getStream();
@@ -94,7 +94,7 @@ public:
 		DeviceAddress target,
 		bool waitForAck = false,
 		PackageSendingDoneCallback doneCallback = nullptr,
-		PackageTimings timings = PackageTimings()
+		PackageTimings&& timings = PackageTimings()
 	);
 
 	void dispatch();
@@ -133,7 +133,7 @@ public:
 	void send(
 		DeviceAddress target,
 		bool waitForAck = false,
-		PackageTimings timings = PackageTimings()
+		PackageTimings&& timings = PackageTimings()
 	);
 
 	bool empty();

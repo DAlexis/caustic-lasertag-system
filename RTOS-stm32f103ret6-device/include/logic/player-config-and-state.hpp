@@ -44,7 +44,8 @@ public:
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, isHealable);
 
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, lifesCount);
-	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, Time,      	shockDelay);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, uint32_t,      shockDelayImmortal);
+	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, uint32_t,      shockDelayInactive);
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, preRespawnDelay);
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, postRespawnDelay);
 	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, UintParameter, autoRespawn);

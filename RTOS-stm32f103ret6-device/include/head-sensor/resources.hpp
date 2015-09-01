@@ -15,6 +15,7 @@ class HeadSensorPackageTimings
 {
 public:
 	PackageTimings killPlayer{20000000, 100000, 100000};
+	PackageTimings woundPlayer{20000000, 100000, 100000};
 };
 
 class BlinkPatterns

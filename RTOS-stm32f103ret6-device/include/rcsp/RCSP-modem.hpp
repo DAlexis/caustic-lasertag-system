@@ -94,6 +94,7 @@ struct Package
 	DeviceAddress target;
 	PackageDetails details;
 
+	/// payloadLength is 23 bytes
 	constexpr static uint16_t packageLength = NRF24L01Manager::payloadSize;
 	constexpr static uint16_t payloadLength = packageLength - sizeof(sender) - sizeof(target) - sizeof(details);
 

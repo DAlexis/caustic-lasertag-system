@@ -168,7 +168,7 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	//ScopedTag tag("shot-cb");
 	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage;
 	Time currentTime = systemClock->getTime();
-	if (currentTime - m_shockDelayBegin < playerConfig.shockDelay)
+	if (currentTime - m_shockDelayBegin < playerConfig.shockDelayImmortal)
 	{
 		info << "!! Shock time";
 	}
@@ -184,24 +184,18 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 		}
 
 		playerState.damage(damage);
-		if (damage != 0)
-		{
-			m_shockDelayBegin = systemClock->getTime();
-			weaponShock();
-		}
+
 		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent;
 
 		// If still is alive
 		if (playerState.isAlive())
 		{
-			m_leds.blink(blinkPatterns.wound);
-			for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+			if (damage != 0)
 			{
-				RCSPStream stream;
-				stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
-				stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent);
-				stream.send(*it, true, nullptr);
+				m_shockDelayBegin = systemClock->getTime();
+				weaponWoundAndShock();
 			}
+			m_leds.blink(blinkPatterns.wound);
 			notifyDamager(playerId, teamId, DamageNotification::injured);
 		} else {
 			//Player was killed
@@ -258,8 +252,7 @@ void HeadSensor::dieWeapons()
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		info << "Sending kill signal to weapon...";
-		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie, false);
-		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie);
+		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie, true, nullptr, std::move(headSensorPackageTimings.killPlayer));
 	}
 }
 
@@ -284,12 +277,18 @@ void HeadSensor::turnOffWeapons()
 	}
 }
 
-void HeadSensor::weaponShock()
+void HeadSensor::weaponWoundAndShock()
 {
 	info << "Weapons shock delay notification";
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleShock, playerConfig.shockDelay);
+		RCSPMultiStream stream;
+		// We have 23 bytes free in one stream (and should try to use only one)
+		stream.addCall(ConfigCodes::Rifle::Functions::rifleShock, playerConfig.shockDelayInactive); // 3b + 4b (16 free)
+		stream.addCall(ConfigCodes::Rifle::Functions::rifleWound); // 3b (13 free)
+		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent); // 3b + 2b (8 free)
+		stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent); // 3b + 2b (3 free)
+		stream.send(*it, true, std::move(headSensorPackageTimings.woundPlayer));
 	}
 }
 
@@ -306,7 +305,6 @@ void HeadSensor::sendHeartbeat()
 
 void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 {
-	ScopedTag tag("register-weapon");
 	info << "Registering weapon";
 	weaponAddress.print();
 	auto it = playerState.weaponsList.weapons.find(weaponAddress);
@@ -330,7 +328,6 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 
 void HeadSensor::setTeam(uint8_t teamId)
 {
-	ScopedTag tag("set-team");
 	info << "Setting team id";
 	playerConfig.teamId = teamId;
 	m_leds.setColor(getTeamColor());

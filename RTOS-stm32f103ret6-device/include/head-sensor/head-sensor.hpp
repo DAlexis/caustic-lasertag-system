@@ -58,7 +58,7 @@ private:
 	void respawnWeapons();
 	void turnOffWeapons();
 	void notifyDamager(PlayerMT2Id player, uint8_t damagerTeam, uint8_t state = 0);
-	void weaponShock();
+	void weaponWoundAndShock();
 
 	void sendHeartbeat();
 

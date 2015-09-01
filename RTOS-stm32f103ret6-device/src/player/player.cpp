@@ -73,7 +73,8 @@ void PlayerConfiguration::setDefault()
 	isHealable = 1;
 
 	lifesCount = UINT16_MAX;
-	shockDelay = 500000;
+	shockDelayImmortal = 500000;
+	shockDelayInactive = 500000;
 	preRespawnDelay = 0;
 	postRespawnDelay = 0;
 	autoRespawn = 0;

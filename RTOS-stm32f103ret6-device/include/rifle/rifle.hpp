@@ -61,8 +61,10 @@ public:
 
 	/// Heartbeat head sensor -> rifle
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
+	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound);
 
 	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged, uint8_t);      ///< Play enemy damaged sound
+	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock, uint32_t);      ///< Play enemy damaged sound
 
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;
@@ -116,6 +118,7 @@ private:
 	void playDamagerNotification(uint8_t state);
 	void scheduleDamageNotification(uint8_t state);
 	void checkHeartBeat();
+	bool isShocked();
 
 	bool m_isEnabled = true;
 
@@ -137,20 +140,24 @@ private:
 	SoundPlayer m_noMagazines;
 	SoundPlayer m_respawnSound;
 	SoundPlayer m_dieSound;
+	SoundPlayer m_woundSound;
 	SoundPlayer m_enemyDamaged;
 	SoundPlayer m_enemyKilled;
 	SoundPlayer m_friendDamaged;
 	SoundPlayer m_noHeartbeat;
+	SoundPlayer m_noShockedShooting;
 
 	PackageId m_registerWeaponPAckageId = 0;
 
 	uint8_t m_state = WeaponState::ready;
 	uint8_t m_currentMagazineNumber = 0; ///< zero means no magazine
 
-	TaskCycled m_updateDisplayTask;
 	Interrogator m_buttonsInterrogator;
 	TasksPool m_tasksPool;
 	Time m_lastHSHeartBeat = 0;
+
+	/// If current time > m_unshockTime, player is not shocked now
+	Time m_unshockTime = 0;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

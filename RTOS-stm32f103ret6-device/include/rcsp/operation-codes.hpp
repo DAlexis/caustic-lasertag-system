@@ -106,7 +106,9 @@ namespace ConfigCodes
 			FUNC_CODE(rifleReset,         203)
 			FUNC_CODE(rifleRespawn,       204)
 			FUNC_CODE(rifleDie,           205)
-			FUNC_CODE(rifleShock,         206)
+			FUNC_CODE(rifleWound,         206)
+			FUNC_CODE(rifleShock,         207)
+
 			FUNC_CODE(riflePlayEnemyDamaged,      210)
 			FUNC_CODE(headSensorToRifleHeartbeat, 220)
 		}
@@ -139,10 +141,13 @@ namespace ConfigCodes
 
 			PAR_CODE(selfShotCoeff,         1016)
 
-			PAR_CODE(shockDelay,        1020)
-			PAR_CODE(preRespawnDelay,   1021)
-			PAR_CODE(postRespawnDelay,  1022)
-			PAR_CODE(autoRespawn,       1023)
+
+			PAR_CODE(preRespawnDelay,    1021)
+			PAR_CODE(postRespawnDelay,   1022)
+			PAR_CODE(autoRespawn,        1023)
+			PAR_CODE(shockDelayImmortal, 1024)
+			PAR_CODE(shockDelayInactive, 1025)
+
 
 			PAR_CODE(plyerId,        1030)
 			PAR_CODE(plyerMT2Id,     1031)
