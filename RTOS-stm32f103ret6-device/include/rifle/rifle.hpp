@@ -10,13 +10,13 @@
 
 #include "rifle/rifle-config-and-state.hpp"
 #include "rifle/resources.hpp"
-#include "logic/device.hpp"
+#include "rifle/rifle-base-types.hpp"
+#include "device/device.hpp"
 #include "rcsp/RCSP-modem.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/wav-player.hpp"
 #include "core/os-wrappers.hpp"
-#include "logic/head-sensor-rifle-communication.hpp"
 #include "core/device-initializer.hpp"
 
 #include <stdint.h>
@@ -28,16 +28,16 @@ public:
 	void syncAll();
 	void print();
 
-	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, healthMax);
-	PAR_ST(ConfigCodes::HeadSensor::Configuration, UintParameter, armorMax);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthMax);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorMax);
 
-	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, healthCurrent);
-	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, armorCurrent);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, healthCurrent);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, armorCurrent);
 
-	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, lifesCountCurrent);
-	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, pointsCount);
-	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, killsCount);
-	PAR_ST(ConfigCodes::HeadSensor::State, UintParameter, deathsCount);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, killsCount);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount);
 
 private:
 	const DeviceAddress* m_headSensorAddress;
@@ -63,8 +63,8 @@ public:
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
 	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound);
 
-	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged, uint8_t);      ///< Play enemy damaged sound
-	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock, uint32_t);      ///< Play enemy damaged sound
+	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged);      ///< Play enemy damaged sound
+	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);      ///< Play enemy damaged sound
 
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;

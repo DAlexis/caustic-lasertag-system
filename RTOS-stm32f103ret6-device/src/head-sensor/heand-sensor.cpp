@@ -305,8 +305,7 @@ void HeadSensor::sendHeartbeat()
 
 void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 {
-	info << "Registering weapon";
-	weaponAddress.print();
+	info << "Registering weapon " << ADDRESS_TO_STREAM(weaponAddress);
 	auto it = playerState.weaponsList.weapons.find(weaponAddress);
 	if (it == playerState.weaponsList.weapons.end())
 	{

@@ -8,6 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_
 
+#include "dev/MT2-base-types.hpp"
 #include "hal/fire-emitter.hpp"
 #include "hal/io-pins.hpp"
 #include "core/os-wrappers.hpp"
@@ -19,8 +20,6 @@
 // unsigned int teamId, unsigned int playerId, unsigned int damage
 using MilesTag2ShotCallback = std::function<void(unsigned int /*teamId*/, unsigned int /*playerId*/, unsigned int /*damage*/)>;
 
-using PlayerMT2Id = uint8_t;
-
 class MilesTag2Transmitter
 {
 public:
@@ -29,7 +28,7 @@ public:
 
 	void init(unsigned int fireEmitterNumber = 0);
 	void setPlayerIdReference(PlayerMT2Id& playerId);
-	void setTeamIdReference(uint8_t& teamId);
+	void setTeamIdReference(TeamMT2Id& teamId);
 
 	/// Set output power in percents. This function may conflict with setChannel()
 	void setPower(unsigned int percent);
@@ -41,7 +40,7 @@ public:
 	// Standard commands
 	void shot(uint8_t damage);
 	void addHealth(int16_t value);
-	void setTeam(uint8_t teamId);
+	void setTeam(TeamMT2Id teamId);
 	void addRounds(uint8_t value);
 	void adminKill();
 	void pauseOrUnpause();

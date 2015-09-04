@@ -6,7 +6,7 @@
  */
 
 #include "head-sensor/resources.hpp"
-#include "logic/player-config-and-state.hpp"
+#include "head-sensor/player-config-and-state.hpp"
 #include "core/logging.hpp"
 
 //////////////////////

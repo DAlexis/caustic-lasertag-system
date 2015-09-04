@@ -8,6 +8,7 @@
 #ifndef LOGIC_CONFIGURATION_HPP_
 #define LOGIC_CONFIGURATION_HPP_
 
+#include "rcsp/RCSP-base-types.hpp"
 #include "utils/macro.hpp"
 #include "core/string-utils.hpp"
 #include "core/result-code.hpp"
@@ -41,49 +42,33 @@
  *   11 - reserved
  */
 
-/** Create variable (in any class) and connect in to configs aggregator.
+#define RESTORABLE      true
+#define NOT_RESTORABLE  false
+
+/** Create variable (in any class) and connect it to configs aggregator.
  *  ST = Simple Types, that can be parsed from string using StringParser<Type>::parse(str)
  */
-#define PAR_ST(NameSpace, Type, name)          Type name; \
-                                               StandartStrParseParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
 
-/** The same as PAR_ST, but R means 'restrable'
- *
- */
-#define PAR_ST_R(NameSpace, Type, name)       Type name; \
-                                              StandartStrParseParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name, true}
+#define PAR_ST(restorable, NameSpace, name)   NameSpace::name##Type name; \
+                                              StandartStrParseParameterAccessor<NameSpace::name##Type> name##Accessor \
+                                                  {NameSpace::name, STRINGIFICATE(name), &name, restorable}
 
 /** The same as PAR_ST, but string parsing using convertFromString function
  *  CL = CLass
  */
-#define PAR_CL(NameSpace, Type, name)         Type name; \
-                                              CustomStrParseParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name}
-
-/** The same as PAR_CL, but R means 'restorable'
- *
- */
-#define PAR_CL_R(NameSpace, Type, name)      Type name; \
-                                             CustomStrParseParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name, true}
+#define PAR_CL(restorable, NameSpace, name)   NameSpace::name##Type name; \
+                                              CustomStrParseParameterAccessor<NameSpace::name##Type> name##Accessor \
+                                                  {NameSpace::name, STRINGIFICATE(name), &name, restorable}
 
 /** The same as PAR_CL, but SS means 'Self serializing'
  *  This macro should be used with classes that has methods
  *  'serialize' and 'deseriaize'
  *
- *  Also no str parsing avaliable for this macro
+ *  Also no str parsing avaliable for typed this macro applied to
  */
-#define PAR_CL_SS(NameSpace, Type, name)     Type name; \
-                                             SelfSerializingParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name, false}
-
-/** The same as PAR_CL_R, but SS means 'Self serializing'
- *  This macro should be used with classes that has methods
- *  'serialize' and 'deseriaize'
- *  R means 'restorable'
- *
- *  Also no str parsing avaliable for this macro
- */
-#define PAR_CL_SS_R(NameSpace, Type, name)   Type name; \
-                                             SelfSerializingParameterAccessor<Type> name##Accessor {NameSpace::name, STRINGIFICATE(name), &name, true}
-
+#define PAR_CL_SS(restorable, NameSpace, name) NameSpace::name##Type name; \
+                                               SelfSerializingParameterAccessor<NameSpace::name##Type> name##Accessor \
+                                                   {NameSpace::name, STRINGIFICATE(name), &name, restorable}
 
 
 /*
@@ -92,17 +77,17 @@
                                                        DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, textName, &name}
 */
 /// Create function in class with 1 parameter and connect it to configs aggregator
-#define FUNCION_1P(NameSpace, ClassName, functionName, ArgType)     void functionName(ArgType argument); \
-                                                                    DefaultFunctionAccessor<ArgType> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
-                                                                    std::bind(&ClassName::functionName, this, std::placeholders::_1)}
+#define FUNCION_1P(NameSpace, ClassName, functionName)    void functionName(NameSpace::functionName##Arg1Type argument); \
+                                                          DefaultFunctionAccessor<NameSpace::functionName##Arg1Type> \
+                                                              functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
+                                                                  std::bind(&ClassName::functionName, this, std::placeholders::_1)}
 
 /// Create function in class with no parameters and connect it to configs aggregator
 #define FUNCION_NP(NameSpace, ClassName, functionName)     void functionName(); \
                                                            DefaultFunctionAccessor<> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
                                                            std::bind(&ClassName::functionName, this)}
 
-using OperationSize = uint8_t;
-using OperationCode = uint16_t;
+
 
 
 /// Any kind of object that can read data from stream and write data to stream
@@ -436,7 +421,7 @@ public:
 	}
 };
 
-/// Realization of IOperationAccessor for simple typed parameters
+/// Realization of IOperationAccessor for parameters that have convertFromString(...) method
 template<class Type>
 class CustomStrParseParameterAccessor : public ParameterAccessorBase<Type>
 {

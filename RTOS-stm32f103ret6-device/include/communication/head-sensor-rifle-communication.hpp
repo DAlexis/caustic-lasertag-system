@@ -8,6 +8,7 @@
 #ifndef INCLUDE_LOGIC_HEAD_SENSOR_RIFLE_COMMUNICATION_HPP_
 #define INCLUDE_LOGIC_HEAD_SENSOR_RIFLE_COMMUNICATION_HPP_
 
+#include "dev/MT2-base-types.hpp"
 
 struct DamageNotification
 {

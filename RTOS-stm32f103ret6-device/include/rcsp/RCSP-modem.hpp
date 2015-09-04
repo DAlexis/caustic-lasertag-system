@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 
 #include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/RCSP-base-types.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
@@ -45,46 +46,8 @@ struct PackageDetails
 };
 #pragma pack(pop)
 
-#define ADDRESS_TO_STREAM(addr)      (addr).address[0] << "-" << (addr).address[1] << "-" << (addr).address[2]
 
-struct DeviceAddress
-{
-	constexpr static uint8_t size = 3;
-	uint8_t address[size];
 
-	DeviceAddress(uint8_t a0 = 1, uint8_t a1 = 1, uint8_t a2 = 1)
-		{ address[0] = a0; address[1] = a1, address[2] = a2; }
-
-	void print() { printf("%u-%u-%u\n", address[0], address[1], address[2]); }
-
-	void convertFromString(const char* str);
-
-	// Operators
-	inline bool operator==(const DeviceAddress& other) const
-	{
-		for(int i=0; i<size; i++)
-			if (address[i] != other.address[i])
-				return false;
-		return true;
-	}
-
-	inline bool operator!=(const DeviceAddress& other) const
-	{
-		return not (*this == other);
-	}
-
-	inline bool operator<(const DeviceAddress& other) const
-	{
-		for(int i=0; i<size; i++)
-		{
-			if (address[i] < other.address[i])
-				return true;
-			if (address[i] > other.address[i])
-				return false;
-		}
-		return false;
-	}
-};
 
 #pragma pack(push, 1)
 struct Package
@@ -152,7 +115,7 @@ public:
 
 	void registerBroadcast(const DeviceAddress& address);
 
-	PAR_CL(ConfigCodes::AnyDevice::Configuration, DeviceAddress, devAddr);
+	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr);
 
 	SIGLETON_IN_CLASS(RCSPModem);
 private:

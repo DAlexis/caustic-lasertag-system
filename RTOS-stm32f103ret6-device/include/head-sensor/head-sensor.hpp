@@ -8,15 +8,15 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 
-#include <head-sensor/resources.hpp>
-#include "logic/player-config-and-state.hpp"
-#include "logic/device.hpp"
+#include "head-sensor/resources.hpp"
+#include "head-sensor/player-config-and-state.hpp"
+#include "device/device.hpp"
 #include "head-sensor/kill-zones.hpp"
+#include "head-sensor/head-sensor-base-types.hpp"
 #include "rcsp/RCSP-modem.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
 #include "rcsp/broadcast.hpp"
 #include "dev/rgb-leds.hpp"
-#include "logic/head-sensor-rifle-communication.hpp"
 #include "core/device-initializer.hpp"
 
 #include <set>
@@ -39,12 +39,12 @@ public:
 	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
 	FUNCION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults);
 
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon, DeviceAddress);
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam, uint8_t);
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon);
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam);
 
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth, int16_t);
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth);
 
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager, DamageNotification);      ///< Feedback when player was damaged or killed
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager);      ///< Feedback when player was damaged or killed
 private:
 
 	constexpr static uint32_t heartbeatPeriod = 2000000;

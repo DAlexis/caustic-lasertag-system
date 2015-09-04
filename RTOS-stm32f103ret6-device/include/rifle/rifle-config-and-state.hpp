@@ -19,8 +19,8 @@ public:
 	RifleOwnerConfiguration() : plyerMT2Id(1), teamId(0)
 	{}
 
-	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, uint8_t, plyerMT2Id);
-	PAR_ST_R(ConfigCodes::HeadSensor::Configuration, uint8_t, teamId);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerMT2Id);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, teamId);
 };
 
 class RifleConfiguration
@@ -32,41 +32,41 @@ public:
 	bool isAutoReloading();
 	bool isReloadingByDistortingTheBolt();
 
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, slot);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, weightInSlot);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, slot);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, weightInSlot);
 
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, damageMin);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, damageMax);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, uint32_t , firePeriod);
-	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, shotDelay);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, jamProb);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, criticalProb);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, criticalCoeff);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, damageMin);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, damageMax);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, firePeriod);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, shotDelay);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, jamProb);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalProb);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalCoeff);
 
-	PAR_ST(ConfigCodes::Rifle::Configuration, bool, semiAutomaticAllowed);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, bool, automaticAllowed);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration,semiAutomaticAllowed);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, automaticAllowed);
 	
-	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadIsMagazineSmart);
-	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadNeedMagDisconnect);
-	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadNeedMagChange);
-	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadNeedBolt);
-	PAR_ST(ConfigCodes::Rifle::Configuration, bool, reloadPlaySound);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadIsMagazineSmart);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedMagDisconnect);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedMagChange);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedBolt);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadPlaySound);
 
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountStart);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, magazinesCountMax);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, magazinesCountStart);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, magazinesCountMax);
 
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineStart);
-	PAR_ST_R(ConfigCodes::Rifle::Configuration, UintParameter, bulletsInMagazineMax);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, bulletsInMagazineStart);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, bulletsInMagazineMax);
 
-	PAR_ST(ConfigCodes::Rifle::Configuration, uint32_t, reloadingTime);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadingTime);
 
-	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, heatPerShot);
-	PAR_ST(ConfigCodes::Rifle::Configuration, UintParameter, heatLossPerSec);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, heatPerShot);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, heatLossPerSec);
 
-	PAR_ST(ConfigCodes::Rifle::Configuration, uint32_t, fireFlashPeriod);
-	PAR_ST(ConfigCodes::Rifle::Configuration, uint32_t, fireVibroPeriod);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, fireFlashPeriod);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, fireVibroPeriod);
 
-	PAR_CL(ConfigCodes::Rifle::Configuration, DeviceAddress, headSensorAddr);
+	PAR_CL(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, headSensorAddr);
 };
 
 class RifleState
@@ -74,9 +74,9 @@ class RifleState
 public:
 	RifleState(RifleConfiguration* config);
 	void reset();
-	PAR_ST_R(ConfigCodes::Rifle::State, UintParameter, bulletsInMagazineCurrent);
-	PAR_ST_R(ConfigCodes::Rifle::State, UintParameter, magazinesCountCurrent);
-	PAR_ST_R(ConfigCodes::Rifle::State, UintParameter, heatnessCurrent);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, bulletsInMagazineCurrent);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, magazinesCountCurrent);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, heatnessCurrent);
 
 	uint32_t lastReloadTime;
 
