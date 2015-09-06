@@ -69,11 +69,11 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, weightInSlot,   2)
 			PAR_CODE(UintParameter, damageMin,      5)
 			PAR_CODE(UintParameter, damageMax,      6)
-			PAR_CODE(TimeInterval, firePeriod,     7)
-			PAR_CODE(TimeInterval, shotDelay,      8)
-			PAR_CODE(FloatParameter, jamProb,        9)
-			PAR_CODE(FloatParameter, criticalProb,   10)
-			PAR_CODE(FloatParameter, criticalCoeff,  11)
+			PAR_CODE(TimeInterval, firePeriod,      7)
+			PAR_CODE(TimeInterval, shotDelay,       8)
+			PAR_CODE(FloatParameter, jamProb,       9)
+			PAR_CODE(FloatParameter, criticalProb,  10)
+			PAR_CODE(FloatParameter, criticalCoeff, 11)
 
 			/// Are these bools need to be grouped to one variable with bit fields?
 			PAR_CODE(bool, semiAutomaticAllowed, 12) ///< Is no need in bolt disorting between shots
@@ -99,8 +99,8 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, heatPerShot,              40)
 			PAR_CODE(UintParameter, heatLossPerSec,           41)
 
-			PAR_CODE(TimeInterval, fireFlashPeriod,          50)
-			PAR_CODE(TimeInterval, fireVibroPeriod,          51)
+			PAR_CODE(TimeInterval, fireFlashPeriod,           50)
+			PAR_CODE(TimeInterval, fireVibroPeriod,           51)
 
 			PAR_CODE(DeviceAddress, headSensorAddr,           80)
 
@@ -123,10 +123,10 @@ namespace ConfigCodes
 			FUNC_CODE_NP(rifleRespawn,       204)
 			FUNC_CODE_NP(rifleDie,           205)
 			FUNC_CODE_NP(rifleWound,         206)
-			FUNC_CODE_1P(rifleShock, TimeInterval,      207)
+			FUNC_CODE_1P(rifleShock, TimeInterval,        207)
 
-			FUNC_CODE_1P(riflePlayEnemyDamaged, uint8_t,     210)
-			FUNC_CODE_NP(headSensorToRifleHeartbeat, 220)
+			FUNC_CODE_1P(riflePlayEnemyDamaged, uint8_t,  210)
+			FUNC_CODE_NP(headSensorToRifleHeartbeat,      220)
 		}
 	}
 
@@ -135,14 +135,14 @@ namespace ConfigCodes
 		namespace Configuration
 		{
 			/// Player configuration
-			PAR_CODE(UintParameter, healthMax,      1000)
-			PAR_CODE(UintParameter, armorMax,       1001)
-			PAR_CODE(UintParameter, healthStart,       1003)
-			PAR_CODE(UintParameter, armorStart,       1004)
+			PAR_CODE(UintParameter, healthMax,   1000)
+			PAR_CODE(UintParameter, armorMax,    1001)
+			PAR_CODE(UintParameter, healthStart, 1003)
+			PAR_CODE(UintParameter, armorStart,  1004)
 
-			PAR_CODE(FloatParameter, isHealable,   1010)
+			PAR_CODE(FloatParameter, isHealable, 1010)
 
-			PAR_CODE(UintParameter, lifesCount,   1011)
+			PAR_CODE(UintParameter, lifesCount,  1011)
 
 			/// Effectivity of armor
 			PAR_CODE(FloatParameter, armorCoeffStart,  1012)
@@ -154,21 +154,21 @@ namespace ConfigCodes
 			PAR_CODE(FloatParameter, shotsCoeffStart,  1014)
 
 			/// Multiplied by friendly fire
-			PAR_CODE(FloatParameter, frendlyFireCoeff,      1015)
+			PAR_CODE(FloatParameter, frendlyFireCoeff, 1015)
 
-			PAR_CODE(FloatParameter, selfShotCoeff,         1016)
+			PAR_CODE(FloatParameter, selfShotCoeff,    1016)
 
 
 			PAR_CODE(TimeInterval, preRespawnDelay,    1021)
 			PAR_CODE(TimeInterval, postRespawnDelay,   1022)
-			PAR_CODE(bool, autoRespawn,        1023)
+			PAR_CODE(bool,         autoRespawn,        1023)
 			PAR_CODE(TimeInterval, shockDelayImmortal, 1024)
 			PAR_CODE(TimeInterval, shockDelayInactive, 1025)
 
 
 			PAR_CODE(UintParameter, plyerId,        1030)
-			PAR_CODE(PlayerMT2Id, plyerMT2Id,     1031)
-			PAR_CODE(TeamMT2Id, teamId,         1032)
+			PAR_CODE(PlayerMT2Id,   plyerMT2Id,     1031)
+			PAR_CODE(TeamMT2Id,     teamId,         1032)
 
 			PAR_CODE(UintParameter, slot1MaxWeight,    1041)
 			PAR_CODE(UintParameter, slot2MaxWeight,    1042)

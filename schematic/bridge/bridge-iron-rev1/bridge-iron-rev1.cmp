@@ -1,0 +1,87 @@
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Сб 05 сен 2015 15:20:54
+
+BeginCmp
+TimeStamp = /55EADD1A;
+Reference = C1;
+ValeurCmp = C;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EAD187;
+Reference = C2;
+ValeurCmp = CP1;
+IdModule  = c_tant_C;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EAD13E;
+Reference = P1;
+ValeurCmp = MCU1;
+IdModule  = pin_array_10x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EADB8E;
+Reference = P2;
+ValeurCmp = Bluetooth;
+IdModule  = PIN_ARRAY-6X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EADADC;
+Reference = P3;
+ValeurCmp = UART1;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EAD14D;
+Reference = P4;
+ValeurCmp = MCU2;
+IdModule  = pin_array_10x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EAD994;
+Reference = P5;
+ValeurCmp = NRF24L01;
+IdModule  = pin_array_4x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EAD16C;
+Reference = Power1;
+ValeurCmp = CONN_2;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EADD1E;
+Reference = Q1;
+ValeurCmp = MOSFET_P;
+IdModule  = SOT23GDS;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EAD8EA;
+Reference = R1;
+ValeurCmp = R;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EAD8F9;
+Reference = R2;
+ValeurCmp = R;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55EAD15D;
+Reference = U1;
+ValeurCmp = LINSTAB-(1-GND/ADJ,2-OUT,3-IN);
+IdModule  = SOT223;
+EndCmp
+
+EndListe
