@@ -8,7 +8,7 @@
 #include "rifle/resources.hpp"
 #include "rifle/rifle.hpp"
 #include "rcsp/RCSP-stream.hpp"
-#include "rcsp/broadcast.hpp"
+#include "network/broadcast.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
@@ -313,16 +313,17 @@ void Rifle::init(const Pinout& pinout)
 	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
 	m_mt2Transmitter.setChannel(3);
 
-	info << "RCSP modem initialization";
-	RCSPModem::instance().init();
-
 	info << "Looking for sound files...";
 	initSounds();
 
-	info << "Other initialization";
+	info << "RCSP modem initialization";
+	RCSPModem::instance().setAddress(deviceConfig.devAddr);
+	RCSPModem::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
 	RCSPModem::instance().registerBroadcast(broadcast.any);
 	RCSPModem::instance().registerBroadcast(broadcast.rifles);
+	RCSPModem::instance().init();
 
+	info << "Other initialization";
 	rifleTurnOff();
 
 	m_tasksPool.add(
@@ -735,7 +736,7 @@ void Rifle::registerWeapon()
 	m_registerWeaponPAckageId = RCSPStream::remoteCall(
 			config.headSensorAddr,
 			ConfigCodes::HeadSensor::Functions::registerWeapon,
-			RCSPModem::instance().devAddr,
+			deviceConfig.devAddr,
 			true,
 			[this](PackageId packageId, bool result) -> void
 			{

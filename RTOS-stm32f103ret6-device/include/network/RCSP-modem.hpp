@@ -8,9 +8,9 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 
-#include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/RCSP-base-types.hpp"
-#include "rcsp/operation-codes.hpp"
+#include "network/modem-base-types.hpp"
+
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
 #include "utils/macro.hpp"
@@ -19,11 +19,6 @@
 #include <list>
 #include <map>
 #include <set>
-
-using PackageId = uint16_t;
-
-using PackageSendingDoneCallback = std::function<void(PackageId /*package_id*/, bool /*was successfully sent*/)>;
-using DataRXCallback = std::function<void(uint8_t* /*data*/, uint16_t dataSize)>;
 
 #pragma pack(push, 1)
 struct PackageDetails
@@ -40,14 +35,11 @@ struct PackageDetails
 		needAck = 0;
 	}
 
-	uint16_t packageId;
+	PackageId packageId;
 	uint8_t TTL : 7;
 	uint8_t needAck : 1;
 };
 #pragma pack(pop)
-
-
-
 
 #pragma pack(push, 1)
 struct Package
@@ -65,26 +57,6 @@ struct Package
 };
 #pragma pack(pop)
 
-struct PackageTimings
-{
-	constexpr static uint32_t defaultTimeout = 20000000;
-	constexpr static uint32_t defaultResendTime = 500000;
-	constexpr static uint32_t defaultResendTimeDelta = 100000;
-
-	PackageTimings(
-			bool _infiniteResend = false,
-			uint32_t _timeout = defaultTimeout,
-			uint32_t _resendTime = defaultResendTime,
-			uint32_t _resendTimeDelta = defaultResendTimeDelta
-			) : infiniteResend(_infiniteResend), timeout(_timeout), resendTime(_resendTime), resendTimeDelta(_resendTimeDelta)
-	{ }
-
-	bool infiniteResend = false;
-	uint32_t timeout = defaultTimeout;
-	uint32_t resendTime = defaultResendTime;
-	uint32_t resendTimeDelta = defaultResendTimeDelta;
-};
-
 class RCSPModem
 {
 public:
@@ -94,6 +66,8 @@ public:
 
 	RCSPModem();
 	void init();
+	void setAddress(const DeviceAddress& address);
+	void setPackageReceiver(ReceivePackageCallback callback);
 
 	/**
 	 * Send package and optionaly wait for acknowledgement
@@ -114,8 +88,6 @@ public:
 	);
 
 	void registerBroadcast(const DeviceAddress& address);
-
-	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr);
 
 	SIGLETON_IN_CLASS(RCSPModem);
 private:
@@ -138,10 +110,11 @@ private:
 #pragma pack(push, 1)
 	struct AckPayload
 	{
+		constexpr static uint16_t acknoledgementCode = 0xFFFF;
 		uint8_t size = sizeof(uint16_t);
-		uint16_t operationCode = ConfigCodes::acknoledgement;
+		uint16_t operationCode = acknoledgementCode;
 		uint16_t packageId;
-		bool isAck() { return operationCode == ConfigCodes::acknoledgement; }
+		bool isAck() { return operationCode == acknoledgementCode; }
 	};
 #pragma pack(pop)
 
@@ -173,6 +146,9 @@ private:
 	std::list<uint16_t> m_lastReceivedIds;
 
 	std::set<DeviceAddress> m_broadcasts;
+
+	const DeviceAddress* m_selfAddress = nullptr;
+	ReceivePackageCallback m_receivePackageCallback = nullptr;
 
 	TaskCycled m_modemTask{std::bind(&RCSPModem::interrogate, this)};
 };

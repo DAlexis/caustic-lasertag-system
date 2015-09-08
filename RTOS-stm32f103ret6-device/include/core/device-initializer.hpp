@@ -89,6 +89,7 @@ public:
 
 	void initHW();
 	IAnyDevice* initDevice(const char* filename);
+	bool isSdcardOk() const;
 
 private:
 
@@ -97,7 +98,7 @@ private:
 	void initFatFS();
 	void initClock();
 	FATFS m_fatfs;
-
+	bool m_fatfsSuccess = false;
 };
 
 

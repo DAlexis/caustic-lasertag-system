@@ -11,7 +11,6 @@
 #include <stdint.h>
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
-#include "rcsp/RCSP-modem.hpp"
 
 class RifleOwnerConfiguration
 {

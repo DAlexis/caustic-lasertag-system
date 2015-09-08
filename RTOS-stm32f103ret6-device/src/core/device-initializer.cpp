@@ -11,6 +11,7 @@
 #include "hal/io-pins.hpp"
 #include "head-sensor/head-sensor.hpp"
 #include "rifle/rifle.hpp"
+#include "bluetooth-bridge/bluetooth-bridge.hpp"
 #include "cmsis_os.h"
 #include "fatfs.h"
 #include <stdio.h>
@@ -91,37 +92,45 @@ void DeviceInitializer::initHW()
 
 IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 {
-	IniParcer* parcer = new IniParcer;
 	IAnyDevice* resultDevice = nullptr;
-	parcer->setCallback(
-		[&resultDevice] (const char* key, const char* value)
-		{
-			if (resultDevice != nullptr)
-			{
-				warning << "Config file should contain only ONE device_type record!";
-				return;
-			}
-			if (0 == strcmp(key, "device_type"))
-			{
-				if (0 == strcmp(value, "head_sensor"))
-					resultDevice = new HeadSensor;
-				else if (0 == strcmp(value, "rifle"))
-					resultDevice = new Rifle;
-				else
-					resultDevice = nullptr;
-			}
-		}
-	);
-	Result res = parcer->parseFile(filename);
-	if (!res)
+	if (isSdcardOk())
 	{
-		error << "Error while reading " << filename << ": " << res.errorText;
+		info << "Detecting device type using device.ini";
+		// We can read device type from config file
+		IniParcer* parcer = new IniParcer;
+		parcer->setCallback(
+			[&resultDevice] (const char* key, const char* value)
+			{
+				if (resultDevice != nullptr)
+				{
+					warning << "Config file should contain only ONE device_type record!";
+					return;
+				}
+				if (0 == strcmp(key, "device_type"))
+				{
+					if (0 == strcmp(value, "head_sensor"))
+						resultDevice = new HeadSensor;
+					else if (0 == strcmp(value, "rifle"))
+						resultDevice = new Rifle;
+					else
+						resultDevice = nullptr;
+				}
+			}
+		);
+		Result res = parcer->parseFile(filename);
+		if (!res)
+		{
+			error << "Error while reading " << filename << ": " << res.errorText;
+		}
+		delete parcer;
+	} else {
+		info << "SD-card unavaliable, device type is bluetooth-bridge";
+		resultDevice = new BluetoothBridge;
 	}
-	delete parcer;
 
 	if (resultDevice == nullptr)
 	{
-		error << "Fatal error: unknown device type, aborting...";
+		error << "Fatal error: unknown device type, aborting...\n";
 		for (;;);
 	}
 
@@ -181,9 +190,20 @@ void DeviceInitializer::initFatFS()
 	info << "Mounting file system...";
 	FRESULT res = f_mount(&m_fatfs, "", 1);
 	if (res == FR_OK)
+	{
 		info << "File system succesfuly mounted";
+		m_fatfsSuccess = true;
+	}
 	else
+	{
 		error << "Error while mounting file system: " << res;
+		m_fatfsSuccess = false;
+	}
+}
+
+bool DeviceInitializer::isSdcardOk() const
+{
+	return m_fatfsSuccess;
 }
 
 void DeviceInitializer::initClock()

@@ -24,6 +24,19 @@ void Kernel::yeld()
 		taskYIELD();
 }
 
+void Kernel::assert(bool shouldBeTrue, const char* message)
+{
+	if (shouldBeTrue)
+		return;
+
+	error << "Fatal error: " << message;
+	if (isRunning())
+	{
+		/// @todo Add here code to stop FreeRTOS
+	}
+	for (;;) ;
+}
+
 void TaskOnce::runTaskOnce(void const* pTask)
 {
 	TaskOnce *task = reinterpret_cast<TaskOnce*> (const_cast<void*>(pTask));

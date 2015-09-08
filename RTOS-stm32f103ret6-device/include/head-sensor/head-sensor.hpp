@@ -13,9 +13,9 @@
 #include "device/device.hpp"
 #include "head-sensor/kill-zones.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
-#include "rcsp/RCSP-modem.hpp"
+#include "rcsp/operation-codes.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
-#include "rcsp/broadcast.hpp"
+#include "network/broadcast.hpp"
 #include "dev/rgb-leds.hpp"
 #include "core/device-initializer.hpp"
 
@@ -30,6 +30,7 @@ public:
 	void setDafaultPinout(Pinout& pinout);
 	bool checkPinout(const Pinout& pinout);
 
+	DeviceConfiguration deviceConfig;
 	PlayerConfiguration playerConfig;
 	PlayerState playerState{&playerConfig};
 	//DeviceParameters device;

@@ -8,7 +8,7 @@
 #ifndef INCLUDE_RCSP_BROADCAST_HPP_
 #define INCLUDE_RCSP_BROADCAST_HPP_
 
-#include "rcsp/RCSP-modem.hpp"
+#include "network/modem-base-types.hpp"
 
 class Broadcast
 {

@@ -12,7 +12,7 @@
 #include "rifle/resources.hpp"
 #include "rifle/rifle-base-types.hpp"
 #include "device/device.hpp"
-#include "rcsp/RCSP-modem.hpp"
+#include "rcsp/operation-codes.hpp"
 #include "dev/buttons.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "dev/wav-player.hpp"
@@ -66,6 +66,7 @@ public:
 	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged);      ///< Play enemy damaged sound
 	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);      ///< Play enemy damaged sound
 
+	DeviceConfiguration deviceConfig;
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;
 	RifleState state{&config};

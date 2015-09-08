@@ -5,6 +5,6 @@
  *      Author: alexey
  */
 
-#include "rcsp/broadcast.hpp"
+#include "network/broadcast.hpp"
 
 Broadcast broadcast;

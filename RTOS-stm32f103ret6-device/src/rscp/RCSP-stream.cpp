@@ -5,7 +5,6 @@
  *      Author: alexey
  */
 
-#include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "core/string-utils.hpp"
 #include "fatfs.h"
@@ -205,3 +204,16 @@ DetailedResult<FRESULT> RCSPMultiStream::writeToFile(FIL* file)
 	}
 }
 
+
+ReceivePackageCallback RCSPMultiStream::getPackageReceiver()
+{
+	return [](DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+	{
+		RCSPMultiStream answerStream;
+		RCSPAggregator::instance().dispatchStream(payload, payloadLength, &answerStream);
+		if (!answerStream.empty())
+		{
+			answerStream.send(sender, true);
+		}
+	};
+}

@@ -9,7 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_
 
 #include "rcsp/RCSP-aggregator.hpp"
-#include "rcsp/RCSP-modem.hpp"
+#include "network/RCSP-modem.hpp"
 #include "fatfs.h"
 #include "core/result-code.hpp"
 #include <list>
@@ -139,6 +139,8 @@ public:
 	bool empty();
 
 	void dispatch();
+
+	static ReceivePackageCallback getPackageReceiver();
 
 	DetailedResult<FRESULT> writeToFile(FIL* file);
 

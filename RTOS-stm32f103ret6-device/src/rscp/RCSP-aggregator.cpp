@@ -20,12 +20,11 @@ SINGLETON_IN_CPP(RCSPAggregator)
 void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor, bool restorable)
 {
 	ScopedTag tag("reg-accessor");
-	//printf("Accepted %u: %s\n", code - (1<<14), textName);
 	m_accessorsByOpCode[code] = accessor;
 	m_accessorsByOpText[textName] = accessor;
 	if (restorable)
 	{
-		if (!isObjectOC(code))
+		if (!RCSPCodeManipulator::isSetObject(code))
 		{
 			error << "Only parameter\'s values can save states!";
 			return;
@@ -54,12 +53,12 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream)
 {
 	ScopedTag tag("dispatch-op");
-	if (isObjectRequestOC(*code))
+	if (RCSPCodeManipulator::isObjectRequest(*code))
 	{
 		if (answerStream)
 		{
 			// Adding parameter to answer stream
-			OperationCode parameterCode = SetObjectOC(*code);
+			OperationCode parameterCode = RCSPCodeManipulator::makeSetObject(*code);
 			//printf("Parameter request: %u\n", parameterCode);
 			auto it = m_accessorsByOpCode.find(parameterCode);
 			if (it != m_accessorsByOpCode.end())
@@ -95,7 +94,8 @@ bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code,
 
 void RCSPAggregator::printWarningUnknownCode(OperationCode code)
 {
-	if (code != ConfigCodes::noOperation)
+	//if (code != ConfigCodes::noOperation)
+	if (code != 0)
 		warning << "Unknown request code: " << code;
 }
 
@@ -144,7 +144,7 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(uin
 	{
 		return DetailedResult<AddingResult>(INVALID_OPCODE, "Opcode not found");
 	}
-	code = SetObjectOC(code);
+	code = RCSPCodeManipulator::makeSetObject(code);
 	OperationSize size = 0;
 	if (!it->second->isReadable())
 		return DetailedResult<AddingResult>(NOT_READABLE, "Object not readable");
@@ -172,7 +172,7 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObjectRequ
 	if (packageSize > freeSpace)
 		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
 
-	variableCode = SetObjectRequestOC(variableCode);
+	variableCode = RCSPCodeManipulator::makeObjectRequestOC(variableCode);
 	OperationSize size = 0;
 	memcpy(stream, &size, sizeof(OperationSize));
 	stream += sizeof(OperationSize);
@@ -188,7 +188,7 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeCallReques
 	if (packageSize > freeSpace)
 		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
 
-	functionCode = SetCallRequestOC(functionCode);
+	functionCode = RCSPCodeManipulator::makeCallRequest(functionCode);
 	OperationSize size = 0;
 	memcpy(stream, &size, sizeof(OperationSize));
 	stream += sizeof(OperationSize);

@@ -30,6 +30,7 @@ public:
 
 	void run();
 	inline bool isRunning() const { return m_isRunning; }
+	void assert(bool shouldBeTrue, const char* message);
 	SIGLETON_IN_CLASS(Kernel);
 
 private:

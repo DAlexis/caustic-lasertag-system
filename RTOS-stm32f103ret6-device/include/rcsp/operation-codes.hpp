@@ -1,6 +1,8 @@
 /*
  * config-codes.h
  *
+ *  This files contains only operation codes for parameters and function calls
+ *  All other logic separated to other files
  *  Created on: 10 янв. 2015 г.
  *      Author: alexey
  */
@@ -8,26 +10,14 @@
 #ifndef LOGIC_CONFIGS_H_
 #define LOGIC_CONFIGS_H_
 
-#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/RCSP-codes-manipulation.hpp"
 
 // Includes that contains types which might be used as parameters types
 #include "rcsp/RCSP-base-types.hpp"
+#include "network/modem-base-types.hpp"
 #include "rifle/rifle-base-types.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "dev/MT2-base-types.hpp"
-
-#include "utils/macro.hpp"
-
-#define PAR_CODE(type, parameterName, value)  constexpr uint16_t parameterName = RCSPAggregator::SetObjectOC(value); \
-                                              constexpr const char parameterName##Text[] = STRINGIFICATE(variable); \
-                                              using parameterName##Type = type;
-
-
-#define FUNC_CODE_NP(function, value)  constexpr uint16_t function = RCSPAggregator::SetCallRequestOC(value);
-
-#define FUNC_CODE_1P(function, argType, value)  constexpr uint16_t function = RCSPAggregator::SetCallRequestOC(value); \
-                                                using function##Arg1Type = argType;
-
 
 /*
  *
@@ -38,7 +28,6 @@
  *    variableCurrent
  */
 
-
 using UintParameter = uint16_t;
 using IntParameter = int16_t;
 using TimeInterval = uint32_t;
@@ -48,7 +37,7 @@ using PlayerId = uint8_t[3];
 namespace ConfigCodes
 {
 	constexpr uint16_t noOperation = 0;
-	constexpr uint16_t acknoledgement = RCSPAggregator::SetCallRequestOC(0xFFFF);
+	//constexpr uint16_t acknoledgement = RCSPCodeManipulator::makeCallRequest(0xFFFF);
 	namespace AnyDevice
 	{
 		namespace Configuration

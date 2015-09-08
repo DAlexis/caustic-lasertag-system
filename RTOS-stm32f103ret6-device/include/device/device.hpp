@@ -9,17 +9,16 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
 
 #include "rcsp/operation-codes.hpp"
-#include "rcsp/RCSP-modem.hpp"
+#include "rcsp/RCSP-base-types.hpp"
+#include "rcsp/RCSP-aggregator.hpp"
 #include <stdint.h>
 #include <string.h>
-/*
-class DeviceParameters
+
+class DeviceConfiguration
 {
 public:
-	DeviceParameters() :
-		devAddr({1, 1, 1})
-	{ }
-	PARAMETER(ConfigCodes::AnyDevice, DeviceAddress, devAddr);
-};*/
+
+	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr);
+};
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_ */

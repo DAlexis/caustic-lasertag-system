@@ -9,6 +9,7 @@
 #define LOGIC_CONFIGURATION_HPP_
 
 #include "rcsp/RCSP-base-types.hpp"
+#include "rcsp/RCSP-codes-manipulation.hpp"
 #include "utils/macro.hpp"
 #include "core/string-utils.hpp"
 #include "core/result-code.hpp"
@@ -126,24 +127,6 @@ public:
 		NOT_READABLE
 	};
 
-	constexpr static OperationCode SetCallRequestOC(OperationCode operationCode) { return operationCode & OperationCodeMask; }
-	constexpr static OperationCode SetObjectOC(OperationCode operationCode)
-			{ return (operationCode & OperationCodeMask) | (1 << 14); }
-	constexpr static OperationCode SetObjectRequestOC(OperationCode operationCode)
-			{ return (operationCode & OperationCodeMask) | (1 << 15); }
-
-	constexpr static inline bool __attribute__((always_inline)) getBit(OperationCode code, uint8_t bit)
-			{ return (code & (1 << bit)) ? true : false; }
-
-	constexpr static inline bool __attribute__((always_inline)) isObjectOC(uint16_t operationCode)
-			{ return !getBit(operationCode, 15) && getBit(operationCode, 14); }
-
-	constexpr static inline bool __attribute__((always_inline)) isCallRequestOC(uint16_t operationCode)
-			{ return !getBit(operationCode, 15) && !getBit(operationCode, 14); }
-
-	constexpr static inline bool __attribute__((always_inline)) isObjectRequestOC(uint16_t operationCode)
-			{ return getBit(operationCode, 15) && !getBit(operationCode, 14); }
-
 	constexpr static unsigned int minimalStreamSize = sizeof(OperationSize) + sizeof(OperationCode);
 
 	using ResultType = DetailedResult<AddingResult>;
@@ -152,11 +135,11 @@ public:
 
 	void registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor, bool restorable = false);
 
-
 	/**
 	 * Dispatch binary stream with encoded operations
 	 * @param stream Binary stream
 	 * @param size Stream size in bytes
+	 * @param answerStream stream to put answer for object requests
 	 * @return Count of unsupported operation found on stream
 	 */
 	uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
@@ -211,7 +194,7 @@ public:
 		if (packageSize > freeSpace)
 			return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
 
-		functionCode = SetCallRequestOC(functionCode);
+		functionCode = RCSPCodeManipulator::makeCallRequest(functionCode);
 		OperationSize size = sizeof(parameter);
 		memcpy(stream, &size, sizeof(OperationSize));
 		stream += sizeof(OperationSize);

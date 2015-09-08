@@ -5,8 +5,7 @@
  *      Author: alexey
  */
 
-#include "rcsp/RCSP-modem.hpp"
-#include "rcsp/RCSP-stream.hpp"
+#include "network/RCSP-modem.hpp"
 
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
@@ -63,8 +62,23 @@ RCSPModem::RCSPModem()
 	m_modemTask.setTask(std::bind(&RCSPModem::interrogate, this));
 }
 
+void RCSPModem::setAddress(const DeviceAddress& address)
+{
+	m_selfAddress = &address;
+}
+
+void RCSPModem::setPackageReceiver(ReceivePackageCallback callback)
+{
+	m_receivePackageCallback = callback;
+}
+
 void RCSPModem::init()
 {
+	Kernel::instance().assert(
+			m_selfAddress != nullptr
+			&& m_receivePackageCallback != nullptr,
+			"Modem initialisation fail: self address or package receiver not set"
+		);
 	nrf.setTXDoneCallback(std::bind(&RCSPModem::TXDoneCallback, this));
 	nrf.setDataReceiveCallback(std::bind(&RCSPModem::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
 	nrf.init(
@@ -123,7 +137,7 @@ uint16_t RCSPModem::send(
 		waitingPackage.timings = timings;
 
 		waitingPackage.callback = doneCallback;
-		waitingPackage.package.sender = devAddr;
+		waitingPackage.package.sender = *m_selfAddress;
 		waitingPackage.package.target = target;
 		waitingPackage.package.details = details;
 		memcpy(waitingPackage.package.payload, data, size);
@@ -131,7 +145,7 @@ uint16_t RCSPModem::send(
 		return details.packageId;
 	} else {
 		m_packagesNoAck.push_back(Package());
-		m_packagesNoAck.back().sender = devAddr;
+		m_packagesNoAck.back().sender = *m_selfAddress;
 		m_packagesNoAck.back().target = target;
 		m_packagesNoAck.back().details = details;
 		memcpy(m_packagesNoAck.back().payload, data, size);
@@ -156,7 +170,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 
 	// Skipping packages for other devices
 	//received.target.print();
-	if (received.target != devAddr && m_broadcasts.find(received.target) == m_broadcasts.end())
+	if (received.target != *m_selfAddress && m_broadcasts.find(received.target) == m_broadcasts.end())
 		return;
 
 	// Dispatching if this is acknoledgement
@@ -189,7 +203,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 		// Forming ack package
 		Package ack;
 		ack.target = received.sender;
-		ack.sender = devAddr;
+		ack.sender = *m_selfAddress;
 		ack.details.packageId = generatePackageId();
 		memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
 		memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
@@ -291,17 +305,22 @@ void RCSPModem::receiveIncoming()
 	while (!m_incoming.empty())
 	{
 		/// @todo [Refactoring] Remove stream from there
-		RCSPMultiStream answerStream;
+
 		radio << "<== Incoming id " << m_incoming.front().details.packageId
 			<< " from " << ADDRESS_TO_STREAM(m_incoming.front().sender)
 			<< " need ack: " << m_incoming.front().details.needAck;
+
+		m_receivePackageCallback(m_incoming.front().sender, m_incoming.front().payload, m_incoming.front().payloadLength);
+/*
+		RCSPMultiStream answerStream;
 		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
+
 		radio << "|=| Dispatched id " << m_incoming.front().details.packageId;
 		if (!answerStream.empty())
 		{
 			radio << "|=| Answer for " << m_incoming.front().details.packageId << "ready";
 			answerStream.send(m_incoming.front().sender, true);
-		}
+		}*/
 		m_incoming.pop_front();
 	}
 }

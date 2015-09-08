@@ -9,7 +9,6 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 
 #include "rcsp/RCSP-aggregator.hpp"
-#include "rcsp/RCSP-modem.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
 #include <stdint.h>
