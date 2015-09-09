@@ -14,7 +14,7 @@
 
 // Includes that contains types which might be used as parameters types
 #include "rcsp/RCSP-base-types.hpp"
-#include "network/modem-base-types.hpp"
+#include "network/network-base-types.hpp"
 #include "rifle/rifle-base-types.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "dev/MT2-base-types.hpp"

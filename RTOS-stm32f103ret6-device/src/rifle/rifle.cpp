@@ -317,11 +317,11 @@ void Rifle::init(const Pinout& pinout)
 	initSounds();
 
 	info << "RCSP modem initialization";
-	RCSPModem::instance().setAddress(deviceConfig.devAddr);
-	RCSPModem::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
-	RCSPModem::instance().registerBroadcast(broadcast.any);
-	RCSPModem::instance().registerBroadcast(broadcast.rifles);
-	RCSPModem::instance().init();
+	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
+	NetworkLayer::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
+	NetworkLayer::instance().registerBroadcast(broadcast.any);
+	NetworkLayer::instance().registerBroadcast(broadcast.rifles);
+	NetworkLayer::instance().init();
 
 	info << "Other initialization";
 	rifleTurnOff();

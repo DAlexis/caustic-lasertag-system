@@ -131,11 +131,11 @@ void HeadSensor::configure(const Pinout &_pinout)
 	m_leds.blink(blinkPatterns.init);
 
 	info << "Other initialization";
-	RCSPModem::instance().setAddress(deviceConfig.devAddr);
-	RCSPModem::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
-	RCSPModem::instance().registerBroadcast(broadcast.any);
-	RCSPModem::instance().registerBroadcast(broadcast.headSensors);
-	RCSPModem::instance().init();
+	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
+	NetworkLayer::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
+	NetworkLayer::instance().registerBroadcast(broadcast.any);
+	NetworkLayer::instance().registerBroadcast(broadcast.headSensors);
+	NetworkLayer::instance().init();
 
 	m_tasksPool.add(
 			[this]() { sendHeartbeat(); },

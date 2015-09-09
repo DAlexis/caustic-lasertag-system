@@ -91,7 +91,7 @@ uint16_t RCSPStream::send(
 	PackageTimings&& timings
 )
 {
-	return RCSPModem::instance().send(
+	return NetworkLayer::instance().send(
 		target,
 		m_stream,
 		m_size,

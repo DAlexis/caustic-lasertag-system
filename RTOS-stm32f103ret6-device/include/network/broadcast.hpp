@@ -8,7 +8,7 @@
 #ifndef INCLUDE_RCSP_BROADCAST_HPP_
 #define INCLUDE_RCSP_BROADCAST_HPP_
 
-#include "network/modem-base-types.hpp"
+#include "network/network-base-types.hpp"
 
 class Broadcast
 {
@@ -20,6 +20,8 @@ public:
 	const DeviceAddress headSensors{255, 255, 4};
 
 	const DeviceAddress rifles{255, 255, 10};
+
+	const DeviceAddress bluetoothBridges{255, 255, 20};
 
 	const DeviceAddress any{255, 255, 255};
 };

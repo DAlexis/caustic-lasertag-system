@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include "network/RCSP-modem.hpp"
+#include "network/network-layer.hpp"
 
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
-SINGLETON_IN_CPP(RCSPModem)
+SINGLETON_IN_CPP(NetworkLayer)
 
 ///////////////////////
 // DeviceAddress
@@ -55,32 +55,32 @@ void DeviceAddress::convertFromString(const char* str)
 	trace << "Parsed: " << address[0] << "-" << address[1] << "-" << address[2];
 }
 ///////////////////////
-// RCSPModem
-RCSPModem::RCSPModem()
+// NetworkLayer
+NetworkLayer::NetworkLayer()
 {
 	m_modemTask.setStackSize(512);
-	m_modemTask.setTask(std::bind(&RCSPModem::interrogate, this));
+	m_modemTask.setTask(std::bind(&NetworkLayer::interrogate, this));
 }
 
-void RCSPModem::setAddress(const DeviceAddress& address)
+void NetworkLayer::setAddress(const DeviceAddress& address)
 {
 	m_selfAddress = &address;
 }
 
-void RCSPModem::setPackageReceiver(ReceivePackageCallback callback)
+void NetworkLayer::setPackageReceiver(ReceivePackageCallback callback)
 {
 	m_receivePackageCallback = callback;
 }
 
-void RCSPModem::init()
+void NetworkLayer::init()
 {
 	Kernel::instance().assert(
 			m_selfAddress != nullptr
 			&& m_receivePackageCallback != nullptr,
 			"Modem initialisation fail: self address or package receiver not set"
 		);
-	nrf.setTXDoneCallback(std::bind(&RCSPModem::TXDoneCallback, this));
-	nrf.setDataReceiveCallback(std::bind(&RCSPModem::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
+	nrf.setTXDoneCallback(std::bind(&NetworkLayer::TXDoneCallback, this));
+	nrf.setDataReceiveCallback(std::bind(&NetworkLayer::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
 	nrf.init(
 		IOPins->getIOPin(1, 7),
 		IOPins->getIOPin(1, 12),
@@ -93,12 +93,12 @@ void RCSPModem::init()
 	m_modemTask.run(0, 1, 1);
 }
 
-void RCSPModem::registerBroadcast(const DeviceAddress& address)
+void NetworkLayer::registerBroadcast(const DeviceAddress& address)
 {
 	m_broadcasts.insert(address);
 }
 
-uint16_t RCSPModem::generatePackageId()
+uint16_t NetworkLayer::generatePackageId()
 {
 	uint16_t id = (systemClock->getTime()) & 0xFFFF;
 	if (id == 0)
@@ -107,7 +107,7 @@ uint16_t RCSPModem::generatePackageId()
 }
 
 
-uint16_t RCSPModem::send(
+uint16_t NetworkLayer::send(
 	DeviceAddress target,
 	uint8_t* data,
 	uint16_t size,
@@ -156,12 +156,12 @@ uint16_t RCSPModem::send(
 	}
 }
 
-void RCSPModem::TXDoneCallback()
+void NetworkLayer::TXDoneCallback()
 {
 	isSendingNow = false;
 }
 
-void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
+void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 {
 	Package received;
 	memcpy(&received, data, sizeof(Package));
@@ -220,7 +220,7 @@ void RCSPModem::RXCallback(uint8_t channel, uint8_t* data)
 	}
 }
 
-bool RCSPModem::checkIfIdStoredAndStore(uint16_t id)
+bool NetworkLayer::checkIfIdStoredAndStore(uint16_t id)
 {
 	uint16_t currentSize = 0;
 	for (auto it = m_lastReceivedIds.begin(); it != m_lastReceivedIds.end(); it++, currentSize++)
@@ -235,7 +235,7 @@ bool RCSPModem::checkIfIdStoredAndStore(uint16_t id)
 	return false;
 }
 
-void RCSPModem::interrogate()
+void NetworkLayer::interrogate()
 {
 	ScopedTag tag("radio-interrogate");
 	sendNext();
@@ -243,7 +243,7 @@ void RCSPModem::interrogate()
 	receiveIncoming();
 }
 
-void RCSPModem::sendNext()
+void NetworkLayer::sendNext()
 {
 	ScopedTag tag("radio-send-next");
 	if (!isTranslationAllowed())
@@ -300,7 +300,7 @@ void RCSPModem::sendNext()
 	}
 }
 
-void RCSPModem::receiveIncoming()
+void NetworkLayer::receiveIncoming()
 {
 	while (!m_incoming.empty())
 	{
@@ -325,7 +325,7 @@ void RCSPModem::receiveIncoming()
 	}
 }
 
-bool RCSPModem::isTranslationAllowed()
+bool NetworkLayer::isTranslationAllowed()
 {
 	return (
 			!isSendingNow &&
@@ -333,7 +333,7 @@ bool RCSPModem::isTranslationAllowed()
 			);
 }
 
-void RCSPModem::temproraryProhibitTransmission()
+void NetworkLayer::temproraryProhibitTransmission()
 {
 	m_transmissionProhibitedTime = systemClock->getTime();
 	/**

@@ -9,7 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 
 #include "rcsp/RCSP-base-types.hpp"
-#include "network/modem-base-types.hpp"
+#include "network/network-base-types.hpp"
 
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
@@ -57,14 +57,14 @@ struct Package
 };
 #pragma pack(pop)
 
-class RCSPModem
+class NetworkLayer
 {
 public:
 	constexpr static uint32_t defaultTimeout = 20000000;
 	constexpr static uint32_t defaultResendTime = 500000;
 	constexpr static uint32_t defaultResendTimeDelta = 100000;
 
-	RCSPModem();
+	NetworkLayer();
 	void init();
 	void setAddress(const DeviceAddress& address);
 	void setPackageReceiver(ReceivePackageCallback callback);
@@ -89,7 +89,7 @@ public:
 
 	void registerBroadcast(const DeviceAddress& address);
 
-	SIGLETON_IN_CLASS(RCSPModem);
+	SIGLETON_IN_CLASS(NetworkLayer);
 private:
 
 	struct WaitingPackage
@@ -150,7 +150,7 @@ private:
 	const DeviceAddress* m_selfAddress = nullptr;
 	ReceivePackageCallback m_receivePackageCallback = nullptr;
 
-	TaskCycled m_modemTask{std::bind(&RCSPModem::interrogate, this)};
+	TaskCycled m_modemTask{std::bind(&NetworkLayer::interrogate, this)};
 };
 
 

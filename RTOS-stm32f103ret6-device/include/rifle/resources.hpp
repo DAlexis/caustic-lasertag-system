@@ -8,7 +8,7 @@
 #ifndef INCLUDE_RIFLE_RESOURCES_HPP_
 #define INCLUDE_RIFLE_RESOURCES_HPP_
 
-#include "network/modem-base-types.hpp"
+#include "network/network-base-types.hpp"
 
 class RiflePackageTimings
 {

@@ -8,7 +8,7 @@
 #ifndef INCLUDE_HEAD_SENSOR_RESOURCES_HPP_
 #define INCLUDE_HEAD_SENSOR_RESOURCES_HPP_
 
-#include "network/modem-base-types.hpp"
+#include "network/network-base-types.hpp"
 #include "dev/rgb-leds.hpp"
 
 class HeadSensorPackageTimings

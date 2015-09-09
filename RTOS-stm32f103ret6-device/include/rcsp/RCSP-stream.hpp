@@ -9,7 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_
 
 #include "rcsp/RCSP-aggregator.hpp"
-#include "network/RCSP-modem.hpp"
+#include "network/network-layer.hpp"
 #include "fatfs.h"
 #include "core/result-code.hpp"
 #include <list>
@@ -100,6 +100,7 @@ public:
 	void dispatch();
 
 	bool empty();
+
 private:
 
 	using SerializationFunc = std::function<RCSPAggregator::ResultType (uint8_t * /*pos*/, OperationCode /*code*/, uint16_t & /*addedSize*/)>;
