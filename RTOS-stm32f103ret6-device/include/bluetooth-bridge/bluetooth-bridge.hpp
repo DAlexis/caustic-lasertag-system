@@ -7,6 +7,9 @@
 
 #include "core/device-initializer.hpp"
 #include "device/device.hpp"
+#include "hal/uart.hpp"
+#include "core/os-wrappers.hpp"
+
 
 class BluetoothBridge : public IAnyDevice
 {
@@ -19,4 +22,8 @@ public:
 
 private:
 	void receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
+
+	IUARTManager* m_bluetoothPort;
+	Worker m_worker{5};
+	char m_tmpBuffer[200];
 };

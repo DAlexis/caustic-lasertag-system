@@ -136,7 +136,8 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 
 	info << "Reading device pinout...";
 	Pinout* pinout = new Pinout;
-	if (!pinout->readIni("pinout.ini"))
+
+	if (!m_fatfsSuccess || pinout->readIni("pinout.ini"))
 	{
 		error << "Cannot read device pinout, setting to default";
 		resultDevice->setDafaultPinout(*pinout);
