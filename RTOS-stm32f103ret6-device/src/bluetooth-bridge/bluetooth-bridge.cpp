@@ -42,7 +42,7 @@ void BluetoothBridge::init(const Pinout& pinout)
 
 			}
 	);
-	m_bluetoothPort->init(2, 9600);
+	m_bluetoothPort->init(2, 115200);
 }
 
 void BluetoothBridge::setDafaultPinout(Pinout& pinout)
