@@ -5,11 +5,18 @@
  *      Author: alexey
  */
 
+#include "bluetooth-bridge/bluetooth-protocol.hpp"
 #include "core/device-initializer.hpp"
 #include "device/device.hpp"
 #include "hal/uart.hpp"
 #include "core/os-wrappers.hpp"
 
+struct AnyBuffer
+{
+	AnyBuffer(uint16_t _size, const void *_data = nullptr);
+	uint8_t* data;
+	const uint16_t size;
+};
 
 class BluetoothBridge : public IAnyDevice
 {
@@ -21,9 +28,16 @@ public:
 	DeviceConfiguration deviceConfig;
 
 private:
-	void receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
+	void receiveNetworkPackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
+	void receiveBluetoothPackageISR(uint8_t* buffer, uint16_t size);
+
+	void sendBluetoothMessage(AnyBuffer* buffer);
+	void sendNetworkPackage(AnyBuffer* buffer);
+
+	BluetoothMessageCreator m_bluetoothMsgCreator;
 
 	IUARTManager* m_bluetoothPort;
-	Worker m_worker{5};
+	Worker m_workerToBluetooth{10};
+	Worker m_workerToNetwork{10};
 	char m_tmpBuffer[200];
 };

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Caustic Laser Tag Controller</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_bluetooth_devices_list">BluetoothDevicesList</string>
+</resources>

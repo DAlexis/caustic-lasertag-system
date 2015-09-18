@@ -61,8 +61,8 @@ class NetworkLayer
 {
 public:
 	constexpr static uint32_t defaultTimeout = 20000000;
-	constexpr static uint32_t defaultResendTime = 500000;
-	constexpr static uint32_t defaultResendTimeDelta = 100000;
+	constexpr static uint32_t defaultResendTime = 300000;
+	constexpr static uint32_t defaultResendTimeDelta = 300000;
 
 	NetworkLayer();
 	void init();

@@ -13,6 +13,7 @@
 #include "rcsp/RCSP-codes-manipulation.hpp"
 
 // Includes that contains types which might be used as parameters types
+#include "device/device-base-types.hpp"
 #include "rcsp/RCSP-base-types.hpp"
 #include "network/network-base-types.hpp"
 #include "rifle/rifle-base-types.hpp"
@@ -43,11 +44,13 @@ namespace ConfigCodes
 		namespace Configuration
 		{
 			PAR_CODE(DeviceAddress, devAddr,           2000)
+			PAR_CODE(DeviceName,    deviceName,        2001)
 		}
 
 		namespace Functions
 		{
 			FUNC_CODE_NP(resetToDefaults,   2100)
+			FUNC_CODE_1P(getName, DeviceAddress,      2200)
 		}
 	}
 	namespace Rifle
@@ -83,7 +86,7 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, bulletsInMagazineStart,   32)
 			PAR_CODE(UintParameter, bulletsInMagazineMax,     33)
 
-			PAR_CODE(UintParameter, reloadingTime,            34)
+			PAR_CODE(TimeInterval, reloadingTime,            34)
 
 			PAR_CODE(UintParameter, heatPerShot,              40)
 			PAR_CODE(UintParameter, heatLossPerSec,           41)
