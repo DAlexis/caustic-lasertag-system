@@ -33,7 +33,6 @@ using UintParameter = uint16_t;
 using IntParameter = int16_t;
 using TimeInterval = uint32_t;
 using FloatParameter = float;
-using PlayerId = uint8_t[3];
 
 namespace ConfigCodes
 {
@@ -203,7 +202,7 @@ namespace ConfigCodes
 			FUNC_CODE_NP(playerKill,         1205)
 
 			FUNC_CODE_1P(addMaxHealth, IntParameter, 1220)
-			FUNC_CODE_1P(setTeam,      uint8_t,      1221)
+			FUNC_CODE_1P(setTeam,      TeamMT2Id,    1221)
 
 			FUNC_CODE_1P(registerWeapon,  DeviceAddress,      1300)
 			FUNC_CODE_1P(notifyIsDamager, DamageNotification, 1400)

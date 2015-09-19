@@ -36,7 +36,7 @@ public class BluetoothManager {
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
-    //private static String address = "98:D3:31:20:52:D1";
+    private String address = "";
 
     private BluetoothManager() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -48,6 +48,9 @@ public class BluetoothManager {
 
     public void setRXHandler(Handler _handler) {
         handler = _handler;
+    }
+    public void setTargetAddress(String _address) {
+        address = _address;
     }
 
 
@@ -61,6 +64,8 @@ public class BluetoothManager {
     }
 
     public boolean connect(String address) {
+        if (address == "")
+            return false;
         Log.d(TAG, "Creating socket...");
 
         // Set up a pointer to the remote node using it's address.
@@ -106,6 +111,8 @@ public class BluetoothManager {
     }
 
     public boolean disconnect() {
+        if (address == "")
+            return false;
         Log.d(TAG, "...In onPause()...");
 
         try {
