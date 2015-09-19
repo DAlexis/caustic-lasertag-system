@@ -49,7 +49,6 @@ namespace ConfigCodes
 		namespace Functions
 		{
 			FUNC_CODE_NP(resetToDefaults,   2100)
-			FUNC_CODE_1P(getName, DeviceAddress,      2200)
 		}
 	}
 	namespace Rifle

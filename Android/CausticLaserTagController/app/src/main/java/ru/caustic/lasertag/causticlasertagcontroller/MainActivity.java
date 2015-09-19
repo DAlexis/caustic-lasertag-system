@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     public void selectBtDeviceClick(View view) {
         Intent intent = new Intent (MainActivity.this, BluetoothDevicesList.class);
         startActivityForResult(intent, CHOOSE_BT_DEVICE);

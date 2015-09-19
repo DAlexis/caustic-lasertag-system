@@ -142,7 +142,7 @@ public class BluetoothManager {
         }
     }
 
-    public boolean sendData(String message) {
+    public boolean sendData(byte[] message) {
         mConnectedThread.write(message);
         return true;
     }
@@ -196,11 +196,9 @@ public class BluetoothManager {
         }
 
         /* Call this from the main activity to send data to the remote device */
-        public void write(String message) {
-            Log.d(TAG, "...Данные для отправки: " + message + "...");
-            byte[] msgBuffer = message.getBytes();
+        public void write(byte[] message) {
             try {
-                mmOutStream.write(msgBuffer);
+                mmOutStream.write(message);
             } catch (IOException e) {
                 Log.d(TAG, "...Ошибка отправки данных: " + e.getMessage() + "...");
             }
