@@ -3,7 +3,6 @@ package ru.caustic.lasertag.causticlasertagcontroller;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,31 +11,73 @@ import java.util.TreeMap;
  * Created by alexey on 18.09.15.
  */
 public class RCSProtocol {
+
     public static final int DEVICE_TYPE_RIFLE = 1;
     public static final int DEVICE_TYPE_HEAD_SENSOR = 2;
 
     private static final String TAG = "RCSProtocol";
 
-    public static class ParametersContainer {
-        private Map<Integer, AnyParameter> allParameters = new TreeMap<Integer, AnyParameter>();
+    public enum OperationCodeType { SET_OBJECT, OBJECT_REQUEST, CALL_REQUEST, RESERVED }
 
-        public void add(AnyParameter par) {
+    private static final int OperationCodeMask = 0b0011_1111_1111_1111;
+
+    public static int removeOperationTypeBits(int id) {
+        return id & OperationCodeMask;
+    }
+
+    public static int makeOperationCodeType(int id, OperationCodeType type) {
+        id &= OperationCodeMask;
+        switch (type) {
+            case SET_OBJECT:
+                id |= (1<<14);
+                break;
+            case OBJECT_REQUEST:
+                id |= (1<<15);
+                break;
+            case CALL_REQUEST:
+                break;
+            case RESERVED:
+                id |= (1<<14) | (1<<15);
+                break;
+        }
+        return id;
+    }
+
+    public static OperationCodeType dispatchOperationCodeType(int id) {
+        boolean b14 = (id & (1<<14)) != 0;
+        boolean b15 = (id & (1<<15)) != 0;
+
+        if (!b14 && !b15)
+            return OperationCodeType.CALL_REQUEST;
+        if (!b14 && b15)
+            return OperationCodeType.OBJECT_REQUEST;
+        if (b14 && !b15)
+            return OperationCodeType.SET_OBJECT;
+
+        // if (b14 && b15)
+        return OperationCodeType.RESERVED;
+    }
+
+    public static class ParametersContainer {
+        private Map<Integer, RCSPParameterGroup> allParameters = new TreeMap<Integer, RCSPParameterGroup>();
+
+        public void add(RCSPParameterGroup par) {
             allParameters.put(par.getId(), par);
         }
 
-        public AnyParameter get(int id){
+        public RCSPParameterGroup get(int id){
             return allParameters.get(id);
         }
 
         public int serializeOneParameter(int id, byte[] memory, int position, int maxPosition) {
-            AnyParameter par = allParameters.get(id);
+            RCSPAnyGroup par = allParameters.get(id);
             if (par == null)
                 return 0;
             int size = par.size();
             if (maxPosition - position < size + 3)
                 return 0;
             memory[position++] = (byte) size;
-            MemoryUtils.uint16ToByteArray(memory, position, id);
+            MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.SET_OBJECT));
             position += 2;
             par.serialize(memory, position);
             return size + 3;
@@ -61,9 +102,15 @@ public class RCSProtocol {
             int id = MemoryUtils.bytesArrayToUint16(memory, position+readed);
             readed += 2;
 
-            // @todo Add here id 'set' bits removing
+            if (dispatchOperationCodeType(id) != OperationCodeType.SET_OBJECT)
+            {
+                Log.e(TAG, "Trying to dispatch " + removeOperationTypeBits(id) + " with invalid operation code type bits");
+                return 0;
+            }
 
-            AnyParameter par = allParameters.get(id);
+            id = removeOperationTypeBits(id);
+
+            RCSPAnyGroup par = allParameters.get(id);
             if (par != null) {
                 par.deserialize(memory, position + readed);
             } else {
@@ -86,12 +133,35 @@ public class RCSProtocol {
         }
     }
 
-    public static abstract class AnyParameter {
+    public static class RemoteFunctionsContainer {
+        private Map<Integer, RCSPFunctionCallGroup> allFucntions = new TreeMap<Integer, RCSPFunctionCallGroup>();
+
+        public void add(RCSPFunctionCallGroup par) {
+            allFucntions.put(par.getId(), par);
+        }
+
+        public int serializeCall(int id, byte[] memory, int position, int maxPosition)
+        {
+            RCSPAnyGroup func = allFucntions.get(id);
+            if (func == null)
+                return 0;
+            int size = func.size();
+            if (maxPosition - position < size + 3)
+                return 0;
+            memory[position++] = (byte) size;
+            MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.CALL_REQUEST));
+            position += 2;
+            func.serialize(memory, position);
+            return size + 3;
+        }
+    }
+
+    public static abstract class RCSPAnyGroup {
         private int id;
         private String name;
-        private String value;
 
-        public AnyParameter(int _id, String _name) {
+
+        public RCSPAnyGroup(int _id, String _name) {
             id = _id;
             name = _name;
         }
@@ -99,14 +169,6 @@ public class RCSProtocol {
         public abstract void deserialize(byte[] memory, int offset);
         public abstract int size();
         public abstract int serialize(byte[] memory, int offset);
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
 
         public String getName() {
             return name;
@@ -117,8 +179,32 @@ public class RCSProtocol {
         }
     }
 
-    public static class UintParameter extends AnyParameter {
-        public UintParameter(int _id, String _name) {
+    public static abstract class RCSPParameterGroup extends RCSPAnyGroup {
+        private String value;
+
+        public RCSPParameterGroup(int _id, String _name) {
+            super(_id, _name);
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    public static abstract class RCSPFunctionCallGroup extends RCSPAnyGroup {
+        public RCSPFunctionCallGroup(int _id, String _name) {
+            super(_id, _name);
+        }
+
+
+    }
+
+    public static class UintGroupRCSP extends RCSPParameterGroup {
+        public UintGroupRCSP(int _id, String _name) {
             super(_id, _name);
             super.value = "0";
         }
@@ -138,8 +224,8 @@ public class RCSProtocol {
             return 2;
         }
     }
-    public static class IntParameter extends AnyParameter {
-        public IntParameter(int _id, String _name) {
+    public static class IntGroupRCSP extends RCSPParameterGroup {
+        public IntGroupRCSP(int _id, String _name) {
             super(_id, _name);
             super.value = "0";
         }
@@ -159,10 +245,10 @@ public class RCSProtocol {
             return 2;
         }
     }
-    public static class DevNameParameter extends AnyParameter {
+    public static class DevNameGroupRCSP extends RCSPParameterGroup {
         public static final String defaultName = "Name unavailable";
 
-        public DevNameParameter(int _id, String _name) {
+        public DevNameGroupRCSP(int _id, String _name) {
             super(_id, _name);
             super.value = defaultName;
         }
@@ -191,8 +277,8 @@ public class RCSProtocol {
             return 20;
         }
     }
-    public static class MT2IdParameter extends AnyParameter {
-        public MT2IdParameter(int _id, String _name) {
+    public static class MT2IdGroupRCSP extends RCSPParameterGroup {
+        public MT2IdGroupRCSP(int _id, String _name) {
             super(_id, _name);
             super.value = "0";
         }
@@ -212,8 +298,8 @@ public class RCSProtocol {
             return 1;
         }
     }
-    public static class FloatParameter extends AnyParameter {
-        public FloatParameter(int _id, String _name) {
+    public static class FloatGroupRCSP extends RCSPParameterGroup {
+        public FloatGroupRCSP(int _id, String _name) {
             super(_id, _name);
             super.value = "0.0";
         }
@@ -236,6 +322,47 @@ public class RCSProtocol {
 
         public int size() {
             return 4;
+        }
+    }
+
+    /// @todo Create device address parameter group class
+
+    public static class FunctionNoParsGroupRCSP extends RCSPFunctionCallGroup {
+        public FunctionNoParsGroupRCSP(int _id, String _name)
+        {
+            super(_id, _name);
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+
+        }
+
+        public int size() {
+            return 0;
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            return size();
+        }
+    }
+
+    public static class RCSPOperationCodes
+    {
+        public static class AnyDevice {
+            public static class Configuration {
+                public static final int devAddr = 2000;
+                public static final int deviceName = 2001;
+                public static final int deviceType = 2002;
+            }
+
+            public static class Functions {
+                public static final int resetToDefaults = 2100;
+            }
+
+            public static void registerOperations(ParametersContainer pars, RemoteFunctionsContainer funcs) {
+                pars.add(new DevNameGroupRCSP(Configuration.deviceName, "Device name"));
+                pars.add(new UintGroupRCSP(Configuration.deviceType, "Device type"));
+            }
         }
     }
 
