@@ -30,7 +30,7 @@ public class CausticDevicesManager {
                 devices.put(address, dev);
             }
             dev.address = new BridgeConnector.DeviceAddress(address);
-            dev.parameters.disatchStream(data, offset, size);
+            dev.parameters.deserializeStream(data, offset, size);
         }
     }
 }
