@@ -12,6 +12,9 @@ import java.util.TreeMap;
  * Created by alexey on 18.09.15.
  */
 public class RCSProtocol {
+    public static final int DEVICE_TYPE_RIFLE = 1;
+    public static final int DEVICE_TYPE_HEAD_SENSOR = 2;
+
     private static final String TAG = "RCSProtocol";
 
     public static class ParametersContainer {
@@ -43,14 +46,14 @@ public class RCSProtocol {
          * Read one parameter from binary stream
          * @param memory Binary stream
          * @param position start position for reading
-         * @param maxPosition maximal index value allowed for memory
+         * @param size maximal index value allowed for memory
          * @return Count of bytes parsed. If parsing is impossible, 0. If id is not registered, nothing will be added
          */
-        public int readOneParamter(byte[] memory, int position, int maxPosition)
+        public int readOneParamter(byte[] memory, int position, int size)
         {
             int readed = 0;
             int argSize = MemoryUtils.byteToUnsignedByte(memory[position]);
-            if (maxPosition - position < argSize + 3) {
+            if (size < argSize + 3) {
                 Log.e(TAG, "binary stream seems to be broken: unexpected end of stream");
                 return 0;
             }
@@ -67,6 +70,19 @@ public class RCSProtocol {
                 Log.e(TAG, "Unknown parameter id: " + id);
             }
             return argSize + 3;
+        }
+
+        public void disatchStream(byte[] memory, int offset, int size)
+        {
+            int notParsed = size;
+            for (int i = 0; i<size; )
+            {
+                int result = readOneParamter(memory, offset+i, notParsed);
+                if (result == 0)
+                    break;
+                i += result;
+                notParsed -= result; /// @todo test it
+            }
         }
     }
 

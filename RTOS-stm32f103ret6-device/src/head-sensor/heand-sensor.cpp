@@ -17,6 +17,7 @@
 HeadSensor::HeadSensor()
 {
 	m_tasksPool.setStackSize(256);
+	deviceConfig.deviceType = DeviceTypes::headSensor;
 	//m_weapons.insert({1,1,1});
 }
 

@@ -148,6 +148,7 @@ void RifleState::reset()
 
 Rifle::Rifle()
 {
+	deviceConfig.deviceType = DeviceTypes::rifle;
 	m_tasksPool.setStackSize(256);
 }
 

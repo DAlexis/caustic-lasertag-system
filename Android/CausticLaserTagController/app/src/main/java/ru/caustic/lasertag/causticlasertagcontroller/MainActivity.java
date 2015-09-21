@@ -80,4 +80,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
         finish();
     }
+
+    public void connectButtonClick(View view) {
+    }
 }

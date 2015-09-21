@@ -8,8 +8,28 @@ import android.util.Log;
  */
 public class BridgeConnector {
 
+    public static class Broadcast {
+        public static DeviceAddress anyDevice = new DeviceAddress(255, 255, 255);
+    }
+
     public static class DeviceAddress {
         public int[] address = new int[3];
+
+        public DeviceAddress() {
+            address[0] = address[1] = address[2] = 0;
+        }
+
+        public DeviceAddress(int a1, int a2, int a3) {
+            address[0] = a1;
+            address[1] = a2;
+            address[2] = a3;
+        }
+
+        public DeviceAddress(DeviceAddress addr) {
+            address[0] = addr.address[0];
+            address[1] = addr.address[1];
+            address[2] = addr.address[2];
+        }
 
         public void deserialize(byte[] memory, int position) {
             address[0] = MemoryUtils.byteToUnsignedByte(memory[position]);
@@ -36,6 +56,11 @@ public class BridgeConnector {
 
     public interface IncomingPackagesListener {
         void getData(DeviceAddress address, byte[] data, int offset, int size);
+    }
+
+    private static BridgeConnector ourInstance = new BridgeConnector();
+    public static BridgeConnector getInstance() {
+        return ourInstance;
     }
 
     public static final int MESSAGE_LEN_MAX = 50;

@@ -44,6 +44,7 @@ namespace ConfigCodes
 		{
 			PAR_CODE(DeviceAddress, devAddr,           2000)
 			PAR_CODE(DeviceName,    deviceName,        2001)
+			PAR_CODE(UintParameter, deviceType,        2002)
 		}
 
 		namespace Functions

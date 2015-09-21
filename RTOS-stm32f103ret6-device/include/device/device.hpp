@@ -21,6 +21,7 @@ public:
 
 	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr);
 	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, deviceName);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, deviceType);
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_ */
