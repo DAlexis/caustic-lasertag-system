@@ -104,6 +104,15 @@ public class RCSProtocolTest extends TestCase {
     }
 
     @Test
+    public void testDevAddrSerializationDeserialization() {
+        RCSProtocol.RCSPParameterGroup par = new RCSProtocol.DevAddrGroupRCSP(123, "Test");
+        testAnyParameterSerDeser(par, "123.43.8", "0.0.0", 4, 0);
+        testAnyParameterSerDeser(par, "255.240.1", "0.0.0", 4, 0);
+        testAnyParameterSerDeser(par, "0.0.0", "1.2.3", 4, 0);
+
+    }
+
+    @Test
     public void testStreamReadWriteOneParameter() {
         RCSProtocol.ParametersContainer pars = new RCSProtocol.ParametersContainer();
         //pars.add("TestPar1", RCSProtocol.Parameter.TYPE_UINT_PARAMETER, 25);

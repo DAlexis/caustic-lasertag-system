@@ -183,7 +183,7 @@ public class BluetoothManager {
             int bytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs
-            while (true) {
+            for (;;) {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);        // Получаем кол-во байт и само собщение в байтовый массив "buffer"

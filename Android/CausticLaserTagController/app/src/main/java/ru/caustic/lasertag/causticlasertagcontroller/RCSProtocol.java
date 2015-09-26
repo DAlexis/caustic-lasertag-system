@@ -83,6 +83,14 @@ public class RCSProtocol {
             return size + 3;
         }
 
+        public static int serializeParameterRequest(int id, byte[] memory, int position, int maxPosition) {
+            if (maxPosition - position < 3)
+                return 0;
+            memory[position++] = 0;
+            MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.OBJECT_REQUEST));
+            return 3;
+        }
+
         /**
          * Read one parameter from binary stream
          * @param memory Binary stream
@@ -140,9 +148,9 @@ public class RCSProtocol {
             allFucntions.put(par.getId(), par);
         }
 
-        public int serializeCall(int id, byte[] memory, int position, int maxPosition)
+        public int serializeCall(int id, String argument, byte[] memory, int position, int maxPosition)
         {
-            RCSPAnyGroup func = allFucntions.get(id);
+            RCSPFunctionCallGroup func = allFucntions.get(id);
             if (func == null)
                 return 0;
             int size = func.size();
@@ -151,6 +159,7 @@ public class RCSProtocol {
             memory[position++] = (byte) size;
             MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.CALL_REQUEST));
             position += 2;
+            func.setArgument(argument);
             func.serialize(memory, position);
             return size + 3;
         }
@@ -200,7 +209,7 @@ public class RCSProtocol {
             super(_id, _name);
         }
 
-
+        public abstract void setArgument(String argument);
     }
 
     public static class UintGroupRCSP extends RCSPParameterGroup {
@@ -324,8 +333,30 @@ public class RCSProtocol {
             return 4;
         }
     }
+    public static class DevAddrGroupRCSP extends RCSPParameterGroup {
+        public DevAddrGroupRCSP(int _id, String _name) {
+            super(_id, _name);
+            super.value = "0.0.0";
+        }
 
-    /// @todo Create device address parameter group class
+        public void deserialize(byte[] memory, int offset) {
+            super.value = MemoryUtils.byteToUnsignedByte(memory[offset])
+                    + "." + MemoryUtils.byteToUnsignedByte(memory[offset+1])
+                    + "." + MemoryUtils.byteToUnsignedByte(memory[offset+2]);
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            String[] address = super.value.split("\\.");
+            memory[offset] = (byte) Integer.parseInt(address[0]);
+            memory[offset+1] = (byte) Integer.parseInt(address[1]);
+            memory[offset+2] = (byte) Integer.parseInt(address[2]);
+            return size();
+        }
+
+        public int size() {
+            return 3;
+        }
+    }
 
     public static class FunctionNoParsGroupRCSP extends RCSPFunctionCallGroup {
         public FunctionNoParsGroupRCSP(int _id, String _name)
@@ -344,6 +375,7 @@ public class RCSProtocol {
         public int serialize(byte[] memory, int offset) {
             return size();
         }
+        public void setArgument(String argument) {  }
     }
 
     public static class RCSPOperationCodes
@@ -362,6 +394,7 @@ public class RCSProtocol {
             public static void registerOperations(ParametersContainer pars, RemoteFunctionsContainer funcs) {
                 pars.add(new DevNameGroupRCSP(Configuration.deviceName, "Device name"));
                 pars.add(new UintGroupRCSP(Configuration.deviceType, "Device type"));
+                funcs.add(new FunctionNoParsGroupRCSP(Functions.resetToDefaults, "Reset to default"));
             }
         }
     }

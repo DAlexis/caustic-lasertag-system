@@ -37,6 +37,27 @@
         android:layout_below="@+id/selectedDeviceText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:onClick="connectButtonClick" />
+        android:onClick="connectButtonClick"
+        android:clickable="false" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disconnect"
+        android:id="@+id/buttonDisconnect"
+        android:layout_below="@+id/buttonConnect"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="disconnectClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get devices list"
+        android:id="@+id/button"
+        android:layout_below="@+id/buttonDisconnect"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="getDevListClick" />
 
 </RelativeLayout>

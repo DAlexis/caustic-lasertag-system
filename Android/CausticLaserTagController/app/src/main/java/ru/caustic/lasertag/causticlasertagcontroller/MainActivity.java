@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,11 +15,16 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "CausticMain";
 
+    private Button connectButton;
+    private TextView infoTextView;
+
     static final private int CHOOSE_BT_DEVICE = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        connectButton = (Button) findViewById(R.id.buttonConnect);
+        infoTextView = (TextView) findViewById(R.id.selectedDeviceText);
 
         switch(BluetoothManager.getInstance().checkBluetoothState()) {
             case BluetoothManager.BLUETOOTH_NOT_SUPPORTED:
@@ -58,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        TextView infoTextView = (TextView) findViewById(R.id.selectedDeviceText);
-
         if (requestCode == CHOOSE_BT_DEVICE) {
             if (resultCode == RESULT_OK) {
+                connectButton.setClickable(true);
                 String device = data.getStringExtra(BluetoothDevicesList.BT_DEVICE);
                 infoTextView.setText(device);
             }else {
+                connectButton.setClickable(false);
                 infoTextView.setText(""); // стираем текст
             }
         }
@@ -82,5 +88,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void connectButtonClick(View view) {
+        String mac = infoTextView.getText().toString().split("\\n")[1];
+        Toast.makeText(getBaseContext(), mac, Toast.LENGTH_LONG).show();
+        if (!BluetoothManager.getInstance().connect(mac)) {
+            Toast.makeText(getBaseContext(), "Cannot connect to device!", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    public void disconnectClick(View view) {
+        BluetoothManager.getInstance().disconnect();
+    }
+
+    public void getDevListClick(View view) {
+        CausticDevicesManager.getInstance().updateDevicesList();
     }
 }

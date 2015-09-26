@@ -9,6 +9,7 @@
 #include "network/network-layer.hpp"
 #include "network/broadcast.hpp"
 #include "core/logging.hpp"
+#include "core/string-utils.hpp"
 #include <string.h>
 
 AnyBuffer::AnyBuffer(uint16_t _size, const void *_data) :
@@ -121,6 +122,8 @@ void BluetoothBridge::receiveBluetoothPackageISR(uint8_t* buffer, uint16_t size)
 	m_workerToNetwork.addFromISR(
 		[this, msgBuffer] ()
 		{
+			info << "Incoming bluetooth:";
+			printHex(msgBuffer->data, msgBuffer->size);
 			sendNetworkPackage(msgBuffer);
 			delete msgBuffer;
 		}

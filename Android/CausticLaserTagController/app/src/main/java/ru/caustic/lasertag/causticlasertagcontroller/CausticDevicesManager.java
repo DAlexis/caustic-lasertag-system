@@ -1,5 +1,8 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -8,17 +11,16 @@ import java.util.TreeMap;
  */
 public class CausticDevicesManager {
 
+    private static final String TAG = "CausticDevicesManager";
+    private static final int MSG_DEVICES_LIST_UPDATED = 1;
+
     private static CausticDevicesManager ourInstance = new CausticDevicesManager();
 
-    private CausticDevicesManager() {
-
-    }
+    private CausticDevicesManager() { }
 
     public static CausticDevicesManager getInstance() {
         return ourInstance;
     }
-
-
 
     public Map<BridgeConnector.DeviceAddress, CausticDevice> devices = new TreeMap<BridgeConnector.DeviceAddress, CausticDevice>();
 
@@ -30,7 +32,18 @@ public class CausticDevicesManager {
 
     public void updateDevicesList() {
         BridgeConnector.getInstance().setReceiver(new Receiver());
-        
+
+        // @todo Send broadcast
+        int reqSize = 23;
+        byte[] request = new byte[reqSize];
+
+        int result = RCSProtocol.ParametersContainer.serializeParameterRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName, request, 0, reqSize);
+        if (result == 0) {
+            Log.e(TAG, "Fatal: Cannot serialize request for device name!");
+            return;
+        }
+
+        BridgeConnector.getInstance().sendMessage(BridgeConnector.Broadcasts.any, request, result);
     }
 
     class Receiver implements BridgeConnector.IncomingPackagesListener {

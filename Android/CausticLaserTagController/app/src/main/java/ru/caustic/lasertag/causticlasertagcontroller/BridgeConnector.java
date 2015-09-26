@@ -25,6 +25,14 @@ public class BridgeConnector {
             address[2] = a3;
         }
 
+        public DeviceAddress(String addressStr) {
+            String[] addressArr = addressStr.split("\\.");
+            address[0] = Integer.parseInt(addressArr[0]);
+            address[1] = Integer.parseInt(addressArr[1]);
+            address[2] = Integer.parseInt(addressArr[2]);
+            normalize();
+        }
+
         public DeviceAddress(DeviceAddress addr) {
             address[0] = addr.address[0];
             address[1] = addr.address[1];
@@ -51,6 +59,15 @@ public class BridgeConnector {
 
         public static int sizeof() {
             return 3;
+        }
+
+        private void normalize() {
+            for (int i=0; i<3; i++) {
+                if (address[i] < 0)
+                    address[i] = 0;
+                else if (address[i] > 255)
+                    address[i] = 255;
+            }
         }
     }
 
@@ -81,7 +98,15 @@ public class BridgeConnector {
     public void sendMessage(DeviceAddress addr, byte[] data, int size) {
         int messageSize = size + 1 + DeviceAddress.sizeof();
         byte[] message = new byte[messageSize];
+
+        // Putting message size
+        message[0] = (byte) messageSize;
+        // Then putting target address
         addr.serialize(message, 1);
+        // Then putting message
+        for (int i= 0; i<size; i++) {
+            message[1 + DeviceAddress.sizeof() + i] = data[i];
+        }
         BluetoothManager.getInstance().sendData(message);
     }
 
@@ -121,6 +146,8 @@ public class BridgeConnector {
         });
     }
 
-
-
+    public static class Broadcasts
+    {
+        public static final DeviceAddress any = new DeviceAddress("255.255.255");
+    }
 }
