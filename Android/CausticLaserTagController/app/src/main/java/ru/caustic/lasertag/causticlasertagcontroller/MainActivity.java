@@ -1,6 +1,9 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,16 +16,24 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "CausticMain";
+    private static final String TAG = "CC.CausticMain";
 
     private Button connectButton;
     private TextView infoTextView;
+
+    private Intent runServiceIntent;
+
+    boolean bound = false;
+    ServiceConnection sConn;
 
     static final private int CHOOSE_BT_DEVICE = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.d(TAG, "Starting main activity");
+
         connectButton = (Button) findViewById(R.id.buttonConnect);
         infoTextView = (TextView) findViewById(R.id.selectedDeviceText);
 
@@ -36,6 +47,23 @@ public class MainActivity extends AppCompatActivity {
             case BluetoothManager.BLUETOOTH_ENABLED:
                 break;
         }
+
+        sConn = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                Log.d(TAG, "MainActivity onServiceConnected");
+                bound = true;
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "MainActivity onServiceDisconnected");
+                bound = false;
+            }
+        };
+
+        //runServiceIntent = new Intent("ru.caustic.lasertag.causticlasertagcontroller.CausticConnectorService");
+        runServiceIntent = new Intent(MainActivity.this, CausticConnectorService.class);
+        startService(runServiceIntent);
+        bindService(runServiceIntent, sConn, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -102,5 +130,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void getDevListClick(View view) {
         CausticDevicesManager.getInstance().updateDevicesList();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopServiceClick(null);
+    }
+
+    public void stopServiceClick(View view) {
+        if (bound) {
+            unbindService(sConn);
+            bound = false;
+        }
+        stopService(runServiceIntent);
+    }
+
+    public void respawnClick(View view) {
     }
 }

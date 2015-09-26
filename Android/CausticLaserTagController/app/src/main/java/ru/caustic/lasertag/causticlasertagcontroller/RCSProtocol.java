@@ -15,7 +15,7 @@ public class RCSProtocol {
     public static final int DEVICE_TYPE_RIFLE = 1;
     public static final int DEVICE_TYPE_HEAD_SENSOR = 2;
 
-    private static final String TAG = "RCSProtocol";
+    private static final String TAG = "CC.RCSProtocol";
 
     public enum OperationCodeType { SET_OBJECT, OBJECT_REQUEST, CALL_REQUEST, RESERVED }
 
@@ -395,6 +395,24 @@ public class RCSProtocol {
                 pars.add(new DevNameGroupRCSP(Configuration.deviceName, "Device name"));
                 pars.add(new UintGroupRCSP(Configuration.deviceType, "Device type"));
                 funcs.add(new FunctionNoParsGroupRCSP(Functions.resetToDefaults, "Reset to default"));
+            }
+        }
+        public static class HeadSensor {
+            public static class Functions
+            {
+                public static final int playerTurnOff =     1201;
+                public static final int playerTurnOn =      1202;
+                public static final int playerReset =       1203;
+                public static final int playerRespawn =     1204;
+                public static final int playerKill =        1205;
+                /*
+                FUNC_CODE_1P(addMaxHealth, IntParameter, 1220)
+                FUNC_CODE_1P(setTeam,      TeamMT2Id,    1221)
+
+                FUNC_CODE_1P(registerWeapon,  DeviceAddress,      1300)
+                FUNC_CODE_1P(notifyIsDamager, DamageNotification, 1400)
+                */
+                public static final int rifleToHeadSensorHeartbeat = 1500;
             }
         }
     }

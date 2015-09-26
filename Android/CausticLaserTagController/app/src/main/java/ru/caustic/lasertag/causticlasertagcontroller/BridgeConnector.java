@@ -47,9 +47,9 @@ public class BridgeConnector {
 
         public int serialize(byte[] memory, int offset)
         {
-            address[offset + 0] = (byte) address[0];
-            address[offset + 1] = (byte) address[1];
-            address[offset + 2] = (byte) address[2];
+            memory[offset + 0] = (byte) address[0];
+            memory[offset + 1] = (byte) address[1];
+            memory[offset + 2] = (byte) address[2];
             return sizeof();
         }
 
@@ -108,6 +108,7 @@ public class BridgeConnector {
             message[1 + DeviceAddress.sizeof() + i] = data[i];
         }
         BluetoothManager.getInstance().sendData(message);
+        //BluetoothManager.getInstance().sendData("TEST\r\n".getBytes());
     }
 
     BridgeConnector() {
@@ -149,5 +150,6 @@ public class BridgeConnector {
     public static class Broadcasts
     {
         public static final DeviceAddress any = new DeviceAddress("255.255.255");
+        public static final DeviceAddress headSensors = new DeviceAddress("255.255.4");
     }
 }

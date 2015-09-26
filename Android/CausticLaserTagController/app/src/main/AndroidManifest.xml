@@ -35,6 +35,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertag.causticlasertagcontroller.MainActivity" />
         </activity>
+
+        <service
+            android:name=".CausticConnectorService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

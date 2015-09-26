@@ -10,36 +10,49 @@
 
 #include "network/network-base-types.hpp"
 
-class BluetoothMessageCreator
+namespace Bluetooth
 {
-public:
+
 	constexpr static uint8_t maxMessageLen = 50;
-	void setSender(const DeviceAddress&& sender);
-	bool addData(uint8_t size, const uint8_t* data);
-	void clear();
 
-	uint8_t size() { return m_message.length; }
-	void* data() { return &m_message; }
+	#pragma pack(push, 1)
+		struct Message
+		{
 
+			constexpr static uint8_t headerLength = sizeof(uint8_t) + sizeof(DeviceAddress);
+			uint8_t length = headerLength;
+			DeviceAddress address;
+			uint8_t data[maxMessageLen - sizeof(length)];
+		};
+	#pragma pack(pop)
 
-#pragma pack(push, 1)
-	struct Message
+	class MessageCreator
 	{
-		constexpr static uint8_t headerLength = sizeof(uint8_t) + sizeof(DeviceAddress);
-		uint8_t length = headerLength;
-		DeviceAddress address;
-		uint8_t data[maxMessageLen - sizeof(length)];
+	public:
+		void setSender(const DeviceAddress&& sender);
+		bool addData(uint8_t size, const uint8_t* data);
+		void clear();
+
+		uint8_t size() { return m_message.length; }
+		void* data() { return &m_message; }
+
+	private:
+		Message m_message;
 	};
-#pragma pack(pop)
 
-private:
+	class MessageReceiver
+	{
+	public:
+		MessageReceiver();
+		void reset();
+		void readByte(uint8_t byte);
+		Message& get();
+		bool ready();
 
-
-
-	Message m_message;
-};
-
-
-
+	private:
+		Message m_message;
+		uint16_t m_offset = 0;
+	};
+}
 
 #endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_BLUETOOTH_PROTOCOL_HPP_ */

@@ -10,6 +10,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public class BluetoothManager {
     public static final int REQUEST_ENABLE_BT = 1;
 
     private static BluetoothManager ourInstance = new BluetoothManager();
-    private static final String TAG = "BluetoothManager";
+    private static final String TAG = "CC.BluetoothManager";
 
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
@@ -63,23 +64,38 @@ public class BluetoothManager {
         return btAdapter.getBondedDevices();
     }
 
-    public boolean connect(String address) {
-        if (address == "")
+    public boolean connect(String _address) {
+        if (_address == "")
             return false;
+        address = _address;
         Log.d(TAG, "Creating socket...");
 
         // Set up a pointer to the remote node using it's address.
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
+
+
 
         // Two things are needed to make a connection:
         //   A MAC address, which we got above.
         //   A Service ID or UUID.  In this case we are using the
         //     UUID for SPP.
         try {
+            // This code block is for solving "[JSR82] write: write() failed" problem.
+            // See https://stackoverflow.com/questions/20078457/android-bluetoothsocket-write-fails-on-4-2-2
+            btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+            Field f = btSocket.getClass().getDeclaredField("mFdHandle");
+            f.setAccessible(true);
+            f.set(btSocket, 0x8000);
+            btSocket.close();
+            Thread.sleep(1000); // Just in case the socket was really connected
+            // end of that block
+
             btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
         } catch (IOException e) {
             Log.e(TAG, "Fatal: socket creation failed: " + e.getMessage() + ".");
             return false;
+        } catch (Exception e1) {
+            Log.e(TAG, "Reset Failed", e1);
         }
 
         // Discovery is resource intensive.  Make sure it isn't going on
@@ -113,14 +129,15 @@ public class BluetoothManager {
     public boolean disconnect() {
         if (address == "")
             return false;
-        Log.d(TAG, "...In onPause()...");
+        Log.d(TAG, "Disconnecting");
 
         try {
             btSocket.close();
-        } catch (IOException e2) {
-            Log.e(TAG, "Fatal: failed to close socket." + e2.getMessage() + ".");
+        } catch (IOException e) {
+            Log.e(TAG, "Fatal: failed to close socket." + e.getMessage() + ".");
             return false;
         }
+        address = "";
         return true;
     }
 
@@ -200,7 +217,7 @@ public class BluetoothManager {
             try {
                 mmOutStream.write(message);
             } catch (IOException e) {
-                Log.d(TAG, "...Ошибка отправки данных: " + e.getMessage() + "...");
+                Log.e(TAG, "Bluetooth data sending error: " + e.getMessage() + "...");
             }
         }
 

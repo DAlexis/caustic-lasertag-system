@@ -11,7 +11,7 @@ import java.util.TreeMap;
  */
 public class CausticDevicesManager {
 
-    private static final String TAG = "CausticDevicesManager";
+    private static final String TAG = "CC.CausticDevManager";
     private static final int MSG_DEVICES_LIST_UPDATED = 1;
 
     private static CausticDevicesManager ourInstance = new CausticDevicesManager();
@@ -36,6 +36,7 @@ public class CausticDevicesManager {
         // @todo Send broadcast
         int reqSize = 23;
         byte[] request = new byte[reqSize];
+        MemoryUtils.zerify(request);
 
         int result = RCSProtocol.ParametersContainer.serializeParameterRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName, request, 0, reqSize);
         if (result == 0) {
@@ -46,6 +47,15 @@ public class CausticDevicesManager {
         BridgeConnector.getInstance().sendMessage(BridgeConnector.Broadcasts.any, request, result);
     }
 
+    public void remoteCall(BridgeConnector.DeviceAddress target, int operationId, String argument)
+    {
+        int reqSize = 23;
+        byte[] request = new byte[reqSize];
+        MemoryUtils.zerify(request);
+
+        /// @todo Add code here
+        //int result = RCSProtocol.RemoteFunctionsContainer
+    }
     class Receiver implements BridgeConnector.IncomingPackagesListener {
         @Override
         public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)

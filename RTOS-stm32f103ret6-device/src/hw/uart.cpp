@@ -86,16 +86,16 @@ void UARTManager::rxDoneISR(uint8_t* buffer, uint16_t size)
 {
 	UNUSED_ARG(buffer);
 	UNUSED_ARG(size);
-	if (rxBuffer[rxCount] == m_stopChar)
+	rxCount++;
+	if (m_stopCharEnabled && rxBuffer[rxCount-1] == m_stopChar)
 	{
 		m_rxCallback(rxBuffer, rxCount);
 		rxCount = 0;
-	} else if (rxCount == rxBufferMaxSize-1)
+	} else if (rxCount == rxBufferMaxSize || rxCount == m_blockSize)
 	{
-		m_rxCallback(rxBuffer, rxCount+1);
+		m_rxCallback(rxBuffer, rxCount);
 		rxCount = 0;
-	} else
-		rxCount++;
+	}
 
 	HAL_UART_Receive_IT(m_huart, &(rxBuffer[rxCount]), 1);
 }

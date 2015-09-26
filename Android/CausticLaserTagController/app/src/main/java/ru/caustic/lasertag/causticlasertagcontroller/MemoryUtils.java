@@ -34,4 +34,9 @@ public class MemoryUtils {
             int16 += 65535;
         uint16ToByteArray(memory, position, int16);
     }
+
+    public static void zerify(byte[] memory) {
+        for (int i=0; i<memory.length; i++)
+            memory[i] = 0;
+    }
 }

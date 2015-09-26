@@ -109,9 +109,15 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 				if (0 == strcmp(key, "device_type"))
 				{
 					if (0 == strcmp(value, "head_sensor"))
+					{
+						info << "Creating HEAD SENSOR device";
 						resultDevice = new HeadSensor;
+					}
 					else if (0 == strcmp(value, "rifle"))
+					{
+						info << "Creating RIFLE device";
 						resultDevice = new Rifle;
+					}
 					else
 						resultDevice = nullptr;
 				}
@@ -124,7 +130,8 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 		}
 		delete parcer;
 	} else {
-		info << "SD-card unavaliable, device type is bluetooth-bridge";
+		info << "SD-card unavaliable";
+		info << "Creating BLUETOOTH BRIDGE device";
 		resultDevice = new BluetoothBridge;
 	}
 

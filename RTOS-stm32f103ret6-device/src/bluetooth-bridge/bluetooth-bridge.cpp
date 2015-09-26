@@ -12,6 +12,8 @@
 #include "core/string-utils.hpp"
 #include <string.h>
 
+using namespace Bluetooth;
+
 AnyBuffer::AnyBuffer(uint16_t _size, const void *_data) :
 	size(_size)
 {
@@ -21,26 +23,6 @@ AnyBuffer::AnyBuffer(uint16_t _size, const void *_data) :
 		memcpy(data, _data, size);
 }
 
-void BluetoothMessageCreator::setSender(const DeviceAddress&& sender)
-{
-	m_message.address = sender;
-}
-
-bool BluetoothMessageCreator::addData(uint8_t size, const uint8_t* data)
-{
-	if (maxMessageLen - m_message.length < size)
-		return false;
-
-	memcpy(&(m_message.data[m_message.length-m_message.headerLength]), data, size);
-	m_message.length += size;
-
-	return true;
-}
-
-void BluetoothMessageCreator::clear()
-{
-	m_message.length = m_message.headerLength;
-}
 
 void BluetoothBridge::init(const Pinout& pinout)
 {
@@ -62,10 +44,12 @@ void BluetoothBridge::init(const Pinout& pinout)
 
 
 	m_bluetoothPort = UARTSFactory->create();
+	m_bluetoothPort->setBlockSize(1);
 	m_bluetoothPort->setRXDoneCallback(
 		[this](uint8_t* buffer, uint16_t size)
 		{
-			receiveBluetoothPackageISR(buffer, size);
+			UNUSED_ARG(size);
+			receiveBluetoothOneByteISR(buffer[0]);
 		}
 	);
 	m_bluetoothPort->init(2, 115200);
@@ -116,6 +100,17 @@ void BluetoothBridge::receiveNetworkPackage(DeviceAddress sender, uint8_t* paylo
 	);
 }
 
+void BluetoothBridge::receiveBluetoothOneByteISR(uint8_t byte)
+{
+	m_receiver.readByte(byte);
+	if (m_receiver.ready())
+	{
+		//printf("R\n");
+		receiveBluetoothPackageISR(reinterpret_cast<uint8_t*>(&m_receiver.get()), m_receiver.get().length);
+		m_receiver.reset();
+	}
+}
+
 void BluetoothBridge::receiveBluetoothPackageISR(uint8_t* buffer, uint16_t size)
 {
 	AnyBuffer* msgBuffer = new AnyBuffer(size, buffer);
@@ -143,8 +138,9 @@ void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
 {
 	debug << "Sending package to network";
 	// Dispatching bluetooth message
-	BluetoothMessageCreator::Message *bluetoothMessage = reinterpret_cast<BluetoothMessageCreator::Message *>(buffer->data);
+	Message *bluetoothMessage = reinterpret_cast<Message *>(buffer->data);
 
+	debug << "Bluetooth message for " << ADDRESS_TO_STREAM(bluetoothMessage->address);
 	// Sending message body as is
 	NetworkLayer::instance().send(bluetoothMessage->address, bluetoothMessage->data, bluetoothMessage->length, true);
 }

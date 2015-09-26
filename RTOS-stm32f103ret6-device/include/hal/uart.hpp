@@ -22,7 +22,10 @@ public:
 	virtual void setTXDoneCallback(TXDoneCallback callback) = 0;
 	virtual void setRXDoneCallback(RXDoneCallback callback) = 0;
 	virtual void setStopChar(uint8_t stopChar) = 0;
+	virtual void enableStopChar(bool enabled) = 0;
+	virtual void setBlockSize(uint16_t blockSize) = 0;
 	virtual void setRXWorker(Worker* worker) = 0;
+
 
 	virtual void transmit(uint8_t* buffer, uint16_t size = 0) = 0;
 	virtual bool txBusy() = 0;
@@ -36,13 +39,17 @@ public:
 	void setTXDoneCallback(TXDoneCallback callback) { m_txCallback = callback; }
 	void setRXDoneCallback(RXDoneCallback callback) {m_rxCallback = callback; }
 	void setStopChar(uint8_t stopChar) { m_stopChar = stopChar; }
+	void enableStopChar(bool enabled) { m_stopCharEnabled = enabled; }
 	void setRXWorker(Worker* worker) { m_worker = worker; }
+	void setBlockSize(uint16_t blockSize) { m_blockSize = blockSize; }
 
 protected:
 	TXDoneCallback m_txCallback = nullptr;
 	RXDoneCallback m_rxCallback = nullptr;
 	uint8_t m_stopChar = '\n';
 	Worker* m_worker = nullptr;
+	uint16_t m_blockSize = 1;
+	bool m_stopCharEnabled = false;
 };
 
 class IUARTsFactory
