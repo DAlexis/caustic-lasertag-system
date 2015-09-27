@@ -141,6 +141,9 @@ uint16_t NetworkLayer::send(
 		waitingPackage.package.target = target;
 		waitingPackage.package.details = details;
 		memcpy(waitingPackage.package.payload, data, size);
+		/// @todo Check package zerification!
+		if (size<Package::payloadLength)
+			memset(waitingPackage.package.payload+size, 0, Package::payloadLength-size);
 		//trace << "Ack-using package queued";
 		return details.packageId;
 	} else {
@@ -150,7 +153,7 @@ uint16_t NetworkLayer::send(
 		m_packagesNoAck.back().details = details;
 		memcpy(m_packagesNoAck.back().payload, data, size);
 		if (size<Package::payloadLength)
-			memset(m_packagesNoAck.back().payload+size, 0, size-Package::payloadLength);
+			memset(m_packagesNoAck.back().payload+size, 0, Package::payloadLength-size); //< fixed third argument
 		//trace << "No-ack package queued";
 		return 0;
 	}

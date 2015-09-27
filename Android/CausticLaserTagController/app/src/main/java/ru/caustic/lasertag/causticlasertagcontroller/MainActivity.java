@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "CC.CausticMain";
@@ -147,5 +150,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void respawnClick(View view) {
+        CausticDevicesManager.getInstance().remoteCall(
+                BridgeConnector.Broadcasts.headSensors,
+                CausticDevicesManager.headSensor,
+                RCSProtocol.RCSPOperationCodes.HeadSensor.Functions.playerRespawn,
+                ""
+        );
     }
 }

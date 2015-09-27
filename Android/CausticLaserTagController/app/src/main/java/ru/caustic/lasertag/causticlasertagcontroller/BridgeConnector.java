@@ -151,5 +151,9 @@ public class BridgeConnector {
     {
         public static final DeviceAddress any = new DeviceAddress("255.255.255");
         public static final DeviceAddress headSensors = new DeviceAddress("255.255.4");
+        public static boolean isBroadcast(DeviceAddress addr)
+        {
+            return (addr == any || addr == headSensors);
+        }
     }
 }

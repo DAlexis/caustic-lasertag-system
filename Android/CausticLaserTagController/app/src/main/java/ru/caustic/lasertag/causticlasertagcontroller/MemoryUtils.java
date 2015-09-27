@@ -4,22 +4,22 @@ package ru.caustic.lasertag.causticlasertagcontroller;
  * Created by alexey on 19.09.15.
  */
 public class MemoryUtils {
-
+    // @todo Check endian problem for other (not uint16_t) types
     public static int byteToUnsignedByte(byte b) {
         return b < 0 ? 256 + b : b;
     }
 
     public static int bytesArrayToUint16(byte[] memory, int position) {
         int result = 0;
-        result = MemoryUtils.byteToUnsignedByte(memory[position]);
+        result = MemoryUtils.byteToUnsignedByte(memory[position+1]);
         result *= 256;
-        result += MemoryUtils.byteToUnsignedByte(memory[position+1]);
+        result += MemoryUtils.byteToUnsignedByte(memory[position]);
         return result;
     }
 
     public static void uint16ToByteArray(byte[] memory, int position, int uint16) {
-        memory[position] = (byte) (uint16 / 256);
-        memory[position+1] = (byte) (uint16 % 256);
+        memory[position+1] = (byte) (uint16 / 256);
+        memory[position] = (byte) (uint16 % 256);
     }
 
     public static int bytesArrayToInt16(byte[] memory, int position) {

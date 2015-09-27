@@ -391,9 +391,11 @@ public class RCSProtocol {
                 public static final int resetToDefaults = 2100;
             }
 
-            public static void registerOperations(ParametersContainer pars, RemoteFunctionsContainer funcs) {
+            public static void registerParameters(ParametersContainer pars) {
                 pars.add(new DevNameGroupRCSP(Configuration.deviceName, "Device name"));
                 pars.add(new UintGroupRCSP(Configuration.deviceType, "Device type"));
+            }
+            public static void registerFunctions(RemoteFunctionsContainer funcs) {
                 funcs.add(new FunctionNoParsGroupRCSP(Functions.resetToDefaults, "Reset to default"));
             }
         }
@@ -413,6 +415,18 @@ public class RCSProtocol {
                 FUNC_CODE_1P(notifyIsDamager, DamageNotification, 1400)
                 */
                 public static final int rifleToHeadSensorHeartbeat = 1500;
+            }
+
+            public static void registerParameters(ParametersContainer pars) {
+
+            }
+
+            public static void registerFunctions(RemoteFunctionsContainer funcs) {
+                funcs.add(new FunctionNoParsGroupRCSP(Functions.playerTurnOff, "Turn off player"));
+                funcs.add(new FunctionNoParsGroupRCSP(Functions.playerTurnOn, "Turn on player"));
+                funcs.add(new FunctionNoParsGroupRCSP(Functions.playerReset, "Reset players configuration to default"));
+                funcs.add(new FunctionNoParsGroupRCSP(Functions.playerRespawn, "Respawn player"));
+                funcs.add(new FunctionNoParsGroupRCSP(Functions.playerKill, "Kill player"));
             }
         }
     }
