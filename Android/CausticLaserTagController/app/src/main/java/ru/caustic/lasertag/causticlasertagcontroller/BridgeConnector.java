@@ -3,6 +3,8 @@ package ru.caustic.lasertag.causticlasertagcontroller;
 import android.os.Handler;
 import android.util.Log;
 
+import java.util.Arrays;
+
 /**
  * Created by alexey on 18.09.15.
  */
@@ -12,7 +14,24 @@ public class BridgeConnector {
         public static DeviceAddress anyDevice = new DeviceAddress(255, 255, 255);
     }
 
-    public static class DeviceAddress {
+    public static class DeviceAddress extends Object {
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            DeviceAddress that = (DeviceAddress) o;
+
+            return Arrays.equals(address, that.address);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(address);
+        }
+
         public int[] address = new int[3];
 
         public DeviceAddress() {
@@ -111,36 +130,42 @@ public class BridgeConnector {
         //BluetoothManager.getInstance().sendData("TEST\r\n".getBytes());
     }
 
-    BridgeConnector() {
+    private BridgeConnector() {
+        int qq=0;
         BluetoothManager.getInstance().setRXHandler(new Handler() {
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what) {
                     case BluetoothManager.RECIEVE_MESSAGE:                    // если приняли сообщение в Handler
                         byte[] readBuf = (byte[]) msg.obj;
+                        int size = msg.arg1;
+                        if (size >= MESSAGE_LEN_MAX) {
+                            Log.e(TAG, "Too long bluetooth message");
+                            return;
+                        }
+
                         if (position == 0) {
                             currentMsgLength = MemoryUtils.byteToUnsignedByte(readBuf[0]);
                             // @todo Add check for incorrect length
                         }
 
-                        // iterating by incoming data. It may contain many messages, so we should process it one by one
-                        for (int i = 1; i < msg.arg1; ) {
-                            // Copying message to incoming
-                            for (; i < msg.arg1 && position < currentMsgLength; i++, position++) {
-                                incoming[position] = readBuf[i];
-                            }
-
-                            // If we have the whole message, we need call
-                            if (position == currentMsgLength) {
-                                DeviceAddress addr = new DeviceAddress();
-                                addr.deserialize(incoming, 0);
-                                if (packagesReceiver != null) {
-                                    int headerSize = 1 + DeviceAddress.sizeof();
-                                    packagesReceiver.getData(addr, incoming, headerSize, currentMsgLength-headerSize);
-                                } else {
-                                    Log.e(TAG, "Packages receiver is not set!");
-                                }
-                            }
+                        for (int i=0; i<size && position < currentMsgLength; i++, position++) {
+                            incoming[position] = readBuf[i];
                         }
+
+                        if (position == currentMsgLength) {
+                            // We have received full message now
+                            DeviceAddress addr = new DeviceAddress();
+                            addr.deserialize(incoming, 1);
+                            if (packagesReceiver != null) {
+                                int headerSize = 1 + DeviceAddress.sizeof();
+                                byte[] toReceiver = Arrays.copyOfRange(incoming, headerSize, currentMsgLength);
+                                packagesReceiver.getData(addr, toReceiver, 0, currentMsgLength-headerSize);
+                            } else {
+                                Log.e(TAG, "Packages receiver is not set!");
+                            }
+                            position = 0;
+                        }
+
                         break;
                 }
             }

@@ -165,7 +165,7 @@ public class RCSProtocol {
         }
     }
 
-    public static abstract class RCSPAnyGroup {
+    public static abstract class RCSPAnyGroup extends Object {
         private int id;
         private String name;
 
@@ -184,6 +184,22 @@ public class RCSProtocol {
         }
 
         public int getId() {
+            return id;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            RCSPAnyGroup that = (RCSPAnyGroup) o;
+
+            return id == that.id;
+
+        }
+
+        @Override
+        public int hashCode() {
             return id;
         }
     }

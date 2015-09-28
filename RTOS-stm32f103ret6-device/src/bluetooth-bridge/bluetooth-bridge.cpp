@@ -14,6 +14,8 @@
 
 using namespace Bluetooth;
 
+BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
+
 AnyBuffer::AnyBuffer(uint16_t _size, const void *_data) :
 	size(_size)
 {
@@ -91,6 +93,8 @@ void BluetoothBridge::receiveNetworkPackage(DeviceAddress sender, uint8_t* paylo
 	m_bluetoothMsgCreator.setSender(std::move(sender));
 	m_bluetoothMsgCreator.addData(payloadLength, payload);
 	AnyBuffer* msgBuffer = new AnyBuffer(m_bluetoothMsgCreator.size(), m_bluetoothMsgCreator.data());
+	trace << "Bluetooth message to be sent: ";
+	printHex(msgBuffer->data, msgBuffer->size);
 	m_workerToBluetooth.add(
 		[this, msgBuffer] ()
 		{
@@ -117,7 +121,7 @@ void BluetoothBridge::receiveBluetoothPackageISR(uint8_t* buffer, uint16_t size)
 	m_workerToNetwork.addFromISR(
 		[this, msgBuffer] ()
 		{
-			info << "Incoming bluetooth:";
+			info << "Incoming bluetooth: ";
 			printHex(msgBuffer->data, msgBuffer->size);
 			sendNetworkPackage(msgBuffer);
 			delete msgBuffer;
@@ -142,5 +146,20 @@ void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
 
 	debug << "Bluetooth message for " << ADDRESS_TO_STREAM(bluetoothMessage->address);
 	// Sending message body as is
-	NetworkLayer::instance().send(bluetoothMessage->address, bluetoothMessage->data, bluetoothMessage->length, true);
+	if (broadcast.isBroadcast(bluetoothMessage->address))
+	{
+		// We need special timings for broadcasts
+		NetworkLayer::instance().send(
+				bluetoothMessage->address,
+				bluetoothMessage->data,
+				bluetoothMessage->payloadLength(),
+				true,
+				nullptr,
+				bluetoothBridgePackageTimings.broadcast
+		);
+	} else {
+		// Not broadcast packages are with default timings
+		NetworkLayer::instance().send(bluetoothMessage->address, bluetoothMessage->data, bluetoothMessage->payloadLength(), true);
+	}
+
 }

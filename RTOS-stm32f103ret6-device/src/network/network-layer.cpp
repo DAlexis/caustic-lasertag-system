@@ -6,6 +6,7 @@
  */
 
 #include "network/network-layer.hpp"
+#include "network/broadcast.hpp"
 
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
@@ -116,7 +117,6 @@ uint16_t NetworkLayer::send(
 	PackageTimings timings
 )
 {
-	ScopedTag tag("modem-send");
 	if (size > Package::payloadLength)
 	{
 		error << "Error: too long payload!";
@@ -133,6 +133,7 @@ uint16_t NetworkLayer::send(
 		WaitingPackage& waitingPackage = m_packages[details.packageId];
 		waitingPackage.wasCreated = time;
 		waitingPackage.nextTransmission = time;
+		waitingPackage.isBroadcast = broadcast.isBroadcast(target);
 
 		waitingPackage.timings = timings;
 
@@ -143,7 +144,9 @@ uint16_t NetworkLayer::send(
 		memcpy(waitingPackage.package.payload, data, size);
 		/// @todo Check package zerification!
 		if (size<Package::payloadLength)
-			memset(waitingPackage.package.payload+size, 0, Package::payloadLength-size);
+		{
+			memset(&(waitingPackage.package.payload[size]), 0, Package::payloadLength-size);
+		}
 		//trace << "Ack-using package queued";
 		return details.packageId;
 	} else {
@@ -153,7 +156,9 @@ uint16_t NetworkLayer::send(
 		m_packagesNoAck.back().details = details;
 		memcpy(m_packagesNoAck.back().payload, data, size);
 		if (size<Package::payloadLength)
+		{
 			memset(m_packagesNoAck.back().payload+size, 0, Package::payloadLength-size); //< fixed third argument
+		}
 		//trace << "No-ack package queued";
 		return 0;
 	}
@@ -166,6 +171,7 @@ void NetworkLayer::TXDoneCallback()
 
 void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 {
+	UNUSED_ARG(channel);
 	Package received;
 	memcpy(&received, data, sizeof(Package));
 
@@ -189,10 +195,15 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 			return;
 		}
 		radio << "|=| Ack for " << ackDispatcher->packageId << " accepted";
-		PackageSendingDoneCallback callback = it->second.callback;
-		m_packages.erase(it);
-		if (callback)
-			callback(ackDispatcher->packageId, true);
+		if (!it->second.isBroadcast)
+		{
+			PackageSendingDoneCallback callback = it->second.callback;
+			m_packages.erase(it);
+			if (callback)
+				callback(ackDispatcher->packageId, true);
+		} else {
+			radio << "|=| but package " << ackDispatcher->packageId << " is broadcast, so don\'t delete from queue";
+		}
 		return;
 	}
 

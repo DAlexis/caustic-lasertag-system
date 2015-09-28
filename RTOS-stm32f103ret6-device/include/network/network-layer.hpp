@@ -76,6 +76,7 @@ public:
 	 * @param size Payload's size
 	 * @param waitForAck Need waiting for acknoledgement
 	 * @param doneCallback Function to call after sending done
+	 * @param timings Timings for package
 	 * @return
 	 */
 	uint16_t send(
@@ -96,6 +97,7 @@ private:
 	{
 		Time wasCreated = 0;
 		Time nextTransmission = 0;
+		bool isBroadcast = false;
 		PackageTimings timings;
 		/*
 		uint32_t timeout = 0;

@@ -8,3 +8,8 @@
 #include "network/broadcast.hpp"
 
 Broadcast broadcast;
+
+bool Broadcast::isBroadcast(const DeviceAddress& addr)
+{
+	return addr.address[0] == 255;
+}

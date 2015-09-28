@@ -24,6 +24,8 @@ public:
 	const DeviceAddress bluetoothBridges{255, 255, 20};
 
 	const DeviceAddress any{255, 255, 255};
+
+	bool isBroadcast(const DeviceAddress& addr);
 };
 
 extern Broadcast broadcast;

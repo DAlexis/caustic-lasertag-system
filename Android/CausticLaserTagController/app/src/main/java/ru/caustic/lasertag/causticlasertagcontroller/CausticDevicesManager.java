@@ -1,5 +1,6 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,10 +14,9 @@ import java.util.TreeMap;
 public class CausticDevicesManager {
 
     private static final String TAG = "CC.CausticDevManager";
-    private static final int MSG_DEVICES_LIST_UPDATED = 1;
+    public static final int DEVICES_LIST_UPDATED = 1;
 
-
-
+    private Handler devicesListUpdated = null;
 
     public Map<BridgeConnector.DeviceAddress, CausticDevice> devices = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
     public static CausticDeviceClass headSensor = new CausticDeviceClass();
@@ -35,6 +35,14 @@ public class CausticDevicesManager {
     public static class CausticDevice {
         public BridgeConnector.DeviceAddress address = new BridgeConnector.DeviceAddress();
         public RCSProtocol.ParametersContainer parameters = new RCSProtocol.ParametersContainer();
+
+        public CausticDevice() {
+            RCSProtocol.RCSPOperationCodes.AnyDevice.registerParameters(parameters);
+        }
+
+        public String getName() {
+            return parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName).getValue();
+        }
     }
 
     public static class CausticDeviceClass {
@@ -72,17 +80,26 @@ public class CausticDevicesManager {
         BridgeConnector.getInstance().sendMessage(target, request, size);
     }
 
+    public void setDevicesListUpdated(Handler devicesListUpdated) {
+        this.devicesListUpdated = devicesListUpdated;
+    }
+
     class Receiver implements BridgeConnector.IncomingPackagesListener {
         @Override
         public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
         {
+            boolean newDeviceAdded = false;
             CausticDevice dev = devices.get(address);
             if (dev == null) {
                 dev = new CausticDevice();
                 devices.put(address, dev);
+                newDeviceAdded = true;
             }
             dev.address = new BridgeConnector.DeviceAddress(address);
             dev.parameters.deserializeStream(data, offset, size);
+            if (/*newDeviceAdded && */devicesListUpdated != null) {
+                devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
+            }
         }
     }
 }

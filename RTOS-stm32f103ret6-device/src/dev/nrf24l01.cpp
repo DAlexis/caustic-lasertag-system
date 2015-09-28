@@ -601,7 +601,8 @@ void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 {
 	if (m_debug)
 	{
-		trace << "nrf24l01 package:" << "\n";
+		trace << "nrf24l01 package >>>\n";
+		printf("\t");
 		printHex(data, size);
 	}
     switchToTX();
@@ -692,9 +693,13 @@ void NRF24L01Manager::interrogate()
         while (!isRXEmpty())
         {
             receiveData(payloadSize, data);
+            if (m_debug)
+			{
+				trace << "nrf24l01 package <<<\n";
+				printHex(data, payloadSize);
+			}
             if (m_RXcallback == nullptr) {
                 printf("Warning: Callback is not set! RX data from pipe %d: \n", pipe);
-                printf("%x %x %x %x %x\n", data[0], data[1], data[2], data[3], data[4]);
             } else {
             	//info << "RX callback called";
                 m_RXcallback(pipe, data);

@@ -18,6 +18,14 @@ struct AnyBuffer
 	const uint16_t size;
 };
 
+class BluetoothBridgePackageTimings
+{
+public:
+	PackageTimings broadcast{false, 1000000, 100000, 100000};
+};
+
+extern BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
+
 class BluetoothBridge : public IAnyDevice
 {
 public:
@@ -29,7 +37,7 @@ public:
 
 private:
 	constexpr static uint16_t bluetoothIncommingBufferSize = 200;
-	void receiveNetworkPackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
+	void receiveNetworkPackage(const DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
 	void receiveBluetoothOneByteISR(uint8_t byte);
 	void receiveBluetoothPackageISR(uint8_t* buffer, uint16_t size);
 
@@ -39,6 +47,8 @@ private:
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
 
 	IUARTManager* m_bluetoothPort;
+
+	/// @todo Queues should be as large as possible, so need to increase its size
 	Worker m_workerToBluetooth{10};
 	Worker m_workerToNetwork{10};
 	Bluetooth::MessageReceiver m_receiver;

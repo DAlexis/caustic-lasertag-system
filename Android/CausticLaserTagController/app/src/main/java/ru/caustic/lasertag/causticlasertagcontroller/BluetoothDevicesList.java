@@ -25,7 +25,6 @@ public class BluetoothDevicesList extends AppCompatActivity {
 
     Set<BluetoothDevice> pairedDevicesSet = null;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

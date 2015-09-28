@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,7 +33,6 @@ public class BluetoothManager {
 
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
-    private Handler handler;
     private ConnectedThread mConnectedThread;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
@@ -48,10 +48,7 @@ public class BluetoothManager {
     }
 
     public void setRXHandler(Handler _handler) {
-        handler = _handler;
-    }
-    public void setTargetAddress(String _address) {
-        address = _address;
+        mConnectedThread.handler = _handler;
     }
 
 
@@ -121,7 +118,7 @@ public class BluetoothManager {
         // Create a data stream so we can talk to server.
         Log.d(TAG, "Creating data stream...");
 
-        mConnectedThread = new ConnectedThread(btSocket, handler);
+        mConnectedThread = new ConnectedThread(btSocket);
         mConnectedThread.start();
         return true;
     }
@@ -176,13 +173,12 @@ public class BluetoothManager {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
-        private Handler handler;
+        public Handler handler;
 
-        public ConnectedThread(BluetoothSocket socket, Handler _handler) {
+        public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
-            handler = _handler;
 
             // Get the input and output streams, using temp objects because
             // member streams are final
@@ -203,8 +199,14 @@ public class BluetoothManager {
             for (;;) {
                 try {
                     // Read from the InputStream
-                    bytes = mmInStream.read(buffer);        // Получаем кол-во байт и само собщение в байтовый массив "buffer"
-                    handler.obtainMessage(RECIEVE_MESSAGE, bytes, -1, buffer).sendToTarget();     // Отправляем в очередь сообщений Handler
+                    bytes = mmInStream.read(buffer);
+                    byte toReceiver[] = buffer.clone();
+                    if (handler != null) {
+                        handler.obtainMessage(RECIEVE_MESSAGE, bytes, -1, toReceiver).sendToTarget();
+                    } else {
+                        Log.e(TAG, "Handler is not set!");
+                    }
+
                 } catch (IOException e) {
                     Log.d(TAG, "run died due to exception!");
                     break;

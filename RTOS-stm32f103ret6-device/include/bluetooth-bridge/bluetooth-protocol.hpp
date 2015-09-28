@@ -18,11 +18,15 @@ namespace Bluetooth
 	#pragma pack(push, 1)
 		struct Message
 		{
-
 			constexpr static uint8_t headerLength = sizeof(uint8_t) + sizeof(DeviceAddress);
 			uint8_t length = headerLength;
 			DeviceAddress address;
 			uint8_t data[maxMessageLen - sizeof(length)];
+
+			uint8_t payloadLength()
+			{
+				return length - headerLength;
+			}
 		};
 	#pragma pack(pop)
 
