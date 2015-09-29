@@ -176,9 +176,20 @@ public class BridgeConnector {
     {
         public static final DeviceAddress any = new DeviceAddress("255.255.255");
         public static final DeviceAddress headSensors = new DeviceAddress("255.255.4");
+        public static final DeviceAddress headSensorsRed    = new DeviceAddress("255.255.0");
+        public static final DeviceAddress headSensorsBlue   = new DeviceAddress("255.255.1");
+        public static final DeviceAddress headSensorsYellow = new DeviceAddress("255.255.2");
+        public static final DeviceAddress headSensorsGreen  = new DeviceAddress("255.255.3");
+
+
         public static boolean isBroadcast(DeviceAddress addr)
         {
-            return (addr == any || addr == headSensors);
+            return addr == any
+                    || addr == headSensors
+                    || addr == headSensorsRed
+                    || addr == headSensorsBlue
+                    || addr == headSensorsYellow
+                    || addr == headSensorsGreen;
         }
     }
 }

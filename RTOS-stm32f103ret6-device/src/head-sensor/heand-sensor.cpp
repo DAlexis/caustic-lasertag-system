@@ -136,6 +136,7 @@ void HeadSensor::configure(const Pinout &_pinout)
 	NetworkLayer::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
 	NetworkLayer::instance().registerBroadcast(broadcast.any);
 	NetworkLayer::instance().registerBroadcast(broadcast.headSensors);
+	NetworkLayer::instance().registerBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
 	NetworkLayer::instance().init();
 
 	m_tasksPool.add(
@@ -429,9 +430,27 @@ uint8_t HeadSensor::getTeamColor()
 
 
 /////////////////////
+// HeadSensor::TeamBroadcastTester
+bool HeadSensor::TeamBroadcastTester::isAcceptableBroadcast(const DeviceAddress& addr)
+{
+	if (addr == broadcast.headSensorsRed && *m_pId == 0)
+		return true;
+	if (addr == broadcast.headSensorsBlue && *m_pId == 1)
+		return true;
+	if (addr == broadcast.headSensorsYellow && *m_pId == 2)
+		return true;
+	if (addr == broadcast.headSensorsGreen && *m_pId == 3)
+		return true;
+	return false;
+}
+
+
+/////////////////////
 // Test functions
 void HeadSensor::testDie(const char*)
 {
 	playerState.healthCurrent = 0;
 	shotCallback(0, 0, 0);
 }
+
+

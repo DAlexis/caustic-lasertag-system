@@ -10,7 +10,7 @@
 
 #include "rcsp/RCSP-base-types.hpp"
 #include "network/network-base-types.hpp"
-
+#include "network/broadcast.hpp"
 #include "dev/nrf24l01.hpp"
 #include "hal/system-clock.hpp"
 #include "utils/macro.hpp"
@@ -65,6 +65,7 @@ public:
 	constexpr static uint32_t defaultResendTimeDelta = 300000;
 
 	NetworkLayer();
+	~NetworkLayer(); //< Only for future purpose
 	void init();
 	void setAddress(const DeviceAddress& address);
 	void setPackageReceiver(ReceivePackageCallback callback);
@@ -89,6 +90,7 @@ public:
 	);
 
 	void registerBroadcast(const DeviceAddress& address);
+	void registerBroadcastTester(Broadcast::IBroadcastTester* tester);
 
 	SIGLETON_IN_CLASS(NetworkLayer);
 private:
@@ -132,6 +134,7 @@ private:
 	bool checkIfIdStoredAndStore(uint16_t id);
 	bool isTranslationAllowed();
 	void temproraryProhibitTransmission();
+	bool isBroadcast(const DeviceAddress& addr);
 
 	Time m_transmissionProhibitedTime = 0;
 	Time m_transmissionProhibitionPeriod = 0;
@@ -148,6 +151,7 @@ private:
 	std::list<uint16_t> m_lastReceivedIds;
 
 	std::set<DeviceAddress> m_broadcasts;
+	std::list<Broadcast::IBroadcastTester*> m_broadcastTesters;
 
 	const DeviceAddress* m_selfAddress = nullptr;
 	ReceivePackageCallback m_receivePackageCallback = nullptr;

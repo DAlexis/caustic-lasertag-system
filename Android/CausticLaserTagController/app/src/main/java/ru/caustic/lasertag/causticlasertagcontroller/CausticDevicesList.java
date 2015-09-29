@@ -38,7 +38,7 @@ public class CausticDevicesList extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        CausticDevicesManager.getInstance().setDevicesListUpdated(
+        CausticDevicesManager.getInstance().updateDevicesList(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
                         int qq = 0;
@@ -60,7 +60,6 @@ public class CausticDevicesList extends AppCompatActivity {
                     }
                 });
 
-        CausticDevicesManager.getInstance().updateDevicesList();
     }
 
     @Override

@@ -5,27 +5,22 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView" />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select paired device"
+        android:text="Select"
         android:id="@+id/selectBtDevice"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="selectBtDeviceClick" />
+        android:onClick="selectBtDeviceClick"
+        android:layout_alignTop="@+id/selectedDeviceText"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
+        android:text="Bridge not connected"
         android:id="@+id/selectedDeviceText"
-        android:layout_below="@+id/selectBtDevice"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -34,31 +29,21 @@
         android:layout_height="wrap_content"
         android:text="Connect"
         android:id="@+id/buttonConnect"
-        android:layout_below="@+id/selectedDeviceText"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:onClick="connectButtonClick"
-        android:clickable="false" />
+        android:clickable="false"
+        android:layout_below="@+id/selectBtDevice"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Disconnect"
         android:id="@+id/buttonDisconnect"
-        android:layout_below="@+id/buttonConnect"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="disconnectClick" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get devices list"
-        android:id="@+id/button"
-        android:layout_below="@+id/buttonDisconnect"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="getDevListClick" />
+        android:onClick="disconnectClick"
+        android:layout_alignTop="@+id/buttonConnect"
+        android:layout_toRightOf="@+id/buttonConnect"
+        android:layout_toEndOf="@+id/buttonConnect" />
 
     <Button
         android:layout_width="wrap_content"
@@ -73,21 +58,61 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Broadcast respawn"
+        android:text="All"
         android:id="@+id/buttonRespawn"
-        android:layout_below="@+id/button"
+        android:onClick="respawnClick"
+        android:layout_below="@+id/textView2"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="respawnClick" />
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Caustic devices"
+        android:text="Configure device..."
         android:id="@+id/buttonDevicesList"
-        android:layout_below="@+id/buttonRespawn"
+        android:onClick="causticDevsListClicked"
+        android:layout_below="@+id/buttonConnect"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="causticDevsListClicked" />
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Quick commands"
+        android:id="@+id/textView"
+        android:layout_below="@+id/buttonDevicesList"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Respawn"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Red"
+        android:id="@+id/buttonRespRed"
+        android:layout_alignTop="@+id/buttonRespawn"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2"
+        android:onClick="respRedClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Blue"
+        android:id="@+id/buttonRespBlue"
+        android:layout_alignTop="@+id/buttonRespRed"
+        android:layout_toRightOf="@+id/buttonRespRed"
+        android:layout_toEndOf="@+id/buttonRespRed"
+        android:onClick="respBlueClick" />
 
 </RelativeLayout>

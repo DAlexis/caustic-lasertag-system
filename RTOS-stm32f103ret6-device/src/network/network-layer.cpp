@@ -63,6 +63,15 @@ NetworkLayer::NetworkLayer()
 	m_modemTask.setTask(std::bind(&NetworkLayer::interrogate, this));
 }
 
+NetworkLayer::~NetworkLayer()
+{
+	for (auto it = m_broadcastTesters.begin(); it != m_broadcastTesters.end(); it++)
+	{
+		if (*it)
+			delete *it;
+	}
+}
+
 void NetworkLayer::setAddress(const DeviceAddress& address)
 {
 	m_selfAddress = &address;
@@ -97,6 +106,11 @@ void NetworkLayer::init()
 void NetworkLayer::registerBroadcast(const DeviceAddress& address)
 {
 	m_broadcasts.insert(address);
+}
+
+void NetworkLayer::registerBroadcastTester(Broadcast::IBroadcastTester* tester)
+{
+	m_broadcastTesters.push_back(tester);
 }
 
 uint16_t NetworkLayer::generatePackageId()
@@ -179,7 +193,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 
 	// Skipping packages for other devices
 	//received.target.print();
-	if (received.target != *m_selfAddress && m_broadcasts.find(received.target) == m_broadcasts.end())
+	if (received.target != *m_selfAddress && !isBroadcast(received.target))
 		return;
 
 	// Dispatching if this is acknoledgement
@@ -359,3 +373,14 @@ void NetworkLayer::temproraryProhibitTransmission()
 	 */
 	m_transmissionProhibitionPeriod = 8000;
 }
+
+bool NetworkLayer::isBroadcast(const DeviceAddress& addr)
+{
+	if (m_broadcasts.find(addr) != m_broadcasts.end())
+		return true;
+	for (auto it = m_broadcastTesters.begin(); it != m_broadcastTesters.end(); it++)
+		if (*it && (*it)->isAcceptableBroadcast(addr))
+			return true;
+	return false;
+}
+

@@ -16,7 +16,9 @@ public class CausticDevicesManager {
     private static final String TAG = "CC.CausticDevManager";
     public static final int DEVICES_LIST_UPDATED = 1;
 
-    private Handler devicesListUpdated = null;
+
+    private DeviceManagerTask currentTask = null;
+
 
     public Map<BridgeConnector.DeviceAddress, CausticDevice> devices = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
     public static CausticDeviceClass headSensor = new CausticDeviceClass();
@@ -49,21 +51,8 @@ public class CausticDevicesManager {
         public RCSProtocol.RemoteFunctionsContainer functions = new RCSProtocol.RemoteFunctionsContainer();
     }
 
-    public void updateDevicesList() {
-        BridgeConnector.getInstance().setReceiver(new Receiver());
-
-        // @todo Send broadcast
-        int reqSize = 23;
-        byte[] request = new byte[reqSize];
-        MemoryUtils.zerify(request);
-
-        int result = RCSProtocol.ParametersContainer.serializeParameterRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName, request, 0, reqSize);
-        if (result == 0) {
-            Log.e(TAG, "Fatal: Cannot serialize request for device name!");
-            return;
-        }
-
-        BridgeConnector.getInstance().sendMessage(BridgeConnector.Broadcasts.any, request, result);
+    public void updateDevicesList(Handler devicesListUpdated) {
+        currentTask = new TaskUpdateDavicesList(devicesListUpdated);
     }
 
     public void remoteCall(BridgeConnector.DeviceAddress target, CausticDeviceClass device, int operationId, String argument)
@@ -80,25 +69,56 @@ public class CausticDevicesManager {
         BridgeConnector.getInstance().sendMessage(target, request, size);
     }
 
-    public void setDevicesListUpdated(Handler devicesListUpdated) {
-        this.devicesListUpdated = devicesListUpdated;
+    private interface DeviceManagerTask {
+        String taskText();
     }
 
-    class Receiver implements BridgeConnector.IncomingPackagesListener {
+    class TaskUpdateDavicesList implements DeviceManagerTask {
+
+        private Handler devicesListUpdated = null;
+
         @Override
-        public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
-        {
-            boolean newDeviceAdded = false;
-            CausticDevice dev = devices.get(address);
-            if (dev == null) {
-                dev = new CausticDevice();
-                devices.put(address, dev);
-                newDeviceAdded = true;
+        public String taskText() {
+            return "Updating devices list";
+        }
+
+        public TaskUpdateDavicesList(Handler _devicesListUpdated) {
+            devicesListUpdated = _devicesListUpdated;
+            BridgeConnector.getInstance().setReceiver(new Receiver());
+
+            // @todo Send broadcast
+            int reqSize = 23;
+            byte[] request = new byte[reqSize];
+            MemoryUtils.zerify(request);
+
+            int result = RCSProtocol.ParametersContainer.serializeParameterRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName, request, 0, reqSize);
+            if (result == 0) {
+                Log.e(TAG, "Fatal: Cannot serialize request for device name!");
+                return;
             }
-            dev.address = new BridgeConnector.DeviceAddress(address);
-            dev.parameters.deserializeStream(data, offset, size);
-            if (/*newDeviceAdded && */devicesListUpdated != null) {
-                devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
+
+            // Clearing devices list
+            devices.clear();
+
+            BridgeConnector.getInstance().sendMessage(BridgeConnector.Broadcasts.any, request, result);
+        }
+
+        class Receiver implements BridgeConnector.IncomingPackagesListener {
+            @Override
+            public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
+            {
+                boolean newDeviceAdded = false;
+                CausticDevice dev = devices.get(address);
+                if (dev == null) {
+                    dev = new CausticDevice();
+                    devices.put(address, dev);
+                    newDeviceAdded = true;
+                }
+                dev.address = new BridgeConnector.DeviceAddress(address);
+                dev.parameters.deserializeStream(data, offset, size);
+                if (/*newDeviceAdded && */devicesListUpdated != null) {
+                    devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
+                }
             }
         }
     }

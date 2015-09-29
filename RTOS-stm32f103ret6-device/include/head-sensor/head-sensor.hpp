@@ -78,6 +78,19 @@ private:
 
 	Time m_shockDelayBegin = 0;
 	TasksPool m_tasksPool;
+
+	class TeamBroadcastTester : public Broadcast::IBroadcastTester
+	{
+	public:
+		TeamBroadcastTester(const TYPE_OF(ConfigCodes::HeadSensor::Configuration, plyerMT2Id)& pId) :
+			m_pId(&pId)
+		{}
+
+		bool isAcceptableBroadcast(const DeviceAddress& addr);
+	private:
+
+		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, plyerMT2Id)* m_pId;
+	};
 };
 
 

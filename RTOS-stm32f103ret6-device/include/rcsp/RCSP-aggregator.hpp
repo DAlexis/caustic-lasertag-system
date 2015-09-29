@@ -46,6 +46,11 @@
 #define RESTORABLE      true
 #define NOT_RESTORABLE  false
 
+/**
+ * Get type for any parameter to avoid type mismatch
+ */
+#define TYPE_OF(NameSpace, parameter)        NameSpace::parameter##Type
+
 /** Create variable (in any class) and connect it to configs aggregator.
  *  ST = Simple Types, that can be parsed from string using StringParser<Type>::parse(str)
  */

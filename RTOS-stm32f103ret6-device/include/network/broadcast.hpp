@@ -26,6 +26,13 @@ public:
 	const DeviceAddress any{255, 255, 255};
 
 	bool isBroadcast(const DeviceAddress& addr);
+
+	class IBroadcastTester
+	{
+	public:
+		virtual ~IBroadcastTester() {}
+		virtual bool isAcceptableBroadcast(const DeviceAddress& addr) = 0;
+	};
 };
 
 extern Broadcast broadcast;

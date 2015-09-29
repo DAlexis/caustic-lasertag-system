@@ -131,10 +131,6 @@ public class MainActivity extends AppCompatActivity {
         BluetoothManager.getInstance().disconnect();
     }
 
-    public void getDevListClick(View view) {
-        CausticDevicesManager.getInstance().updateDevicesList();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -158,8 +154,28 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    public void respRedClick(View view) {
+        CausticDevicesManager.getInstance().remoteCall(
+                BridgeConnector.Broadcasts.headSensorsRed,
+                CausticDevicesManager.headSensor,
+                RCSProtocol.RCSPOperationCodes.HeadSensor.Functions.playerRespawn,
+                ""
+        );
+    }
+
+    public void respBlueClick(View view) {
+        CausticDevicesManager.getInstance().remoteCall(
+                BridgeConnector.Broadcasts.headSensorsBlue,
+                CausticDevicesManager.headSensor,
+                RCSProtocol.RCSPOperationCodes.HeadSensor.Functions.playerRespawn,
+                ""
+        );
+    }
+
     public void causticDevsListClicked(View view) {
         Intent intent = new Intent (MainActivity.this, CausticDevicesList.class);
         startActivityForResult(intent, CHOOSE_BT_DEVICE);
     }
+
+
 }
