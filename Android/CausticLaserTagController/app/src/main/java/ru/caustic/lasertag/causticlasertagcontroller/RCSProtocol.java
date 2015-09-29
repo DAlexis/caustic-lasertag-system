@@ -91,6 +91,21 @@ public class RCSProtocol {
             return 3;
         }
 
+        public int serializeSetObject(int id, byte[] memory, int position, int maxPosition) {
+            RCSPParameterGroup par = allParameters.get(id);
+            int size = par.size();
+            int totalSize = size + 3;
+
+            if (maxPosition - position < totalSize)
+                return 0;
+
+            memory[position++] = 0;
+            MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.SET_OBJECT));
+            position += 2;
+            par.serialize(memory, position);
+            return totalSize;
+        }
+
         /**
          * Read one parameter from binary stream
          * @param memory Binary stream
@@ -398,6 +413,11 @@ public class RCSProtocol {
     {
         public static class AnyDevice {
             public static class Configuration {
+                public static final int DEV_TYPE_UNDEFINED = 100;
+                public static final int DEV_TYPE_RIFLE = 1;
+                public static final int DEV_TYPE_HEAD_SENSOR = 2;
+                public static final int DEV_TYPE_BLUETOOTH_BRIDGE = 3;
+
                 public static final int devAddr = 2000;
                 public static final int deviceName = 2001;
                 public static final int deviceType = 2002;
@@ -410,11 +430,13 @@ public class RCSProtocol {
             public static void registerParameters(ParametersContainer pars) {
                 pars.add(new DevNameGroupRCSP(Configuration.deviceName, "Device name"));
                 pars.add(new UintGroupRCSP(Configuration.deviceType, "Device type"));
+                pars.get(Configuration.deviceType).setValue(Integer.toString(Configuration.DEV_TYPE_UNDEFINED));
             }
             public static void registerFunctions(RemoteFunctionsContainer funcs) {
                 funcs.add(new FunctionNoParsGroupRCSP(Functions.resetToDefaults, "Reset to default"));
             }
         }
+
         public static class HeadSensor {
             public static class Functions
             {
@@ -445,6 +467,22 @@ public class RCSProtocol {
                 funcs.add(new FunctionNoParsGroupRCSP(Functions.playerKill, "Kill player"));
             }
         }
+        public static class Rifle {
+            public static class Functions
+            {
+
+            }
+
+            public static void registerParameters(ParametersContainer pars) {
+
+            }
+
+            public static void registerFunctions(RemoteFunctionsContainer funcs) {
+
+            }
+        }
+
+
     }
 
 }

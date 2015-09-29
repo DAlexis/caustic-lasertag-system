@@ -1,12 +1,9 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
 import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Created by alexey on 20.09.15.
@@ -16,25 +13,29 @@ public class CausticDevicesManager {
     private static final String TAG = "CC.CausticDevManager";
     public static final int DEVICES_LIST_UPDATED = 1;
 
-
     private DeviceManagerTask currentTask = null;
-
+    private Handler devicesListUpdated = null;
 
     public Map<BridgeConnector.DeviceAddress, CausticDevice> devices = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
     public static CausticDeviceClass headSensor = new CausticDeviceClass();
+    public static CausticDeviceClass rife = new CausticDeviceClass();
 
     private static CausticDevicesManager ourInstance = new CausticDevicesManager();
 
     private CausticDevicesManager() {
         RCSProtocol.RCSPOperationCodes.AnyDevice.registerFunctions(headSensor.functions);
         RCSProtocol.RCSPOperationCodes.HeadSensor.registerFunctions(headSensor.functions);
+
+        RCSProtocol.RCSPOperationCodes.AnyDevice.registerFunctions(rife.functions);
+        RCSProtocol.RCSPOperationCodes.Rifle.registerFunctions(rife.functions);
     }
 
     public static CausticDevicesManager getInstance() {
         return ourInstance;
     }
 
-    public static class CausticDevice {
+    public class CausticDevice {
+        private boolean parametersAreAdded = false;
         public BridgeConnector.DeviceAddress address = new BridgeConnector.DeviceAddress();
         public RCSProtocol.ParametersContainer parameters = new RCSProtocol.ParametersContainer();
 
@@ -45,81 +46,154 @@ public class CausticDevicesManager {
         public String getName() {
             return parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName).getValue();
         }
+
+        public void determineType() {
+            RCSPStream stream = new RCSPStream();
+            stream.addObjectRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceType);
+            stream.send(address);
+        }
+
+        public void addDeviceRelatedParameters() {
+            if (parametersAreAdded)
+                return;
+
+            int type = Integer.parseInt(parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceType).getValue());
+            switch (type) {
+                case RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.DEV_TYPE_UNDEFINED:
+                    return;
+                case RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.DEV_TYPE_RIFLE:
+                    RCSProtocol.RCSPOperationCodes.Rifle.registerParameters(parameters);
+                    break;
+                case RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.DEV_TYPE_HEAD_SENSOR:
+                    RCSProtocol.RCSPOperationCodes.HeadSensor.registerParameters(parameters);
+                    break;
+                default:
+                    return;
+            }
+
+            parametersAreAdded = true;
+        }
     }
 
     public static class CausticDeviceClass {
         public RCSProtocol.RemoteFunctionsContainer functions = new RCSProtocol.RemoteFunctionsContainer();
     }
 
-    public void updateDevicesList(Handler devicesListUpdated) {
-        currentTask = new TaskUpdateDavicesList(devicesListUpdated);
+    public boolean updateDevicesList(Handler devicesListUpdated) {
+        this.devicesListUpdated = devicesListUpdated;
+        currentTask = new TaskUpdateDevicesList();
+        return true;
     }
 
     public void remoteCall(BridgeConnector.DeviceAddress target, CausticDeviceClass device, int operationId, String argument)
     {
-        int reqSize = 23;
-        byte[] request = new byte[reqSize];
-        MemoryUtils.zerify(request);
-
-        int size = device.functions.serializeCall(operationId, argument, request, 0, reqSize);
-        if (size == 0) {
-            Log.e(TAG, "Fatal: Cannot serialize call request for " + operationId + "!");
-            return;
-        }
-        BridgeConnector.getInstance().sendMessage(target, request, size);
+        RCSPStream stream = new RCSPStream();
+        stream.addFunctionCall(device, operationId, argument);
+        stream.send(target);
     }
 
     private interface DeviceManagerTask {
         String taskText();
     }
 
-    class TaskUpdateDavicesList implements DeviceManagerTask {
+    public class RCSPStream {
+        int requestSize = 23;
+        byte[] request = new byte[requestSize];
+        int cursor = 0;
 
-        private Handler devicesListUpdated = null;
+        public RCSPStream()
+        {
+            MemoryUtils.zerify(request);
+        }
+
+        public boolean addObjectRequest(int id) {
+            int size = RCSProtocol.ParametersContainer.serializeParameterRequest(
+                    id,
+                    request,
+                    cursor,
+                    requestSize
+            );
+
+            if (size != 0) {
+                cursor += size;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean addSetObject(CausticDevice dev, int id) {
+            RCSProtocol.ParametersContainer pars = dev.parameters;
+
+            int size = pars.serializeSetObject(
+                    id,
+                    request,
+                    cursor,
+                    requestSize
+            );
+
+            if (size != 0) {
+                cursor += size;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean addFunctionCall(CausticDeviceClass devClass, int id, String argument) {
+            int size = devClass.functions.serializeCall(
+                    id,
+                    argument,
+                    request,
+                    cursor,
+                    requestSize
+            );
+
+            if (size != 0) {
+                cursor += size;
+                return true;
+            }
+            return false;
+        }
+
+        public void send(BridgeConnector.DeviceAddress addr) {
+            BridgeConnector.getInstance().sendMessage(addr, request, cursor);
+        }
+    }
+
+    class TaskUpdateDevicesList implements DeviceManagerTask {
 
         @Override
         public String taskText() {
             return "Updating devices list";
         }
 
-        public TaskUpdateDavicesList(Handler _devicesListUpdated) {
-            devicesListUpdated = _devicesListUpdated;
+        public TaskUpdateDevicesList() {
             BridgeConnector.getInstance().setReceiver(new Receiver());
-
-            // @todo Send broadcast
-            int reqSize = 23;
-            byte[] request = new byte[reqSize];
-            MemoryUtils.zerify(request);
-
-            int result = RCSProtocol.ParametersContainer.serializeParameterRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName, request, 0, reqSize);
-            if (result == 0) {
-                Log.e(TAG, "Fatal: Cannot serialize request for device name!");
-                return;
-            }
-
-            // Clearing devices list
+            RCSPStream stream = new RCSPStream();
+            stream.addObjectRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName);
             devices.clear();
-
-            BridgeConnector.getInstance().sendMessage(BridgeConnector.Broadcasts.any, request, result);
+            stream.send(BridgeConnector.Broadcasts.any);
         }
+    }
 
-        class Receiver implements BridgeConnector.IncomingPackagesListener {
-            @Override
-            public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
-            {
-                boolean newDeviceAdded = false;
-                CausticDevice dev = devices.get(address);
-                if (dev == null) {
-                    dev = new CausticDevice();
-                    devices.put(address, dev);
-                    newDeviceAdded = true;
-                }
+    class Receiver implements BridgeConnector.IncomingPackagesListener {
+        @Override
+        public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
+        {
+            boolean newDeviceAdded = false;
+            CausticDevice dev = devices.get(address);
+            if (dev == null) {
+                dev = new CausticDevice();
                 dev.address = new BridgeConnector.DeviceAddress(address);
-                dev.parameters.deserializeStream(data, offset, size);
-                if (/*newDeviceAdded && */devicesListUpdated != null) {
-                    devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
-                }
+                devices.put(address, dev);
+                newDeviceAdded = true;
+            }
+            dev.parameters.deserializeStream(data, offset, size);
+            if (newDeviceAdded && devicesListUpdated != null) {
+                devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
             }
         }
     }
+
 }
