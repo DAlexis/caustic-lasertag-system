@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,9 +37,17 @@ public class BluetoothManager {
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     private String address = "";
+    private String deviceName = "";
 
     private BluetoothManager() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
+        onConnectionClosed();
+    }
+
+    private void onConnectionClosed()
+    {
+        address = "";
+        deviceName = "Bridge not connected";
     }
 
     public static BluetoothManager getInstance() {
@@ -51,7 +58,6 @@ public class BluetoothManager {
         mConnectedThread.handler = _handler;
     }
 
-
     public Intent getIntentEnable() {
         return new Intent(btAdapter.ACTION_REQUEST_ENABLE);
     }
@@ -61,9 +67,14 @@ public class BluetoothManager {
         return btAdapter.getBondedDevices();
     }
 
-    public boolean connect(String _address) {
+    public boolean isConnected() {
+        return address != "";
+    }
+
+    public boolean connect(String _address, String _deviceName) {
         if (_address == "")
             return false;
+        deviceName = _deviceName;
         address = _address;
         Log.d(TAG, "Creating socket...");
 
@@ -89,9 +100,11 @@ public class BluetoothManager {
 
             btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
         } catch (IOException e) {
+            onConnectionClosed();
             Log.e(TAG, "Fatal: socket creation failed: " + e.getMessage() + ".");
             return false;
         } catch (Exception e1) {
+            onConnectionClosed();
             Log.e(TAG, "Reset Failed", e1);
         }
 
@@ -105,6 +118,7 @@ public class BluetoothManager {
             btSocket.connect();
             Log.d(TAG, "Connection established and ready to data transfer");
         } catch (IOException e) {
+            onConnectionClosed();
             Log.e(TAG, "Error during btSocket.connect(): " + e.getMessage());
             try {
                 btSocket.close();
@@ -124,7 +138,7 @@ public class BluetoothManager {
     }
 
     public boolean disconnect() {
-        if (address == "")
+        if (!isConnected())
             return false;
         Log.d(TAG, "Disconnecting");
 
@@ -134,7 +148,7 @@ public class BluetoothManager {
             Log.e(TAG, "Fatal: failed to close socket." + e.getMessage() + ".");
             return false;
         }
-        address = "";
+        onConnectionClosed();
         return true;
     }
 
@@ -166,6 +180,10 @@ public class BluetoothManager {
         try {
             btSocket.close();
         } catch (IOException e) { }
+    }
+
+    public String getDeviceName() {
+        return deviceName;
     }
 
     private class ConnectedThread extends Thread {

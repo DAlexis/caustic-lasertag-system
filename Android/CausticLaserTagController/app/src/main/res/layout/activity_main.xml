@@ -8,12 +8,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select"
+        android:text="Connect to bridge..."
         android:id="@+id/selectBtDevice"
         android:onClick="selectBtDeviceClick"
-        android:layout_alignTop="@+id/selectedDeviceText"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/selectedDeviceText"
+        android:layout_alignRight="@+id/buttonStopService"
+        android:layout_alignEnd="@+id/buttonStopService" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,23 +27,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connect"
-        android:id="@+id/buttonConnect"
-        android:onClick="connectButtonClick"
-        android:clickable="false"
-        android:layout_below="@+id/selectBtDevice"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Disconnect"
         android:id="@+id/buttonDisconnect"
         android:onClick="disconnectClick"
-        android:layout_alignTop="@+id/buttonConnect"
-        android:layout_toRightOf="@+id/buttonConnect"
-        android:layout_toEndOf="@+id/buttonConnect" />
+        android:layout_above="@+id/buttonDevicesList"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -71,7 +60,7 @@
         android:text="Configure device..."
         android:id="@+id/buttonDevicesList"
         android:onClick="causticDevsListClicked"
-        android:layout_below="@+id/buttonConnect"
+        android:layout_below="@+id/selectBtDevice"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

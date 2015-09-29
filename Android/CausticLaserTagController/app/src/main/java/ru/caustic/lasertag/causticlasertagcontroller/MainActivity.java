@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "Starting main activity");
 
-        connectButton = (Button) findViewById(R.id.buttonConnect);
         infoTextView = (TextView) findViewById(R.id.selectedDeviceText);
 
         switch(BluetoothManager.getInstance().checkBluetoothState()) {
@@ -63,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        infoTextView.setText(BluetoothManager.getInstance().getDeviceName());
+
+        // This is not used yet
         //runServiceIntent = new Intent("ru.caustic.lasertag.causticlasertagcontroller.CausticConnectorService");
         runServiceIntent = new Intent(MainActivity.this, CausticConnectorService.class);
         startService(runServiceIntent);
@@ -97,12 +99,19 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == CHOOSE_BT_DEVICE) {
             if (resultCode == RESULT_OK) {
-                connectButton.setClickable(true);
+                infoTextView.setText("Connecting...");
+                //connectButton.setClickable(true);
+
                 String device = data.getStringExtra(BluetoothDevicesList.BT_DEVICE);
-                infoTextView.setText(device);
-            }else {
-                connectButton.setClickable(false);
-                infoTextView.setText(""); // стираем текст
+                String mac = device.split("\\n")[1];
+
+                if (!BluetoothManager.getInstance().connect(mac, device)) {
+                    Toast.makeText(getBaseContext(), "Cannot connect to device!", Toast.LENGTH_LONG).show();
+                }
+
+                infoTextView.setText(BluetoothManager.getInstance().getDeviceName());
+            } else {
+                infoTextView.setText("");
             }
         }
     }
@@ -118,17 +127,9 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    public void connectButtonClick(View view) {
-        String mac = infoTextView.getText().toString().split("\\n")[1];
-        Toast.makeText(getBaseContext(), mac, Toast.LENGTH_LONG).show();
-        if (!BluetoothManager.getInstance().connect(mac)) {
-            Toast.makeText(getBaseContext(), "Cannot connect to device!", Toast.LENGTH_LONG).show();
-        }
-
-    }
-
     public void disconnectClick(View view) {
         BluetoothManager.getInstance().disconnect();
+        infoTextView.setText(BluetoothManager.getInstance().getDeviceName());
     }
 
     @Override
