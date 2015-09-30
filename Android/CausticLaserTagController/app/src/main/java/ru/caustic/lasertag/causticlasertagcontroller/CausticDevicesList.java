@@ -23,6 +23,11 @@ public class CausticDevicesList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caustic_devices_list);
+
+        if (!BluetoothManager.getInstance().isConnected()) {
+            finish();
+        }
+
         devicesList = (ListView) findViewById(R.id.causticDevsList);
 
         arrayAdapter = new ArrayAdapter<>(

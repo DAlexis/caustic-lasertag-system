@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.UUID;
 
@@ -88,6 +89,8 @@ public class BluetoothManager {
         //   A Service ID or UUID.  In this case we are using the
         //     UUID for SPP.
         try {
+
+            // THIS code ony works on ZTE!!
             // This code block is for solving "[JSR82] write: write() failed" problem.
             // See https://stackoverflow.com/questions/20078457/android-bluetoothsocket-write-fails-on-4-2-2
             btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
@@ -99,6 +102,9 @@ public class BluetoothManager {
             // end of that block
 
             btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+            /*Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
+            BluetoothSocket connection = (BluetoothSocket)m.invoke(device, MY_UUID);*/
+
         } catch (IOException e) {
             onConnectionClosed();
             Log.e(TAG, "Fatal: socket creation failed: " + e.getMessage() + ".");
@@ -171,6 +177,10 @@ public class BluetoothManager {
     }
 
     public boolean sendData(byte[] message) {
+        if (!isConnected()) {
+            Log.e(TAG, "Attempt to send data without a connection!");
+            return false;
+        }
         mConnectedThread.write(message);
         return true;
     }

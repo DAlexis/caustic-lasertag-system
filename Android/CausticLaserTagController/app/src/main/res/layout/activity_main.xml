@@ -104,4 +104,15 @@
         android:layout_toEndOf="@+id/buttonRespRed"
         android:onClick="respBlueClick" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test prefs"
+        android:id="@+id/buttonTestPrefs"
+        android:layout_marginTop="64dp"
+        android:layout_below="@+id/buttonRespawn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="testPrefsClick" />
+
 </RelativeLayout>

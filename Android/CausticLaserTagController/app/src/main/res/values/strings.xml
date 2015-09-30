@@ -5,4 +5,24 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_bluetooth_devices_list">BluetoothDevicesList</string>
     <string name="title_activity_caustic_devices_list">Select Caustic device</string>
+
+
+    <string name="checkbox2_title">CheckBox 2</string>
+    <string name="checkbox2_summary">Summary of CheckBox 2</string>
+    <string name="edittext2_title">EditText 2</string>
+    <string name="edittext2_summary">Summary of EditText 2</string>
+    <string name="list2_title">List 2</string>
+    <string name="list2_summary">Summary of List 2</string>
+    <string name="category1">Category 1</string>
+    <string name="category2">Category 2</string>
+    <string name="screen1_title">Screen 1</string>
+    <string name="screen1_summary">Summary of Screen 1</string>
+    <string name="screen2_title">Screen 2</string>
+    <string name="screen2_summary">Summary of Screen 2</string>
+    <string name="header1_title">Header 1</string>
+    <string name="header1_summary">Summary of Header 1</string>
+    <string name="header2_title">Header 2</string>
+    <string name="header2_summary">Summary of Header 2</string>
+    <string name="header3_title">Header 3</string>
+    <string name="header3_summary">Summary of Header 3</string>
 </resources>

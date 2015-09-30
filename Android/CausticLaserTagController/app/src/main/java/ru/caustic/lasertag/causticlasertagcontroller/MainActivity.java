@@ -3,6 +3,7 @@ package ru.caustic.lasertag.causticlasertagcontroller;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     boolean bound = false;
     ServiceConnection sConn;
+
+    SharedPreferences sp;
 
     static final private int CHOOSE_BT_DEVICE = 0;
     @Override
@@ -179,4 +182,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void testPrefsClick(View view) {
+        Intent settingsActivity = new Intent(getBaseContext(),
+                CausticDeviceSettings.class);
+        startActivity(settingsActivity);
+    }
 }

@@ -41,6 +41,15 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <activity
+            android:name=".CausticDeviceSettings"
+            android:label="@string/title_activity_caustic_device_settings"
+            android:parentActivityName=".CausticDevicesList" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.caustic.lasertag.causticlasertagcontroller.CausticDevicesList" />
+        </activity>
     </application>
 
 </manifest>
