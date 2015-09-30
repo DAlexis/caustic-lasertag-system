@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button connectButton;
     private TextView infoTextView;
+    private TextView textViewDevsCount;
 
     private Intent runServiceIntent;
 
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Starting main activity");
 
         infoTextView = (TextView) findViewById(R.id.selectedDeviceText);
+        textViewDevsCount = (TextView) findViewById(R.id.textViewDevsCount);
 
         switch(BluetoothManager.getInstance().checkBluetoothState()) {
             case BluetoothManager.BLUETOOTH_NOT_SUPPORTED:
@@ -69,9 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
         // This is not used yet
         //runServiceIntent = new Intent("ru.caustic.lasertag.causticlasertagcontroller.CausticConnectorService");
+        /*
         runServiceIntent = new Intent(MainActivity.this, CausticConnectorService.class);
         startService(runServiceIntent);
-        bindService(runServiceIntent, sConn, BIND_AUTO_CREATE);
+        bindService(runServiceIntent, sConn, BIND_AUTO_CREATE);*/
     }
 
     @Override
@@ -183,8 +187,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void testPrefsClick(View view) {
-        Intent settingsActivity = new Intent(getBaseContext(),
-                CausticDeviceSettings.class);
+        Intent settingsActivity = new Intent(getBaseContext(), CausticDeviceSettings.class);
         startActivity(settingsActivity);
+    }
+
+    public void updateDevsClick(View view) {
+        textViewDevsCount.setText("0");
+        CausticDevicesManager.getInstance().updateDevicesList(
+                new Handler() {
+                    public void handleMessage(android.os.Message msg) {
+                        switch (msg.what) {
+                            case CausticDevicesManager.DEVICES_LIST_UPDATED:
+                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice> devs =
+                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice>) msg.obj;
+                                textViewDevsCount.setText(Integer.toString(devs.size()));
+                                break;
+                        }
+                    }
+                });
     }
 }

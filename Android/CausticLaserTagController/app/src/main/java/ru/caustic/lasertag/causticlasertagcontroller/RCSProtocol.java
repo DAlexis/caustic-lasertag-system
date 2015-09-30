@@ -1,5 +1,8 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -67,6 +70,18 @@ public class RCSProtocol {
 
         public RCSPParameterGroup get(int id){
             return allParameters.get(id);
+        }
+
+        public void pushToSharedPreferences(Context context) {
+            for (Map.Entry<Integer, RCSPParameterGroup> entry : allParameters.entrySet()) {
+                entry.getValue().pushToSharedPreferences(context);
+            }
+        }
+
+        public void popFromSharedPreferences(Context context) {
+            for (Map.Entry<Integer, RCSPParameterGroup> entry : allParameters.entrySet()) {
+                entry.getValue().popFromSharedPreferences(context);
+            }
         }
 
         public int serializeOneParameter(int id, byte[] memory, int position, int maxPosition) {
@@ -220,10 +235,17 @@ public class RCSProtocol {
     }
 
     public static abstract class RCSPParameterGroup extends RCSPAnyGroup {
+        private String sharedPrefsKey;
         private String value;
+        protected boolean isSynchronized = false;
 
-        public RCSPParameterGroup(int _id, String _name) {
+        public boolean isSync() {
+            return isSynchronized;
+        }
+
+        public RCSPParameterGroup(int _id, String _name, String key) {
             super(_id, _name);
+            sharedPrefsKey = key;
         }
 
         public String getValue() {
@@ -231,7 +253,19 @@ public class RCSProtocol {
         }
 
         public void setValue(String value) {
+            if (value != this.value)
+                isSynchronized = false;
             this.value = value;
+        }
+
+        public void pushToSharedPreferences(Context context) {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+            sp.edit().putString(sharedPrefsKey, value).commit();
+        }
+
+        public void popFromSharedPreferences(Context context) {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+            setValue(sp.getString(sharedPrefsKey, value));
         }
     }
 
@@ -244,17 +278,19 @@ public class RCSProtocol {
     }
 
     public static class UintGroupRCSP extends RCSPParameterGroup {
-        public UintGroupRCSP(int _id, String _name) {
-            super(_id, _name);
+        public UintGroupRCSP(int _id, String _name, String key) {
+            super(_id, _name, key);
             super.value = "0";
         }
 
         public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
             int result = MemoryUtils.bytesArrayToUint16(memory, offset);
             super.value = Integer.toString(result);
         }
 
         public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
             int i = Integer.parseInt(super.value);
             MemoryUtils.uint16ToByteArray(memory, offset, i);
             return size();
@@ -265,17 +301,19 @@ public class RCSProtocol {
         }
     }
     public static class IntGroupRCSP extends RCSPParameterGroup {
-        public IntGroupRCSP(int _id, String _name) {
-            super(_id, _name);
+        public IntGroupRCSP(int _id, String _name, String key) {
+            super(_id, _name, key);
             super.value = "0";
         }
 
         public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
             int result = MemoryUtils.bytesArrayToInt16(memory, offset);
             super.value = Integer.toString(result);
         }
 
         public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
             int val = Integer.parseInt(super.value);
             MemoryUtils.int16ToByteArray(memory, offset, val);
             return size();
@@ -287,11 +325,14 @@ public class RCSProtocol {
     }
     public static class DevNameGroupRCSP extends RCSPParameterGroup {
         public static final String defaultName = "Name unavailable";
+        private boolean isInitialized = false;
 
-        public DevNameGroupRCSP(int _id, String _name) {
-            super(_id, _name);
+        public DevNameGroupRCSP(int _id, String _name, String key) {
+            super(_id, _name, key);
             super.value = defaultName;
         }
+
+        public boolean initialized() { return isInitialized; }
 
         public void deserialize(byte[] memory, int offset) {
             super.value = "";
@@ -300,9 +341,12 @@ public class RCSProtocol {
                     break;
                 super.value += (char) MemoryUtils.byteToUnsignedByte(memory[offset+i]);
             }
+            isInitialized = true;
+            isSynchronized = true;
         }
 
         public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
             int j = 0;
             for (char ch : super.value.toCharArray()){
                 memory[offset + j++] = (byte) ch;
@@ -318,18 +362,19 @@ public class RCSProtocol {
         }
     }
     public static class MT2IdGroupRCSP extends RCSPParameterGroup {
-        public MT2IdGroupRCSP(int _id, String _name) {
-            super(_id, _name);
+        public MT2IdGroupRCSP(int _id, String _name, String key) {
+            super(_id, _name, key);
             super.value = "0";
         }
 
         public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
             int id = MemoryUtils.byteToUnsignedByte(memory[offset]);
             super.value = Integer.toString(id);
         }
 
         public int serialize(byte[] memory, int offset) {
-
+            isSynchronized = true;
             memory[offset] = (byte) Integer.parseInt(super.value);
             return size();
         }
@@ -339,18 +384,20 @@ public class RCSProtocol {
         }
     }
     public static class FloatGroupRCSP extends RCSPParameterGroup {
-        public FloatGroupRCSP(int _id, String _name) {
-            super(_id, _name);
+        public FloatGroupRCSP(int _id, String _name, String key) {
+            super(_id, _name, key);
             super.value = "0.0";
         }
 
         public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
             byte tmp[] = Arrays.copyOfRange(memory, offset, offset + 4);
             float f = ByteBuffer.wrap(tmp)/*.order(ByteOrder.LITTLE_ENDIAN)*/.getFloat();
             super.value = Float.toString(f);
         }
 
         public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
             byte tmp[] = new byte[4];
             ByteBuffer.wrap(tmp).putFloat(Float.parseFloat(super.value));
             for (int i=0; i<4; i++)
@@ -365,18 +412,20 @@ public class RCSProtocol {
         }
     }
     public static class DevAddrGroupRCSP extends RCSPParameterGroup {
-        public DevAddrGroupRCSP(int _id, String _name) {
-            super(_id, _name);
+        public DevAddrGroupRCSP(int _id, String _name, String key) {
+            super(_id, _name, key);
             super.value = "0.0.0";
         }
 
         public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
             super.value = MemoryUtils.byteToUnsignedByte(memory[offset])
                     + "." + MemoryUtils.byteToUnsignedByte(memory[offset+1])
                     + "." + MemoryUtils.byteToUnsignedByte(memory[offset+2]);
         }
 
         public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
             String[] address = super.value.split("\\.");
             memory[offset] = (byte) Integer.parseInt(address[0]);
             memory[offset+1] = (byte) Integer.parseInt(address[1]);
@@ -428,18 +477,37 @@ public class RCSProtocol {
             }
 
             public static void registerParameters(ParametersContainer pars) {
-                pars.add(new DevNameGroupRCSP(Configuration.deviceName, "Device name"));
-                pars.add(new UintGroupRCSP(Configuration.deviceType, "Device type"));
+                pars.add(new DevNameGroupRCSP(Configuration.deviceName, "Device name", "DEVICE_NAME"));
+                pars.add(new UintGroupRCSP(Configuration.deviceType, "Device type", "DEVICE_TYPE"));
                 pars.get(Configuration.deviceType).setValue(Integer.toString(Configuration.DEV_TYPE_UNDEFINED));
             }
+
             public static void registerFunctions(RemoteFunctionsContainer funcs) {
                 funcs.add(new FunctionNoParsGroupRCSP(Functions.resetToDefaults, "Reset to default"));
+            }
+
+            public static String getDevTypeString(int type) {
+                switch (type) {
+                    case Configuration.DEV_TYPE_RIFLE:
+                        return "Rifle";
+                    case Configuration.DEV_TYPE_HEAD_SENSOR:
+                        return "Head sensor";
+                    case Configuration.DEV_TYPE_UNDEFINED:
+                        return "Type not defined";
+                    default:
+                        return "Unknown type";
+                }
             }
         }
 
         public static class HeadSensor {
-            public static class Functions
-            {
+            public static class Configuration {
+                public static final int healthMax   = 1000;
+                public static final int healthStart = 1003;
+                public static final int lifesCount  = 1011;
+
+            }
+            public static class Functions {
                 public static final int playerTurnOff =     1201;
                 public static final int playerTurnOn =      1202;
                 public static final int playerReset =       1203;
@@ -456,7 +524,9 @@ public class RCSProtocol {
             }
 
             public static void registerParameters(ParametersContainer pars) {
-
+                pars.add(new UintGroupRCSP(Configuration.healthMax, "Max health", "MAX_NAME"));
+                pars.add(new UintGroupRCSP(Configuration.healthStart, "Start health", "START_HEALTH"));
+                pars.add(new UintGroupRCSP(Configuration.lifesCount, "Life count", "LIFE_COUNT"));
             }
 
             public static void registerFunctions(RemoteFunctionsContainer funcs) {

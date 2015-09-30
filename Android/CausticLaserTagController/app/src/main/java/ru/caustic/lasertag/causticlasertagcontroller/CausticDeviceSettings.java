@@ -23,24 +23,25 @@ import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class CausticDeviceSettings extends PreferenceActivity {
 
     public final String TAG = "CC.CausticDeviceSettings";
-    public void onBuildHeaders(List<Header> target) {
 
-        //loadHeadersFromResource(R.xml.pref_header, target);
-        //Toast.makeText(getBaseContext(), target.get(0).fragment, Toast.LENGTH_LONG).show();
-
+    public static Header buildHeader(String title, String summary, String devAddr) {
         Header h = new Header();
-        h.title = "Test1";
+        Bundle b = new Bundle();
+        b.putString("device_address", devAddr);
+
+        h.title = title;
         h.fragment = "ru.caustic.lasertag.causticlasertagcontroller.CausticDeviceSettings$CausticDeviceSettingsFragment";
-        h.fragmentArguments = null;
+        h.fragmentArguments = b;
         h.breadCrumbShortTitle = null;
         h.breadCrumbTitle = null;
-        h.summary = "Summmmmary";
+        h.summary = summary;
         h.extras = null;
         h.intent = null;
         h.id = -1;
@@ -49,17 +50,32 @@ public class CausticDeviceSettings extends PreferenceActivity {
         h.breadCrumbShortTitleRes = 0;
         h.summaryRes = 0;
         h.titleRes = 0;
+        return h;
+    }
 
-        //h.fragment = CausticDeviceSettingsFragment.class.toString();
-        //h.fragment = "ru.caustic.lasertag.causticlasertagcontroller.CausticDeviceSettings.CausticDeviceSettingsFragment";
-        target.add(h);
+    private static List<Header> deviceHeaders = new ArrayList<>();
 
+    public void onBuildHeaders(List<Header> target) {
+
+        //loadHeadersFromResource(R.xml.pref_header, target);
+        //Toast.makeText(getBaseContext(), target.get(0).fragment, Toast.LENGTH_LONG).show();
+
+        for (Header header : deviceHeaders) {
+            target.add(header);
+        }
+        target.add(buildHeader("Title1", "Summary1", "192.168.0.1"));
+        target.add(buildHeader("Title2", "Summary2", "Ulyanova st."));
+        Toast.makeText(getBaseContext(), "onBuildHeaders!", Toast.LENGTH_LONG).show();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //getFragmentManager().beginTransaction().replace(android.R.id.content, new CausticDeviceSettingsFragment()).commit();
+    }
+
+    public static List<Header> getDeviceHeaders() {
+        return deviceHeaders;
     }
 
     public static class CausticDeviceSettingsFragment extends PreferenceFragment {
@@ -72,6 +88,8 @@ public class CausticDeviceSettings extends PreferenceActivity {
             // создаем экран
 
             screen = this.getPreferenceScreen(); // "null". See onViewCreated.
+
+            String devAddr = getArguments().getString("device_address");
 
             // Create the Preferences Manually - so that the key can be set programatically.
             PreferenceCategory category = new PreferenceCategory(screen.getContext());
@@ -96,7 +114,7 @@ public class CausticDeviceSettings extends PreferenceActivity {
 
             CheckBoxPreference chb1 = new CheckBoxPreference(screen.getContext());
             chb1.setKey("chb1");
-            chb1.setTitle("CheckBox 1");
+            chb1.setTitle(devAddr);
             chb1.setSummaryOn("Description of checkbox 1 on");
             chb1.setSummaryOff("Description of checkbox 1 off");
 

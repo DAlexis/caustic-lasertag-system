@@ -1,8 +1,11 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
+import android.content.Context;
 import android.os.Handler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,17 +50,37 @@ public class CausticDevicesManager {
             return parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName).getValue();
         }
 
-        public void determineType() {
-            RCSPStream stream = new RCSPStream();
-            stream.addObjectRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceType);
-            stream.send(address);
+        public boolean hasName() {
+            return ( (RCSProtocol.DevNameGroupRCSP) parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName) ).initialized();
+        }
+
+        public boolean isTypeKnown() {
+            return (
+                    Integer.parseInt(parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceType).getValue())
+                    != RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
+            );
+        }
+
+        public String getType() {
+            return RCSProtocol.RCSPOperationCodes.AnyDevice.getDevTypeString(
+                    Integer.parseInt(
+                            parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceType).getValue()
+                    )
+            );
+        }
+
+        public boolean areDeviceRelatedParametersAdded() {
+            return parametersAreAdded;
         }
 
         public void addDeviceRelatedParameters() {
             if (parametersAreAdded)
                 return;
 
-            int type = Integer.parseInt(parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceType).getValue());
+            RCSProtocol.RCSPParameterGroup typeParam = parameters.get(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceType);
+            if (typeParam == null)
+                return;
+            int type = Integer.parseInt(typeParam.getValue());
             switch (type) {
                 case RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.DEV_TYPE_UNDEFINED:
                     return;
@@ -72,6 +95,10 @@ public class CausticDevicesManager {
             }
 
             parametersAreAdded = true;
+        }
+
+        public void popFromConfig(Context context) {
+
         }
     }
 
@@ -161,6 +188,51 @@ public class CausticDevicesManager {
         }
     }
 
+    public class RCSPMultiStream {
+        List<RCSPStream> streams = new ArrayList<>();
+
+        public RCSPMultiStream() {
+            streams.add(new RCSPStream());
+        }
+
+        public void addObjectRequest(int id) {
+            if (!streams.get(streams.size()-1).addObjectRequest(id)) {
+                streams.add(new RCSPStream());
+                streams.get(streams.size()-1).addObjectRequest(id);
+            }
+        }
+
+        public void addSetObject(CausticDevice dev, int id) {
+            if (!streams.get(streams.size()-1).addSetObject(dev, id)) {
+                streams.add(new RCSPStream());
+                streams.get(streams.size()-1).addSetObject(dev, id);
+            }
+        }
+
+        public void addFunctionCall(CausticDeviceClass devClass, int id, String argument) {
+            if (!streams.get(streams.size()-1).addFunctionCall(devClass, id, argument)) {
+                streams.add(new RCSPStream());
+                streams.get(streams.size()-1).addFunctionCall(devClass, id, argument);
+            }
+        }
+
+        public void send(BridgeConnector.DeviceAddress addr) {
+            for (RCSPStream stream : streams) {
+                stream.send(addr);
+            }
+        }
+    }
+
+    void addPreferenceHeaderForDevice(CausticDevice dev) {
+        CausticDeviceSettings.getDeviceHeaders().add(
+                CausticDeviceSettings.buildHeader(
+                        dev.getName(),
+                        dev.getType(),
+                        dev.address.toString()
+                )
+        );
+    }
+
     class TaskUpdateDevicesList implements DeviceManagerTask {
 
         @Override
@@ -172,7 +244,9 @@ public class CausticDevicesManager {
             BridgeConnector.getInstance().setReceiver(new Receiver());
             RCSPStream stream = new RCSPStream();
             stream.addObjectRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceName);
+            stream.addObjectRequest(RCSProtocol.RCSPOperationCodes.AnyDevice.Configuration.deviceType);
             devices.clear();
+            CausticDeviceSettings.getDeviceHeaders().clear();
             stream.send(BridgeConnector.Broadcasts.any);
         }
     }
@@ -181,16 +255,21 @@ public class CausticDevicesManager {
         @Override
         public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
         {
-            boolean newDeviceAdded = false;
+            //boolean newDeviceAdded = false;
             CausticDevice dev = devices.get(address);
             if (dev == null) {
                 dev = new CausticDevice();
                 dev.address = new BridgeConnector.DeviceAddress(address);
                 devices.put(address, dev);
-                newDeviceAdded = true;
+                //newDeviceAdded = true;
             }
+
             dev.parameters.deserializeStream(data, offset, size);
-            if (newDeviceAdded && devicesListUpdated != null) {
+
+            if (dev.hasName() && dev.isTypeKnown() && !dev.areDeviceRelatedParametersAdded()) {
+                // Device is ready to operate with it: we know address, type and name
+                dev.addDeviceRelatedParameters();
+                addPreferenceHeaderForDevice(dev);
                 devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
             }
         }

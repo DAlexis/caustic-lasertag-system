@@ -11,9 +11,9 @@
         android:text="Connect to bridge..."
         android:id="@+id/selectBtDevice"
         android:onClick="selectBtDeviceClick"
-        android:layout_below="@+id/selectedDeviceText"
-        android:layout_alignRight="@+id/buttonStopService"
-        android:layout_alignEnd="@+id/buttonStopService" />
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView"
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -21,8 +21,11 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Bridge not connected"
         android:id="@+id/selectedDeviceText"
+        android:layout_below="@+id/selectBtDevice"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/buttonDisconnect"
+        android:layout_alignEnd="@+id/buttonDisconnect" />
 
     <Button
         android:layout_width="wrap_content"
@@ -30,9 +33,10 @@
         android:text="Disconnect"
         android:id="@+id/buttonDisconnect"
         android:onClick="disconnectClick"
-        android:layout_above="@+id/buttonDevicesList"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignBottom="@+id/selectBtDevice"
+        android:layout_alignLeft="@+id/buttonRespBlue"
+        android:layout_alignStart="@+id/buttonRespBlue"
+        android:layout_alignParentTop="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -50,19 +54,9 @@
         android:text="All"
         android:id="@+id/buttonRespawn"
         android:onClick="respawnClick"
-        android:layout_below="@+id/textView2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Configure device..."
-        android:id="@+id/buttonDevicesList"
-        android:onClick="causticDevsListClicked"
-        android:layout_below="@+id/selectBtDevice"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_above="@+id/buttonRespBlue"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -70,9 +64,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Quick commands"
         android:id="@+id/textView"
-        android:layout_below="@+id/buttonDevicesList"
+        android:layout_above="@+id/buttonRespawn"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="47dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -80,7 +75,17 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Respawn"
         android:id="@+id/textView2"
-        android:layout_below="@+id/textView"
+        android:layout_alignTop="@+id/buttonRespawn"
+        android:layout_alignRight="@+id/buttonRespRed"
+        android:layout_alignEnd="@+id/buttonRespRed" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Configure device..."
+        android:id="@+id/buttonDevicesList"
+        android:onClick="causticDevsListClicked"
+        android:layout_below="@+id/textView3"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -89,30 +94,61 @@
         android:layout_height="wrap_content"
         android:text="Red"
         android:id="@+id/buttonRespRed"
-        android:layout_alignTop="@+id/buttonRespawn"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_toEndOf="@+id/textView2"
-        android:onClick="respRedClick" />
+        android:onClick="respRedClick"
+        android:layout_alignTop="@+id/buttonRespBlue"
+        android:layout_toLeftOf="@+id/buttonRespBlue"
+        android:layout_toStartOf="@+id/buttonRespBlue" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Blue"
         android:id="@+id/buttonRespBlue"
-        android:layout_alignTop="@+id/buttonRespRed"
-        android:layout_toRightOf="@+id/buttonRespRed"
-        android:layout_toEndOf="@+id/buttonRespRed"
-        android:onClick="respBlueClick" />
+        android:onClick="respBlueClick"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Test prefs"
         android:id="@+id/buttonTestPrefs"
-        android:layout_marginTop="64dp"
-        android:layout_below="@+id/buttonRespawn"
+        android:onClick="testPrefsClick"
+        android:layout_below="@+id/buttonDevicesList"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update devices list"
+        android:id="@+id/buttonUpdDevices"
+        android:onClick="updateDevsClick"
+        android:layout_below="@+id/selectedDeviceText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:onClick="testPrefsClick" />
+        android:layout_alignRight="@+id/selectedDeviceText"
+        android:layout_alignEnd="@+id/selectedDeviceText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Devices in the area: "
+        android:id="@+id/textView3"
+        android:layout_below="@+id/buttonUpdDevices"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="0"
+        android:id="@+id/textViewDevsCount"
+        android:layout_below="@+id/buttonUpdDevices"
+        android:layout_toRightOf="@+id/textView3"
+        android:layout_toEndOf="@+id/textView3" />
 
 </RelativeLayout>

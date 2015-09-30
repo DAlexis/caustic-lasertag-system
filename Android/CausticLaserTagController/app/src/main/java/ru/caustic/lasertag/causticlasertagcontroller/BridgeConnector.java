@@ -99,7 +99,7 @@ public class BridgeConnector {
         return ourInstance;
     }
 
-    public static final int MESSAGE_LEN_MAX = 50;
+    public static final int MESSAGE_LEN_MAX = 250;
     public static final int MESSAGE_OUT_LEN_MAX = 23;
 
 
@@ -143,29 +143,35 @@ public class BridgeConnector {
                             return;
                         }
 
-                        if (position == 0) {
-                            currentMsgLength = MemoryUtils.byteToUnsignedByte(readBuf[0]);
-                            // @todo Add check for incorrect length
-                        }
+                        for (int i=0; i<size; ) {
+                            // Iterating by incoming buffer. One iteration ends when incoming message is full
 
-                        for (int i=0; i<size && position < currentMsgLength; i++, position++) {
-                            incoming[position] = readBuf[i];
-                        }
-
-                        if (position == currentMsgLength) {
-                            // We have received full message now
-                            DeviceAddress addr = new DeviceAddress();
-                            addr.deserialize(incoming, 1);
-                            if (packagesReceiver != null) {
-                                int headerSize = 1 + DeviceAddress.sizeof();
-                                byte[] toReceiver = Arrays.copyOfRange(incoming, headerSize, currentMsgLength);
-                                packagesReceiver.getData(addr, toReceiver, 0, currentMsgLength-headerSize);
-                            } else {
-                                Log.e(TAG, "Packages receiver is not set!");
+                            if (position == 0) {
+                                // Incoming is empty at the moment
+                                currentMsgLength = MemoryUtils.byteToUnsignedByte(readBuf[i]);
+                                // @todo Add check for incorrect length -> is this enough?
+                                if (currentMsgLength > MESSAGE_LEN_MAX)
+                                    return;
                             }
-                            position = 0;
-                        }
 
+                            for (; i < size && position < currentMsgLength; i++, position++) {
+                                incoming[position] = readBuf[i];
+                            }
+
+                            if (position == currentMsgLength) {
+                                // We have received full message now
+                                DeviceAddress addr = new DeviceAddress();
+                                addr.deserialize(incoming, 1);
+                                if (packagesReceiver != null) {
+                                    int headerSize = 1 + DeviceAddress.sizeof();
+                                    byte[] toReceiver = Arrays.copyOfRange(incoming, headerSize, currentMsgLength);
+                                    packagesReceiver.getData(addr, toReceiver, 0, currentMsgLength - headerSize);
+                                } else {
+                                    Log.e(TAG, "Packages receiver is not set!");
+                                }
+                                position = 0;
+                            }
+                        }
                         break;
                 }
             }
