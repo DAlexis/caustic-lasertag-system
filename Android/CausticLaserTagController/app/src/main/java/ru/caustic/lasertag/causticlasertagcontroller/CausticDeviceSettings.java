@@ -65,7 +65,7 @@ public class CausticDeviceSettings extends PreferenceActivity {
         }
         target.add(buildHeader("Title1", "Summary1", "192.168.0.1"));
         target.add(buildHeader("Title2", "Summary2", "Ulyanova st."));
-        Toast.makeText(getBaseContext(), "onBuildHeaders!", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getBaseContext(), "onBuildHeaders!", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -81,6 +81,7 @@ public class CausticDeviceSettings extends PreferenceActivity {
     public static class CausticDeviceSettingsFragment extends PreferenceFragment {
 
         private PreferenceScreen screen = null;
+        private CausticDevicesManager.CausticDevice dev = null;
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -88,8 +89,20 @@ public class CausticDeviceSettings extends PreferenceActivity {
             // создаем экран
 
             screen = this.getPreferenceScreen(); // "null". See onViewCreated.
+            Context context = screen.getContext();
 
             String devAddr = getArguments().getString("device_address");
+
+            PreferenceScreen rootScreen = getPreferenceManager().createPreferenceScreen(screen.getContext());
+            // говорим Activity, что rootScreen - корневой
+            setPreferenceScreen(rootScreen);
+
+            dev = CausticDevicesManager.getInstance().devices.get(new BridgeConnector.DeviceAddress(devAddr));
+            if (dev == null) {
+                return;
+            }
+            dev.pushToSharedPreferences(context);
+            dev.parameters.addPreferencesToScreen(rootScreen, context);
 
             // Create the Preferences Manually - so that the key can be set programatically.
             PreferenceCategory category = new PreferenceCategory(screen.getContext());
@@ -106,12 +119,10 @@ public class CausticDeviceSettings extends PreferenceActivity {
 
 
 
-            PreferenceScreen rootScreen = getPreferenceManager().createPreferenceScreen(screen.getContext());
-            // говорим Activity, что rootScreen - корневой
-            setPreferenceScreen(rootScreen);
+
 
             // даллее создаем элементы, присваиваем атрибуты и формируем иерархию
-
+/*
             CheckBoxPreference chb1 = new CheckBoxPreference(screen.getContext());
             chb1.setKey("chb1");
             chb1.setTitle(devAddr);
@@ -119,7 +130,7 @@ public class CausticDeviceSettings extends PreferenceActivity {
             chb1.setSummaryOff("Description of checkbox 1 off");
 
             rootScreen.addPreference(chb1);
-
+*/
     /*
             ListPreference list = new ListPreference(this);
             list.setKey("list");
@@ -130,7 +141,7 @@ public class CausticDeviceSettings extends PreferenceActivity {
 
             rootScreen.addPreference(list);*/
 
-
+/*
             CheckBoxPreference chb2 = new CheckBoxPreference(screen.getContext());
             chb2.setKey("chb2");
             chb2.setTitle("CheckBox 2");
@@ -203,7 +214,14 @@ public class CausticDeviceSettings extends PreferenceActivity {
                     categ2.setEnabled(chb3.isChecked());
                     return false;
                 }
-            });
+            });*/
+        }
+
+        @Override
+        public void onPause() {
+            super.onStop();
+            dev.popFromSharedPreferences(this.getPreferenceScreen().getContext());
+            dev.pushToDevice();
         }
     }
 }

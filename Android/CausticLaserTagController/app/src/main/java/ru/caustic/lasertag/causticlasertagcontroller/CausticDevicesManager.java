@@ -97,8 +97,30 @@ public class CausticDevicesManager {
             parametersAreAdded = true;
         }
 
-        public void popFromConfig(Context context) {
+        public void popFromSharedPreferences(Context context) {
+            parameters.popFromSharedPreferences(context);
+        }
 
+        public void pushToSharedPreferences(Context context) {
+            parameters.pushToSharedPreferences(context);
+        }
+
+        public void pushToDevice() {
+            RCSPMultiStream stream = new RCSPMultiStream();
+            for (Map.Entry<Integer, RCSProtocol.RCSPParameterGroup> entry : parameters.entrySet()) {
+                if (!entry.getValue().isSync())
+                    stream.addSetObject(this, entry.getKey());
+            }
+            stream.send(address);
+        }
+
+        public void popFromDevice() {
+            RCSPMultiStream stream = new RCSPMultiStream();
+            for (Map.Entry<Integer, RCSProtocol.RCSPParameterGroup> entry : parameters.entrySet()) {
+                if (!entry.getValue().isSync())
+                    stream.addObjectRequest(entry.getKey());
+            }
+            stream.send(address);
         }
     }
 
@@ -270,6 +292,7 @@ public class CausticDevicesManager {
                 // Device is ready to operate with it: we know address, type and name
                 dev.addDeviceRelatedParameters();
                 addPreferenceHeaderForDevice(dev);
+                dev.popFromDevice();
                 devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
             }
         }

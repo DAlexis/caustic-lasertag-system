@@ -2,12 +2,16 @@ package ru.caustic.lasertag.causticlasertagcontroller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.EditTextPreference;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -61,6 +65,7 @@ public class RCSProtocol {
         return OperationCodeType.RESERVED;
     }
 
+
     public static class ParametersContainer {
         private Map<Integer, RCSPParameterGroup> allParameters = new TreeMap<Integer, RCSPParameterGroup>();
 
@@ -70,6 +75,11 @@ public class RCSProtocol {
 
         public RCSPParameterGroup get(int id){
             return allParameters.get(id);
+        }
+
+        public Set<Map.Entry<Integer,RCSPParameterGroup>> entrySet()
+        {
+            return allParameters.entrySet();
         }
 
         public void pushToSharedPreferences(Context context) {
@@ -84,7 +94,15 @@ public class RCSProtocol {
             }
         }
 
-        public int serializeOneParameter(int id, byte[] memory, int position, int maxPosition) {
+        public void addPreferencesToScreen(PreferenceScreen screen, Context context) {
+            for (Map.Entry<Integer, RCSPParameterGroup> entry : allParameters.entrySet()) {
+                Preference pref = entry.getValue().createPreference(context);
+                if (pref != null)
+                    screen.addPreference(pref);
+            }
+        }
+
+        public int serializeSetObject(int id, byte[] memory, int position, int maxPosition) {
             RCSPAnyGroup par = allParameters.get(id);
             if (par == null)
                 return 0;
@@ -104,21 +122,6 @@ public class RCSProtocol {
             memory[position++] = 0;
             MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.OBJECT_REQUEST));
             return 3;
-        }
-
-        public int serializeSetObject(int id, byte[] memory, int position, int maxPosition) {
-            RCSPParameterGroup par = allParameters.get(id);
-            int size = par.size();
-            int totalSize = size + 3;
-
-            if (maxPosition - position < totalSize)
-                return 0;
-
-            memory[position++] = 0;
-            MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.SET_OBJECT));
-            position += 2;
-            par.serialize(memory, position);
-            return totalSize;
         }
 
         /**
@@ -196,8 +199,8 @@ public class RCSProtocol {
     }
 
     public static abstract class RCSPAnyGroup extends Object {
-        private int id;
-        private String name;
+        protected int id;
+        protected String name;
 
 
         public RCSPAnyGroup(int _id, String _name) {
@@ -235,8 +238,8 @@ public class RCSProtocol {
     }
 
     public static abstract class RCSPParameterGroup extends RCSPAnyGroup {
-        private String sharedPrefsKey;
-        private String value;
+        protected String sharedPrefsKey;
+        protected String value;
         protected boolean isSynchronized = false;
 
         public boolean isSync() {
@@ -253,7 +256,7 @@ public class RCSProtocol {
         }
 
         public void setValue(String value) {
-            if (value != this.value)
+            if (!value.equals(this.value))
                 isSynchronized = false;
             this.value = value;
         }
@@ -267,6 +270,8 @@ public class RCSProtocol {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
             setValue(sp.getString(sharedPrefsKey, value));
         }
+
+        public abstract Preference createPreference(Context context);
     }
 
     public static abstract class RCSPFunctionCallGroup extends RCSPAnyGroup {
@@ -299,6 +304,14 @@ public class RCSProtocol {
         public int size() {
             return 2;
         }
+
+        public Preference createPreference(Context context) {
+            EditTextPreference pref = new EditTextPreference(context);
+            pref.setTitle(name);
+            pref.setText(value);
+            pref.setKey(sharedPrefsKey);
+            return pref;
+        }
     }
     public static class IntGroupRCSP extends RCSPParameterGroup {
         public IntGroupRCSP(int _id, String _name, String key) {
@@ -322,6 +335,11 @@ public class RCSProtocol {
         public int size() {
             return 2;
         }
+
+        public Preference createPreference(Context context) {
+            return null;
+        }
+        
     }
     public static class DevNameGroupRCSP extends RCSPParameterGroup {
         public static final String defaultName = "Name unavailable";
@@ -360,6 +378,10 @@ public class RCSProtocol {
         public int size() {
             return 20;
         }
+
+        public Preference createPreference(Context context) {
+            return null;
+        }
     }
     public static class MT2IdGroupRCSP extends RCSPParameterGroup {
         public MT2IdGroupRCSP(int _id, String _name, String key) {
@@ -381,6 +403,10 @@ public class RCSProtocol {
 
         public int size() {
             return 1;
+        }
+
+        public Preference createPreference(Context context) {
+            return null;
         }
     }
     public static class FloatGroupRCSP extends RCSPParameterGroup {
@@ -410,6 +436,10 @@ public class RCSProtocol {
         public int size() {
             return 4;
         }
+
+        public Preference createPreference(Context context) {
+            return null;
+        }
     }
     public static class DevAddrGroupRCSP extends RCSPParameterGroup {
         public DevAddrGroupRCSP(int _id, String _name, String key) {
@@ -435,6 +465,10 @@ public class RCSProtocol {
 
         public int size() {
             return 3;
+        }
+
+        public Preference createPreference(Context context) {
+            return null;
         }
     }
 
