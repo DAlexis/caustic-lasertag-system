@@ -59,10 +59,10 @@ public class CausticDeviceSettings extends PreferenceActivity {
 
         //loadHeadersFromResource(R.xml.pref_header, target);
         //Toast.makeText(getBaseContext(), target.get(0).fragment, Toast.LENGTH_LONG).show();
-
+/*
         for (Header header : deviceHeaders) {
             target.add(header);
-        }
+        }*/
         target.add(buildHeader("Title1", "Summary1", "192.168.0.1"));
         target.add(buildHeader("Title2", "Summary2", "Ulyanova st."));
         //Toast.makeText(getBaseContext(), "onBuildHeaders!", Toast.LENGTH_LONG).show();
@@ -85,7 +85,7 @@ public class CausticDeviceSettings extends PreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.device_preference_stub);
+            addPreferencesFromResource(R.xml.device_preference_stub);/*
             // создаем экран
 
             screen = this.getPreferenceScreen(); // "null". See onViewCreated.
@@ -107,7 +107,7 @@ public class CausticDeviceSettings extends PreferenceActivity {
             // Create the Preferences Manually - so that the key can be set programatically.
             PreferenceCategory category = new PreferenceCategory(screen.getContext());
             category.setTitle("Channel Configuration");
-            screen.addPreference(category);
+            screen.addPreference(category);*/
 /*
             CheckBoxPreference checkBoxPref = new CheckBoxPreference(screen.getContext());
             checkBoxPref.setKey(channelConfig.getName() + "_ENABLED");

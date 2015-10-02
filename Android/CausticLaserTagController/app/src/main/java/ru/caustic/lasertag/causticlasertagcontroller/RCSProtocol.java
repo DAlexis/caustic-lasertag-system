@@ -65,7 +65,6 @@ public class RCSProtocol {
         return OperationCodeType.RESERVED;
     }
 
-
     public static class ParametersContainer {
         private Map<Integer, RCSPParameterGroup> allParameters = new TreeMap<Integer, RCSPParameterGroup>();
 
@@ -589,4 +588,506 @@ public class RCSProtocol {
 
     }
 
+    /////////////////////////
+    // New version
+    // Descriptions
+    public static abstract class AnyDescription {
+        protected int id;
+        protected String name;
+
+
+        public AnyDescription(int _id, String _name) {
+            id = _id;
+            name = _name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            RCSPAnyGroup that = (RCSPAnyGroup) o;
+
+            return id == that.id;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return id;
+        }
+    }
+    public static class ParameterDescription extends AnyDescription {
+        public ParameterSerializerFactory factory;
+        public ParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, ParameterSerializerFactory factory) {
+            super(id, name);
+            this.factory = factory;
+            if (descrSet != null)
+                descrSet.register(this);
+        }
+    }
+    public static class FunctionCallDescription extends AnyDescription {
+        public FunctionCallSerializer serializer;
+        public FunctionCallDescription(int _id, String _name) {
+            super(_id, _name);
+        }
+    }
+
+    public interface ParameterSerializerFactory {
+        AnyParameterSerializer create(ParameterDescription descr);
+    }
+
+    // Srializers
+    public static abstract class AnySerializer extends Object {
+
+        public final AnyDescription description;
+
+        public AnySerializer(AnyDescription descr) {
+            description = descr;
+        }
+
+        public AnyDescription getDescription() {
+            return description;
+        }
+
+        public abstract void deserialize(byte[] memory, int offset);
+        public abstract int size();
+        public abstract int serialize(byte[] memory, int offset);
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            AnyParameterSerializer that = (AnyParameterSerializer) o;
+
+            return description.id == that.description.id;
+        }
+
+        @Override
+        public int hashCode() {
+            return description.id;
+        }
+    }
+
+    public static abstract class FunctionCallSerializer extends AnySerializer {
+
+        public FunctionCallSerializer(FunctionsContainer2 container, int id, String name)
+        {
+            super(new FunctionCallDescription(id, name));
+            if (container != null)
+                container.register(this);
+        }
+
+        public abstract void setArgument(String argument);
+    }
+    public static class FunctionCallNoParsSerializer extends FunctionCallSerializer {
+        public FunctionCallNoParsSerializer(FunctionsContainer2 container, int id, String name)
+        {
+            super(container, id, name);
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+
+        }
+
+        public int size() {
+            return 0;
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            return size();
+        }
+        public void setArgument(String argument) {  }
+    }
+
+    public static abstract class AnyParameterSerializer extends AnySerializer {
+        protected boolean isSynchronized = false;
+        protected String value = "";
+
+        public boolean isSync() {
+            return isSynchronized;
+        }
+
+        public AnyParameterSerializer(ParameterDescription descr) {
+            super(descr);
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            if (!value.equals(this.value))
+                isSynchronized = false;
+            this.value = value;
+        }
+    }
+
+    // Custom parameters serializers
+    public static class UintParameterSerializer extends AnyParameterSerializer{
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new UintParameterSerializer(descr);
+            }
+        };
+
+        public UintParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = "0";
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            int result = MemoryUtils.bytesArrayToUint16(memory, offset);
+            super.value = Integer.toString(result);
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            int i = Integer.parseInt(super.value);
+            MemoryUtils.uint16ToByteArray(memory, offset, i);
+            return size();
+        }
+
+        public int size() {
+            return 2;
+        }
+    }
+    public static class IntParameterSerializer extends AnyParameterSerializer {
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new IntParameterSerializer(descr);
+            }
+        };
+
+        public IntParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = "0";
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            int result = MemoryUtils.bytesArrayToInt16(memory, offset);
+            super.value = Integer.toString(result);
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            int val = Integer.parseInt(super.value);
+            MemoryUtils.int16ToByteArray(memory, offset, val);
+            return size();
+        }
+
+        public int size() {
+            return 2;
+        }
+    }
+    public static class DevNameParameterSerializer extends AnyParameterSerializer {
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new DevNameParameterSerializer(descr);
+            }
+        };
+        public static final String defaultName = "Name unavailable";
+        private boolean isInitialized = false;
+
+        public DevNameParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = defaultName;
+        }
+
+        public boolean initialized() { return isInitialized; }
+
+        public void deserialize(byte[] memory, int offset) {
+            super.value = "";
+            for (int i=0; i<19; i++) {
+                if (memory[offset+i] == 0)
+                    break;
+                super.value += (char) MemoryUtils.byteToUnsignedByte(memory[offset+i]);
+            }
+            isInitialized = true;
+            isSynchronized = true;
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            int j = 0;
+            for (char ch : super.value.toCharArray()){
+                memory[offset + j++] = (byte) ch;
+                if (j == 19)
+                    break;
+            }
+            memory[offset + j] = 0;
+            return size();
+        }
+
+        public int size() {
+            return 20;
+        }
+    }
+    public static class MT2IdParameterSerializer extends AnyParameterSerializer {
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new MT2IdParameterSerializer(descr);
+            }
+        };
+
+        public MT2IdParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = "0";
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            int id = MemoryUtils.byteToUnsignedByte(memory[offset]);
+            super.value = Integer.toString(id);
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            memory[offset] = (byte) Integer.parseInt(super.value);
+            return size();
+        }
+
+        public int size() {
+            return 1;
+        }
+
+        public Preference createPreference(Context context) {
+            return null;
+        }
+    }
+    public static class FloatParameterSerializer extends AnyParameterSerializer {
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new FloatParameterSerializer(descr);
+            }
+        };
+
+        public FloatParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = "0.0";
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            byte tmp[] = Arrays.copyOfRange(memory, offset, offset + 4);
+            float f = ByteBuffer.wrap(tmp)/*.order(ByteOrder.LITTLE_ENDIAN)*/.getFloat();
+            super.value = Float.toString(f);
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            byte tmp[] = new byte[4];
+            ByteBuffer.wrap(tmp).putFloat(Float.parseFloat(super.value));
+            for (int i=0; i<4; i++)
+            {
+                memory[offset+i] = tmp[i];
+            }
+            return size();
+        }
+
+        public int size() {
+            return 4;
+        }
+
+    }
+    public static class DevAddrParameterSerializer extends AnyParameterSerializer {
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new UintParameterSerializer(descr);
+            }
+        };
+
+        public DevAddrParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = "0.0.0";
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            super.value = MemoryUtils.byteToUnsignedByte(memory[offset])
+                    + "." + MemoryUtils.byteToUnsignedByte(memory[offset+1])
+                    + "." + MemoryUtils.byteToUnsignedByte(memory[offset+2]);
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            String[] address = super.value.split("\\.");
+            memory[offset] = (byte) Integer.parseInt(address[0]);
+            memory[offset+1] = (byte) Integer.parseInt(address[1]);
+            memory[offset+2] = (byte) Integer.parseInt(address[2]);
+            return size();
+        }
+
+        public int size() {
+            return 3;
+        }
+    }
+
+    // Containers
+    public static class ParametersDescriptionsContainer {
+        public Map<Integer, ParameterDescription> descriptions = new TreeMap<>();
+
+        public void register(ParameterDescription descr)
+        {
+            descriptions.put(descr.getId(), descr);
+        }
+
+        /**
+         * Create parameters serializers by all descriptions and put it to container
+         * @param container where to put parameter serializers
+         */
+        public void addParameters(ParametersContainer2 container) {
+            for (Map.Entry<Integer, ParameterDescription> entry : descriptions.entrySet()) {
+                AnyParameterSerializer serializer = entry.getValue().factory.create(entry.getValue());
+                container.add(serializer);
+            }
+        }
+    }
+    public static class ParametersContainer2 {
+        private Map<Integer, AnyParameterSerializer> allParameters = new TreeMap<>();
+
+        public void add(AnyParameterSerializer par) {
+            allParameters.put(par.description.getId(), par);
+        }
+
+        public AnyParameterSerializer get(int id){
+            return allParameters.get(id);
+        }
+
+        public Set<Map.Entry<Integer,AnyParameterSerializer>> entrySet()
+        {
+            return allParameters.entrySet();
+        }
+
+        public int serializeSetObject(int id, byte[] memory, int position, int maxPosition) {
+            AnyParameterSerializer par = allParameters.get(id);
+            if (par == null)
+                return 0;
+            int size = par.size();
+            if (maxPosition - position < size + 3)
+                return 0;
+            memory[position++] = (byte) size;
+            MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.SET_OBJECT));
+            position += 2;
+            par.serialize(memory, position);
+            return size + 3;
+        }
+
+        public static int serializeParameterRequest(int id, byte[] memory, int position, int maxPosition) {
+            if (maxPosition - position < 3)
+                return 0;
+            memory[position++] = 0;
+            MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.OBJECT_REQUEST));
+            return 3;
+        }
+
+        /**
+         * Read one parameter from binary stream
+         * @param memory Binary stream
+         * @param position start position for reading
+         * @param size maximal index value allowed for memory
+         * @return Count of bytes parsed. If parsing is impossible, 0. If id is not registered, nothing will be added
+         */
+        public int deserializeOneParamter(byte[] memory, int position, int size)
+        {
+            int readed = 0;
+            int argSize = MemoryUtils.byteToUnsignedByte(memory[position]);
+            if (size < argSize + 3) {
+                Log.e(TAG, "binary stream seems to be broken: unexpected end of stream");
+                return 0;
+            }
+            readed++;
+            int id = MemoryUtils.bytesArrayToUint16(memory, position+readed);
+            readed += 2;
+
+            if (dispatchOperationCodeType(id) != OperationCodeType.SET_OBJECT)
+            {
+                Log.e(TAG, "Trying to dispatch " + removeOperationTypeBits(id) + " with invalid operation code type bits");
+                return 0;
+            }
+
+            id = removeOperationTypeBits(id);
+
+            AnyParameterSerializer par = allParameters.get(id);
+            if (par != null) {
+                par.deserialize(memory, position + readed);
+            } else {
+                Log.e(TAG, "Unknown parameter id: " + id);
+            }
+            return argSize + 3;
+        }
+
+        public void deserializeStream(byte[] memory, int offset, int size)
+        {
+            int notParsed = size;
+            for (int i = 0; i<size; )
+            {
+                int result = deserializeOneParamter(memory, offset + i, notParsed);
+                if (result == 0)
+                    break;
+                i += result;
+                notParsed -= result; /// @todo test it
+            }
+        }
+    }
+    public static class FunctionsContainer2 {
+        public Map<Integer, FunctionCallSerializer> funcions;
+
+        public void register(FunctionCallSerializer function) {
+            funcions.put(function.description.getId(), function);
+        }
+    }
+
+    public static class Operations {
+        public static class AnyDevice {
+            public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
+            public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
+            public static class Configuration {
+                public static final int DEV_TYPE_UNDEFINED = 100;
+                public static final int DEV_TYPE_RIFLE = 1;
+                public static final int DEV_TYPE_HEAD_SENSOR = 2;
+                public static final int DEV_TYPE_BLUETOOTH_BRIDGE = 3;
+
+                public static final ParameterDescription deviceType
+                        = new ParameterDescription(parametersDescriptions, 2002, "Device id", UintParameterSerializer.factory);
+            }
+
+            public static class Funcitons {
+                public static final FunctionCallSerializer resetToDefaults
+                        = new FunctionCallNoParsSerializer(functionsSerializers, 2100, "Reset device to default");
+            }
+
+            public static String getDevTypeString(int type) {
+                switch (type) {
+                    case Configuration.DEV_TYPE_RIFLE:
+                        return "Rifle";
+                    case Configuration.DEV_TYPE_HEAD_SENSOR:
+                        return "Head sensor";
+                    case Configuration.DEV_TYPE_UNDEFINED:
+                        return "Type not defined";
+                    default:
+                        return "Unknown type";
+                }
+            }
+        }
+
+
+    }
 }
