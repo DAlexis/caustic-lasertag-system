@@ -12,7 +12,7 @@ import ru.caustic.lasertag.causticlasertagcontroller.RCSProtocol;
  */
 public class RCSProtocolTest extends TestCase {
 
-    private void testAnyParameterSerDeser(RCSProtocol.RCSPParameterGroup par, String originalValue, String otherValue, int bufferLength, int offset) {
+    private void testAnyParameterSerDeser(RCSProtocol.RCSPParameterDescription par, String originalValue, String otherValue, int bufferLength, int offset) {
         byte buffer[] = new byte[bufferLength];
         par.setValue(originalValue);
         par.serialize(buffer, offset);
@@ -50,7 +50,7 @@ public class RCSProtocolTest extends TestCase {
     @Test
     public void testUint16SerializationDeserialization()
     {
-        RCSProtocol.RCSPParameterGroup par = new RCSProtocol.UintGroupRCSP(123, "Test", "TESTKEY");
+        RCSProtocol.RCSPParameterDescription par = new RCSProtocol.UintGroupRCSP(123, "Test", "TESTKEY");
         testAnyParameterSerDeser(par, "1", "0", 10, 0);
         testAnyParameterSerDeser(par, "129", "0", 10, 1);
         testAnyParameterSerDeser(par, "160", "0", 10, 2);
@@ -61,7 +61,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testDeviceNameSerializationDeserialization() {
-        RCSProtocol.RCSPParameterGroup par = new RCSProtocol.DevNameGroupRCSP(123, "Test", "TESTKEY");
+        RCSProtocol.RCSPParameterDescription par = new RCSProtocol.DevNameGroupRCSP(123, "Test", "TESTKEY");
         //RCSProtocol.Parameter par = new RCSProtocol.Parameter("Test", RCSProtocol.Parameter.TYPE_DEVICE_NAME, 123);
         testAnyParameterSerDeser(par, "Test name 1", "", 40, 20);
         testAnyParameterSerDeser(par, "The device ASCII na", "", 20, 0);
@@ -77,7 +77,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testMT2idSerializationDeserialization() {
-        RCSProtocol.RCSPParameterGroup par = new RCSProtocol.MT2IdGroupRCSP(123, "Test", "TESTKEY");
+        RCSProtocol.RCSPParameterDescription par = new RCSProtocol.MT2IdGroupRCSP(123, "Test", "TESTKEY");
         testAnyParameterSerDeser(par, "1", "0", 2, 0);
         testAnyParameterSerDeser(par, "80", "0", 2, 1);
         testAnyParameterSerDeser(par, "127", "0", 10, 5);
@@ -87,7 +87,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testIntSerializationDeserialization() {
-        RCSProtocol.RCSPParameterGroup par = new RCSProtocol.IntGroupRCSP(123, "Test", "TESTKEY");
+        RCSProtocol.RCSPParameterDescription par = new RCSProtocol.IntGroupRCSP(123, "Test", "TESTKEY");
         testAnyParameterSerDeser(par, "1", "0", 2, 0);
         testAnyParameterSerDeser(par, "23767", "0", 10, 5);
         testAnyParameterSerDeser(par, "-1", "0", 4, 1);
@@ -97,7 +97,7 @@ public class RCSProtocolTest extends TestCase {
     @Test
     public void testFloatSerializationDeserialization() {
 
-        RCSProtocol.RCSPParameterGroup par = new RCSProtocol.FloatGroupRCSP(123, "Test", "TESTKEY");
+        RCSProtocol.RCSPParameterDescription par = new RCSProtocol.FloatGroupRCSP(123, "Test", "TESTKEY");
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("1.0")), "0.0", 4, 0);
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("3.1415926")), "0.0", 4, 0);
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("-243.6124123")), "0.0", 4, 0);
@@ -105,7 +105,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testDevAddrSerializationDeserialization() {
-        RCSProtocol.RCSPParameterGroup par = new RCSProtocol.DevAddrGroupRCSP(123, "Test", "TESTKEY");
+        RCSProtocol.RCSPParameterDescription par = new RCSProtocol.DevAddrGroupRCSP(123, "Test", "TESTKEY");
         testAnyParameterSerDeser(par, "123.43.8", "0.0.0", 4, 0);
         testAnyParameterSerDeser(par, "255.240.1", "0.0.0", 4, 0);
         testAnyParameterSerDeser(par, "0.0.0", "1.2.3", 4, 0);

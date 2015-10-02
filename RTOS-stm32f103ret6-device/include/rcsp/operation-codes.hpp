@@ -33,6 +33,7 @@ using UintParameter = uint16_t;
 using IntParameter = int16_t;
 using TimeInterval = uint32_t;
 using FloatParameter = float;
+using BoolParameter = bool;
 
 namespace ConfigCodes
 {
@@ -67,17 +68,17 @@ namespace ConfigCodes
 			PAR_CODE(FloatParameter, criticalCoeff, 11)
 
 			/// Are these bools need to be grouped to one variable with bit fields?
-			PAR_CODE(bool, semiAutomaticAllowed, 12) ///< Is no need in bolt disorting between shots
-			PAR_CODE(bool, automaticAllowed,     13)
+			PAR_CODE(BoolParameter, semiAutomaticAllowed, 12) ///< Is no need in bolt disorting between shots
+			PAR_CODE(BoolParameter, automaticAllowed,     13)
 
 			// Reload cycle control
-			PAR_CODE(bool, reloadIsMagazineSmart,   15) ///< Is magazine smart (with MCU)?
+			PAR_CODE(BoolParameter, reloadIsMagazineSmart,   15) ///< Is magazine smart (with MCU)?
 
-			PAR_CODE(bool, reloadNeedMagDisconnect, 16) ///< 1. Should the magazine be disconnected?
-			PAR_CODE(bool, reloadNeedMagChange,     17) ///< 2. Should the magazine be changed?
-			PAR_CODE(bool, reloadNeedBolt,          18) ///< 3. Should the bolt be distorted?
+			PAR_CODE(BoolParameter, reloadNeedMagDisconnect, 16) ///< 1. Should the magazine be disconnected?
+			PAR_CODE(BoolParameter, reloadNeedMagChange,     17) ///< 2. Should the magazine be changed?
+			PAR_CODE(BoolParameter, reloadNeedBolt,          18) ///< 3. Should the bolt be distorted?
 
-			PAR_CODE(bool, reloadPlaySound,         20) ///< Should reloading sound be played?
+			PAR_CODE(BoolParameter, reloadPlaySound,         20) ///< Should reloading sound be played?
 
 			PAR_CODE(UintParameter, magazinesCountStart,      30)
 			PAR_CODE(UintParameter, magazinesCountMax,        31)
@@ -131,7 +132,7 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, healthStart, 1003)
 			PAR_CODE(UintParameter, armorStart,  1004)
 
-			PAR_CODE(FloatParameter, isHealable, 1010)
+			PAR_CODE(BoolParameter, isHealable, 1010)
 
 			PAR_CODE(UintParameter, lifesCount,  1011)
 
@@ -152,7 +153,7 @@ namespace ConfigCodes
 
 			PAR_CODE(TimeInterval, preRespawnDelay,    1021)
 			PAR_CODE(TimeInterval, postRespawnDelay,   1022)
-			PAR_CODE(bool,         autoRespawn,        1023)
+			PAR_CODE(BoolParameter,autoRespawn,        1023)
 			PAR_CODE(TimeInterval, shockDelayImmortal, 1024)
 			PAR_CODE(TimeInterval, shockDelayInactive, 1025)
 

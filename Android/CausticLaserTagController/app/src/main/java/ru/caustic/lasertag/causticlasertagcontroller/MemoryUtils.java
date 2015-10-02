@@ -35,6 +35,21 @@ public class MemoryUtils {
         uint16ToByteArray(memory, position, int16);
     }
 
+    public static boolean bytesArrayToBool(byte[] memory, int position) {
+        if (memory[position] == 0)
+            return true;
+        else
+            return false;
+    }
+
+    public static void BoolToBytesArray(byte[] memory, int position, boolean val) {
+        if (val) {
+            memory[position] = (byte) 255;
+        } else {
+            memory[position] = 0;
+        }
+    }
+
     public static void zerify(byte[] memory) {
         for (int i=0; i<memory.length; i++)
             memory[i] = 0;

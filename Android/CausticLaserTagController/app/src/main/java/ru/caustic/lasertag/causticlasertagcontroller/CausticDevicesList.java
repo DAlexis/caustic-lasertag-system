@@ -23,7 +23,7 @@ public class CausticDevicesList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caustic_devices_list);
-
+/*
         if (!BluetoothManager.getInstance().isConnected()) {
             finish();
         }
@@ -36,13 +36,13 @@ public class CausticDevicesList extends AppCompatActivity {
                 devicesArrayList
         );
         devicesList.setAdapter(arrayAdapter);
-        arrayAdapter.notifyDataSetChanged();
+        arrayAdapter.notifyDataSetChanged();*/
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
+/*
         CausticDevicesManager.getInstance().updateDevicesList(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
@@ -64,7 +64,7 @@ public class CausticDevicesList extends AppCompatActivity {
                         }
                     }
                 });
-
+*/
     }
 
     @Override

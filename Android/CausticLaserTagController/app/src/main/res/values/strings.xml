@@ -25,4 +25,8 @@
     <string name="header2_summary">Summary of Header 2</string>
     <string name="header3_title">Header 3</string>
     <string name="header3_summary">Summary of Header 3</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_caustic_device_setting">CausticDeviceSettingActivity</string>
 </resources>

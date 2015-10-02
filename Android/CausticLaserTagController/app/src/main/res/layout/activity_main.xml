@@ -85,7 +85,7 @@
         android:text="Configure device..."
         android:id="@+id/buttonDevicesList"
         android:onClick="causticDevsListClicked"
-        android:layout_below="@+id/textView3"
+        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -112,12 +112,14 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test prefs"
+        android:text="Change device settings..."
         android:id="@+id/buttonTestPrefs"
         android:onClick="testPrefsClick"
-        android:layout_below="@+id/buttonDevicesList"
+        android:layout_below="@+id/textView3"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/buttonUpdDevices"
+        android:layout_alignEnd="@+id/buttonUpdDevices" />
 
     <Button
         android:layout_width="wrap_content"
