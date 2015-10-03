@@ -181,8 +181,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void causticDevsListClicked(View view) {
-        Intent intent = new Intent (MainActivity.this, CausticDevicesList.class);
-        startActivityForResult(intent, CHOOSE_BT_DEVICE);
+        Intent intent = new Intent (MainActivity.this, CausticDevicesListActivity.class);
+        //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);
+        startActivityForResult(intent, 0);
     }
 
 
