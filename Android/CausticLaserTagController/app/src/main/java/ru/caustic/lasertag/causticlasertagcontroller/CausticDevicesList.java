@@ -23,7 +23,7 @@ public class CausticDevicesList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caustic_devices_list);
-/*
+
         if (!BluetoothManager.getInstance().isConnected()) {
             finish();
         }
@@ -36,12 +36,34 @@ public class CausticDevicesList extends AppCompatActivity {
                 devicesArrayList
         );
         devicesList.setAdapter(arrayAdapter);
-        arrayAdapter.notifyDataSetChanged();*/
+        arrayAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        CausticDevicesManager.getInstance().updateDevicesList2(
+                new Handler() {
+                    public void handleMessage(android.os.Message msg) {
+                        int qq = 0;
+                        switch (msg.what) {
+                            case CausticDevicesManager.DEVICES_LIST_UPDATED:
+                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2> devs =
+                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2>) msg.obj;
+
+                                devicesArrayList.clear();
+
+                                for (Map.Entry<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2> entry : devs.entrySet()) {
+                                    devicesArrayList.add(entry.getValue().getName() + "\nAddress: " + entry.getKey().toString());
+                                }
+
+                                arrayAdapter.notifyDataSetChanged();
+                                break;
+                        }
+                    }
+                });
+
 /*
         CausticDevicesManager.getInstance().updateDevicesList(
                 new Handler() {
@@ -63,8 +85,8 @@ public class CausticDevicesList extends AppCompatActivity {
                                 break;
                         }
                     }
-                });
-*/
+                });*/
+
     }
 
     @Override

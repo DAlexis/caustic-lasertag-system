@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        RCSProtocol.Operations.init();
         Log.d(TAG, "Starting main activity");
 
         infoTextView = (TextView) findViewById(R.id.selectedDeviceText);

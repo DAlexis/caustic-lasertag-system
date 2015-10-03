@@ -971,7 +971,7 @@ public class RCSProtocol {
             return allParameters.get(id);
         }
 
-        public Set<Map.Entry<Integer,AnyParameterSerializer>> entrySet()
+        public Set<Map.Entry<Integer, AnyParameterSerializer>> entrySet()
         {
             return allParameters.entrySet();
         }
@@ -1048,14 +1048,41 @@ public class RCSProtocol {
         }
     }
     public static class FunctionsContainer2 {
-        public Map<Integer, FunctionCallSerializer> funcions;
+        public Map<Integer, FunctionCallSerializer> funcions = new TreeMap<>();
 
         public void register(FunctionCallSerializer function) {
             funcions.put(function.description.getId(), function);
         }
+
+        public int serializeCall(int id, String argument, byte[] memory, int position, int maxPosition)
+        {
+            FunctionCallSerializer func = funcions.get(id);
+            if (func == null)
+                return 0;
+            int size = func.size();
+            if (maxPosition - position < size + 3)
+                return 0;
+            memory[position++] = (byte) size;
+            MemoryUtils.uint16ToByteArray(memory, position, makeOperationCodeType(id, OperationCodeType.CALL_REQUEST));
+            position += 2;
+            func.setArgument(argument);
+            func.serialize(memory, position);
+            return size + 3;
+        }
     }
 
     public static class Operations {
+        public static void init() {
+            try {
+                Class.forName(Operations.class.getName());
+                Class.forName(Operations.AnyDevice.class.getName());
+                Class.forName(Operations.AnyDevice.Configuration.class.getName());
+                Class.forName(Operations.AnyDevice.Funcitons.class.getName());
+
+            } catch (ClassNotFoundException e) {
+                throw new AssertionError(e);  // Can't happen
+            }
+        }
         public static class AnyDevice {
             public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
             public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
@@ -1067,6 +1094,8 @@ public class RCSProtocol {
 
                 public static final ParameterDescription deviceType
                         = new ParameterDescription(parametersDescriptions, 2002, "Device id", UintParameterSerializer.factory);
+                public static final ParameterDescription deviceName
+                        = new ParameterDescription(parametersDescriptions, 2001, "Device name", DevNameParameterSerializer.factory);
             }
 
             public static class Funcitons {
@@ -1085,6 +1114,30 @@ public class RCSProtocol {
                     default:
                         return "Unknown type";
                 }
+            }
+        }
+
+        public static class Rifle {
+            public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
+            public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
+            public static class Configuration {
+
+            }
+
+            public static class Funcitons {
+
+            }
+        }
+
+        public static class HeadSensor {
+            public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
+            public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
+            public static class Configuration {
+
+            }
+
+            public static class Funcitons {
+
             }
         }
 

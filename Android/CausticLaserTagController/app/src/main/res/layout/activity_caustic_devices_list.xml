@@ -19,12 +19,12 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:choiceMode="multipleChoice" />
-
+<!--
         <fragment android:name="ru.caustic.lasertag.causticlasertagcontroller.DeviceSettingsFragment"
             android:id="@+id/settings"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            tools:layout="@layout/fragment_device_settings" />
+            tools:layout="@layout/fragment_device_settings" />-->
     </LinearLayout>
 </RelativeLayout>
