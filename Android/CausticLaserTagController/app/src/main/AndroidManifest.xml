@@ -66,6 +66,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertag.causticlasertagcontroller.MainActivity" />
         </activity>
+        <activity
+            android:name=".DeviceSettingsActivity"
+            android:label="@string/title_activity_device_settings"
+            android:parentActivityName=".CausticDevicesListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.caustic.lasertag.causticlasertagcontroller.CausticDevicesListActivity" />
+        </activity>
     </application>
 
 </manifest>

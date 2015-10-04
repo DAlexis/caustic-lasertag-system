@@ -14,15 +14,16 @@
 
         <ListView
             android:layout_width="wrap_content"
-            android:layout_height="422dp"
+            android:layout_height="wrap_content"
             android:id="@+id/listViewDevices"
             android:layout_weight="0.87" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/button" />
+            android:text="Configure..."
+            android:id="@+id/buttonConfigureDevice"
+            android:onClick="buttonConfigureDeviceClick" />
 
     </LinearLayout>
 </FrameLayout>

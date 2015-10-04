@@ -730,6 +730,10 @@ public class RCSProtocol {
                 isSynchronized = false;
             this.value = value;
         }
+
+        public ParameterDescription getDescription() {
+            return (ParameterDescription) description;
+        }
     }
 
     // Custom parameters serializers
@@ -958,6 +962,10 @@ public class RCSProtocol {
                 AnyParameterSerializer serializer = entry.getValue().factory.create(entry.getValue());
                 container.add(serializer);
             }
+        }
+
+        public boolean hasParameter(int id) {
+            return descriptions.get(id) != null;
         }
     }
     public static class ParametersContainer2 {

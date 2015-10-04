@@ -9,10 +9,12 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -36,7 +38,6 @@ public class CausticDevicesListFragment extends Fragment {
         CausticDevicesManager.getInstance().updateDevicesList2(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
-                        int qq = 0;
                         switch (msg.what) {
                             case CausticDevicesManager.DEVICES_LIST_UPDATED:
                                 Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2> devs =
@@ -71,6 +72,22 @@ public class CausticDevicesListFragment extends Fragment {
             deviceSummary = (TextView) convertView.findViewById(R.id.textViewDeviceSummary);
             deviceName.setText(device.getName());
             deviceSummary.setText(device.getType() + "\n" + device.address.toString());
+
+            deviceName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkAndAddToSettingsEditorContext();
+                    Toast.makeText(getActivity(), deviceName.getText().toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        public void checkAndAddToSettingsEditorContext() {
+            if (deviceName.isChecked()) {
+                DeviceSettingsFragment.editorContext.add(device.address);
+            } else {
+                DeviceSettingsFragment.editorContext.devices.remove(device.address);
+            }
         }
     }
 
