@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopServiceClick(null);
+        //stopServiceClick(null);
     }
 
     public void stopServiceClick(View view) {

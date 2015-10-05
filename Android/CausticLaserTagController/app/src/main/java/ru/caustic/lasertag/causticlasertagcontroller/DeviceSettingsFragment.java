@@ -3,6 +3,9 @@ package ru.caustic.lasertag.causticlasertagcontroller;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,11 +41,14 @@ public class DeviceSettingsFragment extends Fragment {
         RCSProtocol.UintParameterDescription uintDescr = null;
         public View convertView = null;
 
-        public void init(View convertView, ParameterEntry parameterEntry) {
-            if (this.convertView == null)
-                this.convertView = convertView;
+        public boolean initialized() {
+            return convertView != null;
+        }
 
+        public void init(View convertView, ParameterEntry parameterEntry) {
+            this.convertView = convertView;
             this.parameterEntry = parameterEntry;
+
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
             parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
             seekBar = (SeekBar) convertView.findViewById(R.id.seekBarParameterValue);
@@ -56,6 +62,22 @@ public class DeviceSettingsFragment extends Fragment {
             } else {
                 parameterValue.setText("");
             }
+            parameterValue.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    pickValue();
+                }
+            });
 
             if (parameterEntry.description instanceof RCSProtocol.UintParameterDescription) {
                 uintDescr = (RCSProtocol.UintParameterDescription) parameterEntry.description;
@@ -69,7 +91,7 @@ public class DeviceSettingsFragment extends Fragment {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         parameterValue.setText(Integer.toString(progress + uintDescr.minValue));
-                        String text = parameterValue.getText().toString();
+                        pickValue();
                     }
 
                     @Override
@@ -280,7 +302,22 @@ public class DeviceSettingsFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
+
             ParameterEntry entry = editorContext.parameters.get(position);
+
+            if (entry.getUiListElement().convertView == null) {
+                // If real ui list element not initialized, initialize it
+                convertView = mInflater.inflate(R.layout.parameters_list_base_item, parent, false);
+                entry.initUiListElement(convertView);
+                entry.getUiListElement().update();
+                //convertView.setTag(entry.getUiListElement());
+            }
+
+            return entry.getUiListElement().convertView;
+
+
+/*
             if (convertView == null || entry.getUiListElement().convertView == null) {
 
                 if (entry.getUiListElement().convertView == null) {
@@ -290,16 +327,11 @@ public class DeviceSettingsFragment extends Fragment {
                     convertView = entry.getUiListElement().convertView;
                 }
                 convertView.setTag(entry.getUiListElement());
-                /*
-                // We are creating view now
-                convertView = mInflater.inflate(R.layout.parameters_list_base_item, null);
-                // Initializing holder
-                entry.initUiListElement(convertView);
-                convertView.setTag(entry.getUiListElement());*/
+
             }
             ( (ParametersListElementBase) convertView.getTag() ).update();
             //entry.getUiListElement().update();
-            return convertView;
+            return convertView;*/
         }
 
     }
