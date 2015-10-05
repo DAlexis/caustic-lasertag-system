@@ -626,14 +626,37 @@ public class RCSProtocol {
         }
     }
     public static class ParameterDescription extends AnyDescription {
+        private final boolean editable;
         public ParameterSerializerFactory factory;
-        public ParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, ParameterSerializerFactory factory) {
+        public ParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, ParameterSerializerFactory factory) {
             super(id, name);
+            this.editable = editable;
             this.factory = factory;
             if (descrSet != null)
                 descrSet.register(this);
         }
+        public boolean isEditable() {
+            return editable;
+        }
     }
+
+    public static class UintParameterDescription extends ParameterDescription {
+        public final int minValue;
+        public final int maxValue;
+
+        public UintParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+            super(descrSet, id, name, true, UintParameterSerializer.factory);
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public UintParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name) {
+            super(descrSet, id, name, false, UintParameterSerializer.factory);
+            this.minValue = 0;
+            this.maxValue = 0;
+        }
+    }
+
     public static class FunctionCallDescription extends AnyDescription {
         public FunctionCallSerializer serializer;
         public FunctionCallDescription(int _id, String _name) {
@@ -1086,6 +1109,12 @@ public class RCSProtocol {
                 Class.forName(Operations.AnyDevice.class.getName());
                 Class.forName(Operations.AnyDevice.Configuration.class.getName());
                 Class.forName(Operations.AnyDevice.Funcitons.class.getName());
+                Class.forName(Operations.Rifle.class.getName());
+                Class.forName(Operations.Rifle.Configuration.class.getName());
+                Class.forName(Operations.Rifle.Funcitons.class.getName());
+                Class.forName(Operations.HeadSensor.class.getName());
+                Class.forName(Operations.HeadSensor.Configuration.class.getName());
+                Class.forName(Operations.HeadSensor.Funcitons.class.getName());
 
             } catch (ClassNotFoundException e) {
                 throw new AssertionError(e);  // Can't happen
@@ -1101,9 +1130,9 @@ public class RCSProtocol {
                 public static final int DEV_TYPE_BLUETOOTH_BRIDGE = 3;
 
                 public static final ParameterDescription deviceType
-                        = new ParameterDescription(parametersDescriptions, 2002, "Device id", UintParameterSerializer.factory);
+                        = new UintParameterDescription(parametersDescriptions, 2002, "Device id");
                 public static final ParameterDescription deviceName
-                        = new ParameterDescription(parametersDescriptions, 2001, "Device name", DevNameParameterSerializer.factory);
+                        = new ParameterDescription(parametersDescriptions, 2001, "Device name", false, DevNameParameterSerializer.factory);
             }
 
             public static class Funcitons {
@@ -1125,6 +1154,23 @@ public class RCSProtocol {
             }
         }
 
+        public static class HeadSensor {
+            public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
+            public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
+            public static class Configuration {
+                public static final ParameterDescription healthMax
+                        = new UintParameterDescription(parametersDescriptions, 1000, "Maximal player health", 1, 200);
+                public static final ParameterDescription healthStart
+                        = new UintParameterDescription(parametersDescriptions, 1003, "Player health at start", 1, 200);
+                public static final ParameterDescription lifesCount
+                        = new UintParameterDescription(parametersDescriptions, 1011, "Players life count", 1, 1000);
+            }
+
+            public static class Funcitons {
+
+            }
+        }
+
         public static class Rifle {
             public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
             public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
@@ -1137,17 +1183,7 @@ public class RCSProtocol {
             }
         }
 
-        public static class HeadSensor {
-            public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
-            public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
-            public static class Configuration {
 
-            }
-
-            public static class Funcitons {
-
-            }
-        }
 
 
     }

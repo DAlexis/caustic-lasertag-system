@@ -5,9 +5,38 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/paramtersList"
-        android:layout_gravity="left|top" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/paramtersList"
+            android:layout_gravity="left|top"
+            android:layout_weight="0.87"
+            />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apply"
+                android:id="@+id/buttonApplySettings"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:id="@+id/buttonCancelSettings"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
 </FrameLayout>

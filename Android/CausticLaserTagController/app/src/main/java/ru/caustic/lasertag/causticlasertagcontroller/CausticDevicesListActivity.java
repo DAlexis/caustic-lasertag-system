@@ -36,9 +36,4 @@ public class CausticDevicesListActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    public void buttonConfigureDeviceClick(View view) {
-        Intent settingsActivity = new Intent(getBaseContext(), DeviceSettingsActivity.class);
-        startActivity(settingsActivity);
-    }
 }

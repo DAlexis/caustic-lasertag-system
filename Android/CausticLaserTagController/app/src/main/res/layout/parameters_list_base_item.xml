@@ -1,19 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:gravity="left">
 
-    <TextView
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="parameterName"
-        android:id="@+id/parameterName" />
+        >
 
-    <TextView
-        android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="parameterName"
+                android:id="@+id/parameterName" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="parameterSummary"
+                android:id="@+id/parameterSummary" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+
+        <EditText
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:gravity="right"
+            android:ems="10"
+            android:id="@+id/editTextParameterValue"
+            android:text="0" />
+    </LinearLayout>
+
+    <SeekBar
+        android:paddingTop="10dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="parameterValue"
-        android:id="@+id/parameterValue" />
+        android:id="@+id/seekBarParameterValue"
+        android:indeterminate="false" />
+
 </LinearLayout>

@@ -2,6 +2,7 @@ package ru.caustic.lasertag.causticlasertagcontroller;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ public class CausticDevicesListFragment extends Fragment {
 
     private DevicesListAdapter adapter;
     private ListView devicesList;
+    private Button buttonConfigureDevice;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,6 +35,16 @@ public class CausticDevicesListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_caustic_devices_list, container, false);
 
         devicesList = (ListView) view.findViewById(R.id.listViewDevices);
+        buttonConfigureDevice = (Button) view.findViewById(R.id.buttonConfigureDevice);
+
+        buttonConfigureDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingsActivity = new Intent(getActivity().getBaseContext(), DeviceSettingsActivity.class);
+                startActivity(settingsActivity);
+            }
+        });
+
         adapter = new DevicesListAdapter();
         devicesList.setAdapter(adapter);
 
@@ -77,7 +90,6 @@ public class CausticDevicesListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     checkAndAddToSettingsEditorContext();
-                    Toast.makeText(getActivity(), deviceName.getText().toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }

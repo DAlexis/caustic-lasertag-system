@@ -7,7 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -17,21 +20,72 @@ import java.util.Set;
 
 
 public class DeviceSettingsFragment extends Fragment {
+    private ParametersListAdapter mAdapter;
+    ListView parsList;
+    Button buttonApply;
+    Button buttonCancel;
 
     public static SettingsEditorContext editorContext = new SettingsEditorContext();
 
-
     public static class ParametersListElementBase {
         TextView parameterName;
-        TextView parameterValue;
+        TextView parameterSummary;
+        SeekBar seekBar;
+        EditText parameterValue;
+
         ParameterEntry parameterEntry;
 
+        RCSProtocol.UintParameterDescription uintDescr = null;
+        public View convertView = null;
+
         public void init(View convertView, ParameterEntry parameterEntry) {
+            if (this.convertView == null)
+                this.convertView = convertView;
+
             this.parameterEntry = parameterEntry;
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
-            parameterValue = (TextView) convertView.findViewById(R.id.parameterValue);
+            parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
+            seekBar = (SeekBar) convertView.findViewById(R.id.seekBarParameterValue);
+            parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
+        }
+
+        public void update() {
             parameterName.setText(parameterEntry.description.getName());
-            parameterValue.setText(parameterEntry.getValue());
+            if (parameterEntry.hasInitialValue) {
+                parameterValue.setText(parameterEntry.getValue().toString());
+            } else {
+                parameterValue.setText("");
+            }
+
+            if (parameterEntry.description instanceof RCSProtocol.UintParameterDescription) {
+                uintDescr = (RCSProtocol.UintParameterDescription) parameterEntry.description;
+                // We have min and max values
+                parameterSummary.setText("From " + uintDescr.minValue + " to " + uintDescr.maxValue);
+                if (parameterEntry.hasInitialValue) {
+                    seekBar.setProgress(Integer.parseInt(parameterEntry.getValue().toString()) - uintDescr.minValue);
+                }
+                seekBar.setMax(uintDescr.maxValue - uintDescr.minValue);
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        parameterValue.setText(Integer.toString(progress + uintDescr.minValue));
+                        String text = parameterValue.getText().toString();
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) { }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) { }
+                });
+            } else {
+                seekBar.setVisibility(View.GONE);
+            }
+        }
+
+        public void pickValue() {
+            String text = parameterValue.getText().toString();
+            parameterEntry.setValue(text);
         }
     }
 
@@ -44,7 +98,7 @@ public class DeviceSettingsFragment extends Fragment {
         final String differentValueStr = "Different";
         String currentValue = differentValueStr;
 
-        private ParametersListElementBase uiListElement = null;
+        private ParametersListElementBase uiListElement = new ParametersListElementBase();
 
         public String getValue() {
             return currentValue;
@@ -83,12 +137,29 @@ public class DeviceSettingsFragment extends Fragment {
 
         public void initUiListElement(View convertView) {
             // Here will be parameter type specification code
-            uiListElement = new ParametersListElementBase();
             uiListElement.init(convertView, this);
         }
 
         public ParametersListElementBase getUiListElement() {
             return uiListElement;
+        }
+
+        public void setValue(String newValue) {
+            wasChanged = true;
+            currentValue = newValue;
+        }
+
+        public void pushValue() {
+            if (!wasChanged)
+                return;
+
+            for (BridgeConnector.DeviceAddress addr : context.devices) {
+                RCSProtocol.AnyParameterSerializer par
+                        = CausticDevicesManager.getInstance().devices2
+                        .get(addr).parameters
+                        .get(description.getId());
+                par.setValue(currentValue);
+            }
         }
     }
 
@@ -122,6 +193,9 @@ public class DeviceSettingsFragment extends Fragment {
             for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> par : dev.parameters.entrySet()) {
                 RCSProtocol.ParameterDescription descr = par.getValue().getDescription();
 
+                if (!descr.isEditable())
+                    continue;
+
                 ParameterEntry newParameter = new ParameterEntry(this, descr);
                 newParameter.init();
 
@@ -129,16 +203,43 @@ public class DeviceSettingsFragment extends Fragment {
                 parameters.add(newParameter);
             }
         }
+
+        public void pushValues() {
+            // Reading modified values
+            for (ParameterEntry entry : parameters) {
+                entry.uiListElement.pickValue();
+                entry.pushValue();
+            }
+            // Sending values to devices
+            for (BridgeConnector.DeviceAddress address : devices) {
+                CausticDevicesManager.getInstance().devices2.get(address).pushToDevice();
+            }
+        }
     }
 
-    private ParametersListAdapter mAdapter;
-    ListView parsList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device_settings, container, false);
         parsList = (ListView) view.findViewById(R.id.paramtersList);
+        buttonApply = (Button) view.findViewById(R.id.buttonApplySettings);
+        buttonCancel = (Button) view.findViewById(R.id.buttonCancelSettings);
+
+        buttonApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DeviceSettingsFragment.editorContext.pushValues();
+            }
+        });
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
+
         // Inflate the layout for this fragment
         editorContext.createEntries();
         mAdapter = new ParametersListAdapter();
@@ -180,14 +281,24 @@ public class DeviceSettingsFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ParameterEntry entry = editorContext.parameters.get(position);
-            if (convertView == null) {
+            if (convertView == null || entry.getUiListElement().convertView == null) {
+
+                if (entry.getUiListElement().convertView == null) {
+                    convertView = mInflater.inflate(R.layout.parameters_list_base_item, null);
+                    entry.initUiListElement(convertView);
+                } else {
+                    convertView = entry.getUiListElement().convertView;
+                }
+                convertView.setTag(entry.getUiListElement());
+                /*
                 // We are creating view now
                 convertView = mInflater.inflate(R.layout.parameters_list_base_item, null);
                 // Initializing holder
-                convertView.setTag(entry.getUiListElement());
+                entry.initUiListElement(convertView);
+                convertView.setTag(entry.getUiListElement());*/
             }
-            entry.initUiListElement(convertView);
-
+            ( (ParametersListElementBase) convertView.getTag() ).update();
+            //entry.getUiListElement().update();
             return convertView;
         }
 

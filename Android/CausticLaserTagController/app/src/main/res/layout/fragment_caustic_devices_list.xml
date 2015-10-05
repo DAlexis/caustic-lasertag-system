@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:text="Configure..."
             android:id="@+id/buttonConfigureDevice"
-            android:onClick="buttonConfigureDeviceClick" />
+            />
 
     </LinearLayout>
 </FrameLayout>
