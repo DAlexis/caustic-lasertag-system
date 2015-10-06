@@ -3,8 +3,6 @@
     android:layout_height="match_parent"
     tools:context="ru.caustic.lasertag.causticlasertagcontroller.DeviceSettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -32,19 +30,31 @@
 
         </LinearLayout>
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="400dp">
-
+            android:layout_height="match_parent">
 
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/paramtersList"
-                android:layout_gravity="left|top"
-                android:layout_weight="0.76" />
+                android:layout_alignParentTop="true" />
 
-        </FrameLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="New Button"
+            android:id="@+id/buttonQQ" />
 
     </LinearLayout>
 

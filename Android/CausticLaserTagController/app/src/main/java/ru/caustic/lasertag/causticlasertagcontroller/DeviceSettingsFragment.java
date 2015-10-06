@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -303,16 +304,19 @@ public class DeviceSettingsFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
+            Log.i("getView", "position: "+ position+ " convertView: "+ convertView);
 
             ParameterEntry entry = editorContext.parameters.get(position);
 
             if (entry.getUiListElement().convertView == null) {
                 // If real ui list element not initialized, initialize it
-                convertView = mInflater.inflate(R.layout.parameters_list_base_item, parent, false);
+                convertView = mInflater.inflate(R.layout.parameters_list_base_item, null);
                 entry.initUiListElement(convertView);
                 entry.getUiListElement().update();
                 //convertView.setTag(entry.getUiListElement());
             }
+
+            entry.getUiListElement().update();
 
             return entry.getUiListElement().convertView;
 
