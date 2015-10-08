@@ -30,4 +30,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_caustic_device_setting">CausticDeviceSettingActivity</string>
     <string name="title_activity_device_settings">DeviceSettingsActivity</string>
+    <string name="connecting_text">Connecting...</string>
+    <string name="disconnect_button">Disconnect</string>
 </resources>

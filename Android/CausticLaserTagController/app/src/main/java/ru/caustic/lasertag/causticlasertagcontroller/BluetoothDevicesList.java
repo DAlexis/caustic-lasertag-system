@@ -1,7 +1,9 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +24,12 @@ public class BluetoothDevicesList extends AppCompatActivity {
 
     public final static String BT_DEVICE = "ru.caustic.lasertag.causticlasertagcontroller.BT_DEVICE";
 
+    // @todo Move this to another place
+    public static final String APP_PREFERENCES = "settings";
+
+    SharedPreferences sharedPreferences;
     ListView devicesList = null;
+    CheckBox checkBoxAutoConnect;
 
     Set<BluetoothDevice> pairedDevicesSet = null;
 
@@ -31,7 +39,15 @@ public class BluetoothDevicesList extends AppCompatActivity {
 
         setContentView(R.layout.activity_bluetooth_devices_list);
 
+
+
         devicesList = (ListView) findViewById(R.id.devicesList);
+        checkBoxAutoConnect = (CheckBox) findViewById(R.id.checkBoxAutoConnect);
+
+        sharedPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+
+        boolean autoConnect = sharedPreferences.getBoolean("autoConnect", false);
+        checkBoxAutoConnect.setChecked(autoConnect);
 
         devicesList .setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

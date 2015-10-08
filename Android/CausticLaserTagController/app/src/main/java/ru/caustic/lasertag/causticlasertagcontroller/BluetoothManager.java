@@ -40,6 +40,12 @@ public class BluetoothManager {
     private String address = "";
     private String deviceName = "";
 
+    public static final int BT_NOT_CONNECTED = 0;
+    public static final int BT_ESTABLISHING  = 1;
+    public static final int BT_CONNECTED     = 2;
+
+    private int status = BT_NOT_CONNECTED;
+
     private BluetoothManager() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         onConnectionClosed();
@@ -49,10 +55,15 @@ public class BluetoothManager {
     {
         address = "";
         deviceName = "Bridge not connected";
+        status = BT_NOT_CONNECTED;
     }
 
     public static BluetoothManager getInstance() {
         return ourInstance;
+    }
+
+    public int getStatus() {
+        return this.status;
     }
 
     public void setRXHandler(Handler _handler) {
@@ -72,74 +83,20 @@ public class BluetoothManager {
         return address != "";
     }
 
-    public boolean connect(String _address, String _deviceName) {
+    public boolean connect(String _address, String _deviceName, ConnectionDoneListener listener) {
         if (_address == "")
             return false;
+        if (status == BT_ESTABLISHING)
+            return false;
+        if (status == BT_CONNECTED)
+            disconnect();
+
+        status = BT_ESTABLISHING;
         deviceName = _deviceName;
         address = _address;
-        Log.d(TAG, "Creating socket...");
 
-        // Set up a pointer to the remote node using it's address.
-        BluetoothDevice device = btAdapter.getRemoteDevice(address);
-
-
-
-        // Two things are needed to make a connection:
-        //   A MAC address, which we got above.
-        //   A Service ID or UUID.  In this case we are using the
-        //     UUID for SPP.
-        try {
-
-            // THIS code ony works on ZTE!!
-            // This code block is for solving "[JSR82] write: write() failed" problem.
-            // See https://stackoverflow.com/questions/20078457/android-bluetoothsocket-write-fails-on-4-2-2
-            btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-            Field f = btSocket.getClass().getDeclaredField("mFdHandle");
-            f.setAccessible(true);
-            f.set(btSocket, 0x8000);
-            btSocket.close();
-            Thread.sleep(1000); // Just in case the socket was really connected
-            // end of that block
-
-            btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-            /*Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
-            BluetoothSocket connection = (BluetoothSocket)m.invoke(device, MY_UUID);*/
-
-        } catch (IOException e) {
-            onConnectionClosed();
-            Log.e(TAG, "Fatal: socket creation failed: " + e.getMessage() + ".");
-            return false;
-        } catch (Exception e1) {
-            onConnectionClosed();
-            Log.e(TAG, "Reset Failed", e1);
-        }
-
-        // Discovery is resource intensive.  Make sure it isn't going on
-        // when you attempt to connect and pass your message.
-        btAdapter.cancelDiscovery();
-
-        // Establish the connection.  This will block until it connects.
-        Log.d(TAG, "Connecting...");
-        try {
-            btSocket.connect();
-            Log.d(TAG, "Connection established and ready to data transfer");
-        } catch (IOException e) {
-            onConnectionClosed();
-            Log.e(TAG, "Error during btSocket.connect(): " + e.getMessage());
-            try {
-                btSocket.close();
-                return false;
-            } catch (IOException e2) {
-                Log.e(TAG, "Fatal: unable to close socket during connection failure" + e2.getMessage() + ".");
-                return false;
-            }
-        }
-
-        // Create a data stream so we can talk to server.
-        Log.d(TAG, "Creating data stream...");
-
-        mConnectedThread = new ConnectedThread(btSocket);
-        mConnectedThread.start();
+        Thread asyncConnect = new AsyncConnect(listener);
+        asyncConnect.start();
         return true;
     }
 
@@ -194,6 +151,98 @@ public class BluetoothManager {
 
     public String getDeviceName() {
         return deviceName;
+    }
+
+    public interface ConnectionDoneListener {
+        void onConnectionDone(boolean result);
+    }
+
+    private class AsyncConnect extends Thread {
+
+        private final ConnectionDoneListener listener;
+
+        private class DefaultListener implements ConnectionDoneListener {
+            @Override
+            public void onConnectionDone(boolean result) {
+
+            }
+        }
+
+        public AsyncConnect(ConnectionDoneListener listener) {
+            if (listener != null)
+                this.listener = listener;
+            else
+                this.listener = new DefaultListener();
+        }
+
+        @Override
+        public void run() {
+            BluetoothDevice device = btAdapter.getRemoteDevice(address);
+
+            // Two things are needed to make a connection:
+            //   A MAC address, which we got above.
+            //   A Service ID or UUID.  In this case we are using the
+            //     UUID for SPP.
+            try {
+
+                // THIS code ony works on ZTE!!
+                // This code block is for solving "[JSR82] write: write() failed" problem.
+                // See https://stackoverflow.com/questions/20078457/android-bluetoothsocket-write-fails-on-4-2-2
+                btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                Field f = btSocket.getClass().getDeclaredField("mFdHandle");
+                f.setAccessible(true);
+                f.set(btSocket, 0x8000);
+                btSocket.close();
+                Thread.sleep(1000); // Just in case the socket was really connected
+                // end of that block
+
+                btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+            /*Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
+            BluetoothSocket connection = (BluetoothSocket)m.invoke(device, MY_UUID);*/
+
+            } catch (IOException e) {
+                onConnectionClosed();
+                Log.e(TAG, "Fatal: socket creation failed: " + e.getMessage() + ".");
+                listener.onConnectionDone(false);
+                return;
+            } catch (Exception e1) {
+                onConnectionClosed();
+                Log.e(TAG, "Reset Failed", e1);
+                listener.onConnectionDone(false);
+                return;
+            }
+
+            // Discovery is resource intensive.  Make sure it isn't going on
+            // when you attempt to connect and pass your message.
+            btAdapter.cancelDiscovery();
+
+            // Establish the connection.  This will block until it connects.
+            Log.d(TAG, "Connecting...");
+            try {
+                btSocket.connect();
+                Log.d(TAG, "Connection established and ready to data transfer");
+            } catch (IOException e) {
+                onConnectionClosed();
+                Log.e(TAG, "Error during btSocket.connect(): " + e.getMessage());
+                try {
+                    btSocket.close();
+                    listener.onConnectionDone(false);
+                    return;
+                } catch (IOException e2) {
+                    Log.e(TAG, "Fatal: unable to close socket during connection failure" + e2.getMessage() + ".");
+                    listener.onConnectionDone(false);
+                    return;
+                }
+            }
+
+            // Create a data stream so we can talk to server.
+            Log.d(TAG, "Creating data stream...");
+
+            mConnectedThread = new ConnectedThread(btSocket);
+            mConnectedThread.start();
+            status = BT_CONNECTED;
+            listener.onConnectionDone(true);
+        }
     }
 
     private class ConnectedThread extends Thread {
