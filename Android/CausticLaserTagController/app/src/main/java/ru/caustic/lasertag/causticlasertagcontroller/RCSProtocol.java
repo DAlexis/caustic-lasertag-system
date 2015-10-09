@@ -128,7 +128,6 @@ public class RCSProtocol {
             this.maxValue = 0;
         }
     }
-
     public static class UintParameterDescription extends ParameterDescription {
         public final int minValue;
         public final int maxValue;
@@ -143,6 +142,54 @@ public class RCSProtocol {
             super(descrSet, id, name, false, UintParameterSerializer.factory);
             this.minValue = 0;
             this.maxValue = 0;
+        }
+    }
+    public static class BooleanParameterDescription extends ParameterDescription {
+        public BooleanParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable, BoolParameterSerializer.factory);
+
+        }
+    }
+    public static class MT2IdParameterDescription extends ParameterDescription {
+        public final int minValue;
+        public final int maxValue;
+
+        public MT2IdParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, int minValue, int maxValue) {
+            super(descrSet, id, name, editable, MT2IdParameterSerializer.factory);
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public MT2IdParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable, MT2IdParameterSerializer.factory);
+            this.minValue = 1;
+            this.maxValue = 127;
+        }
+    }
+    public static class FloatParameterDescription extends ParameterDescription {
+        public final float minValue;
+        public final float maxValue;
+
+        public FloatParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, float minValue, float maxValue) {
+            super(descrSet, id, name, editable, FloatParameterSerializer.factory);
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public FloatParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable, FloatParameterSerializer.factory);
+            this.minValue = 0.0f;
+            this.maxValue = 0.0f;
+        }
+    }
+    public static class DevNameParameterDescription extends ParameterDescription {
+        public DevNameParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable, DevNameParameterSerializer.factory);
+        }
+    }
+    public static class DevAddrParameterDescription extends ParameterDescription {
+        public DevAddrParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable, DevAddrParameterSerializer.factory);
         }
     }
 
@@ -310,6 +357,44 @@ public class RCSProtocol {
             return 2;
         }
     }
+    public static class BoolParameterSerializer extends AnyParameterSerializer {
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new BoolParameterSerializer(descr);
+            }
+        };
+
+        public BoolParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = "false";
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            super.value = MemoryUtils.bytesArrayToBool(memory, offset) ? "true" : "false";
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            boolean val = super.value.equals("true");
+            MemoryUtils.boolToBytesArray(memory, offset, val);
+            return size();
+        }
+
+        public void setBool(boolean value) {
+            super.setValue(value ? "true" : "false");
+        }
+
+        public boolean getBool() {
+            return super.value.equals("true");
+        }
+
+        public int size() {
+            return 1;
+        }
+    }
+
     public static class DevNameParameterSerializer extends AnyParameterSerializer {
         public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
             @Override
@@ -427,7 +512,7 @@ public class RCSProtocol {
         public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
             @Override
             public AnyParameterSerializer create(ParameterDescription descr) {
-                return new UintParameterSerializer(descr);
+                return new DevAddrParameterSerializer(descr);
             }
         };
 

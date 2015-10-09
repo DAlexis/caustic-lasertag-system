@@ -113,6 +113,20 @@ public class RCSProtocolTest extends TestCase {
     }
 
     @Test
+    public void testBoolSerializationDeserialization() {
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.BoolParameterSerializer(null);
+        testAnyParameterSerDeser(par, "true", "false", 1, 0);
+        testAnyParameterSerDeser(par, "false", "true", 4, 0);
+    }
+
+    @Test
+    public void testMT2IdSerializationDeserialization() {
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.MT2IdParameterSerializer(null);
+        testAnyParameterSerDeser(par, "24", "0", 1, 0);
+        testAnyParameterSerDeser(par, "127", "4", 4, 0);
+    }
+
+    @Test
     public void testStreamReadWriteOneParameter() {
         RCSProtocol.ParametersDescriptionsContainer description = new RCSProtocol.ParametersDescriptionsContainer();
         RCSProtocol.ParametersContainer2 container = new RCSProtocol.ParametersContainer2();
@@ -141,31 +155,50 @@ public class RCSProtocolTest extends TestCase {
         RCSProtocol.ParameterDescription testParam2
                 = new RCSProtocol.IntParameterDescription(description, 2, "Test int parameter description", -150, 200);
         RCSProtocol.ParameterDescription testParam3
-                = new RCSProtocol.ParameterDescription(description, 3, "Test float parameter description", true, RCSProtocol.FloatParameterSerializer.factory);
+                = new RCSProtocol.FloatParameterDescription(description, 3, "Test float parameter description", true, 0.0f, 1.1f);
         RCSProtocol.ParameterDescription testParam4
-                = new RCSProtocol.ParameterDescription(description, 4, "Test device name parameter description", true, RCSProtocol.DevNameParameterSerializer.factory);
+                = new RCSProtocol.DevNameParameterDescription(description, 4, "Test device name parameter description", false);
+        RCSProtocol.ParameterDescription testParam5
+                = new RCSProtocol.BooleanParameterDescription(description, 5, "Test bool parameter description", true);
+        RCSProtocol.ParameterDescription testParam6
+                = new RCSProtocol.MT2IdParameterDescription(description, 6, "Test MT2 id parameter description", true);
+        RCSProtocol.ParameterDescription testParam7
+                = new RCSProtocol.DevAddrParameterDescription(description, 7, "Test dev address parameter description", true);
+
         description.addParameters(container);
 
-        int bufferSize = 40;
+        int bufferSize = 60;
         byte arr[] = new byte[bufferSize];
         int ui = 2345;
         float f = Float.parseFloat(Float.toString(Float.parseFloat("-3.1415926")));
         String name = "Test name";
         int i = -2022;
+        int id = 17;
+        String addr = "101.255.0";
+
         container.get(1).setValue(Integer.toString(ui));
         container.get(2).setValue(Integer.toString(i));
         container.get(3).setValue(Float.toString(f));
         container.get(4).setValue(name);
+        container.get(5).setValue("true");
+        container.get(6).setValue(Integer.toString(id));
+        container.get(7).setValue(addr);
 
         int cursor = 0;
         cursor += container.serializeSetObject(1, arr, cursor, bufferSize);
         cursor += container.serializeSetObject(2, arr, cursor, bufferSize);
         cursor += container.serializeSetObject(3, arr, cursor, bufferSize);
         cursor += container.serializeSetObject(4, arr, cursor, bufferSize);
+        cursor += container.serializeSetObject(5, arr, cursor, bufferSize);
+        cursor += container.serializeSetObject(6, arr, cursor, bufferSize);
+        cursor += container.serializeSetObject(7, arr, cursor, bufferSize);
         container.get(1).setValue("0");
         container.get(2).setValue("0");
         container.get(3).setValue("No");
         container.get(4).setValue("0");
+        container.get(5).setValue("false");
+        container.get(6).setValue("45");
+        container.get(7).setValue("12.34.56");
 
         // Testing now
         container.deserializeStream(arr, 0, cursor);
@@ -173,5 +206,8 @@ public class RCSProtocolTest extends TestCase {
         Assert.assertEquals(Integer.toString(i), container.get(2).getValue());
         Assert.assertEquals(Float.toString(f), container.get(3).getValue());
         Assert.assertEquals(name, container.get(4).getValue());
+        Assert.assertEquals("true", container.get(5).getValue());
+        Assert.assertEquals(Integer.toString(id), container.get(6).getValue());
+        Assert.assertEquals(addr, container.get(7).getValue());
     }
 }

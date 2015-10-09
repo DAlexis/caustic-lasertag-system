@@ -37,12 +37,12 @@ public class MemoryUtils {
 
     public static boolean bytesArrayToBool(byte[] memory, int position) {
         if (memory[position] == 0)
-            return true;
-        else
             return false;
+        else
+            return true;
     }
 
-    public static void BoolToBytesArray(byte[] memory, int position, boolean val) {
+    public static void boolToBytesArray(byte[] memory, int position, boolean val) {
         if (val) {
             memory[position] = (byte) 255;
         } else {
