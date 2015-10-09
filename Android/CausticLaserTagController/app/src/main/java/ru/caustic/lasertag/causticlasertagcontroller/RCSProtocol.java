@@ -640,6 +640,23 @@ public class RCSProtocol {
         }
     }
 
+    public static class IntParameterDescription extends ParameterDescription {
+        public final int minValue;
+        public final int maxValue;
+
+        public IntParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+            super(descrSet, id, name, true, IntParameterSerializer.factory);
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public IntParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name) {
+            super(descrSet, id, name, false, IntParameterSerializer.factory);
+            this.minValue = 0;
+            this.maxValue = 0;
+        }
+    }
+
     public static class UintParameterDescription extends ParameterDescription {
         public final int minValue;
         public final int maxValue;
