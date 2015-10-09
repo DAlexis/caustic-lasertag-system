@@ -222,6 +222,14 @@ public class MainActivity extends AppCompatActivity {
                         updateBluetoothStatusUI();
                     }
                 });
+
+                if (result) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            buttonScanClick(null);
+                        }
+                    });
+                }
                 //uiHandler.obtainMessage(MSG_UPDATE_BLUETOOTH_UI).sendToTarget();
             }
         });
@@ -327,6 +335,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonSimpleControlsClick(View view) {
+        Intent settingsActivity = new Intent(getBaseContext(), SimpleControlsActivity.class);
+        startActivity(settingsActivity);
+    }
 
+    public void buttonDevicesSettingsClick(View view) {
+        Intent intent = new Intent (MainActivity.this, CausticDevicesListActivity.class);
+        //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);
+        startActivity(intent);
     }
 }

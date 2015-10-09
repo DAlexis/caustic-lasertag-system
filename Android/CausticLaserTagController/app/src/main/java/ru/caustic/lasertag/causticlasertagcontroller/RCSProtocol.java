@@ -1167,7 +1167,16 @@ public class RCSProtocol {
             }
 
             public static class Funcitons {
-
+                public static final FunctionCallSerializer playerTurnOff
+                        = new FunctionCallNoParsSerializer(functionsSerializers, 1201, "Turn off player");
+                public static final FunctionCallSerializer playerTurnOn
+                        = new FunctionCallNoParsSerializer(functionsSerializers, 1202, "Turn on player");
+                public static final FunctionCallSerializer playerReset
+                        = new FunctionCallNoParsSerializer(functionsSerializers, 1203, "Reset players configuration to default");
+                public static final FunctionCallSerializer playerRespawn
+                        = new FunctionCallNoParsSerializer(functionsSerializers, 1204, "Respawn player");
+                public static final FunctionCallSerializer playerKill
+                        = new FunctionCallNoParsSerializer(functionsSerializers, 1205, "Kill player");
             }
         }
 

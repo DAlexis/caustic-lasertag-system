@@ -163,6 +163,13 @@
                 android:text="Basic controls"
                 android:id="@+id/buttonSimpleControls"
                 android:onClick="buttonSimpleControlsClick" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Change device settings..."
+                android:id="@+id/buttonDevicesSettings"
+                android:onClick="buttonDevicesSettingsClick" />
         </LinearLayout>
 
     </LinearLayout>

@@ -46,6 +46,8 @@ public class BluetoothManager {
 
     private int status = BT_NOT_CONNECTED;
 
+    private Handler handler = null;
+
     private BluetoothManager() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         onConnectionClosed();
@@ -66,8 +68,8 @@ public class BluetoothManager {
         return this.status;
     }
 
-    public void setRXHandler(Handler _handler) {
-        mConnectedThread.handler = _handler;
+    public void setRXHandler(Handler handler) {
+        this.handler = handler;
     }
 
     public Intent getIntentEnable() {
@@ -249,8 +251,6 @@ public class BluetoothManager {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
-
-        public Handler handler;
 
         public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;

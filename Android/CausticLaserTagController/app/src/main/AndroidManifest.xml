@@ -74,6 +74,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertag.causticlasertagcontroller.CausticDevicesListActivity" />
         </activity>
+        <activity
+            android:name=".SimpleControlsActivity"
+            android:label="@string/title_activity_simple_controls"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.caustic.lasertag.causticlasertagcontroller.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
