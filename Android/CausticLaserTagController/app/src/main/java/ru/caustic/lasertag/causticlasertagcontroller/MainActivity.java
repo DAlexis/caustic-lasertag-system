@@ -260,33 +260,6 @@ public class MainActivity extends AppCompatActivity {
         stopService(runServiceIntent);
     }
 
-    public void respawnClick(View view) {
-        CausticDevicesManager.getInstance().remoteCall(
-                BridgeConnector.Broadcasts.headSensors,
-                CausticDevicesManager.headSensor,
-                RCSProtocol.RCSPOperationCodes.HeadSensor.Functions.playerRespawn,
-                ""
-        );
-    }
-
-    public void respRedClick(View view) {
-        CausticDevicesManager.getInstance().remoteCall(
-                BridgeConnector.Broadcasts.headSensorsRed,
-                CausticDevicesManager.headSensor,
-                RCSProtocol.RCSPOperationCodes.HeadSensor.Functions.playerRespawn,
-                ""
-        );
-    }
-
-    public void respBlueClick(View view) {
-        CausticDevicesManager.getInstance().remoteCall(
-                BridgeConnector.Broadcasts.headSensorsBlue,
-                CausticDevicesManager.headSensor,
-                RCSProtocol.RCSPOperationCodes.HeadSensor.Functions.playerRespawn,
-                ""
-        );
-    }
-
     public void causticDevsListClicked(View view) {
         Intent intent = new Intent (MainActivity.this, CausticDevicesListActivity.class);
         //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);

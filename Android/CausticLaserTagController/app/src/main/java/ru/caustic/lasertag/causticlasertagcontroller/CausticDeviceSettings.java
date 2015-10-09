@@ -81,7 +81,6 @@ public class CausticDeviceSettings extends PreferenceActivity {
     public static class CausticDeviceSettingsFragment extends PreferenceFragment {
 
         private PreferenceScreen screen = null;
-        private CausticDevicesManager.CausticDevice dev = null;
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -220,8 +219,7 @@ public class CausticDeviceSettings extends PreferenceActivity {
         @Override
         public void onPause() {
             super.onStop();
-            dev.popFromSharedPreferences(this.getPreferenceScreen().getContext());
-            dev.pushToDevice();
+
         }
     }
 }

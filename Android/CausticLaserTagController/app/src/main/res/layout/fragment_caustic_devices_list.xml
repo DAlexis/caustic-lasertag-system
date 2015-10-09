@@ -11,19 +11,34 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:weightSum="1">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/listViewDevices"
-            android:layout_weight="0.87" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Configure..."
+                android:id="@+id/buttonConfigureDevice"
+                />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/listViewDevices"
+                />
+        </RelativeLayout>
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Configure..."
-            android:id="@+id/buttonConfigureDevice"
-            />
-
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="New Button"
+            android:id="@+id/buttonWW" />
     </LinearLayout>
 </FrameLayout>

@@ -48,6 +48,8 @@ public class CausticDevicesListFragment extends Fragment {
         adapter = new DevicesListAdapter();
         devicesList.setAdapter(adapter);
 
+        DeviceSettingsFragment.editorContext.devices.clear();
+
         CausticDevicesManager.getInstance().updateDevicesList2(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
@@ -74,13 +76,21 @@ public class CausticDevicesListFragment extends Fragment {
     private class DevicesListElementHolder {
         public CheckBox deviceName = null;
         public TextView deviceSummary = null;
+        View convertView = null;
         public CausticDevicesManager.CausticDevice2 device;
 
         DevicesListElementHolder(CausticDevicesManager.CausticDevice2 device) {
             this.device = device;
         }
 
-        public void initView(View convertView) {
+        public View getView() {
+            return convertView;
+        }
+        public void setView(View convertView) {
+            this.convertView = convertView;
+        }
+
+        public void updateView() {
             deviceName = (CheckBox) convertView.findViewById(R.id.checkBoxDeviceSelected);
             deviceSummary = (TextView) convertView.findViewById(R.id.textViewDeviceSummary);
             deviceName.setText(device.getName());
@@ -141,6 +151,12 @@ public class CausticDevicesListFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             //System.out.println("getView " + position + " " + convertView);
+            if (mHolders.get(position).getView() == null) {
+                mHolders.get(position).setView(mInflater.inflate(R.layout.devices_list_item, null));
+            }
+            mHolders.get(position).updateView();
+            return mHolders.get(position).getView();
+            /*
             DevicesListElementHolder holder;
             if (convertView == null) {
                 // We are creating view now
@@ -150,8 +166,8 @@ public class CausticDevicesListFragment extends Fragment {
             } else {
                 holder = (DevicesListElementHolder)convertView.getTag();
             }
-            holder.initView(convertView);
-            return convertView;
+            holder.initView(convertView);*/
+            //return convertView;
         }
 
     }
