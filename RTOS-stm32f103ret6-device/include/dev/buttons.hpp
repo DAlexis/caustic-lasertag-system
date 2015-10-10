@@ -27,7 +27,7 @@ public:
 	ButtonManager& setCallback(ButtonPressCallback callback) { m_callback = callback; return *this; }
 	ButtonManager& setDepressCallback(ButtonDepressCallback callback) { m_depressCallback = callback; return *this; }
 	ButtonManager& setAutoRepeat(bool autoRepeat);
-	ButtonManager& setRepeatPeriod(uint32_t repeatPeriod);
+	ButtonManager& setRepeatPeriod(uint32_t& repeatPeriod);
 	void useEXTI(bool enabled = true);
 	void turnOn();
 	void turnOff();
@@ -48,7 +48,7 @@ private:
 	ButtonDepressCallback m_depressCallback = nullptr;
 	IIOPin* m_inputInterrogator = nullptr;
 
-	uint32_t m_repeatPeriod = 500000;
+	uint32_t* m_repeatPeriod = nullptr;
 	uint32_t m_lastPressTime = 0;
 	bool m_autoRepeat = false;
 	bool m_extiDetected = false;

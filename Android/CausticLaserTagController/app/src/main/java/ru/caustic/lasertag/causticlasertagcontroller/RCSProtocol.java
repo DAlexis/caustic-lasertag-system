@@ -144,6 +144,22 @@ public class RCSProtocol {
             this.maxValue = 0;
         }
     }
+    public static class TimeIntervalParameterDescription extends ParameterDescription {
+        public final long minValue;
+        public final long maxValue;
+
+        public TimeIntervalParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, long minValue, long maxValue) {
+            super(descrSet, id, name, true, TimeIntervalParameterSerializer.factory);
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public TimeIntervalParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name) {
+            super(descrSet, id, name, false, TimeIntervalParameterSerializer.factory);
+            this.minValue = 0;
+            this.maxValue = 0;
+        }
+    }
     public static class BooleanParameterDescription extends ParameterDescription {
         public BooleanParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable, BoolParameterSerializer.factory);
@@ -192,6 +208,7 @@ public class RCSProtocol {
             super(descrSet, id, name, editable, DevAddrParameterSerializer.factory);
         }
     }
+
 
     public static class FunctionCallDescription extends AnyDescription {
         public FunctionCallSerializer serializer;
@@ -357,6 +374,37 @@ public class RCSProtocol {
             return 2;
         }
     }
+    public static class TimeIntervalParameterSerializer extends AnyParameterSerializer{
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new TimeIntervalParameterSerializer(descr);
+            }
+        };
+
+        public TimeIntervalParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = "0";
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            long result = MemoryUtils.bytesArrayToUint32(memory, offset);
+            super.value = Long.toString(result);
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            long l = Long.parseLong(super.value);
+            MemoryUtils.uint32ToByteArray(memory, offset, l);
+            return size();
+        }
+
+        public int size() {
+            return 4;
+        }
+    }
+
     public static class BoolParameterSerializer extends AnyParameterSerializer {
         public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
             @Override
@@ -394,7 +442,6 @@ public class RCSProtocol {
             return 1;
         }
     }
-
     public static class DevNameParameterSerializer extends AnyParameterSerializer {
         public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
             @Override
@@ -737,6 +784,8 @@ public class RCSProtocol {
                         = new UintParameterDescription(parametersDescriptions, 1000, "Maximal player health", 1, 200);
                 public static final ParameterDescription healthStart
                         = new UintParameterDescription(parametersDescriptions, 1003, "Player health at start", 1, 200);
+                public static final ParameterDescription isHealable
+                        = new BooleanParameterDescription(parametersDescriptions, 1010, "Is player healable", true);
                 public static final ParameterDescription lifesCount
                         = new UintParameterDescription(parametersDescriptions, 1011, "Players life count", 1, 1000);
             }
@@ -759,6 +808,20 @@ public class RCSProtocol {
             public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
             public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
             public static class Configuration {
+                public static final ParameterDescription damageMin
+                        = new UintParameterDescription(parametersDescriptions, 5, "Minimal damage", 0, 100);
+                public static final ParameterDescription damageMax
+                        = new UintParameterDescription(parametersDescriptions, 6, "Maximal damage", 0, 100);
+
+                public static final ParameterDescription firePeriod
+                        = new TimeIntervalParameterDescription(parametersDescriptions, 7, "Fire period", 0, 10_000_000);
+
+                public static final ParameterDescription automaticAllowed
+                        = new BooleanParameterDescription(parametersDescriptions, 13, "Allow automatic fire", true);
+
+                public static final ParameterDescription reloadingTime
+                        = new TimeIntervalParameterDescription(parametersDescriptions, 34, "Reloading imitation time", 0, 30_000_000);
+
 
             }
 

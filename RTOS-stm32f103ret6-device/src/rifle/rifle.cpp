@@ -247,7 +247,7 @@ void Rifle::init(const Pinout& pinout)
 			pinout[PinoutTexts::reload].pin
 	);
 	m_reloadButton->setAutoRepeat(false);
-	m_reloadButton->setRepeatPeriod(2*config.firePeriod);
+	m_reloadButton->setRepeatPeriod(config.firePeriod);
 	m_reloadButton->setCallback(std::bind(&Rifle::distortBolt, this, std::placeholders::_1));
 	m_reloadButton->turnOn();
 
@@ -338,7 +338,7 @@ void Rifle::init(const Pinout& pinout)
 
 	updatePlayerState();
 
-	StateSaver::instance().runSaver(10000000);
+	StateSaver::instance().runSaver(8000);
 	m_tasksPool.run();
 	info << "Rifle ready to use\n";
 }

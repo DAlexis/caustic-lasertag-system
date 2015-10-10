@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="parameterSummary"
+                android:text="Parameter editing not supported yet :("
                 android:id="@+id/parameterSummary" />
 
         </LinearLayout>
@@ -42,21 +42,6 @@
             android:layout_weight="1"
             />
 
-        <EditText
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:gravity="right"
-            android:ems="10"
-            android:id="@+id/editTextParameterValue"
-            android:text="0" />
     </LinearLayout>
-
-    <SeekBar
-        android:paddingTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekBarParameterValue"
-        android:indeterminate="false" />
 
 </LinearLayout>

@@ -163,6 +163,7 @@ void StateSaver::resetSaves()
 
 void StateSaver::runSaver(uint32_t period)
 {
+	info << "State saver run with period " << period;
 	m_savingTask.run(period, period, period, 0);
 }
 

@@ -28,9 +28,9 @@ ButtonManager& ButtonManager::setAutoRepeat(bool autoRepeat)
 	return *this;
 }
 
-ButtonManager& ButtonManager::setRepeatPeriod(uint32_t repeatPeriod)
+ButtonManager& ButtonManager::setRepeatPeriod(uint32_t& repeatPeriod)
 {
-	m_repeatPeriod = repeatPeriod;
+	m_repeatPeriod = &repeatPeriod;
 	return *this;
 }
 
@@ -68,7 +68,7 @@ void ButtonManager::extiCallback(bool state)
 {
 	if (wasBounce() || !m_isEnabled) return;
 	uint32_t time = systemClock->getTime();
-	if (state == m_pressedState && m_isFirst == !m_pressedState && time - m_lastPressTime >= m_repeatPeriod) {
+	if (state == m_pressedState && m_isFirst == !m_pressedState && time - m_lastPressTime >= *m_repeatPeriod) {
 		m_extiDetected = true;
 	}
 	if (state == !m_pressedState) {
@@ -95,7 +95,7 @@ void ButtonManager::interrogate()
 		if (m_autoRepeat == true)
 		{
 			// Auto-repeating is enabled
-			if (time - m_lastPressTime >= m_repeatPeriod)
+			if (time - m_lastPressTime >= *m_repeatPeriod)
 			{
 				// It was enough time since last call
 				m_lastPressTime = time;
@@ -106,7 +106,7 @@ void ButtonManager::interrogate()
 			// It was NOT enough time since last call
 		} else {
 			// Auto-repeating is disabled
-			if (time - m_lastPressTime >= m_repeatPeriod && m_isFirst == true)
+			if (time - m_lastPressTime >= *m_repeatPeriod && m_isFirst == true)
 			{
 				// It was enough time since last call
 				// Button was suddenly pressed

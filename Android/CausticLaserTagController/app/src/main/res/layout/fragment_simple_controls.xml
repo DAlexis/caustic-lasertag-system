@@ -3,8 +3,6 @@
     android:layout_height="match_parent"
     tools:context="ru.caustic.lasertag.causticlasertagcontroller.SimpleControlsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

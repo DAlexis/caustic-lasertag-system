@@ -22,6 +22,28 @@ public class MemoryUtils {
         memory[position] = (byte) (uint16 % 256);
     }
 
+    public static long bytesArrayToUint32(byte[] memory, int position) {
+        long result = 0;
+        result = MemoryUtils.byteToUnsignedByte(memory[position+3]);
+        result *= 256;
+        result += MemoryUtils.byteToUnsignedByte(memory[position+2]);
+        result *= 256;
+        result += MemoryUtils.byteToUnsignedByte(memory[position+1]);
+        result *= 256;
+        result += MemoryUtils.byteToUnsignedByte(memory[position]);
+        return result;
+    }
+
+    public static void uint32ToByteArray(byte[] memory, int position, long uint32) {
+        memory[position] = (byte) (uint32 % 256);
+        uint32 /= 256;
+        memory[position+1] = (byte) (uint32 % 256);
+        uint32 /= 256;
+        memory[position+2] = (byte) (uint32 % 256);
+        uint32 /= 256;
+        memory[position+3] = (byte) (uint32 % 256);
+    }
+
     public static int bytesArrayToInt16(byte[] memory, int position) {
         int result = bytesArrayToUint16(memory, position);
         if (result > 32767)
@@ -44,7 +66,7 @@ public class MemoryUtils {
 
     public static void boolToBytesArray(byte[] memory, int position, boolean val) {
         if (val) {
-            memory[position] = (byte) 255;
+            memory[position] = (byte) 1;
         } else {
             memory[position] = 0;
         }

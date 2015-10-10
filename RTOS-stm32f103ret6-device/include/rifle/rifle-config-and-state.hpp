@@ -37,7 +37,7 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, damageMin);
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, damageMax);
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, firePeriod);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, shotDelay);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, shotDelay);
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, jamProb);
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalProb);
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalCoeff);
