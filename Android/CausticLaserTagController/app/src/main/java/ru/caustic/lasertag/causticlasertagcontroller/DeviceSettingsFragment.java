@@ -6,21 +6,21 @@ import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -54,12 +54,13 @@ public class DeviceSettingsFragment extends Fragment {
 
         public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
             this.parameterEntry = parameterEntry;
+            uintDescr = (RCSProtocol.UintParameterDescription) parameterEntry.description;
 
-               this.convertView = inflater.inflate(R.layout.parameters_list_base_item, null);
-                parameterName = (TextView) convertView.findViewById(R.id.parameterName);
-                parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
-                seekBar = (SeekBar) convertView.findViewById(R.id.seekBarParameterValue);
-                parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
+            this.convertView = inflater.inflate(R.layout.parameters_list_base_item, null);
+            parameterName = (TextView) convertView.findViewById(R.id.parameterName);
+            parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
+            seekBar = (SeekBar) convertView.findViewById(R.id.seekBarParameterValue);
+            parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
         }
 
         public void update() {
@@ -86,7 +87,7 @@ public class DeviceSettingsFragment extends Fragment {
                 }
             });
 
-            uintDescr = (RCSProtocol.UintParameterDescription) parameterEntry.description;
+
             // We have min and max values
             parameterSummary.setText("From " + uintDescr.minValue + " to " + uintDescr.maxValue);
             if (parameterEntry.hasInitialValue) {
@@ -168,19 +169,21 @@ public class DeviceSettingsFragment extends Fragment {
                 seekBar.setProgress((int) ((Long.parseLong(parameterEntry.getValue()) - descr.minValue) / 1000));
             }
 
-            seekBar.setMax((int) ((descr.maxValue - descr.minValue)/1000) );
+            seekBar.setMax((int) ((descr.maxValue - descr.minValue) / 1000));
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    parameterValue.setText(Integer.toString(progress + ( (int) (descr.minValue/1000) )));
+                    parameterValue.setText(Integer.toString(progress + ((int) (descr.minValue / 1000))));
                     pickValue();
                 }
 
                 @Override
-                public void onStartTrackingTouch(SeekBar seekBar) { }
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
 
                 @Override
-                public void onStopTrackingTouch(SeekBar seekBar) { }
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                }
             });
         }
 
@@ -220,6 +223,65 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
+    public static class ParametersListElementEnum extends ParametersListElement {
+        TextView parameterName = null;
+        TextView parameterSummary = null;
+        Spinner variants = null;
+
+        RCSProtocol.EnumParameterDescription descr = null;
+
+        ArrayAdapter<String> itemsAdapter = null;
+
+        int initialPosition = 0;
+
+        public boolean initialized() {
+            return convertView != null;
+        }
+
+        public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
+            this.parameterEntry = parameterEntry;
+            descr = (RCSProtocol.EnumParameterDescription) parameterEntry.description;
+
+            this.convertView = inflater.inflate(R.layout.parameters_list_enum_item, null);
+            parameterName = (TextView) convertView.findViewById(R.id.parameterName);
+            parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
+            variants = (Spinner) convertView.findViewById(R.id.variants);
+            if (itemsAdapter == null) {
+                itemsAdapter = new ArrayAdapter<>(inflater.getContext(), android.R.layout.simple_list_item_1, descr.namesOrdered);
+            }
+            variants.setAdapter(itemsAdapter);
+            if (parameterEntry.hasInitialValue) {
+                initialPosition = itemsAdapter.getPosition(descr.getCurrentValueString(Integer.parseInt(parameterEntry.currentValue)));
+                if (initialPosition < 0)
+                    initialPosition = 0;
+            } else {
+                initialPosition = 0;
+            }
+        }
+
+        public void update() {
+            parameterName.setText(parameterEntry.description.getName());
+            parameterSummary.setText("");
+            variants.post(new Runnable() {
+                @Override
+                public void run() {
+                    variants.setSelection(initialPosition);
+                }
+            });
+            itemsAdapter.notifyDataSetChanged();
+            //boolSwitch.setChecked(parameterEntry.hasInitialValue && parameterEntry.getValue().equals("true"));
+        }
+
+        public void pickValue() {
+            parameterEntry.setValue(Integer.toString(
+                            descr.entries.get(
+                                    variants.getSelectedItem().toString()
+                            )
+                    )
+            );
+        }
+    }
+
     public static class ParametersListElementUnsupported extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
@@ -252,6 +314,8 @@ public class DeviceSettingsFragment extends Fragment {
             return new ParametersListElementBoolean();
         } else if (description instanceof RCSProtocol.TimeIntervalParameterDescription) {
             return new ParametersListElementTimeInterval();
+        } else if (description instanceof RCSProtocol.EnumParameterDescription) {
+            return new ParametersListElementEnum();
         }
         return new ParametersListElementUnsupported();
     }
@@ -358,8 +422,9 @@ public class DeviceSettingsFragment extends Fragment {
 
             CausticDevicesManager.CausticDevice2 dev = CausticDevicesManager.getInstance().devices2.get(someAddress);
 
-            for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> par : dev.parameters.entrySet()) {
-                RCSProtocol.ParameterDescription descr = par.getValue().getDescription();
+            // We need to output parameters sorted bvy original order
+            for (int id : dev.parameters.orderedIds) {
+                RCSProtocol.ParameterDescription descr = dev.parameters.allParameters.get(id).getDescription();
 
                 if (!descr.isEditable())
                     continue;

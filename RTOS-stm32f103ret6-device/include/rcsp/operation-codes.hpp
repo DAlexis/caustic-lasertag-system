@@ -31,6 +31,8 @@
 
 using UintParameter = uint16_t;
 using IntParameter = int16_t;
+using UByteParameter = uint8_t;
+using EnumParameter = UByteParameter;
 using TimeInterval = uint32_t;
 using FloatParameter = float;
 using BoolParameter = bool;

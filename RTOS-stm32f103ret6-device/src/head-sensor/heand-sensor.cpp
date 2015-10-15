@@ -128,7 +128,6 @@ void HeadSensor::configure(const Pinout &_pinout)
 			IOPins->getIOPin(_pinout["green"].port, _pinout["green"].pin),
 			IOPins->getIOPin(_pinout["blue"].port, _pinout["blue"].pin)
 			);
-	m_leds.setColor(getTeamColor());
 	m_leds.blink(blinkPatterns.init);
 
 	info << "Other initialization";
@@ -302,7 +301,13 @@ void HeadSensor::sendHeartbeat()
 	trace << "Sending heartbeat";
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
-		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat, false, nullptr);
+		RCSPStream stream;
+		stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
+		// This line is temporary solution if team was changed by value, not by setter func call
+		stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
+		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
+		stream.send(*it, false);
+		//RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat, false, nullptr);
 	}
 }
 
@@ -332,7 +337,6 @@ void HeadSensor::setTeam(uint8_t teamId)
 {
 	info << "Setting team id";
 	playerConfig.teamId = teamId;
-	m_leds.setColor(getTeamColor());
 	m_leds.blink(blinkPatterns.anyCommand);
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
@@ -414,18 +418,6 @@ bool HeadSensor::checkPinout(const Pinout& pinout)
 {
 	/// @todo Add cheching here
 	return true;
-}
-
-uint8_t HeadSensor::getTeamColor()
-{
-	switch (playerConfig.teamId)
-	{
-	case 0: return RGBLeds::red;
-	case 1: return RGBLeds::blue;
-	case 2: return RGBLeds::red | RGBLeds::green;
-	case 3: return RGBLeds::green;
-	default: return RGBLeds::red | RGBLeds::green | RGBLeds::blue;
-	}
 }
 
 

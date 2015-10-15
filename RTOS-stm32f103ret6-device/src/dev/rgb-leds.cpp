@@ -9,7 +9,8 @@
 
 #include <stdio.h>
 
-RGBLeds::RGBLeds()
+RGBLeds::RGBLeds(const TeamMT2Id& teamId) :
+	m_teamId(teamId)
 {
 	m_blinkingTask.setTask(std::bind(&RGBLeds::blinkingTask, this));
 	m_blinkingTask.setStackSize(128);
@@ -24,12 +25,6 @@ void RGBLeds::init(IIOPin* red, IIOPin* green, IIOPin* blue)
 	m_green->switchToOutput();
 	m_blue->switchToOutput();
 }
-
-void RGBLeds::setColor(uint8_t color)
-{
-	m_color = color;
-}
-
 
 void RGBLeds::changeState(uint8_t state)
 {
@@ -57,10 +52,32 @@ void RGBLeds::blinkingTask()
 	osDelay(m_currentPattern.offStateDuration / 1000);
 }
 
-void RGBLeds::blink(const BlinkPattern& pattern)
+void RGBLeds::blink(const BlinkPattern& pattern, uint8_t color)
 {
+	if (color == selfColor)
+		m_color = getTeamColor();
+	else
+		m_color = color;
+
 	m_blinkingTask.stopUnsafe();
 	m_currentPattern = pattern;
 	changeState(silence);
 	m_blinkingTask.run(0, 0, 0, m_currentPattern.repetitionsCount);
+}
+
+uint8_t RGBLeds::getTeamColor()
+{
+	return getTeamColor(m_teamId);
+}
+
+uint8_t RGBLeds::getTeamColor(TeamMT2Id teamId)
+{
+	switch (teamId)
+	{
+	case 0: return RGBLeds::red;
+	case 1: return RGBLeds::blue;
+	case 2: return RGBLeds::red | RGBLeds::green;
+	case 3: return RGBLeds::green;
+	default: return RGBLeds::red | RGBLeds::green | RGBLeds::blue;
+	}
 }

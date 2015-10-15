@@ -52,8 +52,6 @@ private:
 	// Test functions
 	void testDie(const char*);
 
-	uint8_t getTeamColor();
-
 	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage);
 	void dieWeapons();
 	void respawnWeapons();
@@ -63,7 +61,7 @@ private:
 
 	void sendHeartbeat();
 
-	RGBLeds m_leds;
+	RGBLeds m_leds{playerConfig.teamId};
 
 	//MilesTag2Receiver m_killZone1;
 

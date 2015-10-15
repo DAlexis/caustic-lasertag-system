@@ -10,6 +10,7 @@
 
 #include "hal/io-pins.hpp"
 #include "core/os-wrappers.hpp"
+#include "dev/MT2-base-types.hpp"
 #include <stdint.h>
 
 class RGBLeds
@@ -19,6 +20,7 @@ public:
 	constexpr static uint8_t red     = 1;
 	constexpr static uint8_t green   = 2;
 	constexpr static uint8_t blue    = 4;
+	constexpr static uint8_t selfColor    = 255;
 
 	struct BlinkPattern
 	{
@@ -38,12 +40,13 @@ public:
 		bool infinite = false;
 	};
 
-	RGBLeds();
+	RGBLeds(const TeamMT2Id& teamId);
 	void init(IIOPin* red, IIOPin* green, IIOPin* blue);
-
-	void blink(const BlinkPattern& pattern);
+	void blink(const BlinkPattern& pattern, uint8_t color = selfColor);
 	void stop();
-	void setColor(uint8_t color);
+
+	uint8_t getTeamColor();
+	uint8_t getTeamColor(TeamMT2Id teamId);
 
 private:
 
@@ -56,6 +59,7 @@ private:
 
 	uint8_t m_color = red;
 
+	const TeamMT2Id& m_teamId;
 	BlinkPattern m_currentPattern;
 
 	TaskCycled m_blinkingTask;

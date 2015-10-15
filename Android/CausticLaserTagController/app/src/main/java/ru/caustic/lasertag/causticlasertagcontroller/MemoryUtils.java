@@ -9,6 +9,10 @@ public class MemoryUtils {
         return b < 0 ? 256 + b : b;
     }
 
+    public static byte unsignedByteToByte(int b) {
+        return (byte) b;
+    }
+
     public static int bytesArrayToUint16(byte[] memory, int position) {
         int result = 0;
         result = MemoryUtils.byteToUnsignedByte(memory[position+1]);
