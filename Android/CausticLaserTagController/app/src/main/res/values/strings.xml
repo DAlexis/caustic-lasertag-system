@@ -33,4 +33,9 @@
     <string name="connecting_text">Connecting...</string>
     <string name="disconnect_button">Disconnect</string>
     <string name="title_activity_simple_controls">SimpleControlsActivity</string>
+
+
+
+    <!-- My strings are here -->
+    <string name="not_equal_values">"\u2260"</string>
 </resources>

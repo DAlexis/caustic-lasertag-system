@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -34,7 +35,7 @@ public class DeviceSettingsFragment extends Fragment {
 
     public static abstract class ParametersListElement {
         public View convertView = null;
-        ParameterEntry parameterEntry = null;
+        protected ParameterEntry parameterEntry = null;
         public abstract void init(LayoutInflater inflater, ParameterEntry parameterEntry);
         public abstract void update();
         public abstract void pickValue();
@@ -45,6 +46,9 @@ public class DeviceSettingsFragment extends Fragment {
         TextView parameterSummary = null;
         SeekBar seekBar = null;
         EditText parameterValue = null;
+        TextView notEqual = null;
+        ImageButton revert = null;
+
 
         RCSProtocol.UintParameterDescription uintDescr = null;
 
@@ -52,7 +56,15 @@ public class DeviceSettingsFragment extends Fragment {
             return convertView != null;
         }
 
-        public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
+        private void updateProgress(String value) {
+            seekBar.setProgress(Integer.parseInt(value) - uintDescr.minValue);
+        }
+
+        private void updateText(String value) {
+            parameterValue.setText(Integer.toString(Integer.parseInt(value) + uintDescr.minValue));
+        }
+
+        public void init(LayoutInflater inflater, final ParameterEntry parameterEntry) {
             this.parameterEntry = parameterEntry;
             uintDescr = (RCSProtocol.UintParameterDescription) parameterEntry.description;
 
@@ -61,14 +73,43 @@ public class DeviceSettingsFragment extends Fragment {
             parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
             seekBar = (SeekBar) convertView.findViewById(R.id.seekBarParameterValue);
             parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
+            notEqual = (TextView) convertView.findViewById(R.id.notEqual);
+            revert = (ImageButton) convertView.findViewById(R.id.revert);
+
+            seekBar.setMax(uintDescr.maxValue - uintDescr.minValue);
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    parameterValue.setText(Integer.toString(progress + uintDescr.minValue));
+                    pickValue();
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                }
+            });
+
+            revert.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateText(parameterEntry.getInitialValue());
+                    updateProgress(parameterEntry.getInitialValue());
+                }
+            });
         }
 
         public void update() {
             parameterName.setText(parameterEntry.description.getName());
             if (parameterEntry.hasInitialValue) {
                 parameterValue.setText(parameterEntry.getValue().toString());
+                notEqual.setVisibility(View.GONE);
             } else {
                 parameterValue.setText("");
+                notEqual.setVisibility(View.VISIBLE);
             }
             parameterValue.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -91,21 +132,14 @@ public class DeviceSettingsFragment extends Fragment {
             // We have min and max values
             parameterSummary.setText("From " + uintDescr.minValue + " to " + uintDescr.maxValue);
             if (parameterEntry.hasInitialValue) {
-                seekBar.setProgress(Integer.parseInt(parameterEntry.getValue()) - uintDescr.minValue);
+                updateProgress(parameterEntry.getValue());
             }
-            seekBar.setMax(uintDescr.maxValue - uintDescr.minValue);
-            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            revert.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    parameterValue.setText(Integer.toString(progress + uintDescr.minValue));
-                    pickValue();
+                public void onClick(View v) {
+                    parameterValue.setText(parameterEntry.getInitialValue());
+                    updateProgress(parameterEntry.getInitialValue());
                 }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) { }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) { }
             });
         }
 
@@ -120,6 +154,8 @@ public class DeviceSettingsFragment extends Fragment {
         TextView parameterSummary = null;
         SeekBar seekBar = null;
         EditText parameterValue = null;
+        TextView notEqual = null;
+        ImageButton revert = null;
 
         RCSProtocol.TimeIntervalParameterDescription descr = null;
 
@@ -127,23 +163,52 @@ public class DeviceSettingsFragment extends Fragment {
             return convertView != null;
         }
 
+        private void updateProgress(String value) {
+            seekBar.setProgress((int) ((Long.parseLong(value) - descr.minValue) / 1000));
+        }
+
+        private void updateText(String value) {
+            long val = Long.parseLong(parameterEntry.getValue()) / 1000;
+            parameterValue.setText(Long.toString(val));
+        }
+
         public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
             this.parameterEntry = parameterEntry;
 
-               this.convertView = inflater.inflate(R.layout.parameters_list_base_item, null);
-                parameterName = (TextView) convertView.findViewById(R.id.parameterName);
-                parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
-                seekBar = (SeekBar) convertView.findViewById(R.id.seekBarParameterValue);
-                parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
+           this.convertView = inflater.inflate(R.layout.parameters_list_base_item, null);
+            parameterName = (TextView) convertView.findViewById(R.id.parameterName);
+            parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
+            seekBar = (SeekBar) convertView.findViewById(R.id.seekBarParameterValue);
+            parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
+            notEqual = (TextView) convertView.findViewById(R.id.notEqual);
+            revert = (ImageButton) convertView.findViewById(R.id.revert);
+
+            seekBar.setMax((int) ((descr.maxValue - descr.minValue) / 1000));
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    parameterValue.setText(Integer.toString(progress + ((int) (descr.minValue / 1000))));
+                    pickValue();
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                }
+            });
         }
 
         public void update() {
             parameterName.setText(parameterEntry.description.getName());
             if (parameterEntry.hasInitialValue) {
-                long val = Long.parseLong(parameterEntry.getValue()) / 1000;
-                parameterValue.setText(Long.toString(val));
+                updateText(parameterEntry.getValue());
+                notEqual.setVisibility(View.GONE);
             } else {
                 parameterValue.setText("");
+                notEqual.setVisibility(View.VISIBLE);
             }
             parameterValue.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -166,25 +231,10 @@ public class DeviceSettingsFragment extends Fragment {
             // We have min and max values
             parameterSummary.setText("From " + descr.minValue / 1000 + " to " + descr.maxValue / 1000);
             if (parameterEntry.hasInitialValue) {
-                seekBar.setProgress((int) ((Long.parseLong(parameterEntry.getValue()) - descr.minValue) / 1000));
+                updateProgress(parameterEntry.getValue());
             }
 
-            seekBar.setMax((int) ((descr.maxValue - descr.minValue) / 1000));
-            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    parameterValue.setText(Integer.toString(progress + ((int) (descr.minValue / 1000))));
-                    pickValue();
-                }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-            });
         }
 
         public void pickValue() {
@@ -197,6 +247,8 @@ public class DeviceSettingsFragment extends Fragment {
         TextView parameterName = null;
         TextView parameterSummary = null;
         Switch boolSwitch = null;
+        TextView notEqual = null;
+        ImageButton revert = null;
 
         RCSProtocol.BooleanParameterDescription descr = null;
 
@@ -204,18 +256,36 @@ public class DeviceSettingsFragment extends Fragment {
             return convertView != null;
         }
 
-        public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
-            this.parameterEntry = parameterEntry;
+        public void init(LayoutInflater inflater, ParameterEntry _parameterEntry) {
+            this.parameterEntry = _parameterEntry;
             this.convertView = inflater.inflate(R.layout.parameters_list_boolean_item, null);
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
             parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
             boolSwitch = (Switch) convertView.findViewById(R.id.switchBooleanValue);
+            notEqual = (TextView) convertView.findViewById(R.id.notEqual);
+            revert = (ImageButton) convertView.findViewById(R.id.revert);
+            revert.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (parameterEntry.hasInitialValue) {
+                        boolSwitch.setChecked(parameterEntry.getInitialValue().equals("true"));
+                    } else {
+                        boolSwitch.setChecked(false);
+                    }
+                }
+            });
         }
 
         public void update() {
             parameterName.setText(parameterEntry.description.getName());
             parameterSummary.setText("");
-            boolSwitch.setChecked(parameterEntry.hasInitialValue && parameterEntry.getValue().equals("true"));
+            if (parameterEntry.hasInitialValue) {
+                boolSwitch.setChecked(parameterEntry.getValue().equals("true"));
+                notEqual.setVisibility(View.GONE);
+            } else {
+                boolSwitch.setChecked(false);
+                notEqual.setVisibility(View.VISIBLE);
+            }
         }
 
         public void pickValue() {
@@ -227,6 +297,8 @@ public class DeviceSettingsFragment extends Fragment {
         TextView parameterName = null;
         TextView parameterSummary = null;
         Spinner variants = null;
+        TextView notEqual = null;
+        ImageButton revert = null;
 
         RCSProtocol.EnumParameterDescription descr = null;
 
@@ -238,14 +310,18 @@ public class DeviceSettingsFragment extends Fragment {
             return convertView != null;
         }
 
-        public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
-            this.parameterEntry = parameterEntry;
+
+        public void init(LayoutInflater inflater, ParameterEntry _parameterEntry) {
+            this.parameterEntry = _parameterEntry;
             descr = (RCSProtocol.EnumParameterDescription) parameterEntry.description;
 
             this.convertView = inflater.inflate(R.layout.parameters_list_enum_item, null);
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
             parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
             variants = (Spinner) convertView.findViewById(R.id.variants);
+            notEqual = (TextView) convertView.findViewById(R.id.notEqual);
+            revert = (ImageButton) convertView.findViewById(R.id.revert);
+
             if (itemsAdapter == null) {
                 itemsAdapter = new ArrayAdapter<>(inflater.getContext(), android.R.layout.simple_list_item_1, descr.namesOrdered);
             }
@@ -257,19 +333,34 @@ public class DeviceSettingsFragment extends Fragment {
             } else {
                 initialPosition = 0;
             }
-        }
 
-        public void update() {
-            parameterName.setText(parameterEntry.description.getName());
-            parameterSummary.setText("");
+            revert.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (parameterEntry.hasInitialValue) {
+                        variants.setSelection(initialPosition);
+                    }
+                }
+            });
+
             variants.post(new Runnable() {
                 @Override
                 public void run() {
                     variants.setSelection(initialPosition);
                 }
             });
+        }
+
+        public void update() {
+            parameterName.setText(parameterEntry.description.getName());
+            parameterSummary.setText("");
+            if (parameterEntry.hasInitialValue) {
+                notEqual.setVisibility(View.GONE);
+
+            } else {
+                notEqual.setVisibility(View.VISIBLE);
+            }
             itemsAdapter.notifyDataSetChanged();
-            //boolSwitch.setChecked(parameterEntry.hasInitialValue && parameterEntry.getValue().equals("true"));
         }
 
         public void pickValue() {
@@ -328,11 +419,16 @@ public class DeviceSettingsFragment extends Fragment {
         boolean wasChanged = false;
         final String differentValueStr = "Different";
         String currentValue = differentValueStr;
+        String initialValue = currentValue;
 
         private ParametersListElement uiListElement = null;//new ParametersListElementInteger();
 
         public String getValue() {
             return currentValue;
+        }
+
+        public String getInitialValue() {
+            return initialValue;
         }
 
         public ParameterEntry(SettingsEditorContext context, RCSProtocol.ParameterDescription description) {
@@ -363,6 +459,7 @@ public class DeviceSettingsFragment extends Fragment {
                     break;
                 }
             }
+            initialValue = currentValue;
             wasChanged = false;
             uiListElement = createListElement(description);
         }
