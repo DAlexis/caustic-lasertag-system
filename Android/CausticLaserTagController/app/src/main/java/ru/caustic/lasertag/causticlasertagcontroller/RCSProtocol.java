@@ -903,7 +903,7 @@ public class RCSProtocol {
                         = new UintParameterDescription(parametersDescriptions, 6, "Maximal damage", 0, 100);
 
                 public static final ParameterDescription firePeriod
-                        = new TimeIntervalParameterDescription(parametersDescriptions, 7, "Fire period", 0, 10_000_000);
+                        = new TimeIntervalParameterDescription(parametersDescriptions, 7, "Fire period", 0, 2_000_000);
 
                 public static final ParameterDescription reloadingTime
                         = new TimeIntervalParameterDescription(parametersDescriptions, 34, "Reloading imitation time", 0, 30_000_000);

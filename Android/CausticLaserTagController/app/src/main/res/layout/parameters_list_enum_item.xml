@@ -50,16 +50,17 @@
             android:id="@+id/notEqual"
             android:textColor="#ff0000" />
 
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/variants" />
+
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:id="@+id/revert"
             android:src="@android:drawable/ic_menu_revert" />
-        <Spinner
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/variants" />
 
     </LinearLayout>
 

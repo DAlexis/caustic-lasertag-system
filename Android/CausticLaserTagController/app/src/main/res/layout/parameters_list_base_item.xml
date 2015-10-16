@@ -52,13 +52,6 @@
             android:id="@+id/notEqual"
             android:textColor="#ff0000" />
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:id="@+id/revert"
-            android:src="@android:drawable/ic_menu_revert" />
-
         <EditText
             android:layout_width="50dp"
             android:layout_height="wrap_content"
@@ -68,6 +61,13 @@
             android:ems="5"
             android:id="@+id/editTextParameterValue"
             android:text="0" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/revert"
+            android:src="@android:drawable/ic_menu_revert" />
     </LinearLayout>
 
     <SeekBar

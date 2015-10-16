@@ -36,12 +36,15 @@ public class DeviceSettingsFragment extends Fragment {
     public static abstract class ParametersListElement {
         public View convertView = null;
         protected ParameterEntry parameterEntry = null;
+        public boolean initialized() {
+            return convertView != null;
+        }
         public abstract void init(LayoutInflater inflater, ParameterEntry parameterEntry);
         public abstract void update();
         public abstract void pickValue();
     }
 
-    public static class ParametersListElementInteger extends ParametersListElement {
+    public static abstract class ParametersListElementSeekBar extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
         SeekBar seekBar = null;
@@ -50,23 +53,26 @@ public class DeviceSettingsFragment extends Fragment {
         ImageButton revert = null;
 
 
-        RCSProtocol.UintParameterDescription uintDescr = null;
+        RCSProtocol.ParameterDescription descr = null;
 
-        public boolean initialized() {
-            return convertView != null;
-        }
+        protected abstract String progressToValue(int progress);
+        protected abstract int valueToProgress(String value);
+        protected abstract int maxProgress();
+        protected abstract String textToValue(String text);
+        protected abstract String valueToText(String value);
+        protected abstract String getSummary();
 
         private void updateProgress(String value) {
-            seekBar.setProgress(Integer.parseInt(value) - uintDescr.minValue);
+            seekBar.setProgress(valueToProgress(value));
         }
 
         private void updateText(String value) {
-            parameterValue.setText(Integer.toString(Integer.parseInt(value) + uintDescr.minValue));
+            parameterValue.setText(valueToText(value));
         }
 
-        public void init(LayoutInflater inflater, final ParameterEntry parameterEntry) {
-            this.parameterEntry = parameterEntry;
-            uintDescr = (RCSProtocol.UintParameterDescription) parameterEntry.description;
+        public void init(LayoutInflater inflater, final ParameterEntry _parameterEntry) {
+            this.parameterEntry = _parameterEntry;
+            descr = parameterEntry.description;
 
             this.convertView = inflater.inflate(R.layout.parameters_list_base_item, null);
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
@@ -76,12 +82,14 @@ public class DeviceSettingsFragment extends Fragment {
             notEqual = (TextView) convertView.findViewById(R.id.notEqual);
             revert = (ImageButton) convertView.findViewById(R.id.revert);
 
-            seekBar.setMax(uintDescr.maxValue - uintDescr.minValue);
+            seekBar.setMax(maxProgress());
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    parameterValue.setText(Integer.toString(progress + uintDescr.minValue));
-                    pickValue();
+                    if (fromUser) {
+                        updateText(progressToValue(progress));
+                        pickValue();
+                    }
                 }
 
                 @Override
@@ -90,6 +98,28 @@ public class DeviceSettingsFragment extends Fragment {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                }
+            });
+
+            parameterValue.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String str = s.toString();
+                    if (s.toString().isEmpty())
+                        return;
+
+                    pickValue();
+                    updateProgress(parameterEntry.getValue());
                 }
             });
 
@@ -100,146 +130,139 @@ public class DeviceSettingsFragment extends Fragment {
                     updateProgress(parameterEntry.getInitialValue());
                 }
             });
+
+            parameterName.setText(parameterEntry.description.getName());
+            parameterSummary.setText(getSummary());
+            if (parameterEntry.hasInitialValue) {
+                parameterValue.setText(valueToText(parameterEntry.getValue()));
+                notEqual.setVisibility(View.GONE);
+                updateProgress(parameterEntry.getValue());
+            } else {
+                parameterValue.setText("");
+                seekBar.setProgress(0);
+                notEqual.setVisibility(View.VISIBLE);
+            }
         }
 
-        public void update() {
+        public void update() {/*
             parameterName.setText(parameterEntry.description.getName());
             if (parameterEntry.hasInitialValue) {
-                parameterValue.setText(parameterEntry.getValue().toString());
+                parameterValue.setText(valueToText(parameterEntry.getValue()));
                 notEqual.setVisibility(View.GONE);
             } else {
                 parameterValue.setText("");
                 notEqual.setVisibility(View.VISIBLE);
             }
-            parameterValue.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    pickValue();
-                }
-            });
-
-
-            // We have min and max values
-            parameterSummary.setText("From " + uintDescr.minValue + " to " + uintDescr.maxValue);
+            parameterSummary.setText(getSummary());
             if (parameterEntry.hasInitialValue) {
                 updateProgress(parameterEntry.getValue());
-            }
-            revert.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    parameterValue.setText(parameterEntry.getInitialValue());
-                    updateProgress(parameterEntry.getInitialValue());
-                }
-            });
+            }*/
         }
 
         public void pickValue() {
             String text = parameterValue.getText().toString();
-            parameterEntry.setValue(text);
+            if (text.isEmpty()) {
+                parameterEntry.setValue(progressToValue(0));
+            } else {
+                parameterEntry.setValue(textToValue(text));
+            }
         }
     }
 
-    public static class ParametersListElementTimeInterval extends ParametersListElement {
-        TextView parameterName = null;
-        TextView parameterSummary = null;
-        SeekBar seekBar = null;
-        EditText parameterValue = null;
-        TextView notEqual = null;
-        ImageButton revert = null;
-
-        RCSProtocol.TimeIntervalParameterDescription descr = null;
-
-        public boolean initialized() {
-            return convertView != null;
+    public static class ParametersListElementInteger extends ParametersListElementSeekBar {
+        private int min() {
+            return ((RCSProtocol.UintParameterDescription) descr).minValue;
         }
 
-        private void updateProgress(String value) {
-            seekBar.setProgress((int) ((Long.parseLong(value) - descr.minValue) / 1000));
+        private int max() {
+            return ((RCSProtocol.UintParameterDescription) descr).maxValue;
         }
 
-        private void updateText(String value) {
-            long val = Long.parseLong(parameterEntry.getValue()) / 1000;
-            parameterValue.setText(Long.toString(val));
+        @Override
+        protected String progressToValue(int progress) {
+            return Integer.toString(progress + min());
         }
 
-        public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
-            this.parameterEntry = parameterEntry;
-
-           this.convertView = inflater.inflate(R.layout.parameters_list_base_item, null);
-            parameterName = (TextView) convertView.findViewById(R.id.parameterName);
-            parameterSummary = (TextView) convertView.findViewById(R.id.parameterSummary);
-            seekBar = (SeekBar) convertView.findViewById(R.id.seekBarParameterValue);
-            parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
-            notEqual = (TextView) convertView.findViewById(R.id.notEqual);
-            revert = (ImageButton) convertView.findViewById(R.id.revert);
-
-            seekBar.setMax((int) ((descr.maxValue - descr.minValue) / 1000));
-            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    parameterValue.setText(Integer.toString(progress + ((int) (descr.minValue / 1000))));
-                    pickValue();
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-            });
+        @Override
+        protected int valueToProgress(String value) {
+            return Integer.parseInt(value) - min();
         }
 
-        public void update() {
-            parameterName.setText(parameterEntry.description.getName());
-            if (parameterEntry.hasInitialValue) {
-                updateText(parameterEntry.getValue());
-                notEqual.setVisibility(View.GONE);
-            } else {
-                parameterValue.setText("");
-                notEqual.setVisibility(View.VISIBLE);
-            }
-            parameterValue.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        @Override
+        protected int maxProgress() {
+            return max() - min();
+        }
 
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    pickValue();
-                }
-            });
-
-            descr = (RCSProtocol.TimeIntervalParameterDescription) parameterEntry.description;
-            // We have min and max values
-            parameterSummary.setText("From " + descr.minValue / 1000 + " to " + descr.maxValue / 1000);
-            if (parameterEntry.hasInitialValue) {
-                updateProgress(parameterEntry.getValue());
+        @Override
+        protected String textToValue(String text) {
+            int val;
+            try {
+                //Update Seekbar value after entering a number
+                val = Integer.parseInt(text);
+            } catch(Exception ex) {
+                val = min();
             }
 
+            if (val > max())
+                val = max();
+            if (val < min())
+                val = min();
 
+            return Integer.toString(val);
         }
 
-        public void pickValue() {
-            long value = Long.parseLong(parameterValue.getText().toString()) * 1000;
-            parameterEntry.setValue(Long.toString(value));
+        @Override
+        protected String valueToText(String value) {
+            return value;
+        }
+
+        @Override
+        protected String getSummary() {
+            return "From " + min() + " to " + max();
+        }
+    }
+
+    public static class ParametersListElementTimeInterval extends ParametersListElementSeekBar {
+        private static int k = 1000;
+        private long min() {
+            return ((RCSProtocol.TimeIntervalParameterDescription) descr).minValue;
+        }
+
+        private long max() {
+            return ((RCSProtocol.TimeIntervalParameterDescription) descr).maxValue;
+        }
+
+        @Override
+        protected String progressToValue(int progress) {
+            long value = progress * k + min();
+            return Long.toString(value);
+        }
+
+        @Override
+        protected int valueToProgress(String value) {
+            long v = (Long.parseLong(value) - min()) / k;
+            return (int) v;
+        }
+
+        @Override
+        protected int maxProgress() {
+            return (int) ((max() - min()) / k);
+        }
+
+        @Override
+        protected String textToValue(String text) {
+            return Long.toString(Long.parseLong(text)*k);
+        }
+
+        @Override
+        protected String valueToText(String value) {
+            return Long.toString(Long.parseLong(value)/k);
+        }
+
+        @Override
+        protected String getSummary() {
+            return "From " + min()/k + "ms to " + max()/k + "ms";
         }
     }
 
@@ -251,10 +274,6 @@ public class DeviceSettingsFragment extends Fragment {
         ImageButton revert = null;
 
         RCSProtocol.BooleanParameterDescription descr = null;
-
-        public boolean initialized() {
-            return convertView != null;
-        }
 
         public void init(LayoutInflater inflater, ParameterEntry _parameterEntry) {
             this.parameterEntry = _parameterEntry;
@@ -305,11 +324,6 @@ public class DeviceSettingsFragment extends Fragment {
         ArrayAdapter<String> itemsAdapter = null;
 
         int initialPosition = 0;
-
-        public boolean initialized() {
-            return convertView != null;
-        }
-
 
         public void init(LayoutInflater inflater, ParameterEntry _parameterEntry) {
             this.parameterEntry = _parameterEntry;
@@ -378,10 +392,6 @@ public class DeviceSettingsFragment extends Fragment {
         TextView parameterSummary = null;
 
         RCSProtocol.BooleanParameterDescription descr = null;
-
-        public boolean initialized() {
-            return convertView != null;
-        }
 
         public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
             this.parameterEntry = parameterEntry;
