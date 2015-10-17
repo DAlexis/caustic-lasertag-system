@@ -514,6 +514,25 @@ public class DeviceSettingsFragment extends Fragment {
             devices.add(addr);
         }
 
+        public BridgeConnector.DeviceAddress getAnyAddress() {
+            for (BridgeConnector.DeviceAddress addr : devices) {
+                return addr;
+            }
+            return null;
+        }
+
+        public int getDeviceType() {
+            if (devices.isEmpty()) {
+                return RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED;
+            }
+
+            return Integer.parseInt(
+                CausticDevicesManager.getInstance().devices2.get(getAnyAddress()).parameters.get(
+                    RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
+                ).getValue()
+            );
+        }
+
         public void createEntries() {
             /// @todo add check that all devices are homogeneous
             if (devices.isEmpty())
@@ -521,11 +540,7 @@ public class DeviceSettingsFragment extends Fragment {
 
             parameters.clear();
 
-            BridgeConnector.DeviceAddress someAddress = null;
-            for (BridgeConnector.DeviceAddress addr : devices) {
-                someAddress = addr;
-                break;
-            }
+            BridgeConnector.DeviceAddress someAddress = getAnyAddress();
 
             CausticDevicesManager.CausticDevice2 dev = CausticDevicesManager.getInstance().devices2.get(someAddress);
 

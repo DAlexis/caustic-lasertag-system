@@ -106,7 +106,16 @@ public class CausticDevicesListFragment extends Fragment {
 
         public void checkAndAddToSettingsEditorContext() {
             if (deviceName.isChecked()) {
-                DeviceSettingsFragment.editorContext.add(device.address);
+                int selectedType = Integer.parseInt(
+                        CausticDevicesManager.getInstance().devices2.get(device.address).parameters.get(
+                                RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
+                        ).getValue()
+                );
+                if (DeviceSettingsFragment.editorContext.devices.isEmpty() || DeviceSettingsFragment.editorContext.getDeviceType() == selectedType) {
+                    DeviceSettingsFragment.editorContext.add(device.address);
+                } else {
+                    deviceName.setChecked(false);
+                }
             } else {
                 DeviceSettingsFragment.editorContext.devices.remove(device.address);
             }
