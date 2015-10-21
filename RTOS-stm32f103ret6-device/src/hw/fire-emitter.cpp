@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include "hw/fire-emitter.hpp"
+#include "hw/fire-emitter-hw.hpp"
 #include "stm32f10x.h"
 #include <stdio.h>
 
@@ -51,7 +51,7 @@ void LEDFireEmitter::init()
 	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
-	setPower(100);
+	setPower(70);
 	modulationOff();
 
 	//////////////////////
@@ -122,7 +122,7 @@ void LEDFireEmitter::setCarrierFrequency(uint32_t frequency)
 	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);
 }
 
-void LEDFireEmitter::setPower(uint8_t powerPercent)
+void LEDFireEmitter::setPower(UintParameter powerPercent)
 {
 	if (powerPercent <= 25)
 	{

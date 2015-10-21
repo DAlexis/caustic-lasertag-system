@@ -23,17 +23,13 @@ using MilesTag2ShotCallback = std::function<void(unsigned int /*teamId*/, unsign
 class MilesTag2Transmitter
 {
 public:
-	MilesTag2Transmitter();
+	MilesTag2Transmitter(const UintParameter& power);
 	~MilesTag2Transmitter() {}
 
 	void init(unsigned int fireEmitterNumber = 0);
 	void setPlayerIdReference(PlayerMT2Id& playerId);
 	void setTeamIdReference(TeamMT2Id& teamId);
 
-	/// Set output power in percents. This function may conflict with setChannel()
-	void setPower(unsigned int percent);
-	/// Set output channel if supported by fire emitter. This function may conflict with setPower()
-	void setChannel(unsigned int channel);
 	PlayerMT2Id getPlayerId() { return *m_playerId; }
 	uint8_t getTeamId() { return *m_teamId; }
 
@@ -89,6 +85,8 @@ private:
 
 	bool m_sendingHeader = false;
 	IFireEmitter *m_fireEmitter = nullptr;
+
+	const UintParameter& m_power;
 };
 
 

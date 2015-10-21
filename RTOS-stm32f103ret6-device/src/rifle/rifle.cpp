@@ -129,6 +129,8 @@ void RifleConfiguration::setDefault()
 
 	fireFlashPeriod = 100000;
 	fireVibroPeriod = 100000;
+
+	outputPower = 70;
 }
 
 RifleState::RifleState(RifleConfiguration* config) :
@@ -312,7 +314,6 @@ void Rifle::init(const Pinout& pinout)
 	m_mt2Transmitter.init();
 	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
 	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
-	m_mt2Transmitter.setChannel(3);
 
 	info << "Looking for sound files...";
 	initSounds();

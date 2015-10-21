@@ -10,6 +10,7 @@
 #ifndef LOGIC_CONFIGS_H_
 #define LOGIC_CONFIGS_H_
 
+#include "rcsp/base-types.hpp"
 #include "rcsp/RCSP-codes-manipulation.hpp"
 
 // Includes that contains types which might be used as parameters types
@@ -28,12 +29,6 @@
  *    variableStart
  *    variableCurrent
  */
-
-using UintParameter = uint16_t;
-using IntParameter = int16_t;
-using TimeInterval = uint32_t;
-using FloatParameter = float;
-using BoolParameter = bool;
 
 namespace ConfigCodes
 {
@@ -88,14 +83,15 @@ namespace ConfigCodes
 
 			PAR_CODE(TimeInterval, reloadingTime,            34)
 
-			PAR_CODE(UintParameter, heatPerShot,              40)
-			PAR_CODE(UintParameter, heatLossPerSec,           41)
+			PAR_CODE(FloatParameter, heatPerShot,              40)
+			PAR_CODE(FloatParameter, heatLossPerSec,           41)
 
 			PAR_CODE(TimeInterval, fireFlashPeriod,           50)
 			PAR_CODE(TimeInterval, fireVibroPeriod,           51)
 
 			PAR_CODE(DeviceAddress, headSensorAddr,           80)
 
+			PAR_CODE(UintParameter, outputPower,              90)
 		}
 
 		namespace State

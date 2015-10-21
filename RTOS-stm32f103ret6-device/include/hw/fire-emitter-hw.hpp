@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_HW_FIRE_EMITTER_HPP_
 
 #include "hal/fire-emitter.hpp"
+#include "utils/memory.hpp"
 
 class LEDFireEmitter : public FireEmitterBase
 {
@@ -17,7 +18,7 @@ public:
 	//~LEDFireEmitter() {}
 	void init();
 	void startImpulsePack(bool isLedOn, unsigned int delayMs);
-	void setPower(uint8_t powerPercent);
+	void setPower(UintParameter powerPercent);
 	void setChannel(unsigned int channel);
 	void setCarrierFrequency(uint32_t frequency);
 

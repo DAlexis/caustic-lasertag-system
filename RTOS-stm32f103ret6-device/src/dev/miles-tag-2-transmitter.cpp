@@ -13,11 +13,12 @@
 
 /////////////////////
 // Transmitter
-MilesTag2Transmitter::MilesTag2Transmitter() :
+MilesTag2Transmitter::MilesTag2Transmitter(const UintParameter& power) :
 	m_pCurrentByte(m_data),
 	m_currentBit(7),
 	m_currentLength(0),
-    m_length(0)
+ 	m_length(0),
+	m_power(power)
 {
 }
 
@@ -29,16 +30,6 @@ void MilesTag2Transmitter::setPlayerIdReference(uint8_t& playerId)
 void MilesTag2Transmitter::setTeamIdReference(uint8_t& teamId)
 {
     m_teamId = &teamId;
-}
-
-void MilesTag2Transmitter::setPower(unsigned int percent)
-{
-	m_fireEmitter->setPower(percent);
-}
-
-void MilesTag2Transmitter::setChannel(unsigned int channel)
-{
-	m_fireEmitter->setChannel(channel);
 }
 
 void MilesTag2Transmitter::shot(uint8_t damage)
@@ -291,6 +282,7 @@ void MilesTag2Transmitter::init(unsigned int fireEmitterNumber)
 
 void MilesTag2Transmitter::beginTransmission()
 {
+	m_fireEmitter->setPower(m_power);
 	cursorToStart();
 	m_sendingHeader = true;
 	m_fireEmitter->startImpulsePack(true, HADER_PERIOD);

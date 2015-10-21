@@ -16,6 +16,19 @@ void zerify(T& object)
 	memset(&object, 0, sizeof(T));
 }
 
+template <typename T>
+class ChangeWatcher
+{
+public:
+	ChangeWatcher(const T& original) { init(original); }
+	void init(const T& original) { m_original = &original; m_stored = *m_original; }
+	bool isChanged() { return m_stored == *m_original; }
+	void update() { m_stored = *m_original; }
+	T& get() { return m_stored; }
+private:
+	const T* m_original;
+	T m_stored;
+};
 
 
 #endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_UTILS_MEMORY_HPP_ */

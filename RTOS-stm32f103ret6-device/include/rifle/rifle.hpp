@@ -133,7 +133,7 @@ private:
 	IIOPin* m_fireFlash = nullptr;
 
 
-	MilesTag2Transmitter m_mt2Transmitter;
+	MilesTag2Transmitter m_mt2Transmitter{config.outputPower};
 
 	SoundPlayer m_shootingSound;
 	SoundPlayer m_reloadingSound;
