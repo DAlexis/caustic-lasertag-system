@@ -65,7 +65,12 @@ void Pinout::readConfigLine(const char* key, const char* value)
 		else
 			m_pins[name] = PinDescr(0, pinNumber);
 	} else {
-		error << "Invalid pinout configuration variable: " << key;
+		auto it = m_other.find(key);
+		if (it != m_other.end())
+		{
+			error << "Key duplication in pinout file: " << key;
+		}
+		m_other[key] = value;
 	}
 }
 
@@ -76,6 +81,16 @@ void Pinout::printPinout() const
 	{
 		info << it->first << " port:" << it->second.port << " pin:" << it->second.pin;
 	}
+}
+
+DetailedResult<std::string> Pinout::getParameter(const char* name) const
+{
+	auto it = m_other.find(name);
+	if (it != m_other.end())
+	{
+		return DetailedResult<std::string>("", "Cannot find required pinout parameter");
+	}
+	return DetailedResult<std::string>(it->second);
 }
 
 void DeviceInitializer::initHW()

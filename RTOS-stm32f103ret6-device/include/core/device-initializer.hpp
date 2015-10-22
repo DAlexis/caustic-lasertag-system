@@ -66,10 +66,12 @@ public:
 	}
 
 	void printPinout() const;
+	DetailedResult<std::string> getParameter(const char* name) const;
 private:
 	void readConfigLine(const char* key, const char* value);
 
 	std::map<std::string, PinDescr> m_pins;
+	std::map<std::string, std::string> m_other;
 
 };
 
