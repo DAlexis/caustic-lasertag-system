@@ -16,16 +16,16 @@ class LEDFireEmitter : public FireEmitterBase
 public:
 	LEDFireEmitter();
 	//~LEDFireEmitter() {}
-	void init();
+	void init(const Pinout& pinout);
 	void startImpulsePack(bool isLedOn, unsigned int delayMs);
 	void setPower(UintParameter powerPercent);
-	void setChannel(unsigned int channel);
 	void setCarrierFrequency(uint32_t frequency);
 
 	void IRQHandler();
 private:
 	void modulationOn();
 	void modulationOff();
+	void setChannel(unsigned int channel);
 
 	unsigned int m_videoPrescaler;
 
@@ -34,6 +34,8 @@ private:
 	unsigned int m_carrierFrequency = 56000;
 	constexpr static unsigned int m_radioTimerPeriod = 10;
 	unsigned int m_radioPrescaler;
+	uint8_t m_powerLevelsCount = 0;
+	uint8_t m_powerChannels[4];
 };
 
 class FireEmittersPool : public IFireEmittersPool

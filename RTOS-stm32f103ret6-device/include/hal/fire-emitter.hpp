@@ -9,6 +9,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_HAL_FIRE_EMITTER_HPP_
 
 #include "rcsp/base-types.hpp"
+#include "core/pinout.hpp"
 #include <functional>
 
 using FireEmitterCallback = std::function<void(bool)>;
@@ -17,7 +18,7 @@ class IFireEmitter
 {
 public:
 	virtual ~IFireEmitter() {}
-	virtual void init() = 0;
+	virtual void init(const Pinout& pinout) = 0;
 	virtual void setCallback(FireEmitterCallback callback) = 0;
 	virtual void startImpulsePack(bool isLedOn, unsigned int delayMs) = 0;
 	virtual void setPower(UintParameter powerPercent) = 0;

@@ -130,7 +130,7 @@ void RifleConfiguration::setDefault()
 	fireFlashPeriod = 100000;
 	fireVibroPeriod = 100000;
 
-	outputPower = 70;
+	outputPower = 100;
 }
 
 RifleState::RifleState(RifleConfiguration* config) :
@@ -311,7 +311,7 @@ void Rifle::init(const Pinout& pinout)
 
 
 	info << "Configuring MT2 transmitter";
-	m_mt2Transmitter.init();
+	m_mt2Transmitter.init(pinout);
 	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
 	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
 

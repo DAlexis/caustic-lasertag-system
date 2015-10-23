@@ -7,6 +7,7 @@
 
 #include <dev/miles-tag-details.hpp>
 #include "dev/miles-tag-2.hpp"
+#include "core/logging.hpp"
 #include <stdio.h>
 
 
@@ -273,11 +274,11 @@ void MilesTag2Transmitter::cursorToStart()
 }
 
 ///////////////////
-void MilesTag2Transmitter::init(unsigned int fireEmitterNumber)
+void MilesTag2Transmitter::init(const Pinout& pinout, unsigned int fireEmitterNumber)
 {
 	m_fireEmitter = fireEmittersPool->getFireEmitter(fireEmitterNumber);
 	m_fireEmitter->setCallback(std::bind(&MilesTag2Transmitter::fireCallback, this, std::placeholders::_1));
-	m_fireEmitter->init();
+	m_fireEmitter->init(pinout);
 }
 
 void MilesTag2Transmitter::beginTransmission()

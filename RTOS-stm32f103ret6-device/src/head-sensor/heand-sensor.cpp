@@ -157,7 +157,7 @@ void HeadSensor::resetToDefaults()
 	m_leds.blink(blinkPatterns.anyCommand);
 	if (!RCSPAggregator::instance().readIni("config.ini"))
 	{
-		error << "Cannot read config file, so setting default values\ns";
+		error << "Cannot read config file, so setting default values";
 		playerConfig.setDefault();
 	}
 	playerState.reset();

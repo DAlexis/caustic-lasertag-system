@@ -6,8 +6,10 @@
  */
 
 #include "hw/fire-emitter-hw.hpp"
-#include "stm32f10x.h"
+#include "core/string-utils.hpp"
 #include <stdio.h>
+#include "stm32f10x.h"
+#include <math.h>
 
 FireEmittersPool fireEmittersPoolInstance;
 IFireEmittersPool* fireEmittersPool = &fireEmittersPoolInstance;
@@ -20,7 +22,7 @@ LEDFireEmitter::LEDFireEmitter() :
 	defaultLEDFireEmitter = this;
 }
 
-void LEDFireEmitter::init()
+void LEDFireEmitter::init(const Pinout& pinout)
 {
 	//////////////////////
 	// GPIO initialization - PWM output pins
@@ -51,7 +53,6 @@ void LEDFireEmitter::init()
 	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
-	setPower(70);
 	modulationOff();
 
 	//////////////////////
@@ -77,6 +78,22 @@ void LEDFireEmitter::init()
 	//NVIC_EnableIRQ(TIM7_IRQn);
 
 	//TIM_ITConfig(TIM7, TIM_DIER_UIE, ENABLE);
+
+	// Creating power level channels
+	const char parameterNames[][25] = {
+			"IRPowerLevel1Channel",
+			"IRPowerLevel2Channel",
+			"IRPowerLevel3Channel",
+			"IRPowerLevel4Channel",
+	};
+	for (int i=0; i<4; i++)
+	{
+		auto result = pinout.getParameter(parameterNames[i]);
+		if (result) {
+			m_powerChannels[m_powerLevelsCount++] = StringParser<uint8_t>::parse(result.details.c_str());
+		}
+	}
+	setPower(100);
 }
 
 void LEDFireEmitter::startImpulsePack(bool isLedOn, unsigned int delayMs)
@@ -124,22 +141,15 @@ void LEDFireEmitter::setCarrierFrequency(uint32_t frequency)
 
 void LEDFireEmitter::setPower(UintParameter powerPercent)
 {
-	if (powerPercent <= 25)
-	{
-		setChannel(1);
-	}
-	else if (powerPercent <= 50)
-	{
-		setChannel(2);
-	}
-	else if (powerPercent <= 75)
-	{
-		setChannel(3);
-	}
-	else
-	{
-		setChannel(4);
-	}
+	if (m_powerLevelsCount == 0)
+		return;
+	unsigned int powerLevel = ceil(powerPercent / 100.0 * m_powerLevelsCount) - 1;
+
+	if (powerLevel > m_powerLevelsCount)
+		powerLevel = m_powerLevelsCount-1;
+
+	//printf("SHOT channel: %d\n", m_powerChannels[powerLevel]);
+	setChannel(m_powerChannels[powerLevel]);
 }
 
 void LEDFireEmitter::setChannel(unsigned int channel)
@@ -175,7 +185,8 @@ void LEDFireEmitter::setChannel(unsigned int channel)
 
 void LEDFireEmitter::modulationOn()
 {
-
+	if (m_powerLevelsCount == 0)
+		return;
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 	TIM_OCStructInit(&TIM_OCInitStructure);
 
@@ -198,6 +209,8 @@ void LEDFireEmitter::modulationOn()
 
 void LEDFireEmitter::modulationOff()
 {
+	if (m_powerLevelsCount == 0)
+		return;
 	TIM_Cmd(TIM3, DISABLE);
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 	TIM_OCStructInit(&TIM_OCInitStructure);

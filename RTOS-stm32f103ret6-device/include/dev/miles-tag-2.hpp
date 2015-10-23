@@ -12,6 +12,7 @@
 #include "hal/fire-emitter.hpp"
 #include "hal/io-pins.hpp"
 #include "core/os-wrappers.hpp"
+#include "core/device-initializer.hpp"
 #include <functional>
 #include <stdint.h>
 
@@ -26,7 +27,7 @@ public:
 	MilesTag2Transmitter(const UintParameter& power);
 	~MilesTag2Transmitter() {}
 
-	void init(unsigned int fireEmitterNumber = 0);
+	void init(const Pinout& pinout, unsigned int fireEmitterNumber = 0);
 	void setPlayerIdReference(PlayerMT2Id& playerId);
 	void setTeamIdReference(TeamMT2Id& teamId);
 

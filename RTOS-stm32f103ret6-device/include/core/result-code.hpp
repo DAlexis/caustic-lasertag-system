@@ -17,7 +17,7 @@ public:
 	Result() {}
 	Result(const char* str) : isSuccess(false), errorText(str)
 	{
-		//printf("Error result: %s", errorText);
+		//printf("Error result: %s\n", errorText);
 	}
 
 	inline void fail(const char* str)
@@ -44,6 +44,12 @@ public:
 		Result(str),
 		details(_details)
 	{}
+	DetailedResult(const T* _details, const char* str) :
+		Result(str)
+	{
+		if (_details != nullptr)
+			details = *_details;
+	}
 
 	T details;
 };
