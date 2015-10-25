@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         >
 
-
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
@@ -41,7 +40,6 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,15 +50,10 @@
             android:id="@+id/notEqual"
             android:textColor="#ff0000" />
 
-        <EditText
-            android:layout_width="50dp"
+        <Spinner
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:layout_gravity="center_vertical"
-            android:gravity="right"
-            android:ems="5"
-            android:id="@+id/editTextParameterValue"
-            android:text="0" />
+            android:id="@+id/variants" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -68,13 +61,7 @@
             android:layout_gravity="center_vertical"
             android:id="@+id/revert"
             android:src="@android:drawable/ic_menu_revert" />
-    </LinearLayout>
 
-    <SeekBar
-        android:paddingTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekBarParameterValue"
-        android:indeterminate="false" />
+    </LinearLayout>
 
 </LinearLayout>

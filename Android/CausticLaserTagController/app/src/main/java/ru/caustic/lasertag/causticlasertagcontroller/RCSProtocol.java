@@ -1,15 +1,13 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -144,6 +142,22 @@ public class RCSProtocol {
             this.maxValue = 0;
         }
     }
+    public static class UByteParameterDescription extends ParameterDescription {
+        public final int minValue;
+        public final int maxValue;
+
+        public UByteParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+            super(descrSet, id, name, true, UByteParameterSerializer.factory);
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public UByteParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable, UByteParameterSerializer.factory);
+            this.minValue = 0;
+            this.maxValue = 0;
+        }
+    }
     public static class TimeIntervalParameterDescription extends ParameterDescription {
         public final long minValue;
         public final long maxValue;
@@ -209,6 +223,41 @@ public class RCSProtocol {
         }
     }
 
+    // @todo Should inherit uint8_t parameter
+    public static abstract class EnumParameterDescription extends UByteParameterDescription {
+        public Map<String, Integer> entries = new HashMap<>();
+        public ArrayList<String> namesOrdered = new ArrayList<>();
+
+        public EnumParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable);
+        }
+
+        public String getCurrentValueString(int intValue) {
+            for (Map.Entry<String, Integer> entry : entries.entrySet())
+            {
+                if (entry.getValue() == intValue)
+                    return entry.getKey();
+            }
+            /// @todo make something there! Value can be out of enum range
+            return "";
+        }
+
+        public void addElement(String name, int value) {
+            entries.put(name, value);
+            namesOrdered.add(name);
+        }
+    }
+
+    public static class teamEnumDescription extends EnumParameterDescription {
+
+        public teamEnumDescription(ParametersDescriptionsContainer descrSet, int id, String name) {
+            super(descrSet, id, name, true);
+            addElement("Red", 0);
+            addElement("Blue", 1);
+            addElement("Yellow", 2);
+            addElement("Green", 3);
+        }
+    }
 
     public static class FunctionCallDescription extends AnyDescription {
         public FunctionCallSerializer serializer;
@@ -342,6 +391,37 @@ public class RCSProtocol {
 
         public int size() {
             return 2;
+        }
+    }
+
+    public static class UByteParameterSerializer extends AnyParameterSerializer{
+        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
+            @Override
+            public AnyParameterSerializer create(ParameterDescription descr) {
+                return new UByteParameterSerializer(descr);
+            }
+        };
+
+        public UByteParameterSerializer(ParameterDescription descr) {
+            super(descr);
+            super.value = "0";
+        }
+
+        public void deserialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            int result = MemoryUtils.byteToUnsignedByte(memory[offset]);
+            super.value = Integer.toString(result);
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            isSynchronized = true;
+            int i = Integer.parseInt(super.value);
+            memory[offset] = MemoryUtils.unsignedByteToByte(i);
+            return size();
+        }
+
+        public int size() {
+            return 1;
         }
     }
     public static class IntParameterSerializer extends AnyParameterSerializer {
@@ -592,10 +672,12 @@ public class RCSProtocol {
     // Containers
     public static class ParametersDescriptionsContainer {
         public Map<Integer, ParameterDescription> descriptions = new TreeMap<>();
+        public ArrayList<Integer> orderedIds = new ArrayList<>();
 
         public void register(ParameterDescription descr)
         {
             descriptions.put(descr.getId(), descr);
+            orderedIds.add(descr.getId());
         }
 
         /**
@@ -607,6 +689,9 @@ public class RCSProtocol {
                 AnyParameterSerializer serializer = entry.getValue().factory.create(entry.getValue());
                 container.add(serializer);
             }
+            for (int id : orderedIds) {
+                container.orderedIds.add(id);
+            }
         }
 
         public boolean hasParameter(int id) {
@@ -614,7 +699,8 @@ public class RCSProtocol {
         }
     }
     public static class ParametersContainer2 {
-        private Map<Integer, AnyParameterSerializer> allParameters = new TreeMap<>();
+        public Map<Integer, AnyParameterSerializer> allParameters = new TreeMap<>();
+        public ArrayList<Integer> orderedIds = new ArrayList<>();
 
         public void add(AnyParameterSerializer par) {
             allParameters.put(par.description.getId(), par);
@@ -780,6 +866,9 @@ public class RCSProtocol {
             public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
             public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
             public static class Configuration {
+                // Parameters order is important for output
+                public static final ParameterDescription teamMT2Id
+                        = new teamEnumDescription(parametersDescriptions, 1032, "Team");
                 public static final ParameterDescription healthMax
                         = new UintParameterDescription(parametersDescriptions, 1000, "Maximal player health", 1, 200);
                 public static final ParameterDescription healthStart
@@ -814,13 +903,14 @@ public class RCSProtocol {
                         = new UintParameterDescription(parametersDescriptions, 6, "Maximal damage", 0, 100);
 
                 public static final ParameterDescription firePeriod
-                        = new TimeIntervalParameterDescription(parametersDescriptions, 7, "Fire period", 0, 10_000_000);
+                        = new TimeIntervalParameterDescription(parametersDescriptions, 7, "Fire period", 0, 2_000_000);
+
+                public static final ParameterDescription reloadingTime
+                        = new TimeIntervalParameterDescription(parametersDescriptions, 34, "Reloading imitation time", 0, 30_000_000);
 
                 public static final ParameterDescription automaticAllowed
                         = new BooleanParameterDescription(parametersDescriptions, 13, "Allow automatic fire", true);
 
-                public static final ParameterDescription reloadingTime
-                        = new TimeIntervalParameterDescription(parametersDescriptions, 34, "Reloading imitation time", 0, 30_000_000);
 
 
             }

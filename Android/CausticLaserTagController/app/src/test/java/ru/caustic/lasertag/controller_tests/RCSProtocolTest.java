@@ -136,6 +136,13 @@ public class RCSProtocolTest extends TestCase {
     }
 
     @Test
+    public void testUByteSerializationDeserialization() {
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.UByteParameterSerializer(null);
+        testAnyParameterSerDeser(par, "24", "0", 1, 0);
+        testAnyParameterSerDeser(par, "255", "4", 4, 0);
+    }
+
+    @Test
     public void testStreamReadWriteOneParameter() {
         RCSProtocol.ParametersDescriptionsContainer description = new RCSProtocol.ParametersDescriptionsContainer();
         RCSProtocol.ParametersContainer2 container = new RCSProtocol.ParametersContainer2();
@@ -156,7 +163,7 @@ public class RCSProtocolTest extends TestCase {
     }
 
     @Test
-    public void testStreamSerDeserStream() {
+    public void testAllTypesSerDeserStream() {
         RCSProtocol.ParametersDescriptionsContainer description = new RCSProtocol.ParametersDescriptionsContainer();
         RCSProtocol.ParametersContainer2 container = new RCSProtocol.ParametersContainer2();
         RCSProtocol.ParameterDescription testParam1
@@ -175,10 +182,12 @@ public class RCSProtocolTest extends TestCase {
                 = new RCSProtocol.DevAddrParameterDescription(description, 7, "Test dev address parameter description", true);
         RCSProtocol.ParameterDescription testParam8
                 = new RCSProtocol.TimeIntervalParameterDescription(description, 8, "Test time interval parameter description", 0, 1_000_000);
+        RCSProtocol.ParameterDescription testParam9
+                = new RCSProtocol.UByteParameterDescription(description, 9, "Test unsigned byte parameter description", 0, 255);
 
         description.addParameters(container);
 
-        int bufferSize = 70;
+        int bufferSize = 80;
         byte arr[] = new byte[bufferSize];
         int ui = 2345;
         float f = Float.parseFloat(Float.toString(Float.parseFloat("-3.1415926")));
@@ -187,6 +196,7 @@ public class RCSProtocolTest extends TestCase {
         int id = 17;
         String addr = "101.255.0";
         long timeInt = 500_000;
+        int ub = 211;
 
         container.get(1).setValue(Integer.toString(ui));
         container.get(2).setValue(Integer.toString(i));
@@ -196,6 +206,7 @@ public class RCSProtocolTest extends TestCase {
         container.get(6).setValue(Integer.toString(id));
         container.get(7).setValue(addr);
         container.get(8).setValue(Long.toString(timeInt));
+        container.get(9).setValue(Integer.toString(ub));
 
         int cursor = 0;
         cursor += container.serializeSetObject(1, arr, cursor, bufferSize);
@@ -206,6 +217,7 @@ public class RCSProtocolTest extends TestCase {
         cursor += container.serializeSetObject(6, arr, cursor, bufferSize);
         cursor += container.serializeSetObject(7, arr, cursor, bufferSize);
         cursor += container.serializeSetObject(8, arr, cursor, bufferSize);
+        cursor += container.serializeSetObject(9, arr, cursor, bufferSize);
         container.get(1).setValue("0");
         container.get(2).setValue("0");
         container.get(3).setValue("No");
@@ -214,6 +226,7 @@ public class RCSProtocolTest extends TestCase {
         container.get(6).setValue("45");
         container.get(7).setValue("12.34.56");
         container.get(8).setValue("10000");
+        container.get(9).setValue("10");
 
         // Testing now
         container.deserializeStream(arr, 0, cursor);
@@ -225,5 +238,6 @@ public class RCSProtocolTest extends TestCase {
         Assert.assertEquals(Integer.toString(id), container.get(6).getValue());
         Assert.assertEquals(addr, container.get(7).getValue());
         Assert.assertEquals(timeInt, Long.parseLong(container.get(8).getValue()));
+        Assert.assertEquals(ub, Integer.parseInt(container.get(9).getValue()));
     }
 }
