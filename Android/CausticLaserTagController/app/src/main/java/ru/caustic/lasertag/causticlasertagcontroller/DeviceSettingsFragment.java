@@ -161,6 +161,8 @@ public class DeviceSettingsFragment extends Fragment {
         }
 
         public void pickValue() {
+            if (parameterValue == null)
+                return;
             String text = parameterValue.getText().toString();
             if (text.isEmpty()) {
                 parameterEntry.setValue(progressToValue(0));
@@ -266,6 +268,48 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
+    public static class ParametersListElementFloat extends ParametersListElementSeekBar {
+        private static int progressElements = 1000;
+        private float min() {
+            return ((RCSProtocol.FloatParameterDescription) descr).minValue;
+        }
+
+        private float max() {
+            return ((RCSProtocol.FloatParameterDescription) descr).maxValue;
+        }
+
+        @Override
+        protected String progressToValue(int progress) {
+            float value = ((float) progress) / progressElements * (max() - min()) + min();
+            return Float.toString(value);
+        }
+
+        @Override
+        protected int valueToProgress(String value) {
+            return Math.round((Float.parseFloat(value) - min()) / (max() - min()) * progressElements);
+        }
+
+        @Override
+        protected int maxProgress() {
+            return progressElements;
+        }
+
+        @Override
+        protected String textToValue(String text) {
+            return text;
+        }
+
+        @Override
+        protected String valueToText(String value) {
+            return value;
+        }
+
+        @Override
+        protected String getSummary() {
+            return "From " + min() + " to " + max();
+        }
+    }
+
     public static class ParametersListElementBoolean extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
@@ -308,6 +352,8 @@ public class DeviceSettingsFragment extends Fragment {
         }
 
         public void pickValue() {
+            if (boolSwitch == null)
+                return;
             parameterEntry.setValue(boolSwitch.isChecked() ? "true" : "false");
         }
     }
@@ -378,6 +424,8 @@ public class DeviceSettingsFragment extends Fragment {
         }
 
         public void pickValue() {
+            if (variants == null)
+                return;
             parameterEntry.setValue(Integer.toString(
                             descr.entries.get(
                                     variants.getSelectedItem().toString()
@@ -417,6 +465,8 @@ public class DeviceSettingsFragment extends Fragment {
             return new ParametersListElementTimeInterval();
         } else if (description instanceof RCSProtocol.EnumParameterDescription) {
             return new ParametersListElementEnum();
+        } else if (description instanceof RCSProtocol.FloatParameterDescription) {
+            return new ParametersListElementFloat();
         }
         return new ParametersListElementUnsupported();
     }

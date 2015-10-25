@@ -94,7 +94,8 @@ public class CausticDevicesManager {
         }
 
         public void send(BridgeConnector.DeviceAddress addr) {
-            BridgeConnector.getInstance().sendMessage(addr, request, cursor);
+            if (cursor != 0)
+                BridgeConnector.getInstance().sendMessage(addr, request, cursor);
         }
     }
 

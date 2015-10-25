@@ -5,6 +5,7 @@ import android.preference.Preference;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -615,14 +616,14 @@ public class RCSProtocol {
         public void deserialize(byte[] memory, int offset) {
             isSynchronized = true;
             byte tmp[] = Arrays.copyOfRange(memory, offset, offset + 4);
-            float f = ByteBuffer.wrap(tmp)/*.order(ByteOrder.LITTLE_ENDIAN)*/.getFloat();
+            float f = ByteBuffer.wrap(tmp).order(ByteOrder.LITTLE_ENDIAN).getFloat();
             super.value = Float.toString(f);
         }
 
         public int serialize(byte[] memory, int offset) {
             isSynchronized = true;
             byte tmp[] = new byte[4];
-            ByteBuffer.wrap(tmp).putFloat(Float.parseFloat(super.value));
+            ByteBuffer.wrap(tmp).order(ByteOrder.LITTLE_ENDIAN).putFloat(Float.parseFloat(super.value));
             for (int i=0; i<4; i++)
             {
                 memory[offset+i] = tmp[i];
@@ -867,6 +868,7 @@ public class RCSProtocol {
             public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
             public static class Configuration {
                 // Parameters order is important for output
+
                 public static final ParameterDescription teamMT2Id
                         = new teamEnumDescription(parametersDescriptions, 1032, "Team");
                 public static final ParameterDescription healthMax
@@ -877,6 +879,12 @@ public class RCSProtocol {
                         = new BooleanParameterDescription(parametersDescriptions, 1010, "Is player healable", true);
                 public static final ParameterDescription lifesCount
                         = new UintParameterDescription(parametersDescriptions, 1011, "Players life count", 1, 1000);
+
+                public static final ParameterDescription frendlyFireCoeff
+                        = new FloatParameterDescription(parametersDescriptions, 1015, "Friendly fire coefficient", true, 0.0f, 1.0f);
+                public static final ParameterDescription selfShotCoeff
+                        = new FloatParameterDescription(parametersDescriptions, 1016, "Self shot coefficient", true, 0.0f, 1.0f);
+
             }
 
             public static class Funcitons {
@@ -902,6 +910,20 @@ public class RCSProtocol {
                 public static final ParameterDescription damageMax
                         = new UintParameterDescription(parametersDescriptions, 6, "Maximal damage", 0, 100);
 
+                public static final ParameterDescription magazinesCountStart
+                        = new UintParameterDescription(parametersDescriptions, 30, "Start magazines count", 0, 100);
+
+                /*
+                public static final ParameterDescription magazinesCountMax
+                        = new UintParameterDescription(parametersDescriptions, 31, "Max magazines count", 0, 100);
+                */
+
+                public static final ParameterDescription bulletsInMagazineStart
+                        = new UintParameterDescription(parametersDescriptions, 32, "Bullets in mag. after respawn", 0, 100);
+                public static final ParameterDescription bulletsInMagazineMax
+                        = new UintParameterDescription(parametersDescriptions, 33, "Bullets in magazine", 0, 100);
+
+
                 public static final ParameterDescription firePeriod
                         = new TimeIntervalParameterDescription(parametersDescriptions, 7, "Fire period", 0, 2_000_000);
 
@@ -911,6 +933,8 @@ public class RCSProtocol {
                 public static final ParameterDescription automaticAllowed
                         = new BooleanParameterDescription(parametersDescriptions, 13, "Allow automatic fire", true);
 
+                public static final ParameterDescription outputPower
+                        = new UintParameterDescription(parametersDescriptions, 90, "IR power", 0, 100);
 
 
             }
