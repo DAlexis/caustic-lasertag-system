@@ -202,7 +202,9 @@ namespace ConfigCodes
 			FUNC_CODE_1P(setTeam,      TeamMT2Id,    1221)
 
 			FUNC_CODE_1P(registerWeapon,  DeviceAddress,      1300)
+
 			FUNC_CODE_1P(notifyIsDamager, DamageNotification, 1400)
+			FUNC_CODE_1P(catchShot, ShotMessage, 1401)
 
 			FUNC_CODE_NP(rifleToHeadSensorHeartbeat, 1500)
 		}

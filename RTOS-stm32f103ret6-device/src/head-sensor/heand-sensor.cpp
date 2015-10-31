@@ -33,13 +33,6 @@ void HeadSensor::configure(const Pinout &_pinout)
 	//debug.enable();
 
 	info << "Configuring kill zones";
-	m_killZonesManager.setCallback(std::bind(
-			&HeadSensor::shotCallback,
-			this,
-			std::placeholders::_1,
-			std::placeholders::_2,
-			std::placeholders::_3
-		));
 
 	const Pinout::PinDescr& zone1 = _pinout["zone1"];
 	const Pinout::PinDescr& zone1vibro = _pinout["zone1_vibro"];
@@ -165,10 +158,10 @@ void HeadSensor::resetToDefaults()
 }
 
 
-void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage)
+void HeadSensor::catchShot(ShotMessage msg)
 {
 	//ScopedTag tag("shot-cb");
-	info << "** Shot - team: " << teamId << ", player: " << playerId << ", damage: " << damage;
+	info << "** Shot - team: " << msg.teamId << ", player: " << msg.playerId << ", damage: " << msg.damage;
 	Time currentTime = systemClock->getTime();
 	if (currentTime - m_shockDelayBegin < playerConfig.shockDelayImmortal)
 	{
@@ -176,34 +169,34 @@ void HeadSensor::shotCallback(unsigned int teamId, unsigned int playerId, unsign
 	}
 	else if (playerState.isAlive()) {
 
-		if (playerId == playerConfig.plyerMT2Id)
+		if (msg.playerId == playerConfig.plyerMT2Id)
 		{
-			damage *= playerConfig.selfShotCoeff;
+			msg.damage *= playerConfig.selfShotCoeff;
 		}
-		else if (teamId == playerConfig.teamId)
+		else if (msg.teamId == playerConfig.teamId)
 		{
-			damage *= playerConfig.frendlyFireCoeff;
+			msg.damage *= playerConfig.frendlyFireCoeff;
 		}
 
-		playerState.damage(damage);
+		playerState.damage(msg.damage);
 
 		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent;
 
 		// If still is alive
 		if (playerState.isAlive())
 		{
-			if (damage != 0)
+			if (msg.damage != 0)
 			{
 				m_shockDelayBegin = systemClock->getTime();
 				weaponWoundAndShock();
 			}
 			m_leds.blink(blinkPatterns.wound);
-			notifyDamager(playerId, teamId, DamageNotification::injured);
+			notifyDamager(msg.playerId, msg.teamId, DamageNotification::injured);
 		} else {
 			//Player was killed
 			info << "xx Player died";
 			dieWeapons();
-			notifyDamager(playerId, teamId, DamageNotification::killed);
+			notifyDamager(msg.playerId, msg.teamId, DamageNotification::killed);
 			m_leds.blink(blinkPatterns.death);
 			/// @todo reenable
 			//Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
@@ -230,7 +223,6 @@ void HeadSensor::playerRespawn()
 
 void HeadSensor::playerReset()
 {
-	ScopedTag tag("reset");
 	playerState.reset();
 	respawnWeapons();
 	info << "Player reseted";
@@ -238,11 +230,10 @@ void HeadSensor::playerReset()
 
 void HeadSensor::playerKill()
 {
-	ScopedTag tag("kill");
 	if (!playerState.isAlive())
 		return;
 	playerState.kill();
-	shotCallback(0, 0, 0);
+	catchShot(ShotMessage {0, 0, 0});
 	dieWeapons();
 	info << "Player killed";
 }
@@ -302,10 +293,10 @@ void HeadSensor::sendHeartbeat()
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{
 		RCSPStream stream;
-		stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
 		// This line is temporary solution if team was changed by value, not by setter func call
 		stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
 		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
+		stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
 		stream.send(*it, false);
 		//RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat, false, nullptr);
 	}
@@ -442,7 +433,7 @@ bool HeadSensor::TeamBroadcastTester::isAcceptableBroadcast(const DeviceAddress&
 void HeadSensor::testDie(const char*)
 {
 	playerState.healthCurrent = 0;
-	shotCallback(0, 0, 0);
+	catchShot(ShotMessage {0, 0, 0});
 }
 
 

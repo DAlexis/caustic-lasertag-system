@@ -45,14 +45,18 @@ public:
 
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth);
 
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager);      ///< Feedback when player was damaged or killed
+	/// Feedback when player was damaged or killed
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager);
+
+	/// Replacement for receive shot callback
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, catchShot);
+
 private:
 
 	constexpr static uint32_t heartbeatPeriod = 2000000;
 	// Test functions
 	void testDie(const char*);
 
-	void shotCallback(unsigned int teamId, unsigned int playerId, unsigned int damage);
 	void dieWeapons();
 	void respawnWeapons();
 	void turnOffWeapons();

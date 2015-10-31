@@ -12,14 +12,15 @@
 #include "rcsp/RCSP-stream.hpp"
 #include "dev/miles-tag-2.hpp"
 #include "hal/system-clock.hpp"
+
 #include <stdio.h>
 
 MilesTag2Receiver::MilesTag2Receiver()
 {
-	//m_delayedTask.
+
 }
 
-void MilesTag2Receiver::setShortMessageCallback(MilesTag2ShotCallback callback)
+void MilesTag2Receiver::setShortMessageCallbackISR(MilesTag2ShotCallbackISR callback)
 {
 	m_shotCallback = callback;
 }
@@ -45,15 +46,13 @@ void MilesTag2Receiver::turnOff()
 	m_input->enableExti(false);
 }
 
+void MilesTag2Receiver::setMessageContext(MilesTag2Receiver::MTMessageContext& buffer)
+{
+	m_msgContext = &buffer;
+}
+
 void MilesTag2Receiver::interrogate()
 {
-	if (m_nextInterrogationCallback)
-	{
-		m_nextInterrogationCallback();
-		m_nextInterrogationCallback = nullptr;
-		return;
-	}
-
 	parseVariableSizeMessage();
 }
 
@@ -118,24 +117,42 @@ int MilesTag2Receiver::getCurrentLength()
 }
 
 
-bool MilesTag2Receiver::parseConstantSizeMessage()
+void MilesTag2Receiver::parseShotISR()
+{
+	// We have the shot
+	unsigned int playerId   = m_data[0] & ~(1 << 7);
+	unsigned int teamId     = m_data[1] >> 6;
+	unsigned int damageCode = (m_data[1] & 0b00111100) >> 2;
+	if (m_shotCallback)
+	{
+		//m_nextInterrogationCallback = std::bind(m_shotCallback, teamId, playerId, decodeDamage(damageCode));
+		m_shotCallback(teamId, playerId, decodeDamage(damageCode));
+	} else {
+		printf("Shot callback not set!\n");
+	}
+}
+
+void MilesTag2Receiver::parseSetTeamISR()
+{
+	uint8_t teamId = m_data[1] & 0x03;
+	//printf("IR: Set team id to %u\n", teamId);
+	if (m_data[1] & ~(0x03)) {
+		//printf("Warning: team id byte contains non-zero upper bits\n");
+	}
+	TeamMT2Id team = m_data[1];
+	m_msgContext->callback = [team] () mutable {
+		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::setTeam, team);
+	};
+}
+
+bool MilesTag2Receiver::parseConstantSizeMessageISR()
 {
 	if (getCurrentLength() == MT2Extended::shotLength
 			&& getBit(0) == false)
 	{
+		// We are calling shot callback from interrupt to be processsed by kill zone manager
 		taskDISABLE_INTERRUPTS();
-			// We have the shot
-			unsigned int playerId   = m_data[0] & ~(1 << 7);
-			unsigned int teamId     = m_data[1] >> 6;
-			unsigned int damageCode = (m_data[1] & 0b00111100) >> 2;
-			if (m_shotCallback)
-			{
-				//m_nextInterrogationCallback = std::bind(m_shotCallback, teamId, playerId, decodeDamage(damageCode));
-				m_shotCallback(teamId, playerId, decodeDamage(damageCode));
-			} else {
-				m_nextInterrogationCallback = nullptr;
-				printf("Shot callback not set!\n");
-			}
+		parseShotISR();
 		taskENABLE_INTERRUPTS();
 		return true;
 	}
@@ -143,25 +160,25 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 			&& m_data[0] == MT2Extended::Byte1::command
 			&& m_data[2] == MT2Extended::Byte3::commandEnd)
 	{
-		printf("Command with code %x detected\n", m_data[1]);
+		//printf("Command with code %x detected\n", m_data[1]);
 		switch(m_data[1])
 		{
 		case MT2Extended::Commands::adminKill:
-			m_nextInterrogationCallback = []()
+			m_msgContext->callback = []()
 				{ RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerKill); };
 			break;
 		case MT2Extended::Commands::pauseOrUnpause:
 			break;
 		case MT2Extended::Commands::startGame:
-			m_nextInterrogationCallback = []()
+			m_msgContext->callback = []()
 				{ RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerReset); };
 			break;
 		case MT2Extended::Commands::restoreDefaults:
-			m_nextInterrogationCallback = []()
+			m_msgContext->callback = []()
 				{ RCSPAggregator::instance().doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults); };
 			break;
 		case MT2Extended::Commands::respawn:
-			m_nextInterrogationCallback = []()
+			m_msgContext->callback = []()
 				{ RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn); };
 			break;
 		case MT2Extended::Commands::newGameImmediate:
@@ -198,7 +215,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 	else if (getCurrentLength() == MT2Extended::messageLength
 			&& m_data[0] == MT2Extended::Byte1::addHealth)
 	{
-		printf("Add health with health code %u detected\n", m_data[1]);
+		//printf("Add health with health code %u detected\n", m_data[1]);
 		int16_t healthDelta = MT2Extended::decodeAddHealth(m_data[1]);
 
 		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::addMaxHealth, healthDelta);
@@ -207,11 +224,7 @@ bool MilesTag2Receiver::parseConstantSizeMessage()
 	else if (getCurrentLength() == MT2Extended::messageLength
 		&& m_data[0] == MT2Extended::Byte1::setTeam)
 	{
-		uint8_t teamId = m_data[1] & 0x03;
-		printf("IR: Set team id to %u\n", teamId);
-		if (m_data[1] & ~(0x03))
-			printf("Warning: team id byte contains non-zero upper bits\n");
-		RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::setTeam, m_data[1]);
+		parseSetTeamISR();
 		return true;
 	}
 	else
@@ -332,7 +345,7 @@ void MilesTag2Receiver::interruptHandler(bool state)
 			}
 			// Check if we have consistent message with fixed size. This is
 			// to prevent loosing information when interrogation period is long
-			if (parseConstantSizeMessage())
+			if (parseConstantSizeMessageISR())
 			{
 				// We have consistent message
 				resetReceiver();
@@ -342,10 +355,9 @@ void MilesTag2Receiver::interruptHandler(bool state)
 	}
 }
 
-
-
 bool MilesTag2Receiver::parseVariableSizeMessage()
 {
+	/// @todo Rewrite it without immediately calling but with callback setting
 	unsigned int time = systemClock->getTime();
 	if (time - m_lastTime < MT2Extended::variableSizePackageEndDelay)
 		return false;
@@ -357,9 +369,33 @@ bool MilesTag2Receiver::parseVariableSizeMessage()
 		printf("Infrared: general purpose RCSP message detected\n");
 		// We have message for RCSP system
 		unsigned int messageSize = getCurrentLength() / 8 - 1;
+		if (messageSize > rcspMessageMaxBufferSize)
+		{
+			error << "Too long RCSP message through IR channel!";
+			return false;
+		}
+		if (m_msgContext == nullptr) {
+			error << "RCSP message buffer is not set for IR receiver!";
+			return false;
+		}
+
 		uint8_t *message = &m_data[1];
-		if (RCSPAggregator::instance().isStreamConsistent(message, messageSize))
-			RCSPAggregator::instance().dispatchStream(message, messageSize);
+		if (
+				RCSPAggregator::instance().isStreamConsistent(message, messageSize)
+				&& messageSize > m_msgContext->size // If one sensor received only a part of message we should get longest
+		)
+		{
+			// We have good message so we can move it to special buffer and create callback for parsing it
+			memcpy(m_msgContext->m_rcspMsgBuffer, message, messageSize);
+			m_msgContext->callback = [this]()
+				{
+					RCSPAggregator::instance().dispatchStream(m_msgContext->m_rcspMsgBuffer, m_msgContext->size);
+					m_msgContext->size = 0;
+				};
+		} else {
+			error << "IR RCSP stream inconsistent";
+			return false;
+		}
 	}
 	resetReceiver();
 	return false;

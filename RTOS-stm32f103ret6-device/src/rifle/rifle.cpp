@@ -22,7 +22,7 @@
 #include <string>
 #include <utility>
 
-PlayerDisplayableData::PlayerDisplayableData(const DeviceAddress& headSensorAddress) :
+PlayerPartialState::PlayerPartialState(const DeviceAddress& headSensorAddress) :
 	m_headSensorAddress(&headSensorAddress)
 {
 	healthMax = 0;
@@ -37,7 +37,7 @@ PlayerDisplayableData::PlayerDisplayableData(const DeviceAddress& headSensorAddr
 	deathsCount = 0;
 }
 
-void PlayerDisplayableData::syncAll()
+void PlayerPartialState::syncAll()
 {
 	RCSPMultiStream stream;
 	stream.addRequest(ConfigCodes::HeadSensor::Configuration::healthMax);
@@ -52,7 +52,7 @@ void PlayerDisplayableData::syncAll()
 	stream.send(*m_headSensorAddress, false);
 }
 
-void PlayerDisplayableData::print()
+void PlayerPartialState::print()
 {
 	printf("\nCurrent player's state:\n");
 	constexpr uint8_t barLength = 10;
@@ -72,6 +72,11 @@ void PlayerDisplayableData::print()
 	printf("Points: %u\n", pointsCount);
 	printf("Kills:  %u\n", killsCount);
 	printf("Deaths: %u\n", deathsCount);
+}
+
+bool PlayerPartialState::isAlive()
+{
+	return healthCurrent > 0;
 }
 
 RifleConfiguration::RifleConfiguration()
@@ -223,7 +228,7 @@ void Rifle::init(const Pinout& pinout)
 
 	m_tasksPool.add(
 			[this]() {
-				playerDisplayable.print();
+				playerState.print();
 				updatePlayerState();
 			},
 			5000000
@@ -593,15 +598,15 @@ bool Rifle::isReloading()
 
 void Rifle::updatePlayerState()
 {
-	playerDisplayable.syncAll();
+	playerState.syncAll();
 	/*
-	if (isEnabled && playerDisplayable.healthCurrent == 0)
+	if (isEnabled && playerState.healthCurrent == 0)
 		rifleTurnOff();
 
-	if (!isEnabled && playerDisplayable.healthCurrent != 0)
+	if (!isEnabled && playerState.healthCurrent != 0)
 		rifleTurnOn();
 */
-	//playerDisplayable.print();
+	//playerState.print();
 }
 
 void Rifle::rifleTurnOff()
@@ -700,8 +705,9 @@ void Rifle::checkHeartBeat()
 	} else {
 		if (!m_isEnabled)
 		{
-			info << "I listen heartbeat again! Turning on.";
-			rifleTurnOn();
+			info << "I listen heartbeat again!";
+			if (playerState.isAlive())
+				rifleTurnOn();
 		}
 	}
 }

@@ -15,8 +15,6 @@
 #include "rcsp/operation-codes.hpp"
 #include "core/os-wrappers.hpp"
 
-using DamageCallback = std::function<void(unsigned int /*teamId*/, unsigned int /*playerId*/, unsigned int /*damage*/)>;
-
 class KillZonesManager
 {
 public:
@@ -32,7 +30,6 @@ public:
 	);
 	KillZonesManager(const KillZonesManager&) = delete;
 	void enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro = nullptr);
-	void setCallback(DamageCallback callback);
 
 private:
 	struct KillZone
@@ -46,7 +43,6 @@ private:
 	void IRReceiverShotCallback_ISR(uint8_t zoneId, unsigned int teamId, unsigned int playerId, unsigned int damage);
 
 	KillZone m_killZones[killZonesMaxCount];
-	DamageCallback m_callback = nullptr;
 
 	Time m_lastDamageMoment = 0;
 	unsigned int m_maxDamage = 0;
@@ -54,6 +50,7 @@ private:
 	unsigned int m_playerId = 0;
 
 	TaskCycled m_interrogateTask;
+	MilesTag2Receiver::MTMessageContext m_messageContext;
 };
 
 

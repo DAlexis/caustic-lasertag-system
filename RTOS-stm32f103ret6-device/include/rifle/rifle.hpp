@@ -21,12 +21,13 @@
 
 #include <stdint.h>
 
-class PlayerDisplayableData
+class PlayerPartialState
 {
 public:
-	PlayerDisplayableData(const DeviceAddress& headSensorAddress);
+	PlayerPartialState(const DeviceAddress& headSensorAddress);
 	void syncAll();
 	void print();
+	bool isAlive();
 
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthMax);
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorMax);
@@ -72,7 +73,7 @@ public:
 	RifleState state{&config};
 	//DeviceParameters device;
 
-	PlayerDisplayableData playerDisplayable{config.headSensorAddr};
+	PlayerPartialState playerState{config.headSensorAddr};
 
 
 private:

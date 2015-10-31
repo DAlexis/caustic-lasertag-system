@@ -29,11 +29,6 @@ KillZonesManager::KillZonesManager(
 	m_interrogateTask.run(50, 2, 2);
 }
 
-void KillZonesManager::setCallback(DamageCallback callback)
-{
-	m_callback = callback;
-}
-
 void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro)
 {
 	if (vibro)
@@ -44,7 +39,7 @@ void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro
 	m_killZones[zone].vibro = vibro;
 	m_killZones[zone].killZone = new MilesTag2Receiver;
 
-	m_killZones[zone].killZone->setShortMessageCallback(std::bind(
+	m_killZones[zone].killZone->setShortMessageCallbackISR(std::bind(
 			&KillZonesManager::IRReceiverShotCallback_ISR,
 			this,
 			zone,
@@ -53,6 +48,7 @@ void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro
 			std::placeholders::_3
 			));
 	m_killZones[zone].killZone->init(input);
+	m_killZones[zone].killZone->setMessageContext(m_messageContext);
 	m_killZones[zone].killZone->turnOn();
 }
 
@@ -81,9 +77,17 @@ void KillZonesManager::interrogate()
 {
 	for (int i=0; i<killZonesMaxCount; i++)
 	{
+		MilesTag2Receiver::ProcessMessageCallback callback = nullptr;
 		if (m_killZones[i].killZone)
 		{
 			m_killZones[i].killZone->interrogate();
+		}
+
+		if (m_messageContext.callback != nullptr)
+		{
+			info << "===================================================================+++";
+			m_messageContext.callback();
+			m_messageContext.callback = nullptr;
 		}
 		// Stopping vibration
 		Time currentTime = systemClock->getTime();
@@ -99,12 +103,11 @@ void KillZonesManager::interrogate()
 			&& systemClock->getTime() - m_lastDamageMoment > callbackDelay // We have waited for enough time
 		)
 	{
-		if (!m_callback)
-		{
-			error << "Zones manager callback not set!\n";
-		} else {
-			m_callback(m_teamId, m_playerId, m_maxDamage);
-		}
+		ShotMessage msg = {m_teamId, m_playerId, m_maxDamage};
+		RCSPAggregator::instance().doOperation(
+				ConfigCodes::HeadSensor::Functions::catchShot,
+				msg
+		);
 		m_lastDamageMoment = 0;
 	}
 }

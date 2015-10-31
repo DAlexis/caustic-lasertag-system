@@ -19,7 +19,7 @@
 #define MILESTAG2_MAX_MESSAGE_LENGTH 	40
 
 // unsigned int teamId, unsigned int playerId, unsigned int damage
-using MilesTag2ShotCallback = std::function<void(unsigned int /*teamId*/, unsigned int /*playerId*/, unsigned int /*damage*/)>;
+using MilesTag2ShotCallbackISR = std::function<void(unsigned int /*teamId*/, unsigned int /*playerId*/, unsigned int /*damage*/)>;
 
 class MilesTag2Transmitter
 {
@@ -90,21 +90,38 @@ private:
 	const UintParameter& m_power;
 };
 
-
+/**
+ * Behavior of receiver:
+ *   - in case of shot MilesTag2ShotCallbackISR will be called immediately from ISR
+ *   - in case of other message callback for message processing will be stored and then
+ *       returned by function getMessageCallback() on next interrogation. No message queue is
+ *       implemented now
+ */
 class MilesTag2Receiver
 {
 public:
+	constexpr static uint16_t rcspMessageMaxBufferSize = 50;
+	using ProcessMessageCallback = std::function<void(void)>;
+
+	struct MTMessageContext {
+		uint8_t m_rcspMsgBuffer[rcspMessageMaxBufferSize];
+		uint8_t size = 0;
+		ProcessMessageCallback callback = nullptr;
+	};
+
 	MilesTag2Receiver();
     ~MilesTag2Receiver() {}
-    void setShortMessageCallback(MilesTag2ShotCallback callback);
+    void setShortMessageCallbackISR(MilesTag2ShotCallbackISR callback);
     void init(IIOPin* input);
     void turnOn();
     void turnOff();
+    void setMessageContext(MTMessageContext& buffer);
+
     void interrogate();
 
     void enableDebug(bool debug = true);
+
 private:
-    using OnNextInterrogationCallback = std::function<void(void)>;
 	enum ReceivingState
 	{
 		RS_WAITING_HEADER = 0,
@@ -116,18 +133,33 @@ private:
     uint8_t decodeDamage(uint8_t damage);
 	void saveBit(bool value);
 	bool isCorrect(unsigned int value, unsigned int min, unsigned int max);
+
+	/**
+	 * Get received message length for this moment
+	 * @return Current received length in bits
+	 */
 	int getCurrentLength();
 	bool getBit(unsigned int n);
-	bool parseConstantSizeMessage();
+	bool parseConstantSizeMessageISR();
+
+	void parseShotISR();
+	void parseSetTeamISR();
+
 	void resetReceiver();
 	void interruptHandler(bool state);
-	/// Currently means "parse general-purpose RCSP message"
+
+	/**
+	 * This function parse messages that may have variable size. Trigger for this is
+	 * delay after last received bit
+	 * @return
+	 */
 	bool parseVariableSizeMessage();
+	void callGenericRCSPDeserializetion();
 
 	ReceivingState m_state = RS_WAITING_HEADER;
 	bool m_falseImpulse = false;
 
-	MilesTag2ShotCallback m_shotCallback = nullptr;
+	MilesTag2ShotCallbackISR m_shotCallback = nullptr;
 	unsigned int m_lastTime = 0;
 	bool m_dataReady = false;
 	bool m_debug = false;
@@ -138,9 +170,7 @@ private:
 	uint32_t m_dtime = 0;
 	uint32_t m_lastDtime = 0;
 	IIOPin* m_input = nullptr;
-    //IExternalInterruptManager* m_exti = nullptr;
-    OnNextInterrogationCallback m_nextInterrogationCallback = nullptr;
-    TaskDeferredFromISR m_delayedTask;
+	MTMessageContext* m_msgContext = nullptr;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_ */
