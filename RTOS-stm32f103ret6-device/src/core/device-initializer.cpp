@@ -87,10 +87,24 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 		for (;;);
 	}
 
+
 	info << "Reading device pinout...";
 	Pinout* pinout = new Pinout;
 
-	if (!m_fatfsSuccess || pinout->readIni("pinout.ini"))
+	bool pinoutReadingSucceeded = false;
+	if (isSdcardOk())
+	{
+		Result res = pinout->readIni("pinout.ini");
+		info << "Hey! Im here!11";
+		if (res)
+		{
+			pinoutReadingSucceeded = true;
+		} else {
+			error << "Error while reading pinout.ini: " << res.errorText;
+		}
+	}
+
+	if (!pinoutReadingSucceeded)
 	{
 		error << "Cannot read device pinout, setting to default";
 		resultDevice->setDafaultPinout(*pinout);

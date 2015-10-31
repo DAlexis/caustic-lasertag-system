@@ -15,8 +15,9 @@ struct Result
 {
 public:
 	Result() {}
-	Result(const char* str) : isSuccess(false), errorText(str)
+	Result(const char* str)
 	{
+		fail(str);
 		//printf("Error result: %s\n", errorText);
 	}
 

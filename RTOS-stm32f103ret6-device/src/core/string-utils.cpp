@@ -102,7 +102,10 @@ Result IniParcer::parseFile(const char* filename)
 	{
 		UINT readed = 0;
 		unsigned int cursor = 0;
-		f_read(m_file, buffer, blockSize, &readed);
+		fres = f_read(m_file, buffer, blockSize, &readed);
+		if (fres != FR_OK) {
+			return Result(parseFRESULT(fres));
+		}
 		// Skipping spaces
 		while (cursor < readed && !error)
 		{
