@@ -9,6 +9,7 @@
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
 #include "hal/io-pins.hpp"
+#include "hal/rtc.hpp"
 #include "head-sensor/head-sensor.hpp"
 #include "rifle/rifle.hpp"
 #include "bluetooth-bridge/bluetooth-bridge.hpp"
@@ -28,6 +29,7 @@ void DeviceInitializer::initHW()
 {
 	HAL_Init();
 	initClock();
+	RTCManager->init();
 	initGPIO();
 	initSDIO();
 	Loggers::initLoggers(1);
@@ -178,10 +180,12 @@ void DeviceInitializer::initClock()
 {
 	RCC_OscInitTypeDef RCC_OscInitStruct;
 	RCC_ClkInitTypeDef RCC_ClkInitStruct;
+	RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
 	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
 	RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+	RCC_OscInitStruct.LSEState = RCC_LSE_ON;
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
 	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
 	RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
@@ -193,6 +197,11 @@ void DeviceInitializer::initClock()
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
 	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
+
+	PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_ADC;
+	PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+	PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV8;
+	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
 
 	// HAL_Init already done this thing
 /*

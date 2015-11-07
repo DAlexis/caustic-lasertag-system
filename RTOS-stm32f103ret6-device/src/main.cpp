@@ -37,6 +37,7 @@
 #include "core/os-wrappers.hpp"
 #include "core/device-initializer.hpp"
 #include "dev/wav-player.hpp"
+#include "hal/rtc.hpp"
 #include <functional>
 #include <stdio.h>
 
@@ -44,14 +45,20 @@
 DeviceInitializer deviceInitializer;
 
 TaskCycled alive([](){
-	info << "I'm alive now";
+
+	info << "alive";
+
+	RTCTime t;
+	RTCManager->getTime(t);
+	info << "I'm alive now " << t.hours << ":" << t.mins << ":" << t.secs;
+
 });
 
 TaskOnce sound([](){
 	info << "Sound here";
 
 
-	WavPlayer::instance().play("piknik.wav", 1);
+	//WavPlayer::instance().play("piknik.wav", 1);
 	//WavPlayer::instance().play("sine.wav", 0);
 });
 
@@ -77,7 +84,7 @@ int main(void)
 
 	IAnyDevice* device = deviceInitializer.initDevice("device.ini");
 
-	alive.setStackSize(64);
+	alive.setStackSize(256);
 	alive.run(0, 500, 500, 0);
 	HAL_Delay(10);
 
