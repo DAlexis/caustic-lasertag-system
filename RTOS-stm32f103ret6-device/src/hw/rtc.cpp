@@ -6,6 +6,7 @@
  */
 
 #include "hw/rtc-hw.hpp"
+#include "core/logging.hpp"
 
 RTCMgr rtcmgr;
 IRTC* RTCManager = &rtcmgr;
@@ -25,11 +26,15 @@ void RTCMgr::init()
 	m_hrtc.DateToUpdate.Date = 1;
 	m_hrtc.DateToUpdate.Year = 0;
 	HAL_RTC_Init(&m_hrtc);
-
-	RTCTime t(0, 0, 0);
-	setTime(t);
-
-	HAL_RTC_SetDate(&m_hrtc, &DateToUpdate, FORMAT_BCD);
+/*
+	if(!(*(volatile uint32_t *) (BDCR_RTCEN_BB)))
+	{
+		warning << "Battery was unplugged, RTC clock value is undefined";
+		RTCTime t(0, 0, 0);
+		setTime(t);
+	}
+*/
+	//HAL_RTC_SetDate(&m_hrtc, &DateToUpdate, FORMAT_BCD);
 
 	//if(!(*(volatile uint32_t *) (BDCR_RTCEN_BB)))__HAL_RCC_RTC_ENABLE();
 }
@@ -37,14 +42,14 @@ void RTCMgr::init()
 void RTCMgr::getDate(RTCDate& date)
 {
 	RTC_DateTypeDef halDate;
-	HAL_RTC_GetDate(&m_hrtc, &halDate, FORMAT_BCD);
+	HAL_RTC_GetDate(&m_hrtc, &halDate, FORMAT_BIN);
 	halDateToDate(date, halDate);
 }
 
 void RTCMgr::getTime(RTCTime& time)
 {
 	RTC_TimeTypeDef halTime;
-	HAL_RTC_GetTime(&m_hrtc, &halTime, FORMAT_BCD);
+	HAL_RTC_GetTime(&m_hrtc, &halTime, FORMAT_BIN);
 	halTimeToTime(time, halTime);
 }
 
@@ -52,14 +57,14 @@ void RTCMgr::setDate(const RTCDate& date)
 {
 	RTC_DateTypeDef halDate;
 	dateToHalDate(date, halDate);
-	HAL_RTC_SetDate(&m_hrtc, &halDate, FORMAT_BCD);
+	HAL_RTC_SetDate(&m_hrtc, &halDate, FORMAT_BIN);
 }
 
 void RTCMgr::setTime(const RTCTime& time)
 {
 	RTC_TimeTypeDef halTime;
 	timeToHalTime(time, halTime);
-	HAL_RTC_SetTime(&m_hrtc, &halTime, FORMAT_BCD);
+	HAL_RTC_SetTime(&m_hrtc, &halTime, FORMAT_BIN);
 }
 
 void RTCMgr::timeToHalTime(const RTCTime& time, RTC_TimeTypeDef& halTime)

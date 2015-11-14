@@ -1,0 +1,20 @@
+EESchema-LIBRARY Version 2.3  Date: Чт 12 ноя 2015 22:23:26
+#encoding utf-8
+#
+# NCP551
+#
+DEF NCP551 U 0 40 Y Y 1 F N
+F0 "U" 0 0 60 H V C CNN
+F1 "NCP551" 0 400 60 H V C CNN
+F2 "~" 0 0 60 H V C CNN
+F3 "~" 0 0 60 H V C CNN
+DRAW
+S -350 300 350 -300 0 1 0 N
+X In 1 -650 200 300 R 50 50 1 1 I
+X GND 2 -650 0 300 R 50 50 1 1 I
+X Enable 3 -650 -200 300 R 50 50 1 1 I
+X Out 5 650 200 300 L 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+#End Library

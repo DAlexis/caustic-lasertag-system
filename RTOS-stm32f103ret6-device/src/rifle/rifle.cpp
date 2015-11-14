@@ -439,8 +439,11 @@ void Rifle::makeShot(bool isFirst)
 				break;
 			}
 		} else {
+			m_state = WeaponState::magazineEmpty;
 			m_noAmmoSound.play();
-			info << "Magazine is empty\n";
+			m_fireButton->setAutoRepeat(false);
+			if (config.isAutoReloading())
+				reloadAndPlay();
 			break;
 		}
 
@@ -567,7 +570,7 @@ void Rifle::reloadAndPlay()
 	if (state.magazinesCountCurrent == 0)
 	{
 		info << "No more magazines!\n";
-		/// @todo Add sound "no magazines"
+		m_noMagazines.play();
 		return;
 	}
 	m_state = WeaponState::reloading;

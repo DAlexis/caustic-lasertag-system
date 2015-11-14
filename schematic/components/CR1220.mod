@@ -1,11 +1,11 @@
-PCBNEW-LibModule-V1  Сб 06 июн 2015 22:35:15
+PCBNEW-LibModule-V1  Чт 12 ноя 2015 22:45:27
 # encoding utf-8
 Units mm
 $INDEX
 CR1220-smd
 $EndINDEX
 $MODULE CR1220-smd
-Po 0 0 0 15 55734B6D 00000000 ~~
+Po 0 0 0 15 5644EC47 00000000 ~~
 Li CR1220-smd
 Sc 0
 AR 
@@ -22,14 +22,14 @@ DS -5.5 -7.2 -5.5 -4.7 0.15 21
 DC 0 0 7.2 -0.1 0.15 21
 DC 0 0 6.3 -0.1 0.15 21
 $PAD
-Sh "2" R 4 3 0 0 0
+Sh "1" R 4 3 0 0 0
 Dr 0 0 0
 At SMD N 00888000
 Ne 0 ""
 Po -9.5 0
 $EndPAD
 $PAD
-Sh "1" R 4 3 0 0 0
+Sh "2" R 4 3 0 0 0
 Dr 0 0 0
 At SMD N 00888000
 Ne 0 ""

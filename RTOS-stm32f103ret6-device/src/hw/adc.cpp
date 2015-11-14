@@ -7,6 +7,9 @@
 
 #include "hw/adc-hw.hpp"
 
+ADCBuilder builder;
+IADCBuilder* ADCs = &builder;
+
 IADC* ADCBuilder::create()
 {
 	return new ADC;

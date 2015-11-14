@@ -24,9 +24,9 @@ class IADCBuilder
 {
 public:
 	virtual ~IADCBuilder() {}
-	virtual IADC* create();
+	virtual IADC* create() = 0;
 };
 
-extern IADCBuilder ADCs;
+extern IADCBuilder* ADCs;
 
 #endif /* INCLUDE_HAL_ADC_HPP_ */

@@ -21,10 +21,9 @@ private:
 	ADC_HandleTypeDef m_hadc;
 };
 
-class ADCBuilder
+class ADCBuilder : public IADCBuilder
 {
 public:
-	~ADCBuilder() {}
 	IADC* create();
 };
 

@@ -37,6 +37,7 @@
 #include "core/os-wrappers.hpp"
 #include "core/device-initializer.hpp"
 #include "dev/wav-player.hpp"
+#include "hal/adc.hpp"
 #include "hal/rtc.hpp"
 #include <functional>
 #include <stdio.h>
@@ -44,13 +45,16 @@
 
 DeviceInitializer deviceInitializer;
 
+IADC* adc = nullptr;
+
 TaskCycled alive([](){
 
 	info << "alive";
 
 	RTCTime t;
 	RTCManager->getTime(t);
-	info << "I'm alive now " << t.hours << ":" << t.mins << ":" << t.secs;
+	uint16_t val=adc->get();
+	info << "I'm alive now " << t.hours << ":" << t.mins << ":" << t.secs << ", v=" << val;
 
 });
 
@@ -86,6 +90,8 @@ int main(void)
 
 	alive.setStackSize(256);
 	alive.run(0, 500, 500, 0);
+	adc = ADCs->create();
+	adc->init(0,0);
 	HAL_Delay(10);
 
 	Kernel::instance().run();
