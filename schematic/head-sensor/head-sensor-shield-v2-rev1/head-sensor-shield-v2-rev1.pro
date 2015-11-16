@@ -1,6 +1,6 @@
-update=Чт 12 ноя 2015 22:23:57
+update=Сб 14 ноя 2015 12:43:06
 version=1
-last_client=eeschema
+last_client=cvpcb
 [pcbnew]
 version=1
 LastNetListRead=
@@ -40,14 +40,10 @@ LibName16=valves
 LibName17=../../components/pin-array-10x2
 LibName18=../../components/pin-arr-2mm-horiz
 LibName19=../../components/CR1220
+LibName20=/home/alexey/Projects/lazertag/schematic/components/sot323-5-fixed
 LibDir=
 [general]
 version=1
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -93,3 +89,8 @@ LibName33=../../components/nrf24l01
 LibName34=../../components/rfid-rc522-module
 LibName35=/home/alexey/Projects/lazertag/schematic/components/sensor_connector
 LibName36=/home/alexey/Projects/lazertag/schematic/components/ncp551
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms

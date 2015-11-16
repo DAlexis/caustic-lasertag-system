@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Чт 12 ноя 2015 23:07:21
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Сб 14 ноя 2015 12:50:02
 
 BeginCmp
 TimeStamp = /556DA9A3;
@@ -67,7 +67,7 @@ BeginCmp
 TimeStamp = /556DAC88;
 Reference = P5;
 ValeurCmp = USART3;
-IdModule  = PIN_ARRAY-4X1-2mm-horiz;
+IdModule  = PIN_ARRAY_4x1;
 EndCmp
 
 BeginCmp
@@ -158,7 +158,7 @@ BeginCmp
 TimeStamp = /5644F15B;
 Reference = U1;
 ValeurCmp = NCP551;
-IdModule  = sot323-5;
+IdModule  = sot323-5-fx;
 EndCmp
 
 EndListe

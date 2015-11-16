@@ -1,55 +1,8 @@
-update=Ср 27 май 2015 21:56:12
+update=Вс 15 ноя 2015 18:27:00
 version=1
-last_client=eeschema
-[pcbnew]
-version=1
-LastNetListRead=
-UseCmpFile=1
-PadDrill=0.600000000000
-PadDrillOvalY=0.600000000000
-PadSizeH=1.500000000000
-PadSizeV=1.500000000000
-PcbTextSizeV=1.500000000000
-PcbTextSizeH=1.500000000000
-PcbTextThickness=0.300000000000
-ModuleTextSizeV=1.000000000000
-ModuleTextSizeH=1.000000000000
-ModuleTextSizeThickness=0.150000000000
-SolderMaskClearance=0.000000000000
-SolderMaskMinWidth=0.000000000000
-DrawSegmentWidth=0.200000000000
-BoardOutlineThickness=0.100000000000
-ModuleOutlineThickness=0.150000000000
-[pcbnew/libraries]
-LibName1=sockets
-LibName2=connect
-LibName3=discret
-LibName4=pin_array
-LibName5=divers
-LibName6=smd_capacitors
-LibName7=smd_resistors
-LibName8=smd_crystal&oscillator
-LibName9=smd_dil
-LibName10=smd_transistors
-LibName11=libcms
-LibName12=display
-LibName13=led
-LibName14=dip_sockets
-LibName15=pga_sockets
-LibName16=valves
-LibName17=../../components/lqfp64
-LibName18=crystal
-LibName19=../../components/micro-sd3-cd
-LibName20=../../components/pin-arr-2mm-horiz
-LibName21=../../components/pin-array-10x2
-LibDir=
+last_client=cvpcb
 [general]
 version=1
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -92,3 +45,52 @@ LibName30=valves
 LibName31=../../components/stm32
 LibName32=../../components/microsd-sdio-cd
 LibName33=../../components/MCU-board-connectors
+[pcbnew]
+version=1
+LastNetListRead=mcu-module.net
+UseCmpFile=1
+PadDrill="    0,000000"
+PadDrillOvalY="    0,000000"
+PadSizeH="    1,168400"
+PadSizeV="    2,184400"
+PcbTextSizeV="    1,000000"
+PcbTextSizeH="    1,000000"
+PcbTextThickness="    0,300000"
+ModuleTextSizeV="    1,000000"
+ModuleTextSizeH="    1,000000"
+ModuleTextSizeThickness="    0,150000"
+SolderMaskClearance="    0,000000"
+SolderMaskMinWidth="    0,000000"
+DrawSegmentWidth="    0,200000"
+BoardOutlineThickness="    0,150000"
+ModuleOutlineThickness="    0,150000"
+[pcbnew/libraries]
+LibName1=sockets
+LibName2=connect
+LibName3=discret
+LibName4=pin_array
+LibName5=divers
+LibName6=smd_capacitors
+LibName7=smd_resistors
+LibName8=smd_crystal&oscillator
+LibName9=smd_dil
+LibName10=smd_transistors
+LibName11=libcms
+LibName12=display
+LibName13=led
+LibName14=dip_sockets
+LibName15=pga_sockets
+LibName16=valves
+LibName17=../../components/lqfp64
+LibName18=crystal
+LibName19=../../components/micro-sd3-cd
+LibName20=../../components/pin-arr-2mm-horiz
+LibName21=../../components/pin-array-10x2
+LibName22=/home/alexey/Projects/lazertag/schematic/components/micro-sd-112I-J
+LibName23=/home/alexey/Projects/lazertag/schematic/components/crystal-tc26h-fixed
+LibDir=
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms

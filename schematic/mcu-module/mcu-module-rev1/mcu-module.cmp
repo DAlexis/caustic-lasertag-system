@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вт 26 май 2015 21:01:16
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вс 15 ноя 2015 18:27:42
 
 BeginCmp
 TimeStamp = /55643130;
@@ -10,14 +10,14 @@ EndCmp
 BeginCmp
 TimeStamp = /55642A50;
 Reference = C2;
-ValeurCmp = 100pF;
+ValeurCmp = 20pF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /55642A82;
 Reference = C3;
-ValeurCmp = 100pF;
+ValeurCmp = 20pF;
 IdModule  = SM0805;
 EndCmp
 
@@ -71,7 +71,14 @@ IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /55643F29;
+TimeStamp = /564783BA;
+Reference = FB1;
+ValeurCmp = FILTER;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55661475;
 Reference = P1;
 ValeurCmp = MCU1;
 IdModule  = pin_array_10x2;
@@ -81,7 +88,7 @@ BeginCmp
 TimeStamp = /55642FF5;
 Reference = P2;
 ValeurCmp = MICROSD-SDIO-CD;
-IdModule  = MICROSD-CD;
+IdModule  = MICROSD-CD-112IJ;
 EndCmp
 
 BeginCmp
@@ -92,7 +99,7 @@ IdModule  = PIN_ARRAY-4X1-2mm-horiz;
 EndCmp
 
 BeginCmp
-TimeStamp = /55643F38;
+TimeStamp = /55661D7C;
 Reference = P4;
 ValeurCmp = MCU2;
 IdModule  = pin_array_10x2;
@@ -144,7 +151,7 @@ BeginCmp
 TimeStamp = /55642A2B;
 Reference = X1;
 ValeurCmp = 32768Hz;
-IdModule  = crystal-TC26H;
+IdModule  = TC26H-fixed;
 EndCmp
 
 BeginCmp
