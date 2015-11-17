@@ -7,34 +7,33 @@
 
 #include "hw/rtc-hw.hpp"
 #include "core/logging.hpp"
+#include "utils/memory.hpp"
 
 RTCMgr rtcmgr;
 IRTC* RTCManager = &rtcmgr;
 
 void RTCMgr::init()
 {
-	RTC_TimeTypeDef sTime;
-	RTC_DateTypeDef DateToUpdate;
-
 	/**Initialize RTC and set the Time and Date
 	*/
+	zerify(m_hrtc);
 	m_hrtc.Instance = RTC;
 	m_hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
 	m_hrtc.Init.OutPut = RTC_OUTPUTSOURCE_NONE;
-	m_hrtc.DateToUpdate.WeekDay = RTC_WEEKDAY_MONDAY;
-	m_hrtc.DateToUpdate.Month = RTC_MONTH_JANUARY;
+	m_hrtc.DateToUpdate.WeekDay = RTC_WEEKDAY_TUESDAY;
+	m_hrtc.DateToUpdate.Month = RTC_MONTH_FEBRUARY;
 	m_hrtc.DateToUpdate.Date = 1;
-	m_hrtc.DateToUpdate.Year = 0;
-	HAL_RTC_Init(&m_hrtc);
-/*
-	if(!(*(volatile uint32_t *) (BDCR_RTCEN_BB)))
+	m_hrtc.DateToUpdate.Year = 15;
+
+	if (!isTurnedOn())
 	{
-		warning << "Battery was unplugged, RTC clock value is undefined";
+		info << "RTC disabled, enabling and resetting";
+		HAL_RTC_Init(&m_hrtc);
 		RTCTime t(0, 0, 0);
+		RTCDate d(1, 2, 3);
 		setTime(t);
+		setDate(d);
 	}
-*/
-	//HAL_RTC_SetDate(&m_hrtc, &DateToUpdate, FORMAT_BCD);
 
 	//if(!(*(volatile uint32_t *) (BDCR_RTCEN_BB)))__HAL_RCC_RTC_ENABLE();
 }
@@ -93,4 +92,10 @@ void RTCMgr::halDateToDate(RTCDate& date, const RTC_DateTypeDef& halDate)
 	date.year = halDate.Year;
 	date.month = halDate.Month;
 	date.day = halDate.Date;
+}
+
+bool RTCMgr::isTurnedOn()
+{
+	// Not sure this will work
+	return (RCC->BDCR & RCC_BDCR_RTCEN) == RCC_BDCR_RTCEN;
 }

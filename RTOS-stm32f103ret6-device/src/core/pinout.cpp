@@ -26,10 +26,11 @@ void Pinout::readConfigLine(const char* key, const char* value)
 {
 	static const char portText[] = "_port";
 	static const char pinText[] = "_pin";
+	static const char invertedText[] = "_inverted";
 	static uint8_t portTextLen = strlen(portText);
 	static uint8_t pinTextLen = strlen(pinText);
 	uint8_t keyLen = strlen(key);
-	if (checkSuffix(key, portText))
+	if (checkSuffix(key, portText)) // If we have port specification
 	{
 		std::string name = std::string(key).substr(0, keyLen-portTextLen);
 		auto it = m_pins.find(name);
@@ -39,7 +40,7 @@ void Pinout::readConfigLine(const char* key, const char* value)
 			it->second.port = portNumber;
 		else
 			m_pins[name] = PinDescr(portNumber, 0);
-	} else if (checkSuffix(key, pinText))
+	} else if (checkSuffix(key, pinText)) // or pin specification
 	{
 		std::string name = std::string(key).substr(0, keyLen-pinTextLen);
 		auto it = m_pins.find(name);
@@ -49,6 +50,15 @@ void Pinout::readConfigLine(const char* key, const char* value)
 			it->second.pin = pinNumber;
 		else
 			m_pins[name] = PinDescr(0, pinNumber);
+	} else if (checkSuffix(key, invertedText)) // or 'inverted' specification
+	{
+		std::string name = std::string(key).substr(0, keyLen-pinTextLen);
+		bool isInverted = StringParser<bool>::parse(value);
+		auto it = m_pins.find(name);
+		if (it != m_pins.end())
+			it->second.inverted = isInverted;
+		else
+			m_pins[name] = PinDescr(0, 0, isInverted);
 	} else {
 		auto it = m_other.find(key);
 		if (it != m_other.end())

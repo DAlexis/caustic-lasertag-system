@@ -52,6 +52,7 @@ public:
 			details = *_details;
 	}
 
+	operator T() { return details; }
 	T details;
 };
 

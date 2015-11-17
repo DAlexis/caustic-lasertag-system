@@ -27,6 +27,8 @@ private:
 	static void halTimeToTime(RTCTime& time, const RTC_TimeTypeDef& halTime);
 	static void dateToHalDate(const RTCDate& date, RTC_DateTypeDef& halDate);
 	static void halDateToDate(RTCDate& date, const RTC_DateTypeDef& halDate);
+
+	bool isTurnedOn();
 };
 
 

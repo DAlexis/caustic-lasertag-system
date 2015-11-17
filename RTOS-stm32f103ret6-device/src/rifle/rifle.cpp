@@ -242,6 +242,7 @@ void Rifle::init(const Pinout& pinout)
 			pinout[PinoutTexts::trigger].pin
 	);
 	m_fireButton->useEXTI(true);
+	m_fireButton->setPressedState(pinout[PinoutTexts::trigger].inverted);
 	m_fireButton->setAutoRepeat(config.automaticAllowed);
 	m_fireButton->setRepeatPeriod(config.firePeriod);
 	m_fireButton->setCallback(std::bind(&Rifle::makeShot, this, std::placeholders::_1));
@@ -254,6 +255,7 @@ void Rifle::init(const Pinout& pinout)
 			pinout[PinoutTexts::reload].pin
 	);
 	m_reloadButton->setAutoRepeat(false);
+	m_reloadButton->setPressedState(pinout[PinoutTexts::reload].inverted);
 	m_reloadButton->setRepeatPeriod(config.firePeriod);
 	m_reloadButton->setCallback(std::bind(&Rifle::distortBolt, this, std::placeholders::_1));
 	m_reloadButton->turnOn();
@@ -264,12 +266,14 @@ void Rifle::init(const Pinout& pinout)
 			pinout[PinoutTexts::automatic].port,
 			pinout[PinoutTexts::automatic].pin
 	);
+	m_automaticFireSwitch->setPressedState(pinout[PinoutTexts::automatic].inverted);
 	m_automaticFireSwitch->turnOff();
 
 	m_semiAutomaticFireSwitch = ButtonsPool::instance().getButtonManager(
 			pinout[PinoutTexts::semiAutomatic].port,
 			pinout[PinoutTexts::semiAutomatic].pin
 	);
+	m_semiAutomaticFireSwitch->setPressedState(pinout[PinoutTexts::semiAutomatic].inverted);
 	m_semiAutomaticFireSwitch->turnOff();
 
 	if (pinout[PinoutTexts::flash].exists())
@@ -292,6 +296,7 @@ void Rifle::init(const Pinout& pinout)
 				pinout[PinoutTexts::mag1Sensor].pin
 		);
 		m_magazine1Sensor->setAutoRepeat(false);
+		m_magazine1Sensor->setPressedState(pinout[PinoutTexts::mag1Sensor].inverted);
 		m_magazine1Sensor->setRepeatPeriod(config.firePeriod);
 		m_magazine1Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 1, std::placeholders::_1));
 		m_magazine1Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 1, true));
@@ -303,6 +308,7 @@ void Rifle::init(const Pinout& pinout)
 				pinout[PinoutTexts::mag2Sensor].pin
 		);
 		m_magazine2Sensor->setAutoRepeat(false);
+		m_magazine2Sensor->setPressedState(pinout[PinoutTexts::mag2Sensor].inverted);
 		m_magazine2Sensor->setRepeatPeriod(config.firePeriod);
 		m_magazine2Sensor->setCallback(std::bind(&Rifle::magazineSensor, this, true, 2, std::placeholders::_1));
 		m_magazine2Sensor->setDepressCallback(std::bind(&Rifle::magazineSensor, this, false, 2, true));

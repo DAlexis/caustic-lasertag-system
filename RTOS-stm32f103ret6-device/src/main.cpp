@@ -53,8 +53,11 @@ TaskCycled alive([](){
 
 	RTCTime t;
 	RTCManager->getTime(t);
+	RTCDate d;
+	RTCManager->getDate(d);
 	uint16_t val=adc->get();
-	info << "I'm alive now " << t.hours << ":" << t.mins << ":" << t.secs << ", v=" << val;
+	info << "I'm alive now " << t.hours << ":" << t.mins << ":" << t.secs << "; "
+			<< d.day << "." << d.month << "." << d.year << ", v=" << val;
 
 });
 

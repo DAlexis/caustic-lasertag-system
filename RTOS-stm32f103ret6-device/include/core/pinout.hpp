@@ -26,9 +26,10 @@ public:
 		{
 		}
 
-		PinDescr(uint8_t _port, uint8_t _pin) :
+		PinDescr(uint8_t _port, uint8_t _pin, bool _inverted = false) :
 			port(_port),
-			pin(_pin)
+			pin(_pin),
+			inverted(_inverted)
 		{}
 
 		inline __attribute__ ((always_inline)) bool exists() const
@@ -43,6 +44,7 @@ public:
 
 		uint8_t port = 0;
 		uint8_t pin = 0;
+		bool inverted = false;
 	};
 
 	Result readIni(const char* filename);
