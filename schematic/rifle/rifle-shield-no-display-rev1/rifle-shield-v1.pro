@@ -1,6 +1,6 @@
-update=Ср 03 июн 2015 22:59:09
+update=Вс 22 ноя 2015 12:20:28
 version=1
-last_client=cvpcb
+last_client=eeschema
 [pcbnew]
 version=1
 LastNetListRead=
@@ -45,6 +45,11 @@ LibName21=/home/alexey/Projects/lazertag/schematic/components/terminals
 LibDir=
 [general]
 version=1
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -90,8 +95,4 @@ LibName33=../../components/nrf24l01
 LibName34=../../components/pam8610
 LibName35=../../components/rfid-rc522-module
 LibName36=../../components/pam8403
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
+LibName37=/home/alexey/Projects/lazertag/schematic/components/ncp551

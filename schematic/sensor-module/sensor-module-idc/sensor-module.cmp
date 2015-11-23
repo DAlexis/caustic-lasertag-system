@@ -1,0 +1,94 @@
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пт 20 ноя 2015 01:04:54
+
+BeginCmp
+TimeStamp = /564E410E;
+Reference = P1;
+ValeurCmp = SENSOR_CONNECTOR;
+IdModule  = Sensors-connector-10x;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517BA51;
+Reference = P2;
+ValeurCmp = VibroEngine;
+IdModule  = PIN_ARRAY_LARGE_PADS_2.54mm_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517BEDF;
+Reference = R1;
+ValeurCmp = R;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517BF25;
+Reference = R2;
+ValeurCmp = R;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517BF34;
+Reference = R3;
+ValeurCmp = R;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517C073;
+Reference = R4;
+ValeurCmp = R;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517C079;
+Reference = R5;
+ValeurCmp = R;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517C07F;
+Reference = R6;
+ValeurCmp = R;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /564E44D3;
+Reference = R7;
+ValeurCmp = R;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517BED0;
+Reference = U1;
+ValeurCmp = RGB-LED;
+IdModule  = RGB-led;
+EndCmp
+
+BeginCmp
+TimeStamp = /5517C06D;
+Reference = U2;
+ValeurCmp = RGB-LED;
+IdModule  = RGB-led;
+EndCmp
+
+BeginCmp
+TimeStamp = /55171C6A;
+Reference = U3;
+ValeurCmp = TSOP4856;
+IdModule  = PIN_ARRAY_LARGE_PADS_2.54mm_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /55171C79;
+Reference = U4;
+ValeurCmp = TSOP4856;
+IdModule  = PIN_ARRAY_LARGE_PADS_2.54mm_3X1;
+EndCmp
+
+EndListe

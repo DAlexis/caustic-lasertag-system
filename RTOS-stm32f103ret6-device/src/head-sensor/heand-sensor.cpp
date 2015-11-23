@@ -287,8 +287,6 @@ void HeadSensor::weaponWoundAndShock()
 
 void HeadSensor::sendHeartbeat()
 {
-	if (!playerState.isAlive())
-		return;
 	trace << "Sending heartbeat";
 	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
 	{

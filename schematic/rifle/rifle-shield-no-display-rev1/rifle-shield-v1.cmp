@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Чт 04 июн 2015 20:32:29
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вс 22 ноя 2015 20:50:41
 
 BeginCmp
 TimeStamp = /556EC445;
@@ -10,7 +10,7 @@ EndCmp
 BeginCmp
 TimeStamp = /556ECE94;
 Reference = C3;
-ValeurCmp = C;
+ValeurCmp = 0.015uF;
 IdModule  = SM0805;
 EndCmp
 
@@ -94,7 +94,7 @@ EndCmp
 BeginCmp
 TimeStamp = /55708970;
 Reference = P4;
-ValeurCmp = CONN_2;
+ValeurCmp = VCC;
 IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
@@ -206,14 +206,14 @@ EndCmp
 BeginCmp
 TimeStamp = /556ECE7B;
 Reference = R1;
-ValeurCmp = R;
+ValeurCmp = 10k;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /556EC465;
 Reference = R3;
-ValeurCmp = R;
+ValeurCmp = 10k;
 IdModule  = SM0805;
 EndCmp
 
@@ -267,10 +267,10 @@ IdModule  = SO16N;
 EndCmp
 
 BeginCmp
-TimeStamp = /556D6EC9;
+TimeStamp = /56518AC9;
 Reference = U2;
-ValeurCmp = LINSTAB-(1-GND/ADJ,2-OUT,3-IN);
-IdModule  = SOT223;
+ValeurCmp = NCP551;
+IdModule  = SOT23-5;
 EndCmp
 
 EndListe
