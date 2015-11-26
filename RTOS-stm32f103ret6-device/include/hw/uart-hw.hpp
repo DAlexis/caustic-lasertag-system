@@ -16,7 +16,8 @@ class UARTManager : public UARTManagerBase
 public:
 	constexpr static uint16_t rxBufferMaxSize = 200;
 	void init(uint8_t portNumber, uint32_t baudrate);
-	void transmit(uint8_t* buffer, uint16_t size = 0);
+	void transmit(uint8_t* buffer, uint16_t size);
+	void transmitSync(uint8_t* buffer, uint16_t size, uint32_t timeout = 10000);
 	bool txBusy();
 	bool rxBusy();
 

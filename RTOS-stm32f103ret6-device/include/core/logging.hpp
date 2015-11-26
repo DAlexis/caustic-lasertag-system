@@ -9,7 +9,7 @@
 #define INCLUDE_CORE_LOGGING_HPP_
 
 #include "os-wrappers.hpp"
-#include "stm32f1xx_hal.h"
+#include "hal/uart.hpp"
 #include <string.h>
 #include <list>
 
@@ -19,8 +19,7 @@ class Loggers
 	friend class ScopedTag;
 public:
 	static void initLoggers(uint8_t portNumber);
-	static UART_HandleTypeDef* __attribute__((always_inline)) getUsart() { return &huart; }
-
+	static IUARTManager* __attribute__((always_inline)) getUsart() { return uart; }
 	static Mutex loggersMutex;
 private:
 	static void infoOnOff(const char* arg);
@@ -29,8 +28,7 @@ private:
 	static void traceOnOff(const char* arg);
 
 	static std::list<const char*> tags;
-	//static const char* tag;
-	static UART_HandleTypeDef huart;
+	static IUARTManager *uart;
 };
 
 class Logger
@@ -49,15 +47,15 @@ public:
 		if (m_enabled)
 		{
 			ScopedLock lock(Loggers::loggersMutex);
-			HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)"\n[", 2, 100000);
-			HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)m_loggerName, strlen(m_loggerName), 100000);
-			HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)"] ", 2, 100000);
+			Loggers::uart->transmitSync((uint8_t*)"\n[", 2);
+			Loggers::uart->transmitSync((uint8_t*)m_loggerName, strlen(m_loggerName));
+			Loggers::uart->transmitSync((uint8_t*)"] ", 2);
 			for (auto it = Loggers::tags.begin(); it != Loggers::tags.end(); it++)
 			{
-				HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)*it, strlen(*it), 100000);
-				HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)"|", 1, 100000);
+				Loggers::uart->transmitSync((uint8_t*)*it, strlen(*it));
+				Loggers::uart->transmitSync((uint8_t*)"|", 1);
 			}
-			HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)" ", 1, 100000);
+			Loggers::uart->transmitSync((uint8_t*)" ", 1);
 		}
 
 		return m_unnamedLogger << data;

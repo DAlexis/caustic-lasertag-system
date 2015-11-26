@@ -9,10 +9,11 @@
 #include "core/logging.hpp"
 #include "utils/macro.hpp"
 
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
-UARTManager* usart[3];
+UARTManager* usart[3] = {nullptr, nullptr, nullptr};
 
 UARTsFactory factory;
 
@@ -20,6 +21,8 @@ IUARTsFactory* UARTSFactory = &factory;
 
 UARTManager* handleToManager(UART_HandleTypeDef* handle)
 {
+	if (handle == &huart1)
+		return usart[0];
 	if (handle == &huart2)
 		return usart[1];
 	if (handle == &huart3)
@@ -32,6 +35,11 @@ void UARTManager::init(uint8_t portNumber, uint32_t baudrate)
 	USART_TypeDef* instance;
 	switch (portNumber)
 	{
+	case 1:
+		m_huart = &huart1;
+		usart[0] = this;
+		instance = USART1;
+		break;
 	case 2:
 		m_huart = &huart2;
 		usart[1] = this;
@@ -63,6 +71,13 @@ void UARTManager::transmit(uint8_t* buffer, uint16_t size)
 {
 	m_txBusy = true;
 	HAL_UART_Transmit_IT(m_huart, buffer, size);
+}
+
+void UARTManager::transmitSync(uint8_t* buffer, uint16_t size, uint32_t timeout)
+{
+	m_txBusy = true;
+	HAL_UART_Transmit(m_huart, buffer, size, timeout);
+	m_txBusy = false;
 }
 
 bool UARTManager::txBusy()
@@ -112,13 +127,17 @@ extern "C"
 {
 	void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
-		handleToManager(huart)->rxDoneISR(huart->pRxBuffPtr, huart->RxXferSize);
+		UARTManager *mgr = handleToManager(huart);
+		if (mgr)
+			mgr->rxDoneISR(huart->pRxBuffPtr, huart->RxXferSize);
 
 	}
 
 	void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 	{
-		handleToManager(huart)->txDoneISR();
+		UARTManager *mgr = handleToManager(huart);
+		if (mgr)
+			mgr->txDoneISR();
 
 	}
 }

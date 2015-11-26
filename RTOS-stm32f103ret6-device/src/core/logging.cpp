@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <string.h>
 
-UART_HandleTypeDef Loggers::huart;
-//const char* Loggers::tag = nullptr;
+
+IUARTManager *Loggers::uart = nullptr;
 std::list<const char*> Loggers::tags;
 
 Mutex Loggers::loggersMutex;
@@ -24,15 +24,8 @@ Logger trace  ("trace");
 
 void Loggers::initLoggers(uint8_t portNumber)
 {
-	huart.Instance = USART1;
-	huart.Init.BaudRate = 921600;
-	huart.Init.WordLength = UART_WORDLENGTH_8B;
-	huart.Init.StopBits = UART_STOPBITS_1;
-	huart.Init.Parity = UART_PARITY_NONE;
-	huart.Init.Mode = UART_MODE_TX_RX;
-	huart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	huart.Init.OverSampling = UART_OVERSAMPLING_16;
-	HAL_UART_Init(&huart);
+	uart = UARTSFactory->create();
+	uart->init(1, 921600);
 	error.enable(true);
 	warning.enable(true);
 	info.enable(true);
@@ -45,7 +38,7 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(const char* str)
 	if (enabled)
 	{
 		ScopedLock lock(Loggers::loggersMutex);
-		HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)str, strlen(str), 100000);
+		Loggers::uart->transmitSync((uint8_t*)str, strlen(str));
 	}
 	return *this;
 }
@@ -130,7 +123,7 @@ _write (int fd __attribute__((unused)), const char* buf __attribute__((unused)),
 	size_t nbyte __attribute__((unused)))
 {
 	//ScopedLock lock(Loggers::loggersMutex);
-	HAL_UART_Transmit(Loggers::getUsart(), (uint8_t*)buf, nbyte, 100000);
+	Loggers::getUsart()->transmitSync((uint8_t*)buf, nbyte);
 	return nbyte;
 }
 

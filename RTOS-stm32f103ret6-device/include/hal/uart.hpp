@@ -27,7 +27,8 @@ public:
 	virtual void setRXWorker(Worker* worker) = 0;
 
 
-	virtual void transmit(uint8_t* buffer, uint16_t size = 0) = 0;
+	virtual void transmit(uint8_t* buffer, uint16_t size) = 0;
+	virtual void transmitSync(uint8_t* buffer, uint16_t size, uint32_t timeout = 100000) = 0;
 	virtual bool txBusy() = 0;
 	virtual bool rxBusy() = 0;
 };
