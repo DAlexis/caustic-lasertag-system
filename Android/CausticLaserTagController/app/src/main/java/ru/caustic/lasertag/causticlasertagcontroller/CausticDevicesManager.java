@@ -1,6 +1,5 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
-import android.content.Context;
 import android.os.Handler;
 
 import java.util.ArrayList;
@@ -148,7 +147,7 @@ public class CausticDevicesManager {
         }
 
         public boolean hasName() {
-            return ( (RCSProtocol.DevNameParameterSerializer) parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId()) ).initialized();
+            return ( (RCSProtocol.DevNameParameter.Serializer) parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId()) ).initialized();
         }
 
         public boolean isTypeKnown() {

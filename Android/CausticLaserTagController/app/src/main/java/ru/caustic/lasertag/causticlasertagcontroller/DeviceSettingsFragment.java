@@ -174,11 +174,11 @@ public class DeviceSettingsFragment extends Fragment {
 
     public static class ParametersListElementInteger extends ParametersListElementSeekBar {
         private int min() {
-            return ((RCSProtocol.UintParameterDescription) descr).minValue;
+            return ((RCSProtocol.UintParameter) descr).minValue;
         }
 
         private int max() {
-            return ((RCSProtocol.UintParameterDescription) descr).maxValue;
+            return ((RCSProtocol.UintParameter) descr).maxValue;
         }
 
         @Override
@@ -228,11 +228,11 @@ public class DeviceSettingsFragment extends Fragment {
     public static class ParametersListElementTimeInterval extends ParametersListElementSeekBar {
         private static int k = 1000;
         private long min() {
-            return ((RCSProtocol.TimeIntervalParameterDescription) descr).minValue;
+            return ((RCSProtocol.TimeIntervalParameter) descr).minValue;
         }
 
         private long max() {
-            return ((RCSProtocol.TimeIntervalParameterDescription) descr).maxValue;
+            return ((RCSProtocol.TimeIntervalParameter) descr).maxValue;
         }
 
         @Override
@@ -271,11 +271,11 @@ public class DeviceSettingsFragment extends Fragment {
     public static class ParametersListElementFloat extends ParametersListElementSeekBar {
         private static int progressElements = 1000;
         private float min() {
-            return ((RCSProtocol.FloatParameterDescription) descr).minValue;
+            return ((RCSProtocol.FloatParameter) descr).minValue;
         }
 
         private float max() {
-            return ((RCSProtocol.FloatParameterDescription) descr).maxValue;
+            return ((RCSProtocol.FloatParameter) descr).maxValue;
         }
 
         @Override
@@ -317,7 +317,7 @@ public class DeviceSettingsFragment extends Fragment {
         TextView notEqual = null;
         ImageButton revert = null;
 
-        RCSProtocol.BooleanParameterDescription descr = null;
+        RCSProtocol.BooleanParameter descr = null;
 
         public void init(LayoutInflater inflater, ParameterEntry _parameterEntry) {
             this.parameterEntry = _parameterEntry;
@@ -365,7 +365,7 @@ public class DeviceSettingsFragment extends Fragment {
         TextView notEqual = null;
         ImageButton revert = null;
 
-        RCSProtocol.EnumParameterDescription descr = null;
+        RCSProtocol.EnumParameter descr = null;
 
         ArrayAdapter<String> itemsAdapter = null;
 
@@ -373,7 +373,7 @@ public class DeviceSettingsFragment extends Fragment {
 
         public void init(LayoutInflater inflater, ParameterEntry _parameterEntry) {
             this.parameterEntry = _parameterEntry;
-            descr = (RCSProtocol.EnumParameterDescription) parameterEntry.description;
+            descr = (RCSProtocol.EnumParameter) parameterEntry.description;
 
             this.convertView = inflater.inflate(R.layout.parameters_list_enum_item, null);
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
@@ -439,7 +439,7 @@ public class DeviceSettingsFragment extends Fragment {
         TextView parameterName = null;
         TextView parameterSummary = null;
 
-        RCSProtocol.BooleanParameterDescription descr = null;
+        RCSProtocol.BooleanParameter descr = null;
 
         public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
             this.parameterEntry = parameterEntry;
@@ -457,15 +457,15 @@ public class DeviceSettingsFragment extends Fragment {
     }
 
     private static ParametersListElement createListElement(RCSProtocol.ParameterDescription description) {
-        if (description instanceof RCSProtocol.UintParameterDescription) {
+        if (description instanceof RCSProtocol.UintParameter) {
             return new ParametersListElementInteger();
-        } else if (description instanceof RCSProtocol.BooleanParameterDescription) {
+        } else if (description instanceof RCSProtocol.BooleanParameter) {
             return new ParametersListElementBoolean();
-        } else if (description instanceof RCSProtocol.TimeIntervalParameterDescription) {
+        } else if (description instanceof RCSProtocol.TimeIntervalParameter) {
             return new ParametersListElementTimeInterval();
-        } else if (description instanceof RCSProtocol.EnumParameterDescription) {
+        } else if (description instanceof RCSProtocol.EnumParameter) {
             return new ParametersListElementEnum();
-        } else if (description instanceof RCSProtocol.FloatParameterDescription) {
+        } else if (description instanceof RCSProtocol.FloatParameter) {
             return new ParametersListElementFloat();
         }
         return new ParametersListElementUnsupported();

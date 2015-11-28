@@ -96,13 +96,12 @@ public class RCSProtocol {
             return id;
         }
     }
-    public static class ParameterDescription extends AnyDescription {
+    public static abstract class ParameterDescription extends AnyDescription {
         private final boolean editable;
-        public ParameterSerializerFactory factory;
-        public ParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, ParameterSerializerFactory factory) {
+        public abstract AnyParameterSerializer createSerializer();
+        public ParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
             super(id, name);
             this.editable = editable;
-            this.factory = factory;
             if (descrSet != null)
                 descrSet.register(this);
         }
@@ -111,125 +110,399 @@ public class RCSProtocol {
         }
     }
 
-    public static class IntParameterDescription extends ParameterDescription {
+    public static class IntParameter extends ParameterDescription {
         public final int minValue;
         public final int maxValue;
 
-        public IntParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
-            super(descrSet, id, name, true, IntParameterSerializer.factory);
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer {
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "0";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                int result = MemoryUtils.bytesArrayToInt16(memory, offset);
+                super.value = Integer.toString(result);
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                int val = Integer.parseInt(super.value);
+                MemoryUtils.int16ToByteArray(memory, offset, val);
+                return size();
+            }
+
+            public int size() {
+                return 2;
+            }
+        }
+
+        public IntParameter(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+            super(descrSet, id, name, true);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public IntParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name) {
-            super(descrSet, id, name, false, IntParameterSerializer.factory);
+        public IntParameter(ParametersDescriptionsContainer descrSet, int id, String name) {
+            super(descrSet, id, name, false);
             this.minValue = 0;
             this.maxValue = 0;
         }
     }
-    public static class UintParameterDescription extends ParameterDescription {
+    public static class UintParameter extends ParameterDescription {
         public final int minValue;
         public final int maxValue;
 
-        public UintParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
-            super(descrSet, id, name, true, UintParameterSerializer.factory);
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer{
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "0";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                int result = MemoryUtils.bytesArrayToUint16(memory, offset);
+                super.value = Integer.toString(result);
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                int i = Integer.parseInt(super.value);
+                MemoryUtils.uint16ToByteArray(memory, offset, i);
+                return size();
+            }
+
+            public int size() {
+                return 2;
+            }
+        }
+
+        public UintParameter(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+            super(descrSet, id, name, true);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public UintParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name) {
-            super(descrSet, id, name, false, UintParameterSerializer.factory);
+        public UintParameter(ParametersDescriptionsContainer descrSet, int id, String name) {
+            super(descrSet, id, name, false);
             this.minValue = 0;
             this.maxValue = 0;
         }
     }
-    public static class UByteParameterDescription extends ParameterDescription {
+    public static class UByteParameter extends ParameterDescription {
         public final int minValue;
         public final int maxValue;
 
-        public UByteParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
-            super(descrSet, id, name, true, UByteParameterSerializer.factory);
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer{
+             public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "0";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                int result = MemoryUtils.byteToUnsignedByte(memory[offset]);
+                super.value = Integer.toString(result);
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                int i = Integer.parseInt(super.value);
+                memory[offset] = MemoryUtils.unsignedByteToByte(i);
+                return size();
+            }
+
+            public int size() {
+                return 1;
+            }
+        }
+
+        public UByteParameter(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+            super(descrSet, id, name, true);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public UByteParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
-            super(descrSet, id, name, editable, UByteParameterSerializer.factory);
+        public UByteParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable);
             this.minValue = 0;
             this.maxValue = 0;
         }
     }
-    public static class TimeIntervalParameterDescription extends ParameterDescription {
+    public static class TimeIntervalParameter extends ParameterDescription {
         public final long minValue;
         public final long maxValue;
 
-        public TimeIntervalParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, long minValue, long maxValue) {
-            super(descrSet, id, name, true, TimeIntervalParameterSerializer.factory);
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer{
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "0";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                long result = MemoryUtils.bytesArrayToUint32(memory, offset);
+                super.value = Long.toString(result);
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                long l = Long.parseLong(super.value);
+                MemoryUtils.uint32ToByteArray(memory, offset, l);
+                return size();
+            }
+
+            public int size() {
+                return 4;
+            }
+        }
+
+        public TimeIntervalParameter(ParametersDescriptionsContainer descrSet, int id, String name, long minValue, long maxValue) {
+            super(descrSet, id, name, true);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public TimeIntervalParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name) {
-            super(descrSet, id, name, false, TimeIntervalParameterSerializer.factory);
+        public TimeIntervalParameter(ParametersDescriptionsContainer descrSet, int id, String name) {
+            super(descrSet, id, name, false);
             this.minValue = 0;
             this.maxValue = 0;
         }
     }
-    public static class BooleanParameterDescription extends ParameterDescription {
-        public BooleanParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
-            super(descrSet, id, name, editable, BoolParameterSerializer.factory);
+    public static class BooleanParameter extends ParameterDescription {
+
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer {
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "false";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                super.value = MemoryUtils.bytesArrayToBool(memory, offset) ? "true" : "false";
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                boolean val = super.value.equals("true");
+                MemoryUtils.boolToBytesArray(memory, offset, val);
+                return size();
+            }
+
+            public void setBool(boolean value) {
+                super.setValue(value ? "true" : "false");
+            }
+
+            public boolean getBool() {
+                return super.value.equals("true");
+            }
+
+            public int size() {
+                return 1;
+            }
+        }
+
+        public BooleanParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable);
 
         }
+
     }
-    public static class MT2IdParameterDescription extends ParameterDescription {
+    public static class MT2IdParameter extends ParameterDescription {
         public final int minValue;
         public final int maxValue;
 
-        public MT2IdParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, int minValue, int maxValue) {
-            super(descrSet, id, name, editable, MT2IdParameterSerializer.factory);
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer {
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "0";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                int id = MemoryUtils.byteToUnsignedByte(memory[offset]);
+                super.value = Integer.toString(id);
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                memory[offset] = (byte) Integer.parseInt(super.value);
+                return size();
+            }
+
+            public int size() {
+                return 1;
+            }
+
+            public Preference createPreference(Context context) {
+                return null;
+            }
+        }
+
+        public MT2IdParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, int minValue, int maxValue) {
+            super(descrSet, id, name, editable);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public MT2IdParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
-            super(descrSet, id, name, editable, MT2IdParameterSerializer.factory);
+        public MT2IdParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable);
             this.minValue = 1;
             this.maxValue = 127;
         }
     }
-    public static class FloatParameterDescription extends ParameterDescription {
+    public static class FloatParameter extends ParameterDescription {
         public final float minValue;
         public final float maxValue;
 
-        public FloatParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, float minValue, float maxValue) {
-            super(descrSet, id, name, editable, FloatParameterSerializer.factory);
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer {
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "0.0";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                byte tmp[] = Arrays.copyOfRange(memory, offset, offset + 4);
+                float f = ByteBuffer.wrap(tmp).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+                super.value = Float.toString(f);
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                byte tmp[] = new byte[4];
+                ByteBuffer.wrap(tmp).order(ByteOrder.LITTLE_ENDIAN).putFloat(Float.parseFloat(super.value));
+                for (int i=0; i<4; i++)
+                {
+                    memory[offset+i] = tmp[i];
+                }
+                return size();
+            }
+
+            public int size() {
+                return 4;
+            }
+
+        }
+
+
+        public FloatParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, float minValue, float maxValue) {
+            super(descrSet, id, name, editable);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public FloatParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
-            super(descrSet, id, name, editable, FloatParameterSerializer.factory);
+        public FloatParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable);
             this.minValue = 0.0f;
             this.maxValue = 0.0f;
         }
     }
-    public static class DevNameParameterDescription extends ParameterDescription {
-        public DevNameParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
-            super(descrSet, id, name, editable, DevNameParameterSerializer.factory);
+    public static class DevNameParameter extends ParameterDescription {
+
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer {
+
+            public static final String defaultName = "Name unavailable";
+            private boolean isInitialized = false;
+
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = defaultName;
+            }
+
+            public boolean initialized() { return isInitialized; }
+
+            public void deserialize(byte[] memory, int offset) {
+                super.value = "";
+                for (int i=0; i<19; i++) {
+                    if (memory[offset+i] == 0)
+                        break;
+                    super.value += (char) MemoryUtils.byteToUnsignedByte(memory[offset+i]);
+                }
+                isInitialized = true;
+                isSynchronized = true;
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                int j = 0;
+                for (char ch : super.value.toCharArray()){
+                    memory[offset + j++] = (byte) ch;
+                    if (j == 19)
+                        break;
+                }
+                memory[offset + j] = 0;
+                return size();
+            }
+
+            public int size() {
+                return 20;
+            }
+        }
+
+        public DevNameParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable);
         }
     }
-    public static class DevAddrParameterDescription extends ParameterDescription {
-        public DevAddrParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
-            super(descrSet, id, name, editable, DevAddrParameterSerializer.factory);
+    public static class DevAddrParameter extends ParameterDescription {
+
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer {
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "0.0.0";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                super.value = MemoryUtils.byteToUnsignedByte(memory[offset])
+                        + "." + MemoryUtils.byteToUnsignedByte(memory[offset+1])
+                        + "." + MemoryUtils.byteToUnsignedByte(memory[offset+2]);
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                String[] address = super.value.split("\\.");
+                memory[offset] = (byte) Integer.parseInt(address[0]);
+                memory[offset+1] = (byte) Integer.parseInt(address[1]);
+                memory[offset+2] = (byte) Integer.parseInt(address[2]);
+                return size();
+            }
+
+            public int size() {
+                return 3;
+            }
+        }
+
+        public DevAddrParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+            super(descrSet, id, name, editable);
         }
     }
 
     // @todo Should inherit uint8_t parameter
-    public static abstract class EnumParameterDescription extends UByteParameterDescription {
+    public static abstract class EnumParameter extends UByteParameter {
         public Map<String, Integer> entries = new HashMap<>();
         public ArrayList<String> namesOrdered = new ArrayList<>();
 
-        public EnumParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public EnumParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable);
         }
 
@@ -249,9 +522,9 @@ public class RCSProtocol {
         }
     }
 
-    public static class teamEnumDescription extends EnumParameterDescription {
+    public static class teamEnum extends EnumParameter {
 
-        public teamEnumDescription(ParametersDescriptionsContainer descrSet, int id, String name) {
+        public teamEnum(ParametersDescriptionsContainer descrSet, int id, String name) {
             super(descrSet, id, name, true);
             addElement("Red", 0);
             addElement("Blue", 1);
@@ -265,11 +538,6 @@ public class RCSProtocol {
         public FunctionCallDescription(int _id, String _name) {
             super(_id, _name);
         }
-    }
-
-    // Factories
-    public interface ParameterSerializerFactory {
-        AnyParameterSerializer create(ParameterDescription descr);
     }
 
     // Srializers
@@ -363,313 +631,6 @@ public class RCSProtocol {
         }
     }
 
-    // Custom parameters serializers
-    public static class UintParameterSerializer extends AnyParameterSerializer{
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new UintParameterSerializer(descr);
-            }
-        };
-
-        public UintParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = "0";
-        }
-
-        public void deserialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            int result = MemoryUtils.bytesArrayToUint16(memory, offset);
-            super.value = Integer.toString(result);
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            int i = Integer.parseInt(super.value);
-            MemoryUtils.uint16ToByteArray(memory, offset, i);
-            return size();
-        }
-
-        public int size() {
-            return 2;
-        }
-    }
-
-    public static class UByteParameterSerializer extends AnyParameterSerializer{
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new UByteParameterSerializer(descr);
-            }
-        };
-
-        public UByteParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = "0";
-        }
-
-        public void deserialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            int result = MemoryUtils.byteToUnsignedByte(memory[offset]);
-            super.value = Integer.toString(result);
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            int i = Integer.parseInt(super.value);
-            memory[offset] = MemoryUtils.unsignedByteToByte(i);
-            return size();
-        }
-
-        public int size() {
-            return 1;
-        }
-    }
-    public static class IntParameterSerializer extends AnyParameterSerializer {
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new IntParameterSerializer(descr);
-            }
-        };
-
-        public IntParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = "0";
-        }
-
-        public void deserialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            int result = MemoryUtils.bytesArrayToInt16(memory, offset);
-            super.value = Integer.toString(result);
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            int val = Integer.parseInt(super.value);
-            MemoryUtils.int16ToByteArray(memory, offset, val);
-            return size();
-        }
-
-        public int size() {
-            return 2;
-        }
-    }
-    public static class TimeIntervalParameterSerializer extends AnyParameterSerializer{
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new TimeIntervalParameterSerializer(descr);
-            }
-        };
-
-        public TimeIntervalParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = "0";
-        }
-
-        public void deserialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            long result = MemoryUtils.bytesArrayToUint32(memory, offset);
-            super.value = Long.toString(result);
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            long l = Long.parseLong(super.value);
-            MemoryUtils.uint32ToByteArray(memory, offset, l);
-            return size();
-        }
-
-        public int size() {
-            return 4;
-        }
-    }
-
-    public static class BoolParameterSerializer extends AnyParameterSerializer {
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new BoolParameterSerializer(descr);
-            }
-        };
-
-        public BoolParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = "false";
-        }
-
-        public void deserialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            super.value = MemoryUtils.bytesArrayToBool(memory, offset) ? "true" : "false";
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            boolean val = super.value.equals("true");
-            MemoryUtils.boolToBytesArray(memory, offset, val);
-            return size();
-        }
-
-        public void setBool(boolean value) {
-            super.setValue(value ? "true" : "false");
-        }
-
-        public boolean getBool() {
-            return super.value.equals("true");
-        }
-
-        public int size() {
-            return 1;
-        }
-    }
-    public static class DevNameParameterSerializer extends AnyParameterSerializer {
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new DevNameParameterSerializer(descr);
-            }
-        };
-        public static final String defaultName = "Name unavailable";
-        private boolean isInitialized = false;
-
-        public DevNameParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = defaultName;
-        }
-
-        public boolean initialized() { return isInitialized; }
-
-        public void deserialize(byte[] memory, int offset) {
-            super.value = "";
-            for (int i=0; i<19; i++) {
-                if (memory[offset+i] == 0)
-                    break;
-                super.value += (char) MemoryUtils.byteToUnsignedByte(memory[offset+i]);
-            }
-            isInitialized = true;
-            isSynchronized = true;
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            int j = 0;
-            for (char ch : super.value.toCharArray()){
-                memory[offset + j++] = (byte) ch;
-                if (j == 19)
-                    break;
-            }
-            memory[offset + j] = 0;
-            return size();
-        }
-
-        public int size() {
-            return 20;
-        }
-    }
-    public static class MT2IdParameterSerializer extends AnyParameterSerializer {
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new MT2IdParameterSerializer(descr);
-            }
-        };
-
-        public MT2IdParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = "0";
-        }
-
-        public void deserialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            int id = MemoryUtils.byteToUnsignedByte(memory[offset]);
-            super.value = Integer.toString(id);
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            memory[offset] = (byte) Integer.parseInt(super.value);
-            return size();
-        }
-
-        public int size() {
-            return 1;
-        }
-
-        public Preference createPreference(Context context) {
-            return null;
-        }
-    }
-    public static class FloatParameterSerializer extends AnyParameterSerializer {
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new FloatParameterSerializer(descr);
-            }
-        };
-
-        public FloatParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = "0.0";
-        }
-
-        public void deserialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            byte tmp[] = Arrays.copyOfRange(memory, offset, offset + 4);
-            float f = ByteBuffer.wrap(tmp).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-            super.value = Float.toString(f);
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            byte tmp[] = new byte[4];
-            ByteBuffer.wrap(tmp).order(ByteOrder.LITTLE_ENDIAN).putFloat(Float.parseFloat(super.value));
-            for (int i=0; i<4; i++)
-            {
-                memory[offset+i] = tmp[i];
-            }
-            return size();
-        }
-
-        public int size() {
-            return 4;
-        }
-
-    }
-    public static class DevAddrParameterSerializer extends AnyParameterSerializer {
-        public static final ParameterSerializerFactory factory = new ParameterSerializerFactory() {
-            @Override
-            public AnyParameterSerializer create(ParameterDescription descr) {
-                return new DevAddrParameterSerializer(descr);
-            }
-        };
-
-        public DevAddrParameterSerializer(ParameterDescription descr) {
-            super(descr);
-            super.value = "0.0.0";
-        }
-
-        public void deserialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            super.value = MemoryUtils.byteToUnsignedByte(memory[offset])
-                    + "." + MemoryUtils.byteToUnsignedByte(memory[offset+1])
-                    + "." + MemoryUtils.byteToUnsignedByte(memory[offset+2]);
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            isSynchronized = true;
-            String[] address = super.value.split("\\.");
-            memory[offset] = (byte) Integer.parseInt(address[0]);
-            memory[offset+1] = (byte) Integer.parseInt(address[1]);
-            memory[offset+2] = (byte) Integer.parseInt(address[2]);
-            return size();
-        }
-
-        public int size() {
-            return 3;
-        }
-    }
-
     // Containers
     public static class ParametersDescriptionsContainer {
         public Map<Integer, ParameterDescription> descriptions = new TreeMap<>();
@@ -687,7 +648,7 @@ public class RCSProtocol {
          */
         public void addParameters(ParametersContainer2 container) {
             for (Map.Entry<Integer, ParameterDescription> entry : descriptions.entrySet()) {
-                AnyParameterSerializer serializer = entry.getValue().factory.create(entry.getValue());
+                AnyParameterSerializer serializer = entry.getValue().createSerializer();
                 container.add(serializer);
             }
             for (int id : orderedIds) {
@@ -839,9 +800,9 @@ public class RCSProtocol {
                 public static final int DEV_TYPE_BLUETOOTH_BRIDGE = 3;
 
                 public static final ParameterDescription deviceType
-                        = new UintParameterDescription(parametersDescriptions, 2002, "Device id");
+                        = new UintParameter(parametersDescriptions, 2002, "Device id");
                 public static final ParameterDescription deviceName
-                        = new ParameterDescription(parametersDescriptions, 2001, "Device name", false, DevNameParameterSerializer.factory);
+                        = new DevNameParameter(parametersDescriptions, 2001, "Device name", false);
             }
 
             public static class Funcitons {
@@ -870,20 +831,20 @@ public class RCSProtocol {
                 // Parameters order is important for output
 
                 public static final ParameterDescription teamMT2Id
-                        = new teamEnumDescription(parametersDescriptions, 1032, "Team");
+                        = new teamEnum(parametersDescriptions, 1032, "Team");
                 public static final ParameterDescription healthMax
-                        = new UintParameterDescription(parametersDescriptions, 1000, "Maximal player health", 1, 200);
+                        = new UintParameter(parametersDescriptions, 1000, "Maximal player health", 1, 200);
                 public static final ParameterDescription healthStart
-                        = new UintParameterDescription(parametersDescriptions, 1003, "Player health at start", 1, 200);
+                        = new UintParameter(parametersDescriptions, 1003, "Player health at start", 1, 200);
                 public static final ParameterDescription isHealable
-                        = new BooleanParameterDescription(parametersDescriptions, 1010, "Is player healable", true);
+                        = new BooleanParameter(parametersDescriptions, 1010, "Is player healable", true);
                 public static final ParameterDescription lifesCount
-                        = new UintParameterDescription(parametersDescriptions, 1011, "Players life count", 1, 1000);
+                        = new UintParameter(parametersDescriptions, 1011, "Players life count", 1, 1000);
 
                 public static final ParameterDescription frendlyFireCoeff
-                        = new FloatParameterDescription(parametersDescriptions, 1015, "Friendly fire coefficient", true, 0.0f, 1.0f);
+                        = new FloatParameter(parametersDescriptions, 1015, "Friendly fire coefficient", true, 0.0f, 1.0f);
                 public static final ParameterDescription selfShotCoeff
-                        = new FloatParameterDescription(parametersDescriptions, 1016, "Self shot coefficient", true, 0.0f, 1.0f);
+                        = new FloatParameter(parametersDescriptions, 1016, "Self shot coefficient", true, 0.0f, 1.0f);
 
             }
 
@@ -906,35 +867,35 @@ public class RCSProtocol {
             public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
             public static class Configuration {
                 public static final ParameterDescription damageMin
-                        = new UintParameterDescription(parametersDescriptions, 5, "Minimal damage", 0, 100);
+                        = new UintParameter(parametersDescriptions, 5, "Minimal damage", 0, 100);
                 public static final ParameterDescription damageMax
-                        = new UintParameterDescription(parametersDescriptions, 6, "Maximal damage", 0, 100);
+                        = new UintParameter(parametersDescriptions, 6, "Maximal damage", 0, 100);
 
                 public static final ParameterDescription magazinesCountStart
-                        = new UintParameterDescription(parametersDescriptions, 30, "Start magazines count", 0, 100);
+                        = new UintParameter(parametersDescriptions, 30, "Start magazines count", 0, 100);
 
                 /*
                 public static final ParameterDescription magazinesCountMax
-                        = new UintParameterDescription(parametersDescriptions, 31, "Max magazines count", 0, 100);
+                        = new UintParameter(parametersDescriptions, 31, "Max magazines count", 0, 100);
                 */
 
                 public static final ParameterDescription bulletsInMagazineStart
-                        = new UintParameterDescription(parametersDescriptions, 32, "Bullets in mag. after respawn", 0, 100);
+                        = new UintParameter(parametersDescriptions, 32, "Bullets in mag. after respawn", 0, 100);
                 public static final ParameterDescription bulletsInMagazineMax
-                        = new UintParameterDescription(parametersDescriptions, 33, "Bullets in magazine", 0, 100);
+                        = new UintParameter(parametersDescriptions, 33, "Bullets in magazine", 0, 100);
 
 
                 public static final ParameterDescription firePeriod
-                        = new TimeIntervalParameterDescription(parametersDescriptions, 7, "Fire period", 0, 2_000_000);
+                        = new TimeIntervalParameter(parametersDescriptions, 7, "Fire period", 0, 2_000_000);
 
                 public static final ParameterDescription reloadingTime
-                        = new TimeIntervalParameterDescription(parametersDescriptions, 34, "Reloading imitation time", 0, 30_000_000);
+                        = new TimeIntervalParameter(parametersDescriptions, 34, "Reloading imitation time", 0, 30_000_000);
 
                 public static final ParameterDescription automaticAllowed
-                        = new BooleanParameterDescription(parametersDescriptions, 13, "Allow automatic fire", true);
+                        = new BooleanParameter(parametersDescriptions, 13, "Allow automatic fire", true);
 
                 public static final ParameterDescription outputPower
-                        = new UintParameterDescription(parametersDescriptions, 90, "IR power", 0, 100);
+                        = new UintParameter(parametersDescriptions, 90, "IR power", 0, 100);
 
 
             }

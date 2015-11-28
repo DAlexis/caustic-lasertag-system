@@ -50,7 +50,7 @@ public class RCSProtocolTest extends TestCase {
     @Test
     public void testUint16SerializationDeserialization()
     {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.UintParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.UintParameter.Serializer(null);
         testAnyParameterSerDeser(par, "1", "0", 10, 0);
         testAnyParameterSerDeser(par, "129", "0", 10, 1);
         testAnyParameterSerDeser(par, "160", "0", 10, 2);
@@ -61,7 +61,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testDeviceNameSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.DevNameParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.DevNameParameter.Serializer(null);
         //RCSProtocol.Parameter par = new RCSProtocol.Parameter("Test", RCSProtocol.Parameter.TYPE_DEVICE_NAME, 123);
         testAnyParameterSerDeser(par, "Test name 1", "", 40, 20);
         testAnyParameterSerDeser(par, "The device ASCII na", "", 20, 0);
@@ -77,7 +77,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testMT2idSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.MT2IdParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.MT2IdParameter.Serializer(null);
         testAnyParameterSerDeser(par, "1", "0", 2, 0);
         testAnyParameterSerDeser(par, "80", "0", 2, 1);
         testAnyParameterSerDeser(par, "127", "0", 10, 5);
@@ -87,7 +87,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testIntSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.IntParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.IntParameter.Serializer(null);
         testAnyParameterSerDeser(par, "1", "0", 2, 0);
         testAnyParameterSerDeser(par, "23767", "0", 10, 5);
         testAnyParameterSerDeser(par, "-1", "0", 4, 1);
@@ -97,7 +97,7 @@ public class RCSProtocolTest extends TestCase {
     @Test
     public void testFloatSerializationDeserialization() {
 
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.FloatParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.FloatParameter.Serializer(null);
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("1.0")), "0.0", 4, 0);
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("3.1415926")), "0.0", 4, 0);
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("-243.6124123")), "0.0", 4, 0);
@@ -105,7 +105,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testDevAddrSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.DevAddrParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.DevAddrParameter.Serializer(null);
         testAnyParameterSerDeser(par, "123.43.8", "0.0.0", 4, 0);
         testAnyParameterSerDeser(par, "255.240.1", "0.0.0", 4, 0);
         testAnyParameterSerDeser(par, "0.0.0", "1.2.3", 4, 0);
@@ -114,14 +114,14 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testBoolSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.BoolParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.BooleanParameter.Serializer(null);
         testAnyParameterSerDeser(par, "true", "false", 1, 0);
         testAnyParameterSerDeser(par, "false", "true", 4, 0);
     }
 
     @Test
     public void timeIntervalSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.TimeIntervalParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.TimeIntervalParameter.Serializer(null);
         testAnyParameterSerDeser(par, "2345", "0", 4, 0);
         testAnyParameterSerDeser(par, "1", "0", 4, 0);
         testAnyParameterSerDeser(par, "0", "24", 4, 0);
@@ -130,14 +130,14 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testMT2IdSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.MT2IdParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.MT2IdParameter.Serializer(null);
         testAnyParameterSerDeser(par, "24", "0", 1, 0);
         testAnyParameterSerDeser(par, "127", "4", 4, 0);
     }
 
     @Test
     public void testUByteSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.UByteParameterSerializer(null);
+        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.UByteParameter.Serializer(null);
         testAnyParameterSerDeser(par, "24", "0", 1, 0);
         testAnyParameterSerDeser(par, "255", "4", 4, 0);
     }
@@ -148,7 +148,7 @@ public class RCSProtocolTest extends TestCase {
         RCSProtocol.ParametersContainer2 container = new RCSProtocol.ParametersContainer2();
         int paramId = 321;
         RCSProtocol.ParameterDescription testParam
-            = new RCSProtocol.UintParameterDescription(description, paramId, "Test parameter description", 1, 200);
+            = new RCSProtocol.UintParameter(description, paramId, "Test parameter description", 1, 200);
         description.addParameters(container);
 
         byte arr[] = new byte[20];
@@ -167,23 +167,23 @@ public class RCSProtocolTest extends TestCase {
         RCSProtocol.ParametersDescriptionsContainer description = new RCSProtocol.ParametersDescriptionsContainer();
         RCSProtocol.ParametersContainer2 container = new RCSProtocol.ParametersContainer2();
         RCSProtocol.ParameterDescription testParam1
-                = new RCSProtocol.UintParameterDescription(description, 1, "Test uintparameter description", 1, 200);
+                = new RCSProtocol.UintParameter(description, 1, "Test uintparameter description", 1, 200);
         RCSProtocol.ParameterDescription testParam2
-                = new RCSProtocol.IntParameterDescription(description, 2, "Test int parameter description", -150, 200);
+                = new RCSProtocol.IntParameter(description, 2, "Test int parameter description", -150, 200);
         RCSProtocol.ParameterDescription testParam3
-                = new RCSProtocol.FloatParameterDescription(description, 3, "Test float parameter description", true, 0.0f, 1.1f);
+                = new RCSProtocol.FloatParameter(description, 3, "Test float parameter description", true, 0.0f, 1.1f);
         RCSProtocol.ParameterDescription testParam4
-                = new RCSProtocol.DevNameParameterDescription(description, 4, "Test device name parameter description", false);
+                = new RCSProtocol.DevNameParameter(description, 4, "Test device name parameter description", false);
         RCSProtocol.ParameterDescription testParam5
-                = new RCSProtocol.BooleanParameterDescription(description, 5, "Test bool parameter description", true);
+                = new RCSProtocol.BooleanParameter(description, 5, "Test bool parameter description", true);
         RCSProtocol.ParameterDescription testParam6
-                = new RCSProtocol.MT2IdParameterDescription(description, 6, "Test MT2 id parameter description", true);
+                = new RCSProtocol.MT2IdParameter(description, 6, "Test MT2 id parameter description", true);
         RCSProtocol.ParameterDescription testParam7
-                = new RCSProtocol.DevAddrParameterDescription(description, 7, "Test dev address parameter description", true);
+                = new RCSProtocol.DevAddrParameter(description, 7, "Test dev address parameter description", true);
         RCSProtocol.ParameterDescription testParam8
-                = new RCSProtocol.TimeIntervalParameterDescription(description, 8, "Test time interval parameter description", 0, 1_000_000);
+                = new RCSProtocol.TimeIntervalParameter(description, 8, "Test time interval parameter description", 0, 1_000_000);
         RCSProtocol.ParameterDescription testParam9
-                = new RCSProtocol.UByteParameterDescription(description, 9, "Test unsigned byte parameter description", 0, 255);
+                = new RCSProtocol.UByteParameter(description, 9, "Test unsigned byte parameter description", 0, 255);
 
         description.addParameters(container);
 
