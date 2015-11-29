@@ -145,7 +145,7 @@ public class RCSProtocolTest extends TestCase {
     @Test
     public void testStreamReadWriteOneParameter() {
         RCSProtocol.ParametersDescriptionsContainer description = new RCSProtocol.ParametersDescriptionsContainer();
-        RCSProtocol.ParametersContainer2 container = new RCSProtocol.ParametersContainer2();
+        RCSProtocol.ParametersContainer container = new RCSProtocol.ParametersContainer();
         int paramId = 321;
         RCSProtocol.ParameterDescription testParam
             = new RCSProtocol.UintParameter(description, paramId, "Test parameter description", 1, 200);
@@ -165,7 +165,7 @@ public class RCSProtocolTest extends TestCase {
     @Test
     public void testAllTypesSerDeserStream() {
         RCSProtocol.ParametersDescriptionsContainer description = new RCSProtocol.ParametersDescriptionsContainer();
-        RCSProtocol.ParametersContainer2 container = new RCSProtocol.ParametersContainer2();
+        RCSProtocol.ParametersContainer container = new RCSProtocol.ParametersContainer();
         RCSProtocol.ParameterDescription testParam1
                 = new RCSProtocol.UintParameter(description, 1, "Test uintparameter description", 1, 200);
         RCSProtocol.ParameterDescription testParam2

@@ -6,11 +6,16 @@
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
     >
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView" >
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <LinearLayout
             android:orientation="vertical"
@@ -172,6 +177,9 @@
                 android:onClick="buttonDevicesSettingsClick" />
         </LinearLayout>
 
+
+
     </LinearLayout>
 
+    </ScrollView>
 </RelativeLayout>

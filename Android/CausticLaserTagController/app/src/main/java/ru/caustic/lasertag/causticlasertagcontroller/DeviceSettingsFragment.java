@@ -592,7 +592,7 @@ public class DeviceSettingsFragment extends Fragment {
 
             BridgeConnector.DeviceAddress someAddress = getAnyAddress();
 
-            CausticDevicesManager.CausticDevice2 dev = CausticDevicesManager.getInstance().devices2.get(someAddress);
+            CausticDevicesManager.CausticDevice dev = CausticDevicesManager.getInstance().devices2.get(someAddress);
 
             // We need to output parameters sorted bvy original order
             for (int id : dev.parameters.orderedIds) {

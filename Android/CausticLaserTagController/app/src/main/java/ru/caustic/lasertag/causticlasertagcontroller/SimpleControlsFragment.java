@@ -1,7 +1,5 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,10 +33,10 @@ public class SimpleControlsFragment extends Fragment {
         buttonRespawnAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CausticDevicesManager.getInstance().remoteCall2(
+                CausticDevicesManager.getInstance().remoteCall(
                         BridgeConnector.Broadcasts.headSensors,
                         RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                        RCSProtocol.Operations.HeadSensor.Funcitons.playerRespawn.description.getId(),
+                        RCSProtocol.Operations.HeadSensor.Funcitons.playerRespawn.getId(),
                         ""
                 );
             }
@@ -47,10 +45,10 @@ public class SimpleControlsFragment extends Fragment {
         buttonRespawnRed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CausticDevicesManager.getInstance().remoteCall2(
+                CausticDevicesManager.getInstance().remoteCall(
                         BridgeConnector.Broadcasts.headSensorsRed,
                         RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                        RCSProtocol.Operations.HeadSensor.Funcitons.playerRespawn.description.getId(),
+                        RCSProtocol.Operations.HeadSensor.Funcitons.playerRespawn.getId(),
                         ""
                 );
             }
@@ -59,10 +57,10 @@ public class SimpleControlsFragment extends Fragment {
         buttonRespawnBlue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CausticDevicesManager.getInstance().remoteCall2(
+                CausticDevicesManager.getInstance().remoteCall(
                         BridgeConnector.Broadcasts.headSensorsBlue,
                         RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                        RCSProtocol.Operations.HeadSensor.Funcitons.playerRespawn.description.getId(),
+                        RCSProtocol.Operations.HeadSensor.Funcitons.playerRespawn.getId(),
                         ""
                 );
             }
@@ -71,10 +69,10 @@ public class SimpleControlsFragment extends Fragment {
         buttonKillAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CausticDevicesManager.getInstance().remoteCall2(
+                CausticDevicesManager.getInstance().remoteCall(
                         BridgeConnector.Broadcasts.headSensors,
                         RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                        RCSProtocol.Operations.HeadSensor.Funcitons.playerKill.description.getId(),
+                        RCSProtocol.Operations.HeadSensor.Funcitons.playerKill.getId(),
                         ""
                 );
             }
@@ -83,10 +81,10 @@ public class SimpleControlsFragment extends Fragment {
         buttonKillRed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CausticDevicesManager.getInstance().remoteCall2(
+                CausticDevicesManager.getInstance().remoteCall(
                         BridgeConnector.Broadcasts.headSensorsRed,
                         RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                        RCSProtocol.Operations.HeadSensor.Funcitons.playerKill.description.getId(),
+                        RCSProtocol.Operations.HeadSensor.Funcitons.playerKill.getId(),
                         ""
                 );
             }
@@ -95,10 +93,10 @@ public class SimpleControlsFragment extends Fragment {
         buttonKillBlue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CausticDevicesManager.getInstance().remoteCall2(
+                CausticDevicesManager.getInstance().remoteCall(
                         BridgeConnector.Broadcasts.headSensorsBlue,
                         RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                        RCSProtocol.Operations.HeadSensor.Funcitons.playerKill.description.getId(),
+                        RCSProtocol.Operations.HeadSensor.Funcitons.playerKill.getId(),
                         ""
                 );
             }

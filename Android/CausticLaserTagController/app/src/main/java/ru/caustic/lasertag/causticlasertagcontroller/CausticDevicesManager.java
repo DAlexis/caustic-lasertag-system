@@ -16,7 +16,6 @@ public class CausticDevicesManager {
     public static final int DEVICES_LIST_UPDATED = 1;
 
     private DeviceManagerTask currentTask = null;
-    private Handler devicesListUpdated = null;
 
     private static CausticDevicesManager ourInstance = new CausticDevicesManager();
 
@@ -43,7 +42,7 @@ public class CausticDevicesManager {
         }
 
         public boolean addObjectRequest(int id) {
-            int size = RCSProtocol.ParametersContainer2.serializeParameterRequest(
+            int size = RCSProtocol.ParametersContainer.serializeParameterRequest(
                     id,
                     request,
                     cursor,
@@ -58,8 +57,8 @@ public class CausticDevicesManager {
             }
         }
 
-        public boolean addSetObject(CausticDevice2 dev, int id) {
-            RCSProtocol.ParametersContainer2 pars = dev.parameters;
+        public boolean addSetObject(CausticDevice dev, int id) {
+            RCSProtocol.ParametersContainer pars = dev.parameters;
 
             int size = pars.serializeSetObject(
                     id,
@@ -76,7 +75,7 @@ public class CausticDevicesManager {
             }
         }
 
-        public boolean addFunctionCall2(RCSProtocol.FunctionsContainer2 functionsContainer, int id, String argument) {
+        public boolean addFunctionCall2(RCSProtocol.FunctionsContainer functionsContainer, int id, String argument) {
             int size = functionsContainer.serializeCall(
                     id,
                     argument,
@@ -97,7 +96,6 @@ public class CausticDevicesManager {
                 BridgeConnector.getInstance().sendMessage(addr, request, cursor);
         }
     }
-
     public class RCSPMultiStream {
         List<RCSPStream> streams = new ArrayList<>();
 
@@ -112,7 +110,7 @@ public class CausticDevicesManager {
             }
         }
 
-        public void addSetObject(CausticDevice2 dev, int id) {
+        public void addSetObject(CausticDevice dev, int id) {
             if (!streams.get(streams.size()-1).addSetObject(dev, id)) {
                 streams.add(new RCSPStream());
                 streams.get(streams.size()-1).addSetObject(dev, id);
@@ -129,15 +127,15 @@ public class CausticDevicesManager {
 
     /////////////////////////
     // New version
-    public Map<BridgeConnector.DeviceAddress, CausticDevice2> devices2 = new HashMap<BridgeConnector.DeviceAddress, CausticDevice2>();
-    private Handler devicesListUpdated2 = null;
+    public Map<BridgeConnector.DeviceAddress, CausticDevice> devices2 = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
+    private Handler devicesListUpdated = null;
 
-    public class CausticDevice2 {
+    public class CausticDevice {
         private boolean parametersAreAdded = false;
         public BridgeConnector.DeviceAddress address = new BridgeConnector.DeviceAddress();
-        public RCSProtocol.ParametersContainer2 parameters = new RCSProtocol.ParametersContainer2();
+        public RCSProtocol.ParametersContainer parameters = new RCSProtocol.ParametersContainer();
 
-        public CausticDevice2() {
+        public CausticDevice() {
             // Registering parameters for any devices
             RCSProtocol.Operations.AnyDevice.parametersDescriptions.addParameters(parameters);
         }
@@ -145,18 +143,15 @@ public class CausticDevicesManager {
         public String getName() {
             return parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId()).getValue();
         }
-
         public boolean hasName() {
             return ( (RCSProtocol.DevNameParameter.Serializer) parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId()) ).initialized();
         }
-
         public boolean isTypeKnown() {
             return (
                     Integer.parseInt(parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()).getValue())
                             != RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
             );
         }
-
         public String getType() {
             return RCSProtocol.Operations.AnyDevice.getDevTypeString(
                     Integer.parseInt(
@@ -164,11 +159,9 @@ public class CausticDevicesManager {
                     )
             );
         }
-
         public boolean areDeviceRelatedParametersAdded() {
             return parametersAreAdded;
         }
-
         public void addDeviceRelatedParameters() {
             if (parametersAreAdded)
                 return;
@@ -192,7 +185,6 @@ public class CausticDevicesManager {
 
             parametersAreAdded = true;
         }
-
         public void pushToDevice() {
             RCSPMultiStream stream = new RCSPMultiStream();
             for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : parameters.entrySet()) {
@@ -201,7 +193,6 @@ public class CausticDevicesManager {
             }
             stream.send(address);
         }
-
         public void popFromDevice() {
             RCSPMultiStream stream = new RCSPMultiStream();
             for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : parameters.entrySet()) {
@@ -212,21 +203,21 @@ public class CausticDevicesManager {
         }
     }
 
-    public boolean updateDevicesList2(Handler devicesListUpdated) {
-        this.devicesListUpdated2 = devicesListUpdated;
-        currentTask = new TaskUpdateDevicesList2();
+    public boolean updateDevicesList(Handler devicesListUpdated) {
+        this.devicesListUpdated = devicesListUpdated;
+        currentTask = new TaskUpdateDevicesList();
         return true;
     }
 
-    class TaskUpdateDevicesList2 implements DeviceManagerTask {
+    class TaskUpdateDevicesList implements DeviceManagerTask {
 
         @Override
         public String taskText() {
             return "Updating devices list";
         }
 
-        public TaskUpdateDevicesList2() {
-            BridgeConnector.getInstance().setReceiver(new Receiver2());
+        public TaskUpdateDevicesList() {
+            BridgeConnector.getInstance().setReceiver(new Receiver());
             RCSPStream stream = new RCSPStream();
             stream.addObjectRequest(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId());
             stream.addObjectRequest(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId());
@@ -235,21 +226,21 @@ public class CausticDevicesManager {
         }
     }
 
-    public void remoteCall2(BridgeConnector.DeviceAddress target, RCSProtocol.FunctionsContainer2 functionsContainer, int operationId, String argument)
+    public void remoteCall(BridgeConnector.DeviceAddress target, RCSProtocol.FunctionsContainer functionsContainer, int operationId, String argument)
     {
         RCSPStream stream = new RCSPStream();
         stream.addFunctionCall2(functionsContainer, operationId, argument);
         stream.send(target);
     }
 
-    class Receiver2 implements BridgeConnector.IncomingPackagesListener {
+    class Receiver implements BridgeConnector.IncomingPackagesListener {
         @Override
         public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
         {
             //boolean newDeviceAdded = false;
-            CausticDevice2 dev = devices2.get(address);
+            CausticDevice dev = devices2.get(address);
             if (dev == null) {
-                dev = new CausticDevice2();
+                dev = new CausticDevice();
                 dev.address = new BridgeConnector.DeviceAddress(address);
                 devices2.put(address, dev);
                 //newDeviceAdded = true;
@@ -264,7 +255,7 @@ public class CausticDevicesManager {
                 dev.addDeviceRelatedParameters();
                 //addPreferenceHeaderForDevice(dev);
                 dev.popFromDevice();
-                devicesListUpdated2.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices2).sendToTarget();
+                devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices2).sendToTarget();
             }
         }
     }

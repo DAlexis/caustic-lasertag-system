@@ -1,26 +1,21 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.TreeMap;
 
 
 public class CausticDevicesListFragment extends Fragment {
@@ -50,17 +45,17 @@ public class CausticDevicesListFragment extends Fragment {
 
         DeviceSettingsFragment.editorContext.devices.clear();
 
-        CausticDevicesManager.getInstance().updateDevicesList2(
+        CausticDevicesManager.getInstance().updateDevicesList(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
                         switch (msg.what) {
                             case CausticDevicesManager.DEVICES_LIST_UPDATED:
-                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2> devs =
-                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2>) msg.obj;
+                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice> devs =
+                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice>) msg.obj;
 
                                 adapter.clear();
 
-                                for (Map.Entry<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2> entry : devs.entrySet()) {
+                                for (Map.Entry<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice> entry : devs.entrySet()) {
                                     adapter.addItem(new DevicesListElementHolder(entry.getValue()));
                                 }
 
@@ -77,9 +72,9 @@ public class CausticDevicesListFragment extends Fragment {
         public CheckBox deviceName = null;
         public TextView deviceSummary = null;
         View convertView = null;
-        public CausticDevicesManager.CausticDevice2 device;
+        public CausticDevicesManager.CausticDevice device;
 
-        DevicesListElementHolder(CausticDevicesManager.CausticDevice2 device) {
+        DevicesListElementHolder(CausticDevicesManager.CausticDevice device) {
             this.device = device;
         }
 

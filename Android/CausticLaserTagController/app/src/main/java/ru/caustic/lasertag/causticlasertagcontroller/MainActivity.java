@@ -1,11 +1,9 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -193,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 connectionEstablishedLayout.setVisibility(View.VISIBLE);
                 operatingLayout.setVisibility(View.VISIBLE);
                 textViewConnectedTo.setText(BluetoothManager.getInstance().getDeviceName());
+                doScan();
                 break;
         }
 
@@ -284,14 +282,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonScanClick(View view) {
+        doScan();
+    }
+
+    public void buttonSimpleControlsClick(View view) {
+        Intent settingsActivity = new Intent(getBaseContext(), SimpleControlsActivity.class);
+        startActivity(settingsActivity);
+    }
+
+    public void buttonDevicesSettingsClick(View view) {
+        Intent intent = new Intent (MainActivity.this, CausticDevicesListActivity.class);
+        //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);
+        startActivity(intent);
+    }
+
+    private void doScan()
+    {
         textViewDevicesInAreaCount.setText("0");
-        CausticDevicesManager.getInstance().updateDevicesList2(
+        CausticDevicesManager.getInstance().updateDevicesList(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
                         switch (msg.what) {
                             case CausticDevicesManager.DEVICES_LIST_UPDATED:
-                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2> devs =
-                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice2>) msg.obj;
+                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice> devs =
+                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice>) msg.obj;
 
                                 causticDevicesCountInArea = devs.size();
 
@@ -304,17 +318,7 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                         }
                     }
-                });
-    }
-
-    public void buttonSimpleControlsClick(View view) {
-        Intent settingsActivity = new Intent(getBaseContext(), SimpleControlsActivity.class);
-        startActivity(settingsActivity);
-    }
-
-    public void buttonDevicesSettingsClick(View view) {
-        Intent intent = new Intent (MainActivity.this, CausticDevicesListActivity.class);
-        //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);
-        startActivity(intent);
+                }
+        );
     }
 }

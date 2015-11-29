@@ -61,8 +61,28 @@ public class RCSProtocol {
         return OperationCodeType.RESERVED;
     }
 
+    // Interfaces
+    public interface IDescriptionsHolder {
+        void register(IDescription description);
+    }
+    public interface IParameterSerializersHolder {
+        void register(AnyParameterSerializer serializer);
+    }
+    public interface ISerializerCreator {
+        AnyParameterSerializer createSerializer();
+    }
+    public interface IDescription {
+        String getName();
+        int getId();
+    }
+    public interface ISerializer {
+        void deserialize(byte[] memory, int offset);
+        int size();
+        int serialize(byte[] memory, int offset);
+    }
+
     // Descriptions
-    public static abstract class AnyDescription {
+    public static abstract class AnyDescription implements IDescription {
         protected int id;
         protected String name;
 
@@ -96,10 +116,9 @@ public class RCSProtocol {
             return id;
         }
     }
-    public static abstract class ParameterDescription extends AnyDescription {
+    public static abstract class ParameterDescription extends AnyDescription implements ISerializerCreator {
         private final boolean editable;
-        public abstract AnyParameterSerializer createSerializer();
-        public ParameterDescription(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public ParameterDescription(IDescriptionsHolder descrSet, int id, String name, boolean editable) {
             super(id, name);
             this.editable = editable;
             if (descrSet != null)
@@ -140,13 +159,13 @@ public class RCSProtocol {
             }
         }
 
-        public IntParameter(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+        public IntParameter(IDescriptionsHolder descrSet, int id, String name, int minValue, int maxValue) {
             super(descrSet, id, name, true);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public IntParameter(ParametersDescriptionsContainer descrSet, int id, String name) {
+        public IntParameter(IDescriptionsHolder descrSet, int id, String name) {
             super(descrSet, id, name, false);
             this.minValue = 0;
             this.maxValue = 0;
@@ -182,13 +201,13 @@ public class RCSProtocol {
             }
         }
 
-        public UintParameter(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+        public UintParameter(IDescriptionsHolder descrSet, int id, String name, int minValue, int maxValue) {
             super(descrSet, id, name, true);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public UintParameter(ParametersDescriptionsContainer descrSet, int id, String name) {
+        public UintParameter(IDescriptionsHolder descrSet, int id, String name) {
             super(descrSet, id, name, false);
             this.minValue = 0;
             this.maxValue = 0;
@@ -224,13 +243,13 @@ public class RCSProtocol {
             }
         }
 
-        public UByteParameter(ParametersDescriptionsContainer descrSet, int id, String name, int minValue, int maxValue) {
+        public UByteParameter(IDescriptionsHolder descrSet, int id, String name, int minValue, int maxValue) {
             super(descrSet, id, name, true);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public UByteParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public UByteParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable);
             this.minValue = 0;
             this.maxValue = 0;
@@ -266,13 +285,13 @@ public class RCSProtocol {
             }
         }
 
-        public TimeIntervalParameter(ParametersDescriptionsContainer descrSet, int id, String name, long minValue, long maxValue) {
+        public TimeIntervalParameter(IDescriptionsHolder descrSet, int id, String name, long minValue, long maxValue) {
             super(descrSet, id, name, true);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public TimeIntervalParameter(ParametersDescriptionsContainer descrSet, int id, String name) {
+        public TimeIntervalParameter(IDescriptionsHolder descrSet, int id, String name) {
             super(descrSet, id, name, false);
             this.minValue = 0;
             this.maxValue = 0;
@@ -313,7 +332,7 @@ public class RCSProtocol {
             }
         }
 
-        public BooleanParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public BooleanParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable);
 
         }
@@ -352,13 +371,13 @@ public class RCSProtocol {
             }
         }
 
-        public MT2IdParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, int minValue, int maxValue) {
+        public MT2IdParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable, int minValue, int maxValue) {
             super(descrSet, id, name, editable);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public MT2IdParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public MT2IdParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable);
             this.minValue = 1;
             this.maxValue = 127;
@@ -401,13 +420,13 @@ public class RCSProtocol {
         }
 
 
-        public FloatParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable, float minValue, float maxValue) {
+        public FloatParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable, float minValue, float maxValue) {
             super(descrSet, id, name, editable);
             this.minValue = minValue;
             this.maxValue = maxValue;
         }
 
-        public FloatParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public FloatParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable);
             this.minValue = 0.0f;
             this.maxValue = 0.0f;
@@ -457,7 +476,7 @@ public class RCSProtocol {
             }
         }
 
-        public DevNameParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public DevNameParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable);
         }
     }
@@ -492,7 +511,7 @@ public class RCSProtocol {
             }
         }
 
-        public DevAddrParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public DevAddrParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable);
         }
     }
@@ -502,7 +521,7 @@ public class RCSProtocol {
         public Map<String, Integer> entries = new HashMap<>();
         public ArrayList<String> namesOrdered = new ArrayList<>();
 
-        public EnumParameter(ParametersDescriptionsContainer descrSet, int id, String name, boolean editable) {
+        public EnumParameter(IDescriptionsHolder descrSet, int id, String name, boolean editable) {
             super(descrSet, id, name, editable);
         }
 
@@ -524,7 +543,7 @@ public class RCSProtocol {
 
     public static class teamEnum extends EnumParameter {
 
-        public teamEnum(ParametersDescriptionsContainer descrSet, int id, String name) {
+        public teamEnum(IDescriptionsHolder descrSet, int id, String name) {
             super(descrSet, id, name, true);
             addElement("Red", 0);
             addElement("Blue", 1);
@@ -533,15 +552,8 @@ public class RCSProtocol {
         }
     }
 
-    public static class FunctionCallDescription extends AnyDescription {
-        public FunctionCallSerializer serializer;
-        public FunctionCallDescription(int _id, String _name) {
-            super(_id, _name);
-        }
-    }
-
-    // Srializers
-    public static abstract class AnySerializer extends Object {
+    // Serializers
+    public static abstract class AnySerializer extends Object implements ISerializer {
 
         public final AnyDescription description;
 
@@ -573,35 +585,58 @@ public class RCSProtocol {
         }
     }
 
-    public static abstract class FunctionCallSerializer extends AnySerializer {
+    public static abstract class FunctionDescription extends AnyDescription implements ISerializer {
+        public AnySerializer argumentSerializer = null;
 
-        public FunctionCallSerializer(FunctionsContainer2 container, int id, String name)
-        {
-            super(new FunctionCallDescription(id, name));
+        public FunctionDescription(IDescriptionsHolder container, int id, String name) {
+            super(id, name);
+
             if (container != null)
                 container.register(this);
         }
 
         public abstract void setArgument(String argument);
     }
-    public static class FunctionCallNoParsSerializer extends FunctionCallSerializer {
-        public FunctionCallNoParsSerializer(FunctionsContainer2 container, int id, String name)
-        {
+
+    public static class FunctionDescriptionNoArg extends FunctionDescription {
+        public FunctionDescriptionNoArg(IDescriptionsHolder container, int id, String name) {
             super(container, id, name);
         }
 
-        public void deserialize(byte[] memory, int offset) {
+        public void setArgument(String argument) {}
 
-        }
+        public void deserialize(byte[] memory, int offset) {}
 
         public int size() {
             return 0;
         }
-
         public int serialize(byte[] memory, int offset) {
             return size();
         }
-        public void setArgument(String argument) {  }
+    }
+    public static class FunctionDesctiptionWithArg extends FunctionDescription {
+        AnyParameterSerializer argumentSerializer;
+
+        public FunctionDesctiptionWithArg(IDescriptionsHolder container, int id, String name, AnyParameterSerializer argumentSerializer)
+        {
+            super(container, id, name);
+            this.argumentSerializer = argumentSerializer;
+        }
+
+        public void setArgument(String argument)
+        {
+            argumentSerializer.setValue(argument);
+        }
+
+        public void deserialize(byte[] memory, int offset) {}
+
+        public int size() {
+            return argumentSerializer.size();
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            return argumentSerializer.serialize(memory, offset);
+        }
     }
 
     public static abstract class AnyParameterSerializer extends AnySerializer {
@@ -632,27 +667,30 @@ public class RCSProtocol {
     }
 
     // Containers
-    public static class ParametersDescriptionsContainer {
+    public static class ParametersDescriptionsContainer implements IDescriptionsHolder {
         public Map<Integer, ParameterDescription> descriptions = new TreeMap<>();
         public ArrayList<Integer> orderedIds = new ArrayList<>();
 
-        public void register(ParameterDescription descr)
+        public void register(IDescription descr)
         {
-            descriptions.put(descr.getId(), descr);
-            orderedIds.add(descr.getId());
+            ParameterDescription parDescr = null;
+            if (descr instanceof ParameterDescription) {
+                parDescr = (ParameterDescription) descr;
+            } else {
+                return;
+            }
+            descriptions.put(parDescr.getId(), parDescr);
+            orderedIds.add(parDescr.getId());
         }
 
         /**
          * Create parameters serializers by all descriptions and put it to container
          * @param container where to put parameter serializers
          */
-        public void addParameters(ParametersContainer2 container) {
-            for (Map.Entry<Integer, ParameterDescription> entry : descriptions.entrySet()) {
-                AnyParameterSerializer serializer = entry.getValue().createSerializer();
-                container.add(serializer);
-            }
+        public void addParameters(IParameterSerializersHolder container) {
             for (int id : orderedIds) {
-                container.orderedIds.add(id);
+                AnyParameterSerializer serializer = descriptions.get(id).createSerializer();
+                container.register(serializer);
             }
         }
 
@@ -660,12 +698,15 @@ public class RCSProtocol {
             return descriptions.get(id) != null;
         }
     }
-    public static class ParametersContainer2 {
+
+    public static class ParametersContainer implements IParameterSerializersHolder {
         public Map<Integer, AnyParameterSerializer> allParameters = new TreeMap<>();
         public ArrayList<Integer> orderedIds = new ArrayList<>();
 
-        public void add(AnyParameterSerializer par) {
+        @Override
+        public void register(AnyParameterSerializer par) {
             allParameters.put(par.description.getId(), par);
+            orderedIds.add(par.description.getId());
         }
 
         public AnyParameterSerializer get(int id){
@@ -748,16 +789,23 @@ public class RCSProtocol {
             }
         }
     }
-    public static class FunctionsContainer2 {
-        public Map<Integer, FunctionCallSerializer> funcions = new TreeMap<>();
 
-        public void register(FunctionCallSerializer function) {
-            funcions.put(function.description.getId(), function);
+    public static class FunctionsContainer implements IDescriptionsHolder {
+        public Map<Integer, FunctionDescription> funcions = new TreeMap<>();
+
+        public void register(IDescription descr) {
+            FunctionDescription funcDescr = null;
+            if (descr instanceof FunctionDescription) {
+                funcDescr = (FunctionDescription) descr;
+            } else {
+                return;
+            }
+            funcions.put(funcDescr.getId(), funcDescr);
         }
 
         public int serializeCall(int id, String argument, byte[] memory, int position, int maxPosition)
         {
-            FunctionCallSerializer func = funcions.get(id);
+            FunctionDescription func = funcions.get(id);
             if (func == null)
                 return 0;
             int size = func.size();
@@ -792,7 +840,7 @@ public class RCSProtocol {
         }
         public static class AnyDevice {
             public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
-            public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
+            public static FunctionsContainer functionsSerializers = new FunctionsContainer();
             public static class Configuration {
                 public static final int DEV_TYPE_UNDEFINED = 100;
                 public static final int DEV_TYPE_RIFLE = 1;
@@ -806,8 +854,8 @@ public class RCSProtocol {
             }
 
             public static class Funcitons {
-                public static final FunctionCallSerializer resetToDefaults
-                        = new FunctionCallNoParsSerializer(functionsSerializers, 2100, "Reset device to default");
+                public static final FunctionDescription resetToDefaults
+                        = new FunctionDescriptionNoArg(functionsSerializers, 2100, "Reset device to default");
             }
 
             public static String getDevTypeString(int type) {
@@ -826,7 +874,7 @@ public class RCSProtocol {
 
         public static class HeadSensor {
             public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
-            public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
+            public static FunctionsContainer functionsSerializers = new FunctionsContainer();
             public static class Configuration {
                 // Parameters order is important for output
 
@@ -849,22 +897,22 @@ public class RCSProtocol {
             }
 
             public static class Funcitons {
-                public static final FunctionCallSerializer playerTurnOff
-                        = new FunctionCallNoParsSerializer(functionsSerializers, 1201, "Turn off player");
-                public static final FunctionCallSerializer playerTurnOn
-                        = new FunctionCallNoParsSerializer(functionsSerializers, 1202, "Turn on player");
-                public static final FunctionCallSerializer playerReset
-                        = new FunctionCallNoParsSerializer(functionsSerializers, 1203, "Reset players configuration to default");
-                public static final FunctionCallSerializer playerRespawn
-                        = new FunctionCallNoParsSerializer(functionsSerializers, 1204, "Respawn player");
-                public static final FunctionCallSerializer playerKill
-                        = new FunctionCallNoParsSerializer(functionsSerializers, 1205, "Kill player");
+                public static final FunctionDescription playerTurnOff
+                        = new FunctionDescriptionNoArg(functionsSerializers, 1201, "Turn off player");
+                public static final FunctionDescription playerTurnOn
+                        = new FunctionDescriptionNoArg(functionsSerializers, 1202, "Turn on player");
+                public static final FunctionDescription playerReset
+                        = new FunctionDescriptionNoArg(functionsSerializers, 1203, "Reset players configuration to default");
+                public static final FunctionDescription playerRespawn
+                        = new FunctionDescriptionNoArg(functionsSerializers, 1204, "Respawn player");
+                public static final FunctionDescription playerKill
+                        = new FunctionDescriptionNoArg(functionsSerializers, 1205, "Kill player");
             }
         }
 
         public static class Rifle {
             public static ParametersDescriptionsContainer parametersDescriptions = new ParametersDescriptionsContainer();
-            public static FunctionsContainer2 functionsSerializers = new FunctionsContainer2();
+            public static FunctionsContainer functionsSerializers = new FunctionsContainer();
             public static class Configuration {
                 public static final ParameterDescription damageMin
                         = new UintParameter(parametersDescriptions, 5, "Minimal damage", 0, 100);
