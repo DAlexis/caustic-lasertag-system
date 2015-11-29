@@ -1,18 +1,27 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
 public class CausticDevicesListActivity extends AppCompatActivity {
+
+    DeviceSettingsFragment deviceSettingsFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caustic_devices_list);
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.fragmentDeviceSettingsWideScreen);
+
+        if (fragment != null && (fragment instanceof DeviceSettingsFragment))
+            deviceSettingsFragment = (DeviceSettingsFragment) fragment;
     }
 
     @Override

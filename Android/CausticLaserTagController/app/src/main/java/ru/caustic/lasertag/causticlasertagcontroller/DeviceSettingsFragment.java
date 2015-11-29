@@ -43,7 +43,6 @@ public class DeviceSettingsFragment extends Fragment {
         public abstract void update();
         public abstract void pickValue();
     }
-
     public static abstract class ParametersListElementSeekBar extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
@@ -224,7 +223,6 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min() + " to " + max();
         }
     }
-
     public static class ParametersListElementTimeInterval extends ParametersListElementSeekBar {
         private static int k = 1000;
         private long min() {
@@ -267,7 +265,6 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min()/k + "ms to " + max()/k + "ms";
         }
     }
-
     public static class ParametersListElementFloat extends ParametersListElementSeekBar {
         private static int progressElements = 1000;
         private float min() {
@@ -309,7 +306,6 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min() + " to " + max();
         }
     }
-
     public static class ParametersListElementBoolean extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
@@ -357,7 +353,6 @@ public class DeviceSettingsFragment extends Fragment {
             parameterEntry.setValue(boolSwitch.isChecked() ? "true" : "false");
         }
     }
-
     public static class ParametersListElementEnum extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
@@ -434,7 +429,6 @@ public class DeviceSettingsFragment extends Fragment {
             );
         }
     }
-
     public static class ParametersListElementUnsupported extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
@@ -559,30 +553,29 @@ public class DeviceSettingsFragment extends Fragment {
         public void clear() {
             devices.clear();
         }
-
-        public void add(BridgeConnector.DeviceAddress addr) {
+        public void selectForEditing(BridgeConnector.DeviceAddress addr) {
             devices.add(addr);
         }
-
+        public void deselectForEditing(BridgeConnector.DeviceAddress addr) {
+            devices.add(addr);
+        }
         public BridgeConnector.DeviceAddress getAnyAddress() {
             for (BridgeConnector.DeviceAddress addr : devices) {
                 return addr;
             }
             return null;
         }
-
         public int getDeviceType() {
             if (devices.isEmpty()) {
                 return RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED;
             }
 
             return Integer.parseInt(
-                CausticDevicesManager.getInstance().devices2.get(getAnyAddress()).parameters.get(
-                    RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
-                ).getValue()
+                    CausticDevicesManager.getInstance().devices2.get(getAnyAddress()).parameters.get(
+                            RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
+                    ).getValue()
             );
         }
-
         public void createEntries() {
             /// @todo add check that all devices are homogeneous
             if (devices.isEmpty())
@@ -594,7 +587,7 @@ public class DeviceSettingsFragment extends Fragment {
 
             CausticDevicesManager.CausticDevice dev = CausticDevicesManager.getInstance().devices2.get(someAddress);
 
-            // We need to output parameters sorted bvy original order
+            // We need to output parameters sorted by original order
             for (int id : dev.parameters.orderedIds) {
                 RCSProtocol.ParameterDescription descr = dev.parameters.allParameters.get(id).getDescription();
 
@@ -608,7 +601,6 @@ public class DeviceSettingsFragment extends Fragment {
                 parameters.add(newParameter);
             }
         }
-
         public void pushValues() {
             // Reading modified values
             for (ParameterEntry entry : parameters) {
@@ -645,12 +637,10 @@ public class DeviceSettingsFragment extends Fragment {
             }
         });
 
-        // Inflate the layout for this fragment
-        editorContext.createEntries();
         mAdapter = new ParametersListAdapter();
-
         parsList.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
+
+        updateContent();
         return view;
     }
 
@@ -718,5 +708,11 @@ public class DeviceSettingsFragment extends Fragment {
             return convertView;*/
         }
 
+    }
+
+    public void updateContent()
+    {
+        editorContext.createEntries();
+        mAdapter.notifyDataSetChanged();
     }
 }

@@ -35,8 +35,14 @@ public class CausticDevicesListFragment extends Fragment {
         buttonConfigureDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent settingsActivity = new Intent(getActivity().getBaseContext(), DeviceSettingsActivity.class);
-                startActivity(settingsActivity);
+                CausticDevicesListActivity activity = (CausticDevicesListActivity) getActivity();
+                if (activity.deviceSettingsFragment != null) {
+                    // We have wide-screen device and need not to create new activity
+                    activity.deviceSettingsFragment.updateContent();
+                } else {
+                    Intent settingsActivity = new Intent(getActivity().getBaseContext(), DeviceSettingsActivity.class);
+                    startActivity(settingsActivity);
+                }
             }
         });
 
@@ -107,16 +113,15 @@ public class CausticDevicesListFragment extends Fragment {
                         ).getValue()
                 );
                 if (DeviceSettingsFragment.editorContext.devices.isEmpty() || DeviceSettingsFragment.editorContext.getDeviceType() == selectedType) {
-                    DeviceSettingsFragment.editorContext.add(device.address);
+                    DeviceSettingsFragment.editorContext.selectForEditing(device.address);
                 } else {
                     deviceName.setChecked(false);
                 }
             } else {
-                DeviceSettingsFragment.editorContext.devices.remove(device.address);
+                DeviceSettingsFragment.editorContext.deselectForEditing(device.address);
             }
         }
     }
-
 
     private class DevicesListAdapter extends BaseAdapter {
 
