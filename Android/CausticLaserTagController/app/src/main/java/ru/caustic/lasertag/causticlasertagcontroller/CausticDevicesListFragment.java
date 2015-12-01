@@ -24,6 +24,7 @@ public class CausticDevicesListFragment extends Fragment {
     private ListView devicesList;
     private Button buttonConfigureDevice;
 
+    private CausticDevicesListActivity activity = null;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -32,10 +33,10 @@ public class CausticDevicesListFragment extends Fragment {
         devicesList = (ListView) view.findViewById(R.id.listViewDevices);
         buttonConfigureDevice = (Button) view.findViewById(R.id.buttonConfigureDevice);
 
+        activity = (CausticDevicesListActivity) getActivity();
         buttonConfigureDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CausticDevicesListActivity activity = (CausticDevicesListActivity) getActivity();
                 if (activity.deviceSettingsFragment != null) {
                     // We have wide-screen device and need not to create new activity
                     activity.deviceSettingsFragment.updateContent();
@@ -112,13 +113,17 @@ public class CausticDevicesListFragment extends Fragment {
                                 RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
                         ).getValue()
                 );
-                if (DeviceSettingsFragment.editorContext.devices.isEmpty() || DeviceSettingsFragment.editorContext.getDeviceType() == selectedType) {
+                if (DeviceSettingsFragment.editorContext.getDeviceType() == RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
+                        || DeviceSettingsFragment.editorContext.getDeviceType() == selectedType)
+                {
                     DeviceSettingsFragment.editorContext.selectForEditing(device.address);
+                    activity.deviceSettingsFragment.updateContent();
                 } else {
                     deviceName.setChecked(false);
                 }
             } else {
                 DeviceSettingsFragment.editorContext.deselectForEditing(device.address);
+                activity.deviceSettingsFragment.updateContent();
             }
         }
     }

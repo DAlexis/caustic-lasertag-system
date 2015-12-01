@@ -244,6 +244,7 @@ void NRF24L01Manager::switchToTX()
 {
     chipEnableOff();
     setConfig(IM_MASK_MAX_RETRIES, CRC_ENABLE, CRC2BYTES, POWER_ON, MODE_TRANSMITTER);
+    systemClock->wait_us(150);
 }
 
 void NRF24L01Manager::switchToRX()
@@ -692,7 +693,7 @@ void NRF24L01Manager::interrogate()
         unsigned char data[payloadSize];
         while (!isRXEmpty())
         {
-            receiveData(payloadSize, data);
+            receiveData(payloadSize, data); // This updates m_status value
             if (m_debug)
 			{
 				trace << "nrf24l01 package <<<\n";

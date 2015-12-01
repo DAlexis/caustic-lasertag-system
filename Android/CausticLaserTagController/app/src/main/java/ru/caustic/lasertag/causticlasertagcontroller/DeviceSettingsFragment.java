@@ -14,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -27,9 +28,13 @@ import java.util.Set;
 
 public class DeviceSettingsFragment extends Fragment {
     private ParametersListAdapter mAdapter;
-    ListView parsList;
-    Button buttonApply;
-    Button buttonCancel;
+    private ListView parsList;
+    private Button buttonApply;
+    private Button buttonCancel;
+    private LinearLayout deviceSettingsLinearLayout;
+    private TextView textViewSelectDevices;
+
+    boolean isActive = false;
 
     public static SettingsEditorContext editorContext = new SettingsEditorContext();
 
@@ -550,14 +555,16 @@ public class DeviceSettingsFragment extends Fragment {
         public Set<BridgeConnector.DeviceAddress> devices = new HashSet<>();
         public ArrayList<ParameterEntry> parameters = new ArrayList<>();
 
+        private boolean entriesCreated = false;
         public void clear() {
             devices.clear();
         }
         public void selectForEditing(BridgeConnector.DeviceAddress addr) {
             devices.add(addr);
+            entriesCreated = false;
         }
         public void deselectForEditing(BridgeConnector.DeviceAddress addr) {
-            devices.add(addr);
+            devices.remove(addr);
         }
         public BridgeConnector.DeviceAddress getAnyAddress() {
             for (BridgeConnector.DeviceAddress addr : devices) {
@@ -581,6 +588,8 @@ public class DeviceSettingsFragment extends Fragment {
             if (devices.isEmpty())
                 return;
 
+            /*if (entriesCreated)
+                return;*/
             parameters.clear();
 
             BridgeConnector.DeviceAddress someAddress = getAnyAddress();
@@ -600,6 +609,7 @@ public class DeviceSettingsFragment extends Fragment {
                 /// @todo Combine this to containers and classes those contain
                 parameters.add(newParameter);
             }
+            entriesCreated = true;
         }
         public void pushValues() {
             // Reading modified values
@@ -614,6 +624,21 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
+    public DeviceSettingsFragment() {
+        super();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isActive = false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isActive = true;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -622,6 +647,8 @@ public class DeviceSettingsFragment extends Fragment {
         parsList = (ListView) view.findViewById(R.id.paramtersList);
         buttonApply = (Button) view.findViewById(R.id.buttonApplySettings);
         buttonCancel = (Button) view.findViewById(R.id.buttonCancelSettings);
+        deviceSettingsLinearLayout = (LinearLayout) view.findViewById(R.id.deviceSettingsLinearLayout);
+        textViewSelectDevices = (TextView) view.findViewById(R.id.textViewSelectDevices);
 
         buttonApply.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -712,7 +739,26 @@ public class DeviceSettingsFragment extends Fragment {
 
     public void updateContent()
     {
-        editorContext.createEntries();
-        mAdapter.notifyDataSetChanged();
+        if (!isActive)
+            return;
+
+        if (editorContext.devices.isEmpty())
+        {
+            setSettingsControlsInvisible();
+        } else {
+            setSettingsControlsVisible();
+            editorContext.createEntries();
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void setSettingsControlsVisible() {
+        textViewSelectDevices.setVisibility(View.GONE);
+        deviceSettingsLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void setSettingsControlsInvisible() {
+        deviceSettingsLinearLayout.setVisibility(View.GONE);
+        textViewSelectDevices.setVisibility(View.VISIBLE);
     }
 }
