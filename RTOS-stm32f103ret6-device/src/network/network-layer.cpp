@@ -59,7 +59,7 @@ void DeviceAddress::convertFromString(const char* str)
 // NetworkLayer
 NetworkLayer::NetworkLayer()
 {
-	m_modemTask.setStackSize(512);
+	m_modemTask.setStackSize(1024);
 	m_modemTask.setTask(std::bind(&NetworkLayer::interrogate, this));
 }
 
@@ -143,6 +143,7 @@ uint16_t NetworkLayer::send(
 	{
 		Time time = systemClock->getTime();
 		details.needAck = 1;
+		ScopedLock lock(m_packagesQueueMutex);
 		m_packages[details.packageId] = WaitingPackage();
 		WaitingPackage& waitingPackage = m_packages[details.packageId];
 		waitingPackage.wasCreated = time;
@@ -164,6 +165,7 @@ uint16_t NetworkLayer::send(
 		//trace << "Ack-using package queued";
 		return details.packageId;
 	} else {
+		ScopedLock lock(m_packagesQueueMutex);
 		m_packagesNoAck.push_back(Package());
 		m_packagesNoAck.back().sender = *m_selfAddress;
 		m_packagesNoAck.back().target = target;
@@ -201,6 +203,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 	if (ackDispatcher->isAck())
 	{
 		radio << "<== Ack for " << ackDispatcher->packageId << " from " << ADDRESS_TO_STREAM(received.sender);
+		ScopedLock lock(m_packagesQueueMutex);
 		auto it = m_packages.find(ackDispatcher->packageId);
 		if (it == m_packages.end())
 		{
@@ -235,6 +238,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 		ack.details.packageId = generatePackageId();
 		memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
 		memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
+		ScopedLock lock(m_packagesQueueMutex);
 		// Adding ack package to list for sending
 		m_packagesNoAck.push_back(ack);
 	}
@@ -269,14 +273,31 @@ void NetworkLayer::interrogate()
 	sendNext();
 	nrf.interrogate();
 	receiveIncoming();
+	/// @todo Remove comment below after some time
+	/*
+	static int i=0;
+	i++;
+	if (i==1500) {
+		i = 0;
+		radio << "Net Alive!";
+		if (isSendingNow)
+			radio << "SENDING";
+
+		nrf.printStatus();
+
+		//reinitNRF();
+	}*/
 }
 
 void NetworkLayer::sendNext()
 {
 	ScopedTag tag("radio-send-next");
 	if (!isTranslationAllowed())
+	{
 		return;
+	}
 
+	ScopedLock lock(m_packagesQueueMutex);
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
 	{
@@ -288,8 +309,6 @@ void NetworkLayer::sendNext()
 		} else {
 			radio << "==> No-ack package " << m_packagesNoAck.front().details.packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target);
 		}
-		//radio << "Sending package " << m_packagesNoAck.front().details.packageId << " with NO ack needed";
-
 		nrf.sendData(Package::packageLength, (uint8_t*) &(m_packagesNoAck.front()));
 		m_packagesNoAck.pop_front();
 		isSendingNow = true;
@@ -297,6 +316,7 @@ void NetworkLayer::sendNext()
 		currentlySendingPackageId = 0;
 		return;
 	}
+
 	Time time = systemClock->getTime();
 	for (auto it=m_packages.begin(); it!=m_packages.end(); it++)
 	{
@@ -384,3 +404,17 @@ bool NetworkLayer::isBroadcast(const DeviceAddress& addr)
 	return false;
 }
 
+/// @todo Remove this code after some time
+/*
+void NetworkLayer::reinitNRF()
+{
+	TXDoneCallback();
+	nrf.init(
+		IOPins->getIOPin(1, 7),
+		IOPins->getIOPin(1, 12),
+		IOPins->getIOPin(1, 8),
+		2,
+		true
+	);
+}
+*/

@@ -10,6 +10,7 @@
 
 #include "hal/spi.hpp"
 #include "hal/io-pins.hpp"
+#include "hal/system-clock.hpp"
 
 #define RADIO_ADDRESS_SIZE  5
 #define RADIO_CHANNEL       1
@@ -111,6 +112,8 @@ private:
 		MODE_RECEIVER = 1,
 	};
 
+	constexpr static uint16_t timeEnoughForTransmission = 1000;
+
 	void switchToTX();
 	void switchToRX();
 
@@ -190,6 +193,10 @@ private:
 	void chipDeselect();
 	void CEImpulse();
 
+	void onRXDataReady();
+	void onTXDataSent();
+	void onMaxRetriesReached();
+
 	IIOPin* m_chipEnablePin = nullptr;
 	IIOPin* m_chipSelectPin = nullptr;
 	IIOPin* m_IRQPin = nullptr;
@@ -214,6 +221,9 @@ private:
 	DataReceiveCallback m_RXcallback = nullptr;
 	TXMaxRetriesCallback m_TXMaxRTcallback = nullptr;
 	TXDoneCallback m_TXDoneCallback = nullptr;
+
+	Time m_lastTransmissionTime = 0;
+	bool m_waitingForTransmissionEnd = false;
 
 	bool m_debug = false;
 };

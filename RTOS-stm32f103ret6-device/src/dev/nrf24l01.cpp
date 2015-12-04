@@ -162,7 +162,7 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     m_chipSelectPin = chipSelectPin;
     m_IRQPin = IRQPin;
     m_spi = SPIs->getSPI(SPIIndex);
-    m_spi->init(ISPIManager::BaudRatePrescaler8, chipSelectPin);
+    m_spi->init(ISPIManager::BaudRatePrescaler16, chipSelectPin);
 
     //////////////////////
     // Chip enable line init
@@ -250,6 +250,7 @@ void NRF24L01Manager::switchToTX()
 void NRF24L01Manager::switchToRX()
 {
     setConfig(IM_MASK_MAX_RETRIES, CRC_ENABLE, CRC2BYTES, POWER_ON, MODE_RECEIVER);
+    systemClock->wait_us(150);
     chipEnableOn();
 }
 
@@ -268,10 +269,12 @@ void NRF24L01Manager::chipEnableOff()
 void NRF24L01Manager::chipSelect()
 {
 	m_chipSelectPin->reset();
+	//systemClock->wait_us(15);
 }
 
 void NRF24L01Manager::chipDeselect()
 {
+	//systemClock->wait_us(15);
 	m_chipSelectPin->set();
 }
 
@@ -612,6 +615,8 @@ void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
     m_spi->Transmit(data, size);
     chipDeselect();
     CEImpulse();
+    m_lastTransmissionTime = systemClock->getTime();
+    m_waitingForTransmissionEnd = true;
 }
 
 void NRF24L01Manager::receiveData(unsigned char size, unsigned char* data)
@@ -675,6 +680,7 @@ void NRF24L01Manager::resetAllIRQ()
 void NRF24L01Manager::interrogate()
 {
 	//info << "ri";
+	/*
 	if (m_useInterrupts)
 	{
 		if (!m_needInterrogation)
@@ -683,57 +689,92 @@ void NRF24L01Manager::interrogate()
 	} else {
 		if (true == m_IRQPin->state())
 			return;
+	}*/
+
+	// This is a workaround for strange behavior of some (all?) nrf24l01 modules:
+	// sometimes module does not reset IRQ pin in case of TX data sent AND does not set
+	// proper flag, so we simply check a timeout
+	bool softwareDetectionOfTXDataSent = (
+			m_waitingForTransmissionEnd
+			&& (systemClock->getTime() - m_lastTransmissionTime) > timeEnoughForTransmission
+		);
+
+	if (softwareDetectionOfTXDataSent)
+	{
+		onTXDataSent();
+		return;
 	}
 
+	if (m_IRQPin->state() == true)
+		return;
+
     updateStatus();
+    if (isTXDataSent())
+	{
+    	onTXDataSent();
+	}
     if (isRXDataReady())
     {
-    	//info << "RX data ready";
-        unsigned char pipe = getPipeNumberAvaliableForRXFIFO();
-        unsigned char data[payloadSize];
-        while (!isRXEmpty())
-        {
-            receiveData(payloadSize, data); // This updates m_status value
-            if (m_debug)
-			{
-				trace << "nrf24l01 package <<<\n";
-				printHex(data, payloadSize);
-			}
-            if (m_RXcallback == nullptr) {
-                printf("Warning: Callback is not set! RX data from pipe %d: \n", pipe);
-            } else {
-            	//info << "RX callback called";
-                m_RXcallback(pipe, data);
-            }
-        }
-        chipEnableOn();
-        //info << "resetRXDataReady";
-        resetRXDataReady();
-    }
-    if (isTXDataSent())
-    {
-        // Returning to default state: receiver
-    	switchToRX();
-        resetTXDataSent();
-        if (m_TXDoneCallback == nullptr) {
-            printf("TX done; no cb\n");
-        } else
-            m_TXDoneCallback();
+    	onRXDataReady();
     }
     if (isMaxRetriesReached())
     {
-        if (m_TXMaxRTcallback == nullptr) {
-            printf("Max RT; no cb\n");
-        } else {
-            m_TXMaxRTcallback();
-        }
-        // Clearing PLOS_CNT
-        setRFChannel(RADIO_CHANNEL);
-
-        resetMaxRetriesReached();
+    	onMaxRetriesReached();
     }
     //resetAllIRQ();
 }
+
+
+void NRF24L01Manager::onTXDataSent()
+{
+	m_waitingForTransmissionEnd = false;
+	// Returning to default state: receiver
+	resetTXDataSent();
+	switchToRX();
+	if (m_TXDoneCallback == nullptr) {
+		printf("TX done; no cb\n");
+	} else
+		m_TXDoneCallback();
+}
+
+void NRF24L01Manager::onRXDataReady()
+{
+	//info << "RX data ready";
+	unsigned char pipe = getPipeNumberAvaliableForRXFIFO();
+	unsigned char data[payloadSize];
+	while (!isRXEmpty())
+	{
+		receiveData(payloadSize, data); // This updates m_status value
+		if (m_debug)
+		{
+			trace << "nrf24l01 package <<<\n";
+			printHex(data, payloadSize);
+		}
+		if (m_RXcallback == nullptr) {
+			printf("Warning: Callback is not set! RX data from pipe %d: \n", pipe);
+		} else {
+			//info << "RX callback called";
+			m_RXcallback(pipe, data);
+		}
+	}
+	chipEnableOn();
+	//info << "resetRXDataReady";
+	resetRXDataReady();
+}
+
+void NRF24L01Manager::onMaxRetriesReached()
+{
+	if (m_TXMaxRTcallback == nullptr) {
+		printf("Max RT; no cb\n");
+	} else {
+		m_TXMaxRTcallback();
+	}
+	// Clearing PLOS_CNT
+	setRFChannel(RADIO_CHANNEL);
+
+	resetMaxRetriesReached();
+}
+
 
 ////////////////////
 // Interrupts handling

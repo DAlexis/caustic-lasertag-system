@@ -49,8 +49,6 @@ IADC* adc = nullptr;
 
 TaskCycled alive([](){
 
-	info << "alive";
-
 	RTCTime t;
 	RTCManager->getTime(t);
 	RTCDate d;
@@ -58,6 +56,7 @@ TaskCycled alive([](){
 	uint16_t val=adc->get();
 	info << "I'm alive now " << t.hours << ":" << t.mins << ":" << t.secs << "; "
 			<< d.day << "." << d.month << "." << d.year << ", v=" << val;
+	info << "FreeRTOS free heap: " << xPortGetFreeHeapSize() << ", min: " << xPortGetMinimumEverFreeHeapSize();
 
 });
 
@@ -91,7 +90,7 @@ int main(void)
 
 	IAnyDevice* device = deviceInitializer.initDevice("device.ini");
 
-	alive.setStackSize(256);
+	alive.setStackSize(200);
 	alive.run(0, 500, 500, 0);
 	adc = ADCs->create();
 	adc->init(0,0);

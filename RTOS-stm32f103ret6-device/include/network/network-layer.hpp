@@ -136,11 +136,15 @@ private:
 	void temproraryProhibitTransmission();
 	bool isBroadcast(const DeviceAddress& addr);
 
+	/// @todo Remove this function after some time
+	//void reinitNRF();
+
 	Time m_transmissionProhibitedTime = 0;
 	Time m_transmissionProhibitionPeriod = 0;
 
 	uint16_t currentlySendingPackageId = 0;
 	bool isSendingNow = false;
+	Mutex m_packagesQueueMutex;
 	std::list<Package> m_packagesNoAck;
 
 	NRF24L01Manager nrf;

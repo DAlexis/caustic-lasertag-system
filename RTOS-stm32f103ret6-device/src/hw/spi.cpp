@@ -10,9 +10,8 @@
 #include "utils/memory.hpp"
 #include "core/string-utils.hpp"
 
-#ifndef USE_STDPERIPH_SPI
-	#include "core/logging.hpp"
-#endif
+#include "core/logging.hpp"
+
 
 static SPIsPool pool;
 
@@ -105,28 +104,48 @@ void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin)
 
 uint8_t SPIManager::sendByte(uint8_t data)
 {
+	/*
 	//info << "TX:";
 	//printf("TX: %x\n", data);
     uint8_t tmp;
 	m_SPI->DR = data; // write data to be transmitted to the SPI data register
+	//printf("w\n");
 	while( !(m_SPI->SR & SPI_I2S_FLAG_TXE) ); // wait until transmit complete
+	//printf("tc\n");
 	while( !(m_SPI->SR & SPI_I2S_FLAG_RXNE) ); // wait until receive complete
+	//printf("rc\n");
 	while( m_SPI->SR & SPI_I2S_FLAG_BSY ); // wait until SPI is not busy anymore
+	//printf("sb\n");
 	tmp = m_SPI->DR; // return received data from SPI data register
+	//printf("rx\n");
 	//info << "RXb:";
 	//printf("RX: %x\n", tmp);
-	return tmp;
+	return tmp;*/
+
+
+	while(SPI_I2S_GetFlagStatus(m_SPI, SPI_I2S_FLAG_TXE) == RESET);
+	SPI_I2S_SendData (m_SPI, data);
+	while(SPI_I2S_GetFlagStatus(m_SPI, SPI_I2S_FLAG_RXNE) == RESET);
+	uint8_t res = SPI_I2S_ReceiveData(m_SPI);
+	return res;
 }
 
 uint8_t SPIManager::receiveByte()
 {
+	return sendByte(0xFF);
+	/*
+	while(SPI_I2S_GetFlagStatus(m_SPI, SPI_I2S_FLAG_TXE) == RESET);
+	SPI_I2S_SendData (m_SPI, 0xFF);
+	while(SPI_I2S_GetFlagStatus(m_SPI, SPI_I2S_FLAG_RXNE) == RESET);
+	return SPI_I2S_ReceiveData(m_SPI);*/
+	/*
 	m_SPI->DR = 0xFF; // write data to be transmitted to the SPI data register
 	while( !(m_SPI->SR & SPI_I2S_FLAG_TXE) ); // wait until transmit complete
 	while( !(m_SPI->SR & SPI_I2S_FLAG_RXNE) ); // wait until receive complete
 	while( m_SPI->SR & SPI_I2S_FLAG_BSY ); // wait until SPI is not busy anymore
 	//info << "RX:";
 	//printf("RX %x\n", m_SPI->DR);
-	return m_SPI->DR; // return received data from SPI data register
+	return m_SPI->DR; // return received data from SPI data register*/
 }
 
 bool SPIManager::Transmit(uint8_t* data, uint16_t length, uint32_t Timeout)
@@ -154,11 +173,15 @@ bool SPIManager::TransmitReceive(uint8_t* txbuf, uint8_t* rxbuf, uint16_t len, u
 {
 	while (len--)
 	{
+		/*
 		m_SPI->DR = *txbuf; // write data to be transmitted to the SPI data register
 		while( !(m_SPI->SR & SPI_I2S_FLAG_TXE) ); // wait until transmit complete
 		while( !(m_SPI->SR & SPI_I2S_FLAG_RXNE) ); // wait until receive complete
 		while( m_SPI->SR & SPI_I2S_FLAG_BSY ); // wait until SPI is not busy anymore
 		*rxbuf = m_SPI->DR; // return received data from SPI data register
+		txbuf++;
+		rxbuf++;*/
+		*rxbuf = sendByte(*txbuf);
 		txbuf++;
 		rxbuf++;
 	}
