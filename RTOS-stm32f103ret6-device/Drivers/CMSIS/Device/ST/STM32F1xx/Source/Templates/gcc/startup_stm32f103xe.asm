@@ -112,8 +112,10 @@ LoopFillZerobss:
     bl  SystemInit
 /* Call static constructors */
     bl __libc_init_array
-/* Call the application's entry point.*/
-  bl main
+/* Call the application's entry point.
+  use "bl main" to start real main function or "bl bootloaderMain" to start bootloader */
+  /* bl main */
+  bl bootloaderMain
   bx lr
 .size Reset_Handler, .-Reset_Handler
 

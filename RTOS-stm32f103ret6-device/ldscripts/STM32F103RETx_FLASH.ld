@@ -45,7 +45,10 @@ PROVIDE ( _Heap_Limit = _estack - __Main_Stack_Size ) ;
 /* Specify the memory areas */
 MEMORY
 {
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 512K
+/*FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 512K*/
+UNTERRUPTS(rx) : ORIGIN = 0x8000000, LENGTH = 2K
+LOADER (rx)    : ORIGIN = 0x8000800, LENGTH = 4K
+FLASH  (rx)    : ORIGIN = 0x8001800, LENGTH = 506K
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 64K
 }
 
@@ -58,13 +61,20 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
-  } >FLASH
-
+  } >UNTERRUPTS
+  
+  .test_section :
+  {
+    . = ALIGN(4);
+    *bootloader/*.o (.text .text*)
+    . = ALIGN(4);
+  } >LOADER
+  
   /* The program code and other data goes into FLASH */
   .text :
   {
     . = ALIGN(4);
-    *(.text)           /* .text sections (code) */
+    *(EXCLUDE_FILE(*bootloader/*.o).text)           /* .text sections (code) */
     *(.text*)          /* .text* sections (code) */
     *(.glue_7)         /* glue arm to thumb code */
     *(.glue_7t)        /* glue thumb to arm code */

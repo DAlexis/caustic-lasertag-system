@@ -68,8 +68,12 @@ TaskOnce sound([](){
 	//WavPlayer::instance().play("sine.wav", 0);
 });
 
+extern "C" void testFunc1(int* arg);
+
 int main(void)
 {
+	int q=43;
+	testFunc1(&q);
 	deviceInitializer.initHW();
 	// Wait for voltages stabilization
 	HAL_Delay(100);
@@ -96,6 +100,7 @@ int main(void)
 	adc->init(0,0);
 	HAL_Delay(10);
 
+	info << " !!! !!! !!! main: " << (uint32_t) main << " testFunc1: " << (uint32_t) testFunc1;
 	Kernel::instance().run();
 
 
