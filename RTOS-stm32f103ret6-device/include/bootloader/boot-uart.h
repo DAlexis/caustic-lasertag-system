@@ -8,6 +8,8 @@
 #ifndef INCLUDE_BOOTLOADER_BOOT_UART_H_
 #define INCLUDE_BOOTLOADER_BOOT_UART_H_
 
+#include "bootloader/boot-system.h"
+
 void initUart1();
 
 

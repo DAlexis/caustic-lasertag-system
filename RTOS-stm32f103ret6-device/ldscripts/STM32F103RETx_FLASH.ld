@@ -30,7 +30,7 @@
 */
 
 /* Entry Point */
-ENTRY(Reset_Handler)
+ENTRY(bootloader_loaderMain)
 
 /* Highest address of the user mode stack */
 _estack = 0x2000FFFF;    /* end of RAM */
@@ -63,18 +63,61 @@ SECTIONS
     . = ALIGN(4);
   } >UNTERRUPTS
   
-  .test_section :
+  .loader_text :
   {
     . = ALIGN(4);
-    *bootloader/*.o (.text .text*)
+    *libbootloader-stm32f103ret6.a:(.text .text*)
     . = ALIGN(4);
   } >LOADER
+  
+  /* Constant data goes into FLASH */
+  .loader_rodata :
+  {
+    . = ALIGN(4);
+    *libbootloader-stm32f103ret6.a: (.rodata)         /* .rodata sections (constants, strings, etc.) */
+    *libbootloader-stm32f103ret6.a: (.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+    . = ALIGN(4);
+  } >LOADER
+  
+  bootloader__sidata = LOADADDR(.loader_data);
+  
+  /* Initialized data sections goes into RAM, load LMA copy after code */
+  .loader_data : 
+  {
+    . = ALIGN(4);
+    bootloader__sdata = .;        /* create a global symbol at data start */
+    *libbootloader-stm32f103ret6.a: (.data)           /* .data sections */
+    *libbootloader-stm32f103ret6.a: (.data*)          /* .data* sections */
+
+    . = ALIGN(4);
+    bootloader__edata = .;        /* define a global symbol at data end */
+  } >RAM AT> LOADER
+  
+  /* Uninitialized data section */
+  . = ALIGN(4);
+  .loader_bss :
+  {
+    /* This is used by the startup in order to initialize the .bss secion */
+    bootloader__sbss = .;         /* define a global symbol at bss start */
+    bootloader___bss_start__ = bootloader__sbss;
+    *libbootloader-stm32f103ret6.a: (.bss)
+    *libbootloader-stm32f103ret6.a: (.bss*)
+    *libbootloader-stm32f103ret6.a: (COMMON)
+
+    . = ALIGN(4);
+    bootloader__ebss = .;         /* define a global symbol at bss end */
+    bootloader___bss_end__ = bootloader__ebss;
+  } >RAM
+  
+  
+  
+  
   
   /* The program code and other data goes into FLASH */
   .text :
   {
     . = ALIGN(4);
-    *(EXCLUDE_FILE(*bootloader/*.o).text)           /* .text sections (code) */
+    *(.text)           /* .text sections (code) */
     *(.text*)          /* .text* sections (code) */
     *(.glue_7)         /* glue arm to thumb code */
     *(.glue_7t)        /* glue thumb to arm code */

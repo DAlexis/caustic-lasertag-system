@@ -7,7 +7,8 @@
   * @brief     STM32F103xE Devices vector table for Atollic toolchain.
   *            This module performs:
   *                - Set the initial SP
-  *                - Set the initial PC == Reset_Handler,
+  *                - Set the initial PC == bootloader_Reset_Handler,
+  *                         Important: bootloader_ prefix added to make symbol avaliable from bootloader
   *                - Set the vector table entries with the exceptions ISR address
   *                - Configure the clock system   
   *                - Configure external SRAM mounted on STM3210E-EVAL board
@@ -75,10 +76,10 @@ defined in linker script */
  * @retval : None
 */
 
-  .section .text.Reset_Handler
-  .weak Reset_Handler
-  .type Reset_Handler, %function
-Reset_Handler:
+  .section .text.bootloader_Reset_Handler
+  .weak bootloader_Reset_Handler
+  .type bootloader_Reset_Handler, %function
+bootloader_Reset_Handler:
 
 /* Copy the data segment initializers from flash to SRAM */
   movs r1, #0
@@ -117,7 +118,7 @@ LoopFillZerobss:
   /* bl main */
   bl bootloaderMain
   bx lr
-.size Reset_Handler, .-Reset_Handler
+.size bootloader_Reset_Handler, .-bootloader_Reset_Handler
 
 /**
  * @brief  This is the code that gets called when the processor receives an
@@ -147,7 +148,7 @@ Infinite_Loop:
 g_pfnVectors:
 
   .word _estack
-  .word Reset_Handler
+  .word bootloader_loaderMain
   .word NMI_Handler
   .word HardFault_Handler
   .word MemManage_Handler

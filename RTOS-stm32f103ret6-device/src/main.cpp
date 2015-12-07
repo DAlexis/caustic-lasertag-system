@@ -32,6 +32,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "bootloader/bootloader.h"
 #include "head-sensor/head-sensor.hpp"
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
@@ -39,9 +40,11 @@
 #include "dev/wav-player.hpp"
 #include "hal/adc.hpp"
 #include "hal/rtc.hpp"
+
 #include <functional>
 #include <stdio.h>
 
+#include "loader.h"
 
 DeviceInitializer deviceInitializer;
 
@@ -70,6 +73,8 @@ TaskOnce sound([](){
 
 extern "C" void testFunc1(int* arg);
 
+unsigned char test2[] = {0xDE, 0xDE, 0xDE, 0xDE, 0xAD};
+
 int main(void)
 {
 	int q=43;
@@ -83,7 +88,7 @@ int main(void)
 	trace.enable();
 #endif
 	info << "=============== Device initialization ===============";
-
+	info << "System runs with bootloader ver. " << FUNC_PREFIX(getBootloaderVersion)();
 	/* USER CODE BEGIN RTOS_TIMERS */
 	/* start timers, add new ones, ... */
 	/* USER CODE END RTOS_TIMERS */
@@ -100,7 +105,20 @@ int main(void)
 	adc->init(0,0);
 	HAL_Delay(10);
 
-	info << " !!! !!! !!! main: " << (uint32_t) main << " testFunc1: " << (uint32_t) testFunc1;
+
+	info << " !!! !!! !!! bootlader_testFuncLib: " << bootloader_testFuncLib();
+	info << " !!! !!! !!! main: " << (uint32_t) main << " testFunc1: " << (uint32_t) testFunc1
+			<< " bootlader_testFuncLib: " << (uint32_t) bootloader_testFuncLib;
+	info << " !!! !!! !!! test2: " << (uint32_t) test2 << " getTestString: " << (uint32_t) getTestString()
+			<< " FUNC_PREFIX(testFuncArray)():" << (uint32_t) FUNC_PREFIX(testFuncArray)();
+	unsigned char testchar =  FUNC_PREFIX(testFuncArray)()[2];
+	if (testchar == 0xAE)
+		info << "+++ testchar is good";
+	else
+		info << "--- testchar is baad";
+
+
+
 	Kernel::instance().run();
 
 

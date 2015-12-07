@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>RTOS-stm32f103ret6-device</name>
+	<name>bootloader-stm32f103ret6</name>
 	<comment></comment>
 	<projects>
-		<project>bootloader-stm32f103ret6</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -21,7 +20,6 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.cdt.core.cnature</nature>
-		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
