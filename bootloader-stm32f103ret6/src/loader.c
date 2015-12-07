@@ -5,6 +5,10 @@
  *      Author: alexey
  */
 
+#include "system.h"
+#include "console.h"
+#include "stm32f10x.h"
+
 void Reset_Handler();
 
 char bootloaderVersion[] = "0.1";
@@ -37,6 +41,11 @@ unsigned char* testFuncArray()
 void loaderMain()
 {
 	lowLewelSystemInit();
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	initUart();
+	print("\n\n\nBootloader started successfuly\n");
+
 	Reset_Handler();
 }
 
