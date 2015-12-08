@@ -10,6 +10,6 @@
 
 void lowLewelSystemInit();
 
-
+void moveISRForMainProgram();
 
 #endif /* INCLUDE_SYSTEM_H_ */

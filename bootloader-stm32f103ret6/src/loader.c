@@ -37,16 +37,32 @@ unsigned char* testFuncArray()
 	return testString;
 }
 
-
 void loaderMain()
 {
-	lowLewelSystemInit();
+	getISRTable();
+	/*lowLewelSystemInit();
 
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	//NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 	initUart();
 	print("\n\n\nBootloader started successfuly\n");
+	moveISRForMainProgram();
 
-	Reset_Handler();
+	uint32_t sysTick = *((uint32_t*)0x0800A000+15);
+	if (sysTick == 0x0800b3ad)
+	{
+		print("SysTick ok\n");
+	} else {
+		print("SysTick bad\n");
+	}
+	void (*user_code_entry)(void);
+	uint32_t entryPoint = *((uint32_t*)0x0800A000+1);
+
+	user_code_entry = (void (*)(void)) (entryPoint);
+
+	user_code_entry();*/
+	moveISRForMainProgram();
+	//*(int volatile*)0xE000ED08 = 0x0800A000;
+	Reset_Handler__();
 }
 
 const char* getBootloaderVersion()

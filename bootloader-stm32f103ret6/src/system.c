@@ -7,7 +7,9 @@
 
 #include "system.h"
 
-#include "stm32f1xx.h"
+#include "misc.h"
+//#include "stm32f1xx.h"
+//
 
 // Begin address for the initialisation values of the .data section.
 // defined in linker script
@@ -22,6 +24,8 @@ extern unsigned int _edata;
 extern unsigned int __bss_start__;
 // End address for the .bss section; defined in linker script
 extern unsigned int __bss_end__;
+
+extern unsigned int _ISR_main;
 
 inline void
 __attribute__((always_inline))
@@ -75,4 +79,14 @@ void lowLewelSystemInit()
 	__initialize_bss(&__bss_start__, &__bss_end__);
 
 	SystemCoreClockUpdate();
+}
+
+
+void moveISRForMainProgram()
+{
+	//__set_PRIMASK(1);
+	NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0xA000);
+	//NVIC_SetVectorTable(NVIC_VectTab_FLASH, &_ISR_main);
+	//__set_PRIMASK(0);
+	//__enable_irq();
 }
