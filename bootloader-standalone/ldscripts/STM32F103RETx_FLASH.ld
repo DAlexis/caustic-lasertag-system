@@ -52,7 +52,7 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = 0x20010000;    /* end of RAM */
+_estack = 0x2000FFFF;    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
@@ -65,7 +65,6 @@ PROVIDE ( _Heap_Limit = _estack - __Main_Stack_Size ) ;
 MEMORY
 {
 /*FLASH (rx)           : ORIGIN = 0x8000000, LENGTH = 512K*/
-
 INTERRUPTS_STUB (rx) : ORIGIN = 0x8000000, LENGTH = 4K
 FREE_SPACE (rx)      : ORIGIN = 0x8001000, LENGTH = 476K
 FLASH (rx)           : ORIGIN = 0x8078000, LENGTH = 30K
@@ -80,10 +79,18 @@ SECTIONS
   .isr_vector_stub :
   {
     . = ALIGN(4);
-    _isr_real = .;
+    _isr_stub = .;
     KEEP(*(.isr_vector_stub)) 
     . = ALIGN(4);
   } >INTERRUPTS_STUB
+  
+  .loader_state :
+  {
+    . = ALIGN(4);
+    _loader_state_addr = .;
+    KEEP(*(.loader_state))
+    . = ALIGN(4);
+  } >STATE
   
   /* The startup code goes first into FLASH */
   .isr_vector :

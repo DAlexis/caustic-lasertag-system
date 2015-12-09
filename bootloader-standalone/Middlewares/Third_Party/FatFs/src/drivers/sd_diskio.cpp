@@ -229,7 +229,6 @@ extern SD_CardInfo SDCardInfo;
 DSTATUS SD_initialize(void)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
-	printf("SD_initialize\n");
 	NVIC_InitStructure.NVIC_IRQChannel = SDIO_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
@@ -260,7 +259,6 @@ DSTATUS SD_status(void)
   */
 DRESULT SD_read(BYTE *buff, DWORD sector, UINT count)
 {
-	printf("SD_read\n");
 	if(count==1)
 	{
 		/// @todo [low] Put critical section deeper (all crit. sections below)

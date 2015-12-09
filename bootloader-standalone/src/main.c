@@ -34,6 +34,7 @@
 #include <fatfs.h>
 
 #include "console.h"
+#include "flash.h"
 
 #include "stm32f1xx_hal.h"
 
@@ -41,9 +42,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 //static void MX_SDIO_SD_Init(void);
 
-
-FATFS fatfs;
-FIL fil;
 
 int main(void)
 {
@@ -57,32 +55,20 @@ int main(void)
 	//MX_SDIO_SD_Init();
 	MX_FATFS_Init();
 	initConsole();
+	// Do not forget to __set_MSP
 	printf("\n\nBootloader started successfuly\n");
+	HAL_Delay(5000);
 
 
-	FRESULT res = f_mount(&fatfs, "", 1);
-	if (res == FR_OK)
-	{
-		printf("File system succesfuly mounted\n");
-		FRESULT res;
-		res = f_open(&fil, "config.ini", FA_OPEN_EXISTING | FA_READ);
-		if (res == FR_OK)
-		{
-			printf("Successfuly opened file\n");
-			f_close(&fil);
-		}
-	}
-	else
-	{
-		printf("Error while mounting file system: %d\n", res);
-	}
+	flash();
+
 
 	while (1)
 	{
 	/* USER CODE END WHILE */
 
 	/* USER CODE BEGIN 3 */
-	  printf("Prntf test!11\n");
+	  printf("Flashing done\n");
 	  HAL_Delay(1000);
 	}
 	/* USER CODE END 3 */

@@ -32,6 +32,8 @@ void SD_LowLevel_DeInit(void)
   /*!< Disable the SDIO AHB Clock */
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_SDIO, DISABLE);
 
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, DISABLE);
+
   /*!< Configure PC.08, PC.09, PC.10, PC.11, PC.12 pin: D0, D1, D2, D3, CLK pin */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;

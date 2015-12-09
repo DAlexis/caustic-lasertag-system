@@ -10,6 +10,6 @@
 
 void initConsole();
 
-
+void deinitConsile();
 
 #endif /* INCLUDE_CONSOLE_H_ */

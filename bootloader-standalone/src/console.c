@@ -24,6 +24,11 @@ void initConsole()
 	HAL_UART_Init(&huart1);
 }
 
+void deinitConsile()
+{
+	HAL_UART_DeInit(&huart1);
+}
+
 ssize_t
 _write (int fd __attribute__((unused)), const char* buf __attribute__((unused)),
 	size_t nbyte __attribute__((unused)))
