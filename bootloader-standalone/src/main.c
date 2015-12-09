@@ -33,73 +33,59 @@
 /* Includes ------------------------------------------------------------------*/
 #include <fatfs.h>
 
+#include "console.h"
+
 #include "stm32f1xx_hal.h"
 
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private variables ---------------------------------------------------------*/
-SD_HandleTypeDef hsd;
-HAL_SD_CardInfoTypedef SDCardInfo;
-
-UART_HandleTypeDef huart1;
-
-/* USER CODE BEGIN PV */
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_SDIO_SD_Init(void);
-static void MX_USART1_UART_Init(void);
+//static void MX_SDIO_SD_Init(void);
 
-/* USER CODE BEGIN PFP */
-/* Private function prototypes -----------------------------------------------*/
 
-/* USER CODE END PFP */
-
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
+FATFS fatfs;
+FIL fil;
 
 int main(void)
 {
 
-  /* USER CODE BEGIN 1 */
+	HAL_Init();
 
-  /* USER CODE END 1 */
+	SystemClock_Config();
 
-  /* MCU Configuration----------------------------------------------------------*/
+	// Initialize all configured peripherals
+	MX_GPIO_Init();
+	//MX_SDIO_SD_Init();
+	MX_FATFS_Init();
+	initConsole();
+	printf("\n\nBootloader started successfuly\n");
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	FRESULT res = f_mount(&fatfs, "", 1);
+	if (res == FR_OK)
+	{
+		printf("File system succesfuly mounted\n");
+		FRESULT res;
+		res = f_open(&fil, "config.ini", FA_OPEN_EXISTING | FA_READ);
+		if (res == FR_OK)
+		{
+			printf("Successfuly opened file\n");
+			f_close(&fil);
+		}
+	}
+	else
+	{
+		printf("Error while mounting file system: %d\n", res);
+	}
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_SDIO_SD_Init();
-  MX_USART1_UART_Init();
-  MX_FATFS_Init();
+	while (1)
+	{
+	/* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-  /* USER CODE END WHILE */
-
-  /* USER CODE BEGIN 3 */
-	  HAL_UART_Transmit(&huart1, (uint8_t*) "Hello, world!\n", 14, 1000);
-  }
-  /* USER CODE END 3 */
+	/* USER CODE BEGIN 3 */
+	  printf("Prntf test!11\n");
+	  HAL_Delay(1000);
+	}
+	/* USER CODE END 3 */
 
 }
 
@@ -135,6 +121,7 @@ void SystemClock_Config(void)
 }
 
 /* SDIO init function */
+/*
 void MX_SDIO_SD_Init(void)
 {
 
@@ -146,23 +133,7 @@ void MX_SDIO_SD_Init(void)
   hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
   hsd.Init.ClockDiv = 0;
 
-}
-
-/* USART1 init function */
-void MX_USART1_UART_Init(void)
-{
-
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 921600;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  HAL_UART_Init(&huart1);
-
-}
+}*/
 
 /** Configure pins as 
         * Analog 

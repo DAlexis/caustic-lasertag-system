@@ -63,27 +63,25 @@ void HAL_MspInit(void)
 
   /* USER CODE END MspInit 1 */
 }
-
+/*
 void HAL_SD_MspInit(SD_HandleTypeDef* hsd)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct;
   if(hsd->Instance==SDIO)
   {
-  /* USER CODE BEGIN SDIO_MspInit 0 */
 
-  /* USER CODE END SDIO_MspInit 0 */
-    /* Peripheral clock enable */
+    // Peripheral clock enable
     __SDIO_CLK_ENABLE();
   
-    /**SDIO GPIO Configuration    
-    PC8     ------> SDIO_D0
-    PC9     ------> SDIO_D1
-    PC10     ------> SDIO_D2
-    PC11     ------> SDIO_D3
-    PC12     ------> SDIO_CK
-    PD2     ------> SDIO_CMD 
-    */
+    //SDIO GPIO Configuration
+    //PC8     ------> SDIO_D0
+    //PC9     ------> SDIO_D1
+    //PC10     ------> SDIO_D2
+    //PC11     ------> SDIO_D3
+    //PC12     ------> SDIO_CK
+    //PD2     ------> SDIO_CMD
+
     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
                           |GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -95,43 +93,30 @@ void HAL_SD_MspInit(SD_HandleTypeDef* hsd)
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /* USER CODE BEGIN SDIO_MspInit 1 */
 
-  /* USER CODE END SDIO_MspInit 1 */
   }
 
-}
-
+}*/
+/*
 void HAL_SD_MspDeInit(SD_HandleTypeDef* hsd)
 {
 
   if(hsd->Instance==SDIO)
   {
-  /* USER CODE BEGIN SDIO_MspDeInit 0 */
 
-  /* USER CODE END SDIO_MspDeInit 0 */
-    /* Peripheral clock disable */
+    // Peripheral clock disable
     __SDIO_CLK_DISABLE();
   
-    /**SDIO GPIO Configuration    
-    PC8     ------> SDIO_D0
-    PC9     ------> SDIO_D1
-    PC10     ------> SDIO_D2
-    PC11     ------> SDIO_D3
-    PC12     ------> SDIO_CK
-    PD2     ------> SDIO_CMD 
-    */
+
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
                           |GPIO_PIN_12);
 
     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
 
   }
-  /* USER CODE BEGIN SDIO_MspDeInit 1 */
 
-  /* USER CODE END SDIO_MspDeInit 1 */
 
-}
+}*/
 
 void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 {

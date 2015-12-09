@@ -70,5 +70,25 @@ void SysTick_Handler(void)
 
 /* USER CODE BEGIN 1 */
 
+/**
+* @brief This function handles SDIO global interrupt.
+*/
+void SDIO_IRQHandler(void)
+{
+  /* USER CODE BEGIN SDIO_IRQn 0 */
+
+  /* USER CODE END SDIO_IRQn 0 */
+#ifdef USE_STDPERIPH_SDCARD
+	SD_ProcessIRQSrc();
+#else
+ //	printf("\nsdio int\n");
+	HAL_SD_IRQHandler(&hsd);
+ // printf("\nsdio int done\n");
+#endif
+  /* USER CODE BEGIN SDIO_IRQn 1 */
+
+  /* USER CODE END SDIO_IRQn 1 */
+}
+
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

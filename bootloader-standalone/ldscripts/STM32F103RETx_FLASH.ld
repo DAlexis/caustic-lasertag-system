@@ -57,21 +57,40 @@ _estack = 0x20010000;    /* end of RAM */
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
 
+__Main_Stack_Size = 1024 ;
+PROVIDE ( _Heap_Begin = _end ) ;
+PROVIDE ( _Heap_Limit = _estack - __Main_Stack_Size ) ;
+
 /* Specify the memory areas */
 MEMORY
 {
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 512K
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 64K
+/*FLASH (rx)           : ORIGIN = 0x8000000, LENGTH = 512K*/
+
+INTERRUPTS_STUB (rx) : ORIGIN = 0x8000000, LENGTH = 4K
+FREE_SPACE (rx)      : ORIGIN = 0x8001000, LENGTH = 476K
+FLASH (rx)           : ORIGIN = 0x8078000, LENGTH = 30K
+STATE (rx)           : ORIGIN = 0x807F800, LENGTH = 2K
+RAM (xrw)            : ORIGIN = 0x20000000, LENGTH = 64K
 }
 
 /* Define output sections */
 SECTIONS
 {
+  
+  .isr_vector_stub :
+  {
+    . = ALIGN(4);
+    _isr_real = .;
+    KEEP(*(.isr_vector_stub)) 
+    . = ALIGN(4);
+  } >INTERRUPTS_STUB
+  
   /* The startup code goes first into FLASH */
   .isr_vector :
   {
     . = ALIGN(4);
-    KEEP(*(.isr_vector)) /* Startup code */
+    _isr_real = .;
+    KEEP(*(.isr_vector))
     . = ALIGN(4);
   } >FLASH
 

@@ -488,12 +488,13 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
   sdio_cmdinitstructure.WaitForInterrupt = SDIO_WAIT_NO;
   sdio_cmdinitstructure.CPSM             = SDIO_CPSM_ENABLE;
   SDIO_SendCommand(hsd->Instance, &sdio_cmdinitstructure);
-  
+  printf("SD_CmdResp1Error\n");
   /* Check for error conditions */
   errorstate = SD_CmdResp1Error(hsd, SD_CMD_SET_BLOCKLEN);
   
   if (errorstate != SD_OK)
   {
+	  printf("\nerror: %d\n", errorstate);
     return errorstate;
   }
   
@@ -524,10 +525,12 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
   if(NumberOfBlocks > 1)
   {
     /* Check for error conditions */
+	  printf("NumberOfBlocks > 1 SD_CmdResp1Error\n");
     errorstate = SD_CmdResp1Error(hsd, SD_CMD_READ_MULT_BLOCK);
     
     if (errorstate != SD_OK)
     {
+    	printf("\nerror: %d\n", errorstate);
       return errorstate;
     }
     
@@ -549,10 +552,12 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
   else
   {
     /* Check for error conditions */
+	  printf("else SD_CmdResp1Error\n");
     errorstate = SD_CmdResp1Error(hsd, SD_CMD_READ_SINGLE_BLOCK); 
     
     if (errorstate != SD_OK)
     {
+    	printf("\nerror: %d\n", errorstate);
       return errorstate;
     }    
     
@@ -565,6 +570,8 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
         for (count = 0; count < 8; count++)
         {
           *(tempbuff + count) = SDIO_ReadFIFO(hsd->Instance);
+          if (__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_RXOVERR))
+        	  printf("Overrun!! %d\n", count);
         }
         
         tempbuff += 8;
