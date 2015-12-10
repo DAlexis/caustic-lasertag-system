@@ -10,11 +10,12 @@
 #include "console.h"
 #include "stm32f10x.h"
 
+#include "flash-consts.h"
+
 #include <stdio.h>
 #include <string.h>
 
-#define FLASH_BEGIN               0x8000000
-#define FLASH_PAGE_SIZE           2048
+
 
 #define LOADER_SATE_NO_FLASH          0x1234
 #define LOADER_SATE_HAS_FLASH         0x4321
@@ -108,8 +109,6 @@ void flashWrite(uint32_t position, uint8_t *data, uint32_t size)
 {
 	for (uint32_t i=0; i<size; i+=4)
 	{
-		if (position == FLASH_BEGIN)
-			printf("%lX\n", position + i);
 		FLASH_Status res = FLASH_ProgramWord(position + i, *(uint32_t*)&data[i]);
 		if (res != FLASH_COMPLETE)
 		{
@@ -126,8 +125,8 @@ void flash()
 		printf("MCU is flashed, we can boot\n");
 		Callable pReset_Handler = (Callable) state.mainProgramResetHandler;
 		deinitConsile();
-		HAL_DeInit();
 		__disable_irq();
+		NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x00);
 		__set_MSP(state.mainProgramStackPointer);
 		pReset_Handler();
 	}

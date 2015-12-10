@@ -20,7 +20,6 @@
 #endif
 
 //#include "cmsis_os.h"    /* _FS_REENTRANT set to 1 */
-#include "bsp_driver_sd.h"
 
 /*-----------------------------------------------------------------------------/
 / Functions and Buffer Configurations

@@ -31,116 +31,27 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <fatfs.h>
-
+#include "fatfs.h"
 #include "console.h"
 #include "flash.h"
-
-#include "stm32f1xx_hal.h"
-
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-//static void MX_SDIO_SD_Init(void);
-
+#include "misc.h"
+#include <stdio.h>
 
 int main(void)
 {
-
-	HAL_Init();
-
-	SystemClock_Config();
-
-	// Initialize all configured peripherals
-	MX_GPIO_Init();
-	//MX_SDIO_SD_Init();
-	MX_FATFS_Init();
 	initConsole();
 	// Do not forget to __set_MSP
 	printf("\n\nBootloader started successfuly\n");
-	HAL_Delay(5000);
-
-
+	MX_FATFS_Init();
+	printf("\n\nFatFS init done\n");
+	for (uint32_t i=0; i<10000000; i++) {}
 	flash();
-
 
 	while (1)
 	{
-	/* USER CODE END WHILE */
-
-	/* USER CODE BEGIN 3 */
-	  printf("Flashing done\n");
-	  HAL_Delay(1000);
+		printf("Flashing done\n");
 	}
-	/* USER CODE END 3 */
-
 }
-
-/** System Clock Configuration
-*/
-void SystemClock_Config(void)
-{
-
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
-  HAL_RCC_OscConfig(&RCC_OscInitStruct);
-
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
-
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
-}
-
-/* SDIO init function */
-/*
-void MX_SDIO_SD_Init(void)
-{
-
-  hsd.Instance = SDIO;
-  hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
-  hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
-  hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
-  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
-  hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-  hsd.Init.ClockDiv = 0;
-
-}*/
-
-/** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-*/
-void MX_GPIO_Init(void)
-{
-
-  /* GPIO Ports Clock Enable */
-  __GPIOD_CLK_ENABLE();
-  __GPIOC_CLK_ENABLE();
-  __GPIOA_CLK_ENABLE();
-
-}
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
 
 #ifdef USE_FULL_ASSERT
 
@@ -153,6 +64,7 @@ void MX_GPIO_Init(void)
    */
 void assert_failed(uint8_t* file, uint32_t line)
 {
+	printf("Wrong parameters value: file %s on line %lu\r\n", file, line);
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

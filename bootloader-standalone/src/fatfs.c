@@ -36,22 +36,12 @@
 uint8_t retSD;    /* Return value for SD */
 char SD_Path[4];  /* SD logical drive path */
 
-/* USER CODE BEGIN Variables */
-
-/* USER CODE END Variables */    
 
 void MX_FATFS_Init(void) 
 {
   /*## FatFS: Link the SD driver ###########################*/
   retSD = FATFS_LinkDriver(&SD_Driver, SD_Path);
-
-  /* USER CODE BEGIN Init */
-  /* additional user code for init */     
-  /* USER CODE END Init */
 }
 
-/* USER CODE BEGIN Application */
-     
-/* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
