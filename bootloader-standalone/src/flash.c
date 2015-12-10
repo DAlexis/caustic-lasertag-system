@@ -151,6 +151,52 @@ void bootIfReady()
 	}
 }
 
+uint32_t calculateFlashHash(size_t size)
+{
+	uint32_t result = 0;
+	// First get hash from original two first adresses int vectors table
+	result = HashLy(result, (uint8_t*) &state.mainProgramStackPointer, 4);
+	result = HashLy(result, (uint8_t*) &state.mainProgramResetHandler, 4);
+	// Reading all flash word by word
+	for (size_t i=8; i<size; i +=4)
+	{
+		uint32_t word = * (uint32_t*) (FLASH_BEGIN + i);
+		result = HashLy(result, (uint8_t*) &word, 4);
+	}
+}
+
+uint32_t calculateFileHash(FIL* pfil)
+{
+	FRESULT res = f_lseek(pfil, 0);
+	if (FR_OK != res)
+	{
+		printf("Cannot f_lseek(pfil, 0) for hasing: %d\n", res);
+		return 0;
+	}
+	UINT readed = 0;
+	UINT blockSize = 256;
+	uint8_t buf[256];
+	uint32_t result = 0;
+
+	do {
+		res = f_read(pfil, buf, blockSize, &readed);
+		if (FR_OK != res)
+		{
+			printf("Cannot read file to calculate hash: %d\n", res);
+			return 0;
+		}
+		result = HashLy(result, buf, readed);
+	} while (readed == blockSize);
+
+	res = f_lseek(pfil, 0);
+	if (FR_OK != res)
+	{
+		printf("Cannot f_lseek(fil, 0) after hashing: %d\n", res);
+		return 0;
+	}
+	return result;
+}
+
 void flash()
 {
 	MX_FATFS_Init();
@@ -168,10 +214,13 @@ void flash()
 
 	if (res == FR_OK)
 	{
+		printf("Calculating hash...\n");
+		printf("hash = %lX\n", calculateFlashHash(info.fsize));
 		res = f_open(&fil, flashFileName, FA_OPEN_EXISTING | FA_READ);
 	}
 	if (res == FR_OK)
 	{
+		printf("File hash = %lX\n", calculateFileHash(&fil));
 		printf("Flash image found on sd-card\n");
 		uint32_t position = FLASH_BEGIN + FLASH_PAGE_SIZE;
 		printf("Erasing MCU pages except first...\n");
