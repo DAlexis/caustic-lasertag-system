@@ -8,6 +8,7 @@
 #ifndef INCLUDE_FLASH_H_
 #define INCLUDE_FLASH_H_
 
+void bootIfReady();
 void flash();
 
 #endif /* INCLUDE_FLASH_H_ */

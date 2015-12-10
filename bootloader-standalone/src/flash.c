@@ -8,17 +8,18 @@
 #include "flash.h"
 #include "fatfs.h"
 #include "console.h"
-#include "stm32f10x.h"
-
+#include "utils.h"
 #include "flash-consts.h"
+
+#include "stm32f10x.h"
 
 #include <stdio.h>
 #include <string.h>
 
-
-
 #define LOADER_SATE_NO_FLASH          0x1234
 #define LOADER_SATE_HAS_FLASH         0x4321
+#define LOADER_SATE_SHOULD_BOOT       0x1111
+#define LOADER_SATE_SHOULD_CHECK      0x2222
 
 extern unsigned int _isr_real;
 extern unsigned int _loader_state_addr;
@@ -42,6 +43,8 @@ uint32_t bufferLen = 0;
 static FATFS fatfs;
 static FIL fil;
 
+const char flashFileName[] = "flash.bin";
+
 typedef struct {
 	uint32_t state;
 	uint32_t mainProgramStackPointer;
@@ -50,6 +53,7 @@ typedef struct {
 
 LoaderState state;
 
+// Initial loader state when no real program is flashed yet
 __attribute__ ((section(".loader_state"),used))
 uint32_t loaderStateStub[] =
 {
@@ -118,19 +122,39 @@ void flashWrite(uint32_t position, uint8_t *data, uint32_t size)
 
 }
 
-void flash()
+void reboot()
+{
+	f_mount(&fatfs, "", 0);
+	deinitConsile();
+	NVIC_SystemReset();
+}
+
+void bootMainProgram()
+{
+	Callable pReset_Handler = (Callable) state.mainProgramResetHandler;
+	deinitConsile();
+	//__disable_irq();
+	NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x00);
+	__set_MSP(state.mainProgramStackPointer);
+	pReset_Handler();
+}
+
+void bootIfReady()
 {
 	readState();
-	if (state.state == LOADER_SATE_HAS_FLASH) {
+	if (state.state == LOADER_SATE_SHOULD_BOOT) {
 		printf("MCU is flashed, we can boot\n");
-		Callable pReset_Handler = (Callable) state.mainProgramResetHandler;
-		deinitConsile();
-		__disable_irq();
-		NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x00);
-		__set_MSP(state.mainProgramStackPointer);
-		pReset_Handler();
+		// Next reboot we must check for updates
+		state.state = LOADER_SATE_SHOULD_CHECK;
+		saveState();
+		bootMainProgram();
 	}
+}
 
+void flash()
+{
+	MX_FATFS_Init();
+	delay();
 	FRESULT res = f_mount(&fatfs, "", 1);
 	if (res != FR_OK)
 	{
@@ -138,14 +162,21 @@ void flash()
 		return;
 	}
 
-	res = f_open(&fil, "flash.bin", FA_OPEN_EXISTING | FA_READ);
+	printf("File system mounted successfully\n");
+	FILINFO info;
+	res = f_stat(flashFileName, &info);
+
+	if (res == FR_OK)
+	{
+		res = f_open(&fil, flashFileName, FA_OPEN_EXISTING | FA_READ);
+	}
 	if (res == FR_OK)
 	{
 		printf("Flash image found on sd-card\n");
 		uint32_t position = FLASH_BEGIN + FLASH_PAGE_SIZE;
 		printf("Erasing MCU pages except first...\n");
 		FLASH_Unlock();
-		erase(secondPageAddr, lastPageAddr);
+		erase(secondPageAddr, info.fsize + firstPageAddr);
 
 		if (FR_OK == readNextPage(firstPage, &fistPageLen))
 		{
@@ -160,38 +191,6 @@ void flash()
 			f_close(&fil);
 			return;
 		}
-
-
-		/*
-		UINT readed = 0;
-		do
-		{
-
-			f_read(&fil, buffer, 512, &readed);
-			bufferLen += readed;
-			printf("Flashing at %lX\n", position);
-
-			for (uint32_t i = 0; i < readed; i += 4)
-			{
-			  FLASH_Status res = FLASH_ProgramWord(position, *(uint32_t*)&buffer[i]);
-			  if (res != FLASH_COMPLETE) {
-				  printf("At byte %lX error %d\n", position, res);
-			  }
-			  position += 4;
-			}
-		} while (readed != 0);*/
-/*
-		if (programBytesToRead != programBytesCounter)
-		{
-		  f_read(&program, readBuffer, (programBytesToRead - programBytesCounter), &readBytes);
-
-		  for (uint32_t i = 0; i < (programBytesToRead - programBytesCounter); i += 4)
-		  {
-		      FLASH_ProgramWord(currentAddress, *(uint32_t*)&readBuffer[i]);
-		      currentAddress += 4;
-		  }
-		  programBytesCounter = programBytesToRead;
-		}*/
 
 		do {
 			readNextPage(buffer, &bufferLen);
@@ -209,12 +208,20 @@ void flash()
 
 		printf("First page written\n");
 		FLASH_Lock();
-		state.state = LOADER_SATE_HAS_FLASH;
+
+		// Next reboot we must run program
+		state.state = LOADER_SATE_SHOULD_BOOT;
 		saveState();
+		reboot();
 	} else {
-		printf("Flash image not found on sd-card\n");
+		if (state.state == LOADER_SATE_SHOULD_CHECK)
+		{
+			state.state = LOADER_SATE_SHOULD_BOOT;
+			saveState();
+			printf("No firmware updates found\n");
+			reboot();
+		} else {
+			return;
+		}
 	}
-
-
-
 }

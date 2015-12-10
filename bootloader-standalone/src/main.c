@@ -31,10 +31,10 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include "fatfs.h"
 #include "console.h"
 #include "flash.h"
 #include "misc.h"
+#include "utils.h"
 #include <stdio.h>
 
 int main(void)
@@ -42,14 +42,14 @@ int main(void)
 	initConsole();
 	// Do not forget to __set_MSP
 	printf("\n\nBootloader started successfuly\n");
-	MX_FATFS_Init();
-	printf("\n\nFatFS init done\n");
-	for (uint32_t i=0; i<10000000; i++) {}
+
+	bootIfReady();
 	flash();
 
 	while (1)
 	{
-		printf("Flashing done\n");
+		printf("Flash image not found on sd-card\n");
+		delay();
 	}
 }
 
