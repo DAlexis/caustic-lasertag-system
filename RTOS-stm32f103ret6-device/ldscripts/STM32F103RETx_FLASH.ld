@@ -46,87 +46,19 @@ PROVIDE ( _Heap_Limit = _estack - __Main_Stack_Size ) ;
 /* Specify the memory areas */
 MEMORY
 {
-/*FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 512K*/
-/*UNTERRUPTS(rx) : ORIGIN = 0x8000000, LENGTH = 2K*/
-LOADER (rx)    : ORIGIN = 0x8000000, LENGTH = 40K
-FLASH  (rx)    : ORIGIN = 0x800A000, LENGTH = 472K
+FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 512K
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 64K
 }
 
 /* Define output sections */
 SECTIONS
 {
-
-  /***************************************************************************************/
-  /************************* Bootloader **************************************************/
-  /***************************************************************************************/
-  
-  /* The startup code goes first into FLASH */
-  
-  .loader_isr_vector :
-  {
-    . = ALIGN(4);
-    KEEP(*(.loader_isr_vector))
-    . = ALIGN(4);
-  } >LOADER
-  
-  
-  .loader_text :
-  {
-    . = ALIGN(4);
-    *libbootloader-stm32f103ret6.a:(.text .text*)
-    . = ALIGN(4);
-  } >LOADER
-  
-  /* Constant data goes into FLASH */
-  .loader_rodata :
-  {
-    . = ALIGN(4);
-    *libbootloader-stm32f103ret6.a: (.rodata)         /* .rodata sections (constants, strings, etc.) */
-    *libbootloader-stm32f103ret6.a: (.rodata*)        /* .rodata* sections (constants, strings, etc.) */
-    . = ALIGN(4);
-  } >LOADER
-  
-  bootloader__sidata = LOADADDR(.loader_data);
-  
-  /* Initialized data sections goes into RAM, load LMA copy after code */
-  .loader_data : 
-  {
-    . = ALIGN(4);
-    bootloader__sdata = .;        /* create a global symbol at data start */
-    *libbootloader-stm32f103ret6.a: (.data)           /* .data sections */
-    *libbootloader-stm32f103ret6.a: (.data*)          /* .data* sections */
-
-    . = ALIGN(4);
-    bootloader__edata = .;        /* define a global symbol at data end */
-  } >RAM AT> LOADER
-  
-  /* Uninitialized data section */
-  . = ALIGN(4);
-  .loader_bss :
-  {
-    /* This is used by the startup in order to initialize the .bss secion */
-    bootloader__sbss = .;         /* define a global symbol at bss start */
-    bootloader___bss_start__ = bootloader__sbss;
-    *libbootloader-stm32f103ret6.a: (.bss)
-    *libbootloader-stm32f103ret6.a: (.bss*)
-    *libbootloader-stm32f103ret6.a: (COMMON)
-
-    . = ALIGN(4);
-    bootloader__ebss = .;         /* define a global symbol at bss end */
-    bootloader___bss_end__ = bootloader__ebss;
-  } >RAM
-  
-  /***************************************************************************************/
-  /************************* Main code ***************************************************/
-  /***************************************************************************************/
-  
    /* The startup code goes first into FLASH */
   .isr_vector :
   {
     . = ALIGN(4);
     bootloader__ISR_main = .;
-    KEEP(*(.isr_vector)) /* Startup code */
+    KEEP(*(.isr_vector))
     . = ALIGN(4);
   } >FLASH
   

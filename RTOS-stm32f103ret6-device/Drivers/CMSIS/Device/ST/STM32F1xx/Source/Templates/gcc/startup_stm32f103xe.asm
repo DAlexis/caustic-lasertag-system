@@ -7,8 +7,7 @@
   * @brief     STM32F103xE Devices vector table for Atollic toolchain.
   *            This module performs:
   *                - Set the initial SP
-  *                - Set the initial PC == bootloader_Reset_Handler__,
-  *                         Important: bootloader_ prefix added to make symbol avaliable from bootloader
+  *                - Set the initial PC == Reset_Handler
   *                - Set the vector table entries with the exceptions ISR address
   *                - Configure the clock system   
   *                - Configure external SRAM mounted on STM3210E-EVAL board
@@ -76,10 +75,10 @@ defined in linker script */
  * @retval : None
 */
 
-  .section .text.bootloader_Reset_Handler__
-  .weak bootloader_Reset_Handler__
-  .type bootloader_Reset_Handler__, %function
-bootloader_Reset_Handler__:
+  .section .text.Reset_Handler
+  .weak Reset_Handler
+  .type Reset_Handler, %function
+Reset_Handler:
 
 /* Copy the data segment initializers from flash to SRAM */
   movs r1, #0
@@ -113,12 +112,10 @@ LoopFillZerobss:
     bl  SystemInit
 /* Call static constructors */
     bl __libc_init_array
-/* Call the application's entry point.
-  use "bl main" to start real main function or "bl bootloaderMain" to start bootloader */
+/* Call the application's entry point. */
   bl main
-  /*bl bootloaderMain*/
   bx lr
-.size bootloader_Reset_Handler__, .-bootloader_Reset_Handler__
+.size Reset_Handler, .-Reset_Handler
 
 /**
  * @brief  This is the code that gets called when the processor receives an
@@ -148,7 +145,7 @@ Infinite_Loop:
 g_pfnVectors:
 
   .word _estack
-  .word bootloader_Reset_Handler__
+  .word Reset_Handler
   .word NMI_Handler
   .word HardFault_Handler
   .word MemManage_Handler

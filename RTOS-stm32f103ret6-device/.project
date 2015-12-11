@@ -3,7 +3,6 @@
 	<name>RTOS-stm32f103ret6-device</name>
 	<comment></comment>
 	<projects>
-		<project>bootloader-stm32f103ret6</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
