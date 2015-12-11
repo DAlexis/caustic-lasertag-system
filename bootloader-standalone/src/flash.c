@@ -45,6 +45,7 @@ static FIL fil;
 static FILINFO info;
 
 const char flashFileName[] = "flash.bin";
+const char hashFileName[] = "flash.ly";
 
 typedef struct {
 	uint32_t state;
@@ -201,6 +202,13 @@ uint32_t calculateFileHash(FIL* pfil)
 	return result;
 }
 
+void rebootToMainCode()
+{
+	state.state = LOADER_SATE_SHOULD_BOOT;
+	saveState();
+	reboot();
+}
+
 void flash()
 {
 	MX_FATFS_Init();
@@ -210,6 +218,16 @@ void flash()
 	{
 		printf("Cannot mount FS!\n");
 		return;
+	}
+
+	uint32_t trueHash = 0;
+	res = f_open(&fil, hashFileName, FA_OPEN_EXISTING | FA_READ);
+	if (res == FR_OK) {
+		UINT readed = 0;
+		f_read(&fil, (void*) &trueHash, sizeof(trueHash), &readed);
+		f_close(&fil);
+	} else {
+		printf("Hash file %s not found, skipping image validation\n", hashFileName);
 	}
 
 	uint32_t fileHash = 0;
@@ -227,11 +245,15 @@ void flash()
 		printf("Image hash = %lX\n", fileHash);
 		if (fileHash == state.hash)
 		{
-			state.state = LOADER_SATE_SHOULD_BOOT;
-			saveState();
 			printf("Firmware is up to date\n");
-			reboot();
+			rebootToMainCode();
 		}
+		if (trueHash != 0 && trueHash != fileHash)
+		{
+			printf("Image is inconsistent! May be hash file %s was not updated.\n", hashFileName);
+			rebootToMainCode();
+		}
+
 		uint32_t position = FLASH_BEGIN + FLASH_PAGE_SIZE;
 		printf("Erasing MCU pages except first...\n");
 		FLASH_Unlock();
@@ -276,10 +298,8 @@ void flash()
 	} else {
 		if (state.state == LOADER_SATE_SHOULD_CHECK)
 		{
-			state.state = LOADER_SATE_SHOULD_BOOT;
-			saveState();
 			printf("No firmware updates found\n");
-			reboot();
+			rebootToMainCode();
 		} else {
 			return;
 		}
