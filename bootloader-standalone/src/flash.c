@@ -42,6 +42,7 @@ uint32_t bufferLen = 0;
 
 static FATFS fatfs;
 static FIL fil;
+static FILINFO info;
 
 const char flashFileName[] = "flash.bin";
 
@@ -49,6 +50,7 @@ typedef struct {
 	uint32_t state;
 	uint32_t mainProgramStackPointer;
 	uint32_t mainProgramResetHandler;
+	uint32_t hash;
 } LoaderState;
 
 LoaderState state;
@@ -58,6 +60,7 @@ __attribute__ ((section(".loader_state"),used))
 uint32_t loaderStateStub[] =
 {
 		LOADER_SATE_NO_FLASH,
+		0x0,
 		0x0,
 		0x0
 };
@@ -163,6 +166,7 @@ uint32_t calculateFlashHash(size_t size)
 		uint32_t word = * (uint32_t*) (FLASH_BEGIN + i);
 		result = HashLy(result, (uint8_t*) &word, 4);
 	}
+	return result;
 }
 
 uint32_t calculateFileHash(FIL* pfil)
@@ -208,20 +212,26 @@ void flash()
 		return;
 	}
 
+	uint32_t fileHash = 0;
 	printf("File system mounted successfully\n");
-	FILINFO info;
 	res = f_stat(flashFileName, &info);
 
 	if (res == FR_OK)
 	{
-		printf("Calculating hash...\n");
-		printf("hash = %lX\n", calculateFlashHash(info.fsize));
 		res = f_open(&fil, flashFileName, FA_OPEN_EXISTING | FA_READ);
 	}
 	if (res == FR_OK)
 	{
-		printf("File hash = %lX\n", calculateFileHash(&fil));
 		printf("Flash image found on sd-card\n");
+		fileHash = calculateFileHash(&fil);
+		printf("Image hash = %lX\n", fileHash);
+		if (fileHash == state.hash)
+		{
+			state.state = LOADER_SATE_SHOULD_BOOT;
+			saveState();
+			printf("Firmware is up to date\n");
+			reboot();
+		}
 		uint32_t position = FLASH_BEGIN + FLASH_PAGE_SIZE;
 		printf("Erasing MCU pages except first...\n");
 		FLASH_Unlock();
@@ -260,6 +270,7 @@ void flash()
 
 		// Next reboot we must run program
 		state.state = LOADER_SATE_SHOULD_BOOT;
+		state.hash = fileHash;
 		saveState();
 		reboot();
 	} else {

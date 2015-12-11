@@ -79,7 +79,6 @@ unsigned char test2[] = {0xDE, 0xDE, 0xDE, 0xDE, 0xAD};
 
 int main(void)
 {
-	__enable_irq();
 	int q=43;
 	testFunc1(&q);
 	deviceInitializer.initHW();
