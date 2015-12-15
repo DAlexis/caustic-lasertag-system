@@ -32,6 +32,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "console.h"
+#include "cardreader.h"
 #include "stm32f1xx_hal.h"
 #include "fatfs.h"
 #include "usb_device.h"
@@ -41,10 +42,8 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
-SD_HandleTypeDef hsd;
+
 HAL_SD_CardInfoTypedef SDCardInfo;
-
-
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -64,74 +63,67 @@ static void MX_GPIO_Init(void);
 
 /* USER CODE END 0 */
 
+void tmpCheckRes(HAL_SD_ErrorTypedef res)
+{
+	if (res != SD_OK)
+	{
+		printf("SD error: %d\n", res);
+	}
+}
+uint8_t buf[512];
 int main(void)
 {
 
-  /* USER CODE BEGIN 1 */
+	/* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
+	/* USER CODE END 1 */
 
-  /* MCU Configuration----------------------------------------------------------*/
+	/* MCU Configuration----------------------------------------------------------*/
+/*
+	// Reset of all peripherals, Initializes the Flash interface and the Systick.
+	HAL_Init();
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	SystemClock_Config();
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  initConsole();
-  printf("Starting bootloader...\n");
 
-  //MX_FATFS_Init();
-  //MX_USB_DEVICE_Init();
+	MX_GPIO_Init();
+	initConsole();
+	printf("Starting bootloader...\n");
+*/
+	//MX_FATFS_Init();
+	//MX_SDIO_SD_Init();
+	//MX_USB_DEVICE_Init();
 
-  bootIfReady();
-	flash();
+	HAL_Init();
 
+	SystemClock_Config();
+
+	MX_GPIO_Init();
+	initConsole();
+	initCardreader();
+
+
+
+	printf("Starting bootloader...\n");
+	HAL_Delay(3000);
+
+
+/*
+	  bootIfReady();
+	  flash();*/
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	while (1)
 	{
 		printf("Flash image not found on sd-card\n");
 		HAL_Delay(1000);
 	}
-
-  /* USER CODE BEGIN 2 */
-/*  FATFS fileSystem;
-  FIL testFile;
-
-  	HAL_UART_Transmit(&huart1, "Uart initialized\n", 17, 1000);
-  	char good[] = "Ok\n";
-  	char bad[] = "bd\n";
-
-  	if(f_mount(&fileSystem, "", 1) == FR_OK)
-  	{
-  		FRESULT res = f_open(&testFile, "config.ini",  FA_OPEN_EXISTING | FA_READ);
-  		if (res != FR_OK)
-  		{
-  			HAL_UART_Transmit(&huart1, bad, 3, 1000);
-  		} else {
-  			char buff[10];
-  			UINT size = 0;
-  			f_read(&testFile, buff, 10, &size);
-  			HAL_UART_Transmit(&huart1, buff, size, 1000);
-  			HAL_UART_Transmit(&huart1, good, 3, 1000);
-  		}
-  	} else {
-  		HAL_UART_Transmit(&huart1, bad, 3, 1000);
-  	}*/
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
   /* USER CODE END WHILE */
-	  printf("Hello!\n");
-	  HAL_Delay(1000);
+
   /* USER CODE BEGIN 3 */
 
-  }
   /* USER CODE END 3 */
 
 }
