@@ -54,7 +54,6 @@ HAL_SD_CardInfoTypedef SDCardInfo;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_SDIO_SD_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -84,9 +83,18 @@ int main(void)
   MX_GPIO_Init();
   initConsole();
   printf("Starting bootloader...\n");
-  MX_SDIO_SD_Init();
-  MX_FATFS_Init();
+
+  //MX_FATFS_Init();
   //MX_USB_DEVICE_Init();
+
+  bootIfReady();
+	flash();
+
+	while (1)
+	{
+		printf("Flash image not found on sd-card\n");
+		HAL_Delay(1000);
+	}
 
   /* USER CODE BEGIN 2 */
 /*  FATFS fileSystem;
@@ -164,19 +172,7 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-/* SDIO init function */
-void MX_SDIO_SD_Init(void)
-{
 
-  hsd.Instance = SDIO;
-  hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
-  hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
-  hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
-  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
-  hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-  hsd.Init.ClockDiv = 3;
-
-}
 
 /** Configure pins as 
         * Analog 
@@ -210,6 +206,7 @@ void MX_GPIO_Init(void)
    */
 void assert_failed(uint8_t* file, uint32_t line)
 {
+	printf("Assertion failes at %s, line %d\n", (char*) file, line);
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

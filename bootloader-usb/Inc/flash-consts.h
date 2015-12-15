@@ -9,7 +9,7 @@
 #define INCLUDE_FLASH_CONSTS_H_
 
 #define FLASH_BEGIN               0x8000000
-#define FLASH_PAGE_SIZE           2048
+//#define FLASH_PAGE_SIZE           2048
 
 
 
