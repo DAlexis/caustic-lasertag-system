@@ -117,6 +117,7 @@ const int8_t  STORAGE_Inquirydata_FS[] = {//36
 /* USER CODE BEGIN EXPORTED_VARIABLES  */
   extern SD_HandleTypeDef hsd;
   extern HAL_SD_CardInfoTypedef SDCardInfo;
+  extern int USBDeviceActivated;
 /* USER CODE END  EXPORTED_VARIABLES */
 
 /**
@@ -171,7 +172,8 @@ USBD_StorageTypeDef USBD_Storage_Interface_fops_FS =
 *******************************************************************************/
 int8_t STORAGE_Init_FS (uint8_t lun)
 {
-  /* USER CODE BEGIN 2 */ 
+  /* USER CODE BEGIN 2 */
+	USBDeviceActivated = 1;
   return (USBD_OK);
   /* USER CODE END 2 */ 
 }

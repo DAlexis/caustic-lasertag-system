@@ -33,10 +33,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "console.h"
 #include "cardreader.h"
-#include "stm32f1xx_hal.h"
+#include "flash.h"
+#include "utils.h"
 #include "fatfs.h"
 #include "usb_device.h"
 
+#include "stm32f1xx_hal.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -44,7 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 HAL_SD_CardInfoTypedef SDCardInfo;
-
+extern USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
@@ -63,70 +65,53 @@ static void MX_GPIO_Init(void);
 
 /* USER CODE END 0 */
 
-void tmpCheckRes(HAL_SD_ErrorTypedef res)
-{
-	if (res != SD_OK)
-	{
-		printf("SD error: %d\n", res);
-	}
-}
-uint8_t buf[512];
 int main(void)
 {
-
-	/* USER CODE BEGIN 1 */
-
-	/* USER CODE END 1 */
-
-	/* MCU Configuration----------------------------------------------------------*/
-/*
 	// Reset of all peripherals, Initializes the Flash interface and the Systick.
 	HAL_Init();
-
-
 	SystemClock_Config();
-
-
 	MX_GPIO_Init();
+	// Resetting all pins in case of open gates of mosfets
+	resetAllPins();
+
 	initConsole();
+
 	printf("Starting bootloader...\n");
-*/
-	//MX_FATFS_Init();
-	//MX_SDIO_SD_Init();
-	//MX_USB_DEVICE_Init();
+	//HAL_Delay(3000);
+	// Trying to boot without cardreader or fatfs initialization
+	bootIfReady();
+	// We are here if system is not ready to boot, and it things it should check flash updates
 
-	HAL_Init();
-
-	SystemClock_Config();
-
-	MX_GPIO_Init();
-	initConsole();
+	// We are trying to enable cardreader first
+	printf("Initializing cardreader\n");
 	initCardreader();
+	HAL_Delay(1000);
+	if (0 == isCardreaderActive())
+	{
+		// If USB not connected for enough time, we disable it
+		printf("PC connection timeout, cardreader deactivation...\n");
+		deinitCardreader();
 
+		flash();
 
+		for (;;)
+		{
+			printf("Flash image cannot be programmed\n");
+			HAL_Delay(1000);
+		}
+	} else {
+		for (;;)
+		{
+			printf("System in USB device mode\n");
+			HAL_Delay(1000);
+		}
+	}
 
-	printf("Starting bootloader...\n");
-	HAL_Delay(3000);
-
-
-/*
-	  bootIfReady();
-	  flash();*/
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+	// We should never reach this point
 	while (1)
 	{
-		printf("Flash image not found on sd-card\n");
-		HAL_Delay(1000);
-	}
-  /* USER CODE END WHILE */
-
-  /* USER CODE BEGIN 3 */
-
-  /* USER CODE END 3 */
-
-}
+		printf("Thats fail\n");
+	}}
 
 /** System Clock Configuration
 */
@@ -177,36 +162,16 @@ void MX_GPIO_Init(void)
 {
 
   /* GPIO Ports Clock Enable */
-  __GPIOD_CLK_ENABLE();
-  __GPIOC_CLK_ENABLE();
   __GPIOA_CLK_ENABLE();
-
+  __GPIOB_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
+  __GPIOD_CLK_ENABLE();
 }
 
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
 
-#ifdef USE_FULL_ASSERT
-
-/**
-   * @brief Reports the name of the source file and the source line number
-   * where the assert_param error has occurred.
-   * @param file: pointer to the source file name
-   * @param line: assert_param error line source number
-   * @retval None
-   */
-void assert_failed(uint8_t* file, uint32_t line)
-{
-	printf("Assertion failes at %s, line %d\n", (char*) file, line);
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-    ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
-
-}
-
-#endif
 
 /**
   * @}

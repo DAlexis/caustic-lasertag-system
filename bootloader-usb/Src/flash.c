@@ -73,8 +73,9 @@ void moveVectorTable(uint32_t Offset)
 	SCB->VTOR = FLASH_BASE | Offset;
 }
 
-void erase(uint32_t from, uint32_t to)
+HAL_StatusTypeDef erase(uint32_t from, uint32_t to)
 {
+	HAL_StatusTypeDef res = HAL_OK;
 	for (uint32_t i = from; i <= to; i += FLASH_PAGE_SIZE)
 	{
 		FLASH_EraseInitTypeDef erase;
@@ -83,23 +84,34 @@ void erase(uint32_t from, uint32_t to)
 		erase.PageAddress = i;
 		erase.NbPages = 1;
 		uint32_t error = 0;
-		HAL_FLASHEx_Erase(&erase, &error);
-		//FLASH_PageErase(i);
-		//printf("Page at %lX erased\n", i);
+		res = HAL_FLASHEx_Erase(&erase, &error);
+		if (res != HAL_OK) {
+			printf("Error while erasing page at %lX\n", i);
+			return res;
+		}
 	}
 	printf("Pages from %lX to %lX erased\n", from, to);
+	return res;
 }
 
 void saveState()
 {
 	HAL_FLASH_Unlock();
-	erase((uint32_t) &_loader_state_addr, (uint32_t) &_loader_state_addr);
+	if (HAL_OK != erase((uint32_t) &_loader_state_addr, (uint32_t) &_loader_state_addr))
+	{
+		printf("Error while loader state saving: cannot erase state page. Rebooting...\n");
+		reboot();
+	}
 	//FLASH_PageErase((uint32_t) &_loader_state_addr);
 	for (uint32_t i=0; i < sizeof(LoaderState) / 4; i++)
 	{
 		uint32_t targetAddress = (uint32_t) &_loader_state_addr + 4*i;
 		uint32_t* pWord = ((uint32_t*) &state) + i;
-		HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, targetAddress, *pWord);
+		if (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, targetAddress, *pWord))
+		{
+			printf("Error while loader state saving: cannot program state page. Rebooting...\n");
+			reboot();
+		}
 	}
 	HAL_FLASH_Lock();
 }
@@ -128,16 +140,19 @@ FRESULT readNextPage(uint8_t *target, uint32_t *readed)
 	return res;
 }
 
-void flashWrite(uint32_t position, uint8_t *data, uint32_t size)
+HAL_StatusTypeDef flashWrite(uint32_t position, uint8_t *data, uint32_t size)
 {
+	HAL_StatusTypeDef res = HAL_OK;
 	for (uint32_t i=0; i<size; i+=2)
 	{
-		HAL_StatusTypeDef res = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, position + i, *(uint16_t*)&data[i]);
+		res = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, position + i, *(uint16_t*)&data[i]);
 		if (res != HAL_OK)
 		{
 			printf("Error! Flash programming failed at %lX: %d\n", position+i, res);
+			break;
 		}
 	}
+	return res;
 }
 
 void reboot()
@@ -270,6 +285,12 @@ void flash()
 
 	if (res == FR_OK)
 	{
+		uint32_t maxSize = (uint32_t) &_isr_real - firstPageAddr;
+		if (info.fsize > maxSize)
+		{
+			printf("Flash image is too large for this MCU. Maximal size is %lu\n", maxSize);
+			return;
+		}
 		res = f_open(&fil, flashFileName, FA_OPEN_EXISTING | FA_READ);
 	}
 	if (res == FR_OK)
@@ -293,7 +314,12 @@ void flash()
 		HAL_StatusTypeDef res = HAL_FLASH_Unlock();
 		if (res != HAL_OK)
 			printf("Unlock error: %d\n", res);
-		erase(secondPageAddr, info.fsize + firstPageAddr);
+
+		if (HAL_OK != erase(secondPageAddr, info.fsize + firstPageAddr))
+		{
+			printf("Error during erasing MCU, rebooting system.\n");
+			reboot();
+		}
 
 		if (FR_OK == readNextPage(firstPage, &fistPageLen))
 		{
@@ -311,17 +337,28 @@ void flash()
 
 		do {
 			readNextPage(buffer, &bufferLen);
-			flashWrite(position, buffer, bufferLen);
+			if (HAL_OK != flashWrite(position, buffer, bufferLen))
+			{
+				printf("Cannot write flash page at %lX, rebooting system.\n", position);
+				reboot();
+			}
 			position += bufferLen;
 			printf("Page at %lX written\n", position);
 		} while (bufferLen != 0);
 		f_close(&fil);
 
 		printf("Erasing first page...\n");
-		erase(FLASH_BEGIN, FLASH_BEGIN);
-
+		if (HAL_OK != erase(FLASH_BEGIN, FLASH_BEGIN))
+		{
+			printf("Error during erasing first page, rebooting system.\n");
+			reboot();
+		}
 		printf("Writing first page...\n");
-		flashWrite(FLASH_BEGIN, firstPage, fistPageLen);
+		if (HAL_OK != flashWrite(FLASH_BEGIN, firstPage, fistPageLen))
+		{
+			printf("Cannot write first flash page. Your MCU bricked, reflash bootloader with SWD/JTAG!\n");
+			for (;;) { }
+		}
 
 		printf("First page written\n");
 		HAL_FLASH_Lock();

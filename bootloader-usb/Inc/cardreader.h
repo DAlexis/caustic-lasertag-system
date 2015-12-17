@@ -9,5 +9,7 @@
 #define INC_CARDREADER_H_
 
 void initCardreader();
+void deinitCardreader();
+int isCardreaderActive();
 
 #endif /* INC_CARDREADER_H_ */
