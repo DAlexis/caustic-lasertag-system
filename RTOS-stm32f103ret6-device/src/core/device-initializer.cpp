@@ -31,11 +31,11 @@ void DeviceInitializer::initEnvironment()
 {
 	// Initializing base hardware
 	hardwareInitializer->init();
+	Loggers::initLoggers(1);
 	systemClock->init();
 	RTCManager->init();
-	Loggers::initLoggers(1);
 	initFatFS();
-	info << "Base HW initialization done";
+	info << "Base environment initialization done";
 	printf("\nprintf works()\n");
 }
 

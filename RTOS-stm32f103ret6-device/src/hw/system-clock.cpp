@@ -5,9 +5,7 @@
  *      Author: alexey
  */
 
-#include "hw/system-clock.hpp"
-
-#include "stm32f10x.h"
+#include "hw/system-clock-hw.hpp"
 
 SystemClock clock;
 ISystemClock *systemClock = &clock;
@@ -16,52 +14,49 @@ constexpr uint32_t msInSec = 1000000;
 constexpr uint32_t msTimerPeriod = UINT16_MAX;
 constexpr uint32_t slaveTimerPeriod = UINT16_MAX;
 
-SystemClock::SystemClock()
-{
-
-}
-
 void SystemClock::init()
 {
-	RCC_ClocksTypeDef RCC_Clocks;
-	RCC_GetClocksFreq(&RCC_Clocks);
+	MX_TIM4_Init();
+	MX_TIM5_Init();
+	HAL_TIM_Base_Start(&htim4);
+	HAL_TIM_Base_Start(&htim5);
+}
 
-	//SysTick_Config(RCC_Clocks.HCLK_Frequency / SYSTICK_FREQUENCY_HZ);
+void SystemClock::MX_TIM4_Init()
+{
+	TIM_ClockConfigTypeDef sClockSourceConfig;
+	TIM_MasterConfigTypeDef sMasterConfig;
 
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
-	// Initializing microseconds timer
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+	htim4.Instance = TIM4;
+	htim4.Init.Prescaler = 72-1;
+	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim4.Init.Period = msTimerPeriod;
+	htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	HAL_TIM_Base_Init(&htim4);
 
-	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
+	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig);
 
-	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInitStructure.TIM_Prescaler = 72-1;//SystemCoreClock / msInSec - 1;
-	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInitStructure.TIM_Period = msTimerPeriod;
-	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseInitStructure);
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
+	HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig);
+}
 
-	TIM_SelectMasterSlaveMode(TIM4, TIM_MasterSlaveMode_Enable);
-	TIM_SelectOutputTrigger(TIM4, TIM_TRGOSource_Update);
+void SystemClock::MX_TIM5_Init()
+{
+	TIM_SlaveConfigTypeDef sSlaveConfig;
+	TIM_MasterConfigTypeDef sMasterConfig;
 
-	// Initializing slave timer
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
+	htim5.Instance = TIM5;
+	htim5.Init.Prescaler = 0;
+	htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim5.Init.Period = slaveTimerPeriod;
+	htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	HAL_TIM_Base_Init(&htim5);
 
-	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
-
-	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInitStructure.TIM_Prescaler = 0;
-	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInitStructure.TIM_Period = slaveTimerPeriod;
-	TIM_TimeBaseInit(TIM5, &TIM_TimeBaseInitStructure);
-
-	TIM_SelectSlaveMode(TIM5, TIM_SlaveMode_Gated);
-	TIM_SelectInputTrigger(TIM5, TIM_TS_ITR2);
-
-
-	TIM_Cmd(TIM4, ENABLE);
-	TIM_Cmd(TIM5, ENABLE);
+	sSlaveConfig.SlaveMode = TIM_SLAVEMODE_GATED;
+	sSlaveConfig.InputTrigger = TIM_TS_ITR2;
+	HAL_TIM_SlaveConfigSynchronization(&htim5, &sSlaveConfig);
 }
 
 Time SystemClock::getTime()
