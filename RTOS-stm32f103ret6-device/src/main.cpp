@@ -71,10 +71,11 @@ TaskOnce sound([](){
 
 int main(void)
 {
-	deviceInitializer.initHW();
+	deviceInitializer.initEnvironment();
 	// Wait for voltages stabilization
 	printf("Hal delay\n");
-	HAL_Delay(100);
+
+	//HAL_Delay(100);
 	printf("delay done\n");
 #ifdef DEBUG
 	debug.enable();
@@ -96,7 +97,7 @@ int main(void)
 	alive.run(0, 500, 500, 0);
 	adc = ADCs->create();
 	adc->init(0,0);
-	HAL_Delay(10);
+	//HAL_Delay(10);
 
 	Kernel::instance().run();
 
@@ -123,7 +124,7 @@ char buf[10];
    * @param line: assert_param error line source number
    * @retval None
    */
-void assert_failed(uint8_t* file, uint32_t line)
+extern "C" void assert_failed(uint8_t* file, uint32_t line)
 {
 	//error << "Called assert_failed at " << (char*)file << ":" << (int)line;
   /* USER CODE BEGIN 6 */

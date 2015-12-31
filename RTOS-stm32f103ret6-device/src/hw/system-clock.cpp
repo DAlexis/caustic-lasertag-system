@@ -18,6 +18,11 @@ constexpr uint32_t slaveTimerPeriod = UINT16_MAX;
 
 SystemClock::SystemClock()
 {
+
+}
+
+void SystemClock::init()
+{
 	RCC_ClocksTypeDef RCC_Clocks;
 	RCC_GetClocksFreq(&RCC_Clocks);
 

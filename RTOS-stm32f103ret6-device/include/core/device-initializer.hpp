@@ -8,7 +8,6 @@
 #ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_DEVICE_INITIALIZER_HPP_
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_DEVICE_INITIALIZER_HPP_
 
-#include "stm32f1xx_hal.h"
 #include "fatfs.h"
 #include "core/result-code.hpp"
 #include "core/pinout.hpp"
@@ -27,7 +26,7 @@ class DeviceInitializer
 public:
 	void startOS();
 
-	void initHW();
+	void initEnvironment();
 	IAnyDevice* initDevice(const char* filename);
 	bool isSdcardOk() const;
 

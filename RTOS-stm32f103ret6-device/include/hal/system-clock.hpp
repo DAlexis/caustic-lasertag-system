@@ -16,6 +16,7 @@ class ISystemClock
 {
 public:
 	virtual void wait_us(uint32_t time) = 0;
+	virtual void init() = 0;
 	virtual Time getTime() = 0;
 };
 
