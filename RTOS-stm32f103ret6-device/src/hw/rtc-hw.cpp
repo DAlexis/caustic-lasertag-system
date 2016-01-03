@@ -16,6 +16,7 @@ void RTCMgr::init()
 {
 	/**Initialize RTC and set the Time and Date
 	*/
+
 	zerify(m_hrtc);
 	m_hrtc.Instance = RTC;
 	m_hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
@@ -35,6 +36,39 @@ void RTCMgr::init()
 		setDate(d);
 	}
 
+	/*
+	m_hrtc.Instance = RTC;
+	m_hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
+
+	if (HAL_RTC_Init(&m_hrtc) != HAL_OK)
+	{
+		// Initialization Error
+		error << "Error on HAL_RTC_Init";
+	}
+
+	//##-2- Check if Data stored in BackUp register1: No Need to reconfigure RTC#
+	// Read the Back Up Register 1 Data
+	if (HAL_RTCEx_BKUPRead(&m_hrtc, RTC_BKP_DR1) != 0x32F2)
+	{
+	// Configure RTC Calendar
+		RTC_CalendarConfig();
+	}
+	else
+	{
+		// Check if the Power On Reset flag is set
+		if (__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST) != RESET)
+		{
+		  // Power on reset occured
+		}
+		// Check if Pin Reset flag is set
+		if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)
+		{
+		  // External reset occured
+		}
+		// Clear source Reset Flag
+		__HAL_RCC_CLEAR_RESET_FLAGS();
+	}
+*/
 	//if(!(*(volatile uint32_t *) (BDCR_RTCEN_BB)))__HAL_RCC_RTC_ENABLE();
 }
 
@@ -98,4 +132,38 @@ bool RTCMgr::isTurnedOn()
 {
 	// Not sure this will work
 	return (RCC->BDCR & RCC_BDCR_RTCEN) == RCC_BDCR_RTCEN;
+}
+
+void RTCMgr::RTC_CalendarConfig()
+{
+  RTC_DateTypeDef sdatestructure;
+  RTC_TimeTypeDef stimestructure;
+
+  /*##-1- Configure the Date #################################################*/
+  /* Set Date: Tuesday February 18th 2014 */
+  sdatestructure.Year = 0x14;
+  sdatestructure.Month = RTC_MONTH_FEBRUARY;
+  sdatestructure.Date = 0x18;
+  sdatestructure.WeekDay = RTC_WEEKDAY_TUESDAY;
+
+  if(HAL_RTC_SetDate(&m_hrtc,&sdatestructure,RTC_FORMAT_BCD) != HAL_OK)
+  {
+    /* Initialization Error */
+	  error << "Error on HAL_RTC_SetDate";
+  }
+
+  /*##-2- Configure the Time #################################################*/
+  /* Set Time: 02:00:00 */
+  stimestructure.Hours = 0x02;
+  stimestructure.Minutes = 0x00;
+  stimestructure.Seconds = 0x00;
+
+  if (HAL_RTC_SetTime(&m_hrtc, &stimestructure, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    /* Initialization Error */
+	  error << "Error on HAL_RTC_SetTime";
+  }
+
+  /*##-3- Writes a data in a RTC Backup data Register1 #######################*/
+  HAL_RTCEx_BKUPWrite(&m_hrtc, RTC_BKP_DR1, 0x32F2);
 }

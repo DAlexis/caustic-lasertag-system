@@ -13,6 +13,10 @@
 IUARTManager *Loggers::uart = nullptr;
 std::list<const char*> Loggers::tags;
 
+bool Loggers::m_isInitialized = false;
+char* Loggers::m_tmpBuffer = nullptr;
+uint16_t Loggers::m_tmpBufferCurrent = 0;
+
 Mutex Loggers::loggersMutex;
 
 Logger error  ("ERROR");
@@ -29,6 +33,18 @@ void Loggers::initLoggers(uint8_t portNumber)
 	error.enable(true);
 	warning.enable(true);
 	info.enable(true);
+	m_isInitialized = true;
+	if (m_tmpBuffer != nullptr)
+	{
+		getUsart()->transmitSync((uint8_t*)m_tmpBuffer, m_tmpBufferCurrent);
+		delete[] m_tmpBuffer;
+		m_tmpBuffer = nullptr;
+	}
+}
+
+bool Loggers::isInitialized()
+{
+	return m_isInitialized;
 }
 
 //////////////////////
@@ -93,6 +109,28 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(bool b)
 		return *this << "false";
 }
 
+uint32_t Loggers::write(const char* buf, size_t nbyte)
+{
+
+	//ScopedLock lock(Loggers::loggersMutex);
+	if (isInitialized())
+	{
+		getUsart()->transmitSync((uint8_t*)buf, nbyte);
+	}
+	else
+	{
+		if (m_tmpBuffer == nullptr)
+			m_tmpBuffer = new char[tmpBufferSize];
+
+		if (tmpBufferSize-m_tmpBufferCurrent > nbyte)
+		{
+			memcpy(&m_tmpBuffer[m_tmpBufferCurrent], buf, nbyte);
+			m_tmpBufferCurrent += nbyte;
+		}
+	}
+	return nbyte;
+}
+
 //////////////////////
 // Logger
 void Logger::enable(bool enabled)
@@ -117,14 +155,11 @@ ScopedTag::~ScopedTag()
 	//Loggers::tags.pop_back();
 }
 
-
 extern "C" ssize_t
 _write (int fd __attribute__((unused)), const char* buf __attribute__((unused)),
 	size_t nbyte __attribute__((unused)))
 {
-	//ScopedLock lock(Loggers::loggersMutex);
-	Loggers::getUsart()->transmitSync((uint8_t*)buf, nbyte);
-	return nbyte;
+	return Loggers::write(buf, nbyte);
 }
 
 extern "C" int __attribute__((weak))

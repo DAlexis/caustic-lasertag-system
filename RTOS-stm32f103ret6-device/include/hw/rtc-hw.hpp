@@ -29,6 +29,7 @@ private:
 	static void halDateToDate(RTCDate& date, const RTC_DateTypeDef& halDate);
 
 	bool isTurnedOn();
+	void RTC_CalendarConfig();
 };
 
 

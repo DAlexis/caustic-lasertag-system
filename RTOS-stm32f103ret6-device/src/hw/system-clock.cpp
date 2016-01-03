@@ -6,6 +6,7 @@
  */
 
 #include "hw/system-clock-hw.hpp"
+#include "utils/memory.hpp"
 
 SystemClock clock;
 ISystemClock *systemClock = &clock;
@@ -26,6 +27,8 @@ void SystemClock::MX_TIM4_Init()
 {
 	TIM_ClockConfigTypeDef sClockSourceConfig;
 	TIM_MasterConfigTypeDef sMasterConfig;
+	zerify(sClockSourceConfig);
+	zerify(sMasterConfig);
 
 	htim4.Instance = TIM4;
 	htim4.Init.Prescaler = 72-1;

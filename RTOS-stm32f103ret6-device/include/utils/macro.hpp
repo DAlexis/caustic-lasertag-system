@@ -8,6 +8,8 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_CORE_MACRO_UTILS_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_CORE_MACRO_UTILS_HPP_
 
+#include "utils/macro-c.h"
+
 #define STRINGIFICATE(a)    _STRINGIFICATE(a)
 #define _STRINGIFICATE(a)   #a
 

@@ -272,7 +272,7 @@ HAL_StatusTypeDef HAL_RTC_Init(RTC_HandleTypeDef *hrtc)
   {
     /* Set RTC state */
     hrtc->State = HAL_RTC_STATE_ERROR;
-    
+    //printf("Error at HAL_RTC_WaitForSynchro\n");
     return HAL_ERROR;
   } 
 
@@ -281,7 +281,7 @@ HAL_StatusTypeDef HAL_RTC_Init(RTC_HandleTypeDef *hrtc)
   {
     /* Set RTC state */
     hrtc->State = HAL_RTC_STATE_ERROR;
-    
+    //printf("Error at RTC_EnterInitMode\n");
     return HAL_ERROR;
   } 
   else
@@ -314,6 +314,7 @@ HAL_StatusTypeDef HAL_RTC_Init(RTC_HandleTypeDef *hrtc)
       {
         /* Should not happen. Frequency is not available*/
         hrtc->State = HAL_RTC_STATE_ERROR;
+        //printf("Error at prescaler == 0\n");
         return HAL_ERROR;
       }
       else
@@ -331,7 +332,7 @@ HAL_StatusTypeDef HAL_RTC_Init(RTC_HandleTypeDef *hrtc)
     if(RTC_ExitInitMode(hrtc) != HAL_OK)
     {       
       hrtc->State = HAL_RTC_STATE_ERROR;
-      
+      //printf("Error at RTC_ExitInitMode\n");
       return HAL_ERROR;
     }
     

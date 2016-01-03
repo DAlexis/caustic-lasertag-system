@@ -7,8 +7,11 @@
 
 #include "hw/hardware-initializer-hw.hpp"
 #include "hal/io-pins.hpp"
+#include "utils/memory.hpp"
+#include "utils/macro.hpp"
 #include "fatfs.h"
 #include "stm32f1xx_hal.h"
+#include <string.h>
 
 HardwareInitializer instance;
 
@@ -29,38 +32,49 @@ void HardwareInitializer::init()
 
 void HardwareInitializer::SystemClock_Config()
 {
+	DECL_CLEAN(RCC_OscInitTypeDef, RCC_OscInitStruct);
+	DECL_CLEAN(RCC_ClkInitTypeDef, RCC_ClkInitStruct);
+	DECL_CLEAN(RCC_PeriphCLKInitTypeDef, PeriphClkInit);
+	HAL_StatusTypeDef result = HAL_OK;
 
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-  RCC_PeriphCLKInitTypeDef PeriphClkInit;
+	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
-  HAL_RCC_OscConfig(&RCC_OscInitStruct);
+	HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
+	// SysTick_IRQn interrupt configuration
+	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+	char isLSEOk = 1;
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+	RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+	RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+	RCC_OscInitStruct.LSIState = RCC_LSI_OFF;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+	result = HAL_RCC_OscConfig(&RCC_OscInitStruct);
+	if (result != HAL_OK) {
+		isLSEOk = 0;
+		RCC_OscInitStruct.LSEState = RCC_LSE_OFF;
+		RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+		HAL_RCC_OscConfig(&RCC_OscInitStruct);
+	}
 
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_ADC;
-  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
-  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV8;
-  HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1;
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
 
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-  // SysTick_IRQn interrupt configuration
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+	PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_ADC;
+	if (isLSEOk)
+		PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+	else
+		PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
+	PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV8;
+	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
 }
 
 void HardwareInitializer::MX_GPIO_Init(void)

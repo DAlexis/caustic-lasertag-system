@@ -19,8 +19,10 @@ class Loggers
 	friend class ScopedTag;
 public:
 	static void initLoggers(uint8_t portNumber);
+	static bool isInitialized();
 	static IUARTManager* __attribute__((always_inline)) getUsart() { return uart; }
 	static Mutex loggersMutex;
+	static uint32_t write(const char* buf, size_t nbyte);
 private:
 	static void infoOnOff(const char* arg);
 	static void debugOnOff(const char* arg);
@@ -29,6 +31,10 @@ private:
 
 	static std::list<const char*> tags;
 	static IUARTManager *uart;
+	static bool m_isInitialized;
+	static char* m_tmpBuffer;
+	static uint16_t m_tmpBufferCurrent;
+	constexpr static uint16_t tmpBufferSize = 1000;
 };
 
 class Logger
