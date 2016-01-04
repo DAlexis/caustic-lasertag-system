@@ -80,7 +80,7 @@ public:
 	 * @param timings Timings for package
 	 * @return
 	 */
-	uint16_t send(
+	PackageId send(
 		DeviceAddress target,
 		uint8_t* data,
 		uint16_t size,
@@ -88,6 +88,9 @@ public:
 		PackageSendingDoneCallback doneCallback = nullptr,
 		PackageTimings timings = PackageTimings()
 	);
+
+	bool stopSending(PackageId packageId);
+	bool updateTimeout(PackageId packageId);
 
 	void registerBroadcast(const DeviceAddress& address);
 	void registerBroadcastTester(Broadcast::IBroadcastTester* tester);
@@ -148,11 +151,11 @@ private:
 	std::list<Package> m_packagesNoAck;
 
 	NRF24L01Manager nrf;
-	std::map<uint16_t, WaitingPackage> m_packages;
+	std::map<PackageId, WaitingPackage> m_packages;
 
 	std::list<Package> m_incoming;
 
-	std::list<uint16_t> m_lastReceivedIds;
+	std::list<PackageId> m_lastReceivedIds;
 
 	std::set<DeviceAddress> m_broadcasts;
 	std::list<Broadcast::IBroadcastTester*> m_broadcastTesters;
@@ -162,7 +165,5 @@ private:
 
 	TaskCycled m_modemTask{std::bind(&NetworkLayer::interrogate, this)};
 };
-
-
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_ */

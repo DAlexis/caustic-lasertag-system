@@ -14,10 +14,74 @@
 
 #include <stdio.h>
 
+WeaponManager::~WeaponManager()
+{
+	dropAllPackages();
+}
+
+void WeaponManager::assign(const DeviceAddress& addr)
+{
+	m_addr = addr;
+}
+
+void WeaponManager::dropAllPackages()
+{
+	auto checkAndDrop = [](PackageId& id) {
+		if (id != 0)
+		{
+			NetworkLayer::instance().stopSending(id);
+			id = 0;
+		}
+	};
+
+	checkAndDrop(m_respawnPackage);
+	checkAndDrop(m_diePackage);
+}
+
+void WeaponManager::respawn()
+{
+	if (m_respawnPackage != 0)
+	{
+		NetworkLayer::instance().updateTimeout(m_respawnPackage);
+	} else {
+		info << "WeaponManager::respawn() sending package";
+		m_respawnPackage = RCSPStream::remoteCall
+			(
+				m_addr,
+				ConfigCodes::Rifle::Functions::rifleRespawn,
+				true,
+				[this](PackageId, bool){ m_respawnPackage = 0; }
+			);
+	}
+}
+
+void WeaponManager::die()
+{
+	if (m_diePackage != 0)
+	{
+		NetworkLayer::instance().updateTimeout(m_diePackage);
+	} else {
+		m_diePackage = RCSPStream::remoteCall
+			(
+				m_addr,
+				ConfigCodes::Rifle::Functions::rifleDie,
+				true,
+				[this](PackageId, bool){ m_diePackage = 0; },
+				std::move(headSensorPackageTimings.killPlayer)
+			);
+	}
+}
+
+IWeaponObresver *WeaponManagerFactory::create() const
+{
+	return new WeaponManager();
+}
+
 HeadSensor::HeadSensor()
 {
 	m_tasksPool.setStackSize(256);
 	deviceConfig.deviceType = DeviceTypes::headSensor;
+	playerState.weaponsList.setWeaponObserverFactory(&weaponManagerFactory);
 	//m_weapons.insert({1,1,1});
 }
 
@@ -242,10 +306,10 @@ void HeadSensor::dieWeapons()
 {
 	ScopedTag tag("die-weapons");
 	/// Notifying weapons
-	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Sending kill signal to weapon...";
-		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleDie, true, nullptr, std::move(headSensorPackageTimings.killPlayer));
+		RCSPStream::remoteCall(it->first, ConfigCodes::Rifle::Functions::rifleDie, true, nullptr, std::move(headSensorPackageTimings.killPlayer));
 	}
 }
 
@@ -253,27 +317,28 @@ void HeadSensor::respawnWeapons()
 {
 	/// Notifying weapons
 	ScopedTag tag("reset-weapons");
-	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Resetting weapon...";
-		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleRespawn);
+		static_cast<WeaponManager*>(it->second)->respawn();
+		//RCSPStream::remoteCall(it->first, ConfigCodes::Rifle::Functions::rifleRespawn);
 	}
 }
 
 void HeadSensor::turnOffWeapons()
 {
 	ScopedTag tag("turn-off");
-	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Turning off weapon...";
-		RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::rifleTurnOff);
+		RCSPStream::remoteCall(it->first, ConfigCodes::Rifle::Functions::rifleTurnOff);
 	}
 }
 
 void HeadSensor::weaponWoundAndShock()
 {
 	info << "Weapons shock delay notification";
-	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		RCSPMultiStream stream;
 		// We have 23 bytes free in one stream (and should try to use only one)
@@ -281,21 +346,21 @@ void HeadSensor::weaponWoundAndShock()
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleWound); // 3b (13 free)
 		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent); // 3b + 2b (8 free)
 		stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent); // 3b + 2b (3 free)
-		stream.send(*it, true, std::move(headSensorPackageTimings.woundPlayer));
+		stream.send(it->first, true, std::move(headSensorPackageTimings.woundPlayer));
 	}
 }
 
 void HeadSensor::sendHeartbeat()
 {
 	trace << "Sending heartbeat";
-	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		RCSPStream stream;
 		// This line is temporary solution if team was changed by value, not by setter func call
 		stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
 		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
 		stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
-		stream.send(*it, false);
+		stream.send(it->first, false);
 		//RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat, false, nullptr);
 	}
 }
@@ -303,10 +368,10 @@ void HeadSensor::sendHeartbeat()
 void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 {
 	info << "Registering weapon " << ADDRESS_TO_STREAM(weaponAddress);
-	auto it = playerState.weaponsList.weapons.find(weaponAddress);
-	if (it == playerState.weaponsList.weapons.end())
+	auto it = playerState.weaponsList.weapons().find(weaponAddress);
+	if (it == playerState.weaponsList.weapons().end())
 	{
-		playerState.weaponsList.weapons.insert(weaponAddress);
+		playerState.weaponsList.insert(weaponAddress);
 	}
 
 	RCSPStream stream;
@@ -327,10 +392,10 @@ void HeadSensor::setTeam(uint8_t teamId)
 	info << "Setting team id";
 	playerConfig.teamId = teamId;
 	m_leds.blink(blinkPatterns.anyCommand);
-	for (auto it = playerState.weaponsList.weapons.begin(); it != playerState.weaponsList.weapons.end(); it++)
+	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Changing weapon team id to" << teamId;
-		RCSPStream::remotePullValue(*it, ConfigCodes::HeadSensor::Configuration::teamId);
+		RCSPStream::remotePullValue(it->first, ConfigCodes::HeadSensor::Configuration::teamId);
 	}
 }
 
@@ -373,13 +438,13 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 	if (notification.damager != playerConfig.plyerMT2Id)
 		return;
 
-	if (!playerState.weaponsList.weapons.empty())
+	if (!playerState.weaponsList.weapons().empty())
 	{
 		uint8_t sound =
 			notification.damagedTeam == playerConfig.teamId ?
 				NotificationSoundCase::friendInjured :
 				notification.state;
-		RCSPStream::remoteCall(*(playerState.weaponsList.weapons.begin()), ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged, sound);
+		RCSPStream::remoteCall(playerState.weaponsList.weapons().begin()->first, ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged, sound);
 	}
 
 }

@@ -21,6 +21,29 @@
 
 #include <set>
 
+class WeaponManager : public IWeaponObresver
+{
+public:
+	~WeaponManager();
+	void assign(const DeviceAddress& addr);
+
+	void dropAllPackages();
+
+	void respawn();
+	void die();
+private:
+	PackageId m_respawnPackage = 0;
+	PackageId m_diePackage = 0;
+
+	DeviceAddress m_addr;
+};
+
+class WeaponManagerFactory : public IWeaponObserverFactory
+{
+public:
+	IWeaponObresver *create() const;
+};
+
 class HeadSensor : public IAnyDevice
 {
 public:
@@ -64,6 +87,8 @@ private:
 	void weaponWoundAndShock();
 
 	void sendHeartbeat();
+
+	WeaponManagerFactory weaponManagerFactory;
 
 	RGBLeds m_leds{playerConfig.teamId};
 

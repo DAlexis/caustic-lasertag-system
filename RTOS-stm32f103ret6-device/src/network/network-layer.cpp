@@ -23,7 +23,6 @@ SINGLETON_IN_CPP(NetworkLayer)
 
 void DeviceAddress::convertFromString(const char* str)
 {
-	ScopedTag tag("dev-addr-parcer");
 	/// @todo Improve parcer to be absolutely stable
 	trace << "Parsing address " << str;
 	const char* pos = str;
@@ -122,7 +121,7 @@ uint16_t NetworkLayer::generatePackageId()
 }
 
 
-uint16_t NetworkLayer::send(
+PackageId NetworkLayer::send(
 	DeviceAddress target,
 	uint8_t* data,
 	uint16_t size,
@@ -401,6 +400,30 @@ bool NetworkLayer::isBroadcast(const DeviceAddress& addr)
 	for (auto it = m_broadcastTesters.begin(); it != m_broadcastTesters.end(); it++)
 		if (*it && (*it)->isAcceptableBroadcast(addr))
 			return true;
+	return false;
+}
+
+bool NetworkLayer::stopSending(PackageId packageId)
+{
+	ScopedLock lock(m_packagesQueueMutex);
+	auto it = m_packages.find(packageId);
+	if (it != m_packages.end())
+	{
+		m_packages.erase(it);
+		return true;
+	}
+	return false;
+}
+
+bool NetworkLayer::updateTimeout(PackageId packageId)
+{
+	ScopedLock lock(m_packagesQueueMutex);
+	auto it = m_packages.find(packageId);
+	if (it != m_packages.end())
+	{
+		it->second.wasCreated = systemClock->getTime();
+		return true;
+	}
 	return false;
 }
 
