@@ -9,7 +9,7 @@
 #include "fatfs.h"
 #include <string.h>
 
-void printHex(uint8_t* buffer, size_t size)
+void printHex(const uint8_t* buffer, size_t size)
 {
 	for (size_t i=0; i<size; i++)
 	{

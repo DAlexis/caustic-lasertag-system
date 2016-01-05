@@ -93,7 +93,8 @@ void KillZonesManager::interrogate()
 		Time currentTime = systemClock->getTime();
 		if (m_killZones[i].vibrationStopTime <= currentTime)
 		{
-			m_killZones[i].vibro->reset();
+			if (m_killZones[i].vibro)
+				m_killZones[i].vibro->reset();
 		}
 	}
 

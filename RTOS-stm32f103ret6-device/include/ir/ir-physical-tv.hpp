@@ -9,6 +9,7 @@
 #define INCLUDE_IR_IR_PHYSICAL_TV_HPP_
 
 #include "ir/ir-physical.hpp"
+#include "hal/system-clock.hpp"
 
 class IRTransmitterTV : public IRTransmitterBase
 {
@@ -48,10 +49,54 @@ public:
 	~IRReceiverTV() {}
 
 	void init();
+	void setEnabled(bool enabled);
 	void interrogate();
+
 private:
+	enum ReceivingState
+	{
+		RS_WAITING_HEADER = 0,
+		RS_HEADER_BEGINNED = 1,
+		RS_SPACE = 2,
+		RS_BIT = 3
+	};
+
 	constexpr static int bufferMaxSize = 100;
-	uint8_t m_buffer[bufferMaxSize];
+
+	// Receiver constants
+	constexpr static int headerPeriodMin     = 1700;
+	constexpr static int headerPeriodMax     = 2600;
+
+	constexpr static int bitOnePeriodMin    = 1100;
+	constexpr static int bitOnePeriodMax    = 1500;
+
+	constexpr static int bitZeroPeriodMin   = 500;
+	constexpr static int bitZeroPeriodMax   = 750;
+
+	constexpr static int bitWaitPeriodMin   = 500;
+	constexpr static int bitWaitPeriodMax   = 900;
+
+	uint8_t m_data[bufferMaxSize];
+	uint8_t *m_pCurrentByte;
+	uint8_t m_currentBit;
+	bool m_falseImpulse;
+	ReceivingState m_state;
+
+	Time m_lastTime = 0;
+	uint32_t m_dtime = 0;
+	uint32_t m_lastDtime = 0;
+
+	bool m_haveSomeData = false;
+
+	bool m_debug = false;
+
+
+	void resetReceiver();
+	bool isCorrect(unsigned int value, unsigned int min, unsigned int max);
+	void saveBit(bool value);
+	int getCurrentLength();
+
+	void interruptHandler(bool state);
 };
 
 

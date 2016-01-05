@@ -14,6 +14,8 @@
 
 #include <stdio.h>
 
+#include <math.h>
+
 WeaponManager::~WeaponManager()
 {
 	dropAllPackages();
@@ -85,19 +87,25 @@ HeadSensor::HeadSensor()
 	//m_weapons.insert({1,1,1});
 }
 
-void HeadSensor::init(const Pinout &pinout)
+void HeadSensor::init(const Pinout &_pinout)
 {
-	configure(pinout);
-}
-
-void HeadSensor::configure(const Pinout &_pinout)
-{
-	ScopedTag tag("head-init");
-
 	//debug.enable();
 
 	info << "Configuring kill zones";
 
+	const Pinout::PinDescr& zone1 = _pinout["zone1"];
+	const Pinout::PinDescr& zone1vibro = _pinout["zone1_vibro"];
+
+	receiver.setIOPin(IOPins->getIOPin(zone1.port, zone1.pin));
+	receiver.init();
+
+	receiver.setCallback([](const uint8_t* b, uint16_t s){
+		info << "|||||||||||||||||||||||==========||||||||||||||||||||||";
+		printHex(b, ceil(s / 8.0));
+	});
+	receiver.setEnabled(true);
+	m_tasksPool.add([this](){ receiver.interrogate(); }, 1, 1);
+/*
 	const Pinout::PinDescr& zone1 = _pinout["zone1"];
 	const Pinout::PinDescr& zone1vibro = _pinout["zone1_vibro"];
 	IIOPin* zone1vibroPin = zone1vibro ? IOPins->getIOPin(zone1vibro.port, zone1vibro.pin) : nullptr;
@@ -107,7 +115,7 @@ void HeadSensor::configure(const Pinout &_pinout)
 				IOPins->getIOPin(zone1.port, zone1.pin),
 				zone1vibroPin
 				);
-
+/*
 	const Pinout::PinDescr& zone2 = _pinout["zone2"];
 	const Pinout::PinDescr& zone2vibro = _pinout["zone2_vibro"];
 	if (zone2)
@@ -152,7 +160,7 @@ void HeadSensor::configure(const Pinout &_pinout)
 				IOPins->getIOPin(zone6.port, zone6.pin),
 				zone6vibro ? IOPins->getIOPin(zone6vibro.port, zone6vibro.pin) : zone1vibroPin
 				);
-
+*/
 	//m_mainSensor.enableDebug(true);
 
 

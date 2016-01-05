@@ -10,6 +10,7 @@
 
 #include "rcsp/base-types.hpp"
 #include "hal/fire-emitter.hpp"
+#include "hal/io-pins.hpp"
 #include <functional>
 #include <stdint.h>
 
@@ -32,6 +33,8 @@ public:
 	virtual ~IIRReceiver() {}
 
 	virtual void setCallback(IRReceiverCallback callback) = 0;
+	virtual void setIOPin(IIOPin* input) = 0;
+	virtual void setEnabled(bool enabled) = 0;
 
 	virtual void init() = 0;
 	/// Callback will be called from this function if needed
@@ -54,9 +57,11 @@ class IRReceiverBase : public IIRReceiver
 {
 public:
 	void setCallback(IRReceiverCallback callback) { m_callback = callback; }
+	void setIOPin(IIOPin* input) { m_input = input; }
 
 protected:
 	IRReceiverCallback m_callback = nullptr;
+	IIOPin* m_input = nullptr;
 };
 
 #endif /* INCLUDE_IR_IR_PHYSICAL_HPP_ */

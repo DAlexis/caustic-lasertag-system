@@ -19,6 +19,8 @@
 #include "dev/rgb-leds.hpp"
 #include "core/device-initializer.hpp"
 
+
+#include "ir/ir-physical-tv.hpp"
 #include <set>
 
 class WeaponManager : public IWeaponObresver
@@ -48,7 +50,6 @@ class HeadSensor : public IAnyDevice
 {
 public:
 	HeadSensor();
-	void configure(const Pinout &_pinout);
 	void init(const Pinout &pinout);
 	void setDafaultPinout(Pinout& pinout);
 	bool checkPinout(const Pinout& pinout);
@@ -118,6 +119,7 @@ private:
 
 		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, plyerMT2Id)* m_pId;
 	};
+	IRReceiverTV receiver;
 };
 
 

@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-void printHex(uint8_t* buffer, size_t size);
+void printHex(const uint8_t* buffer, size_t size);
 const char* parseFRESULT(int res);
 
 inline char lower(char c)
