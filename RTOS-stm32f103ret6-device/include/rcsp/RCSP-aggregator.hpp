@@ -132,6 +132,13 @@ public:
 		NOT_READABLE
 	};
 
+	struct Operation
+	{
+		OperationCode code;
+		OperationSize argumentSize;
+		const uint8_t* argument = nullptr;
+	};
+
 	constexpr static unsigned int minimalStreamSize = sizeof(OperationSize) + sizeof(OperationCode);
 
 	using ResultType = DetailedResult<AddingResult>;
@@ -149,7 +156,14 @@ public:
 	 */
 	uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
 
-	bool isStreamConsistent(uint8_t* stream, uint32_t size);
+	const uint8_t* extractNextOperation(
+			const uint8_t* stream,
+			Operation& commad,
+			uint16_t streamSize,
+			bool& success
+		);
+
+	bool isStreamConsistent(const uint8_t* stream, uint32_t size);
 
 	Result readIni(const char* filename);
 
@@ -241,6 +255,20 @@ template<typename T>
 inline void serializeAndInc(void*& cursor, const T& data)
 {
 	memcpy(cursor, &data, sizeof(T));
+	cursor += sizeof(T);
+}
+
+template<typename T>
+inline void deserializeAndInc(const void*& cursor, T& target)
+{
+	memcpy(&target, cursor, sizeof(T));
+	cursor += sizeof(T);
+}
+
+template<typename T>
+inline void deserializeAndInc(const uint8_t*& cursor, T& target)
+{
+	memcpy(&target, cursor, sizeof(T));
 	cursor += sizeof(T);
 }
 

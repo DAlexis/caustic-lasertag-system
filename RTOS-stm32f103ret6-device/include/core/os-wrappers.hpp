@@ -11,6 +11,7 @@
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SHEDULER_HPP_
 
 #include "utils/macro.hpp"
+#include "utils/interfaces.hpp"
 #include "cmsis_os.h"
 #include "hal/system-clock.hpp"
 #include <functional>
@@ -235,12 +236,6 @@ private:
 	xQueueHandle m_handle;
 };
 
-class IInterrogatable
-{
-public:
-	virtual ~IInterrogatable() {}
-	virtual void interrogate() = 0;
-};
 
 class Interrogator
 {

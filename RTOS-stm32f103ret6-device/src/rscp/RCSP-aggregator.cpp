@@ -50,6 +50,30 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 	return unsupported;
 }
 
+const uint8_t* RCSPAggregator::extractNextOperation(
+			const uint8_t* stream,
+			RCSPAggregator::Operation& commad,
+			uint16_t streamSize,
+			bool& success
+		)
+{
+	OperationSize size;
+	deserializeAndInc(stream, size);
+	if (streamSize < size + sizeof(OperationSize)+sizeof(OperationCode))
+	{
+		success = false;
+		return stream;
+	}
+	OperationCode code;
+	deserializeAndInc(stream, code);
+	commad.argumentSize = size;
+	commad.code = code;
+	commad.argument = stream;
+	stream += size;
+	success = true;
+	return stream;
+}
+
 bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream)
 {
 	ScopedTag tag("dispatch-op");
@@ -100,10 +124,10 @@ void RCSPAggregator::printWarningUnknownCode(OperationCode code)
 }
 
 
-bool RCSPAggregator::isStreamConsistent(uint8_t* stream, uint32_t size)
+bool RCSPAggregator::isStreamConsistent(const uint8_t* stream, uint32_t size)
 {
 	//uint8_t* position = stream;
-	for (uint8_t* position = stream; position - stream <= size; position++)
+	for (const uint8_t* position = stream; position - stream <= size; position++)
 	{
 		OperationSize operationSize = *position;
 		unsigned int thisOperationSize = sizeof(operationSize)+sizeof(OperationCode)+operationSize;

@@ -96,6 +96,17 @@ void HeadSensor::init(const Pinout &_pinout)
 	const Pinout::PinDescr& zone1 = _pinout["zone1"];
 	const Pinout::PinDescr& zone1vibro = _pinout["zone1_vibro"];
 
+	physicalReceiver.setIOPin(IOPins->getIOPin(zone1.port, zone1.pin));
+	physicalReceiver.init();
+	physicalReceiver.setEnabled(true);
+
+	presReceiver.setPhysicalReceiver(&physicalReceiver);
+	presReceiver.init();
+
+	presGroup.connectReceiver(presReceiver);
+
+	m_tasksPool.add([this]() { presGroup.interrogate(); }, 10000 );
+	/*
 	receiver.setIOPin(IOPins->getIOPin(zone1.port, zone1.pin));
 	receiver.init();
 
@@ -105,7 +116,7 @@ void HeadSensor::init(const Pinout &_pinout)
 	});
 	receiver.setEnabled(true);
 	m_tasksPool.add([this](){ receiver.interrogate(); }, 1, 1);
-/*
+
 	const Pinout::PinDescr& zone1 = _pinout["zone1"];
 	const Pinout::PinDescr& zone1vibro = _pinout["zone1_vibro"];
 	IIOPin* zone1vibroPin = zone1vibro ? IOPins->getIOPin(zone1vibro.port, zone1vibro.pin) : nullptr;
@@ -305,7 +316,7 @@ void HeadSensor::playerKill()
 	if (!playerState.isAlive())
 		return;
 	playerState.kill();
-	catchShot(ShotMessage {0, 0, 0});
+	catchShot(ShotMessage());
 	dieWeapons();
 	info << "Player killed";
 }
@@ -505,7 +516,7 @@ bool HeadSensor::TeamBroadcastTester::isAcceptableBroadcast(const DeviceAddress&
 void HeadSensor::testDie(const char*)
 {
 	playerState.healthCurrent = 0;
-	catchShot(ShotMessage {0, 0, 0});
+	catchShot(ShotMessage());
 }
 
 

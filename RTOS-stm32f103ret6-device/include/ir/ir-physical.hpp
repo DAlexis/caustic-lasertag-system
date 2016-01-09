@@ -11,6 +11,7 @@
 #include "rcsp/base-types.hpp"
 #include "hal/fire-emitter.hpp"
 #include "hal/io-pins.hpp"
+#include "utils/interfaces.hpp"
 #include <functional>
 #include <stdint.h>
 
@@ -27,7 +28,7 @@ public:
 	virtual bool busy() = 0;
 };
 
-class IIRReceiver
+class IIRReceiver : public IInterrogatable
 {
 public:
 	virtual ~IIRReceiver() {}
@@ -38,7 +39,6 @@ public:
 
 	virtual void init() = 0;
 	/// Callback will be called from this function if needed
-	virtual void interrogate() = 0;
 };
 
 class IRTransmitterBase : public IIRTransmitter

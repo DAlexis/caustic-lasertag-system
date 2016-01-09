@@ -63,8 +63,8 @@ public:
 		return stream.send(target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
-	uint8_t* getStream();
-	uint16_t getSize();
+	uint8_t* getStream() const;
+	uint16_t getSize() const;
 	RCSPAggregator::ResultType addValue(OperationCode code);
 	RCSPAggregator::ResultType addRequest(OperationCode code);
 	RCSPAggregator::ResultType addCall(OperationCode code);
@@ -84,13 +84,14 @@ public:
 
 	/**
 	 * Send current stream with specified timeout, resend period and resend period delta
+	 * @TODO Move sending function from stream. Stream only for multiply serializetion
 	 * @param target Address of receiver
 	 * @param waitForAck Need resend while no ACK received
 	 * @param doneCallback Callback after successful/not successful delivery
 	 * @param timings Package timings
 	 * @return Package id
 	 */
-	uint16_t send(
+	PackageId send(
 		DeviceAddress target,
 		bool waitForAck = false,
 		PackageSendingDoneCallback doneCallback = nullptr,

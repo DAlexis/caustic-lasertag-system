@@ -24,12 +24,12 @@ RCSPStream::~RCSPStream()
 		delete[] m_stream;
 }
 
-uint8_t* RCSPStream::getStream()
+uint8_t* RCSPStream::getStream() const
 {
 	return m_stream;
 }
 
-uint16_t RCSPStream::getSize()
+uint16_t RCSPStream::getSize() const
 {
 	return m_size;
 }
@@ -84,7 +84,7 @@ RCSPAggregator::ResultType RCSPStream::serializeAnything(OperationCode code, Ser
 	return result;
 }
 
-uint16_t RCSPStream::send(
+PackageId RCSPStream::send(
 	DeviceAddress target,
 	bool waitForAck,
 	PackageSendingDoneCallback doneCallback,

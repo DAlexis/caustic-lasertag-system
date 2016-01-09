@@ -11,14 +11,14 @@
 #include "utils/macro.hpp"
 #include "rcsp/RCSP-base-types.hpp"
 
-#define PAR_CODE(type, parameterName, value)  constexpr uint16_t parameterName = RCSPCodeManipulator::makeSetObject(value); \
-                                              constexpr const char parameterName##Text[] = STRINGIFICATE(variable); \
-                                              using parameterName##Type = type;
+#define PAR_CODE(type, parameterName, value)    constexpr OperationCode parameterName = RCSPCodeManipulator::makeSetObject(value); \
+                                                constexpr const char parameterName##Text[] = STRINGIFICATE(variable); \
+                                                using parameterName##Type = type;
 
 
-#define FUNC_CODE_NP(function, value)  constexpr uint16_t function = RCSPCodeManipulator::makeCallRequest(value);
+#define FUNC_CODE_NP(function, value)           constexpr OperationCode function = RCSPCodeManipulator::makeCallRequest(value);
 
-#define FUNC_CODE_1P(function, argType, value)  constexpr uint16_t function = RCSPCodeManipulator::makeCallRequest(value); \
+#define FUNC_CODE_1P(function, argType, value)  constexpr OperationCode function = RCSPCodeManipulator::makeCallRequest(value); \
                                                 using function##Arg1Type = argType;
 
 /**
@@ -27,6 +27,7 @@
 class RCSPCodeManipulator
 {
 public:
+	constexpr static OperationCode clearOptionBits(OperationCode operationCode) { return operationCode & OperationCodeMask; }
 	constexpr static OperationCode makeCallRequest(OperationCode operationCode) { return operationCode & OperationCodeMask; }
 	constexpr static OperationCode makeSetObject(OperationCode operationCode)
 			{ return (operationCode & OperationCodeMask) | (1 << 14); }

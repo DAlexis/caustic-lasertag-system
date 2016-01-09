@@ -17,6 +17,18 @@ void zerify(T& object)
 }
 
 template <typename T>
+void copyToBuffer(void* buffer, const T& object)
+{
+	memcpy(buffer, (void*) &object, sizeof(T));
+}
+
+template <typename T>
+T& interpretBuffer(void* buffer)
+{
+	return *reinterpret_cast<T*>(buffer);
+}
+
+template <typename T>
 class ChangeWatcher
 {
 public:

@@ -104,7 +104,7 @@ void KillZonesManager::interrogate()
 			&& systemClock->getTime() - m_lastDamageMoment > callbackDelay // We have waited for enough time
 		)
 	{
-		ShotMessage msg = {m_teamId, m_playerId, m_maxDamage};
+		ShotMessage msg(m_teamId, m_playerId, m_maxDamage);
 		RCSPAggregator::instance().doOperation(
 				ConfigCodes::HeadSensor::Functions::catchShot,
 				msg

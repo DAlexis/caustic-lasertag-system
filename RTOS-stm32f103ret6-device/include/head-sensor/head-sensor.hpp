@@ -21,6 +21,7 @@
 
 
 #include "ir/ir-physical-tv.hpp"
+#include "ir/ir-presentation-mt2.hpp"
 #include <set>
 
 class WeaponManager : public IWeaponObresver
@@ -119,7 +120,9 @@ private:
 
 		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, plyerMT2Id)* m_pId;
 	};
-	IRReceiverTV receiver;
+	IRReceiverTV physicalReceiver;
+	IRPresentationReceiverMT2 presReceiver;
+	PresentationReceiversGroupMT2 presGroup;
 };
 
 
