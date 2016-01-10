@@ -139,6 +139,10 @@ void IRPresentationReceiverMT2::assignReceiversGroup(IPresentationReceiversGroup
 
 void IRPresentationReceiverMT2::interrogate()
 {
+	if (m_vibro != nullptr && systemClock->getTime() - m_vibroEnabledTime > vibroPeriod)
+	{
+		m_vibro->reset();
+	}
 	m_physicalReceiver->interrogate();
 }
 
@@ -149,11 +153,12 @@ void IRPresentationReceiverMT2::setDamageCoefficient(const FloatParameter* coeff
 
 void IRPresentationReceiverMT2::receiverCallback(const uint8_t* data, uint16_t size)
 {
-	debug << "pres receiver has data: ";
+	debug << "IR receiver has data: ";
 	printHex(data, size);
 	// If shot
-	if (data[0] & ~MT2Extended::Byte1::shotMask == 0)
+	if ((data[0] & ~MT2Extended::Byte1::shotMask) == 0)
 	{
+		// For compatibility with protocol extensions no limitations to package size are provided
 		parseShot(data, size);
 		return;
 	}
@@ -216,19 +221,15 @@ void IRPresentationReceiverMT2::parseShot(const uint8_t* data, uint16_t size)
 			}
 		);
 	}
-	// Doing a real call
-
 }
 
 void IRPresentationReceiverMT2::parseSetTeam(const uint8_t* data, uint16_t size)
 {
 	UNUSED_ARG(size);
-	uint8_t teamId = data[1] & 0x03;
-	//printf("IR: Set team id to %u\n", teamId);
 	if (data[1] & ~(0x03)) {
-		//printf("Warning: team id byte contains non-zero upper bits\n");
+		warning << "Team id byte contains non-zero upper bits";
 	}
-	TeamMT2Id team = data[1];
+	TeamMT2Id team = data[1] & 0x03;
 	updateOperationCallback([team]() mutable {
 		RCSPAggregator::instance().doOperation(
 				ConfigCodes::HeadSensor::Functions::setTeam,
@@ -238,6 +239,7 @@ void IRPresentationReceiverMT2::parseSetTeam(const uint8_t* data, uint16_t size)
 
 void IRPresentationReceiverMT2::parseAddHealth(const uint8_t* data, uint16_t size)
 {
+	UNUSED_ARG(size);
 	int16_t healthDelta = MT2Extended::decodeAddHealth(data[1]);
 	updateOperationCallback([healthDelta]() mutable {
 		RCSPAggregator::instance().doOperation(
@@ -248,6 +250,7 @@ void IRPresentationReceiverMT2::parseAddHealth(const uint8_t* data, uint16_t siz
 
 void IRPresentationReceiverMT2::parseMT2Command(const uint8_t* data, uint16_t size)
 {
+	UNUSED_ARG(size);
 	switch(data[1])
 	{
 	case MT2Extended::Commands::adminKill:
@@ -316,6 +319,15 @@ void IRPresentationReceiverMT2::parseRCSP(const uint8_t* data, uint16_t size)
 	});
 }
 
+void IRPresentationReceiverMT2::enableVibro()
+{
+	if (m_vibro)
+	{
+		m_vibro->set();
+		m_vibroEnabledTime = systemClock->getTime();
+	}
+}
+
 uint8_t IRPresentationReceiverMT2::decodeDamage(uint8_t damage)
 {
 	switch(damage)
@@ -364,8 +376,7 @@ void PresentationReceiversGroupMT2::interrogate()
 		(*it)->interrogate();
 	}
 
-	Time time = systemClock->getTime();
-	if (time - m_lastReceivedMessage > messageParsingDelay)
+	if (systemClock->getTime() - m_lastReceivedMessage > messageParsingDelay)
 	{
 		if (m_operation != nullptr)
 		{

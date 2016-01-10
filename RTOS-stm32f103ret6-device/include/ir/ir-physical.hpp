@@ -28,10 +28,10 @@ public:
 	virtual bool busy() = 0;
 };
 
-class IIRReceiver : public IInterrogatable
+class IIRPhysicalReceiver : public IInterrogatable
 {
 public:
-	virtual ~IIRReceiver() {}
+	virtual ~IIRPhysicalReceiver() {}
 
 	virtual void setCallback(IRReceiverCallback callback) = 0;
 	virtual void setIOPin(IIOPin* input) = 0;
@@ -53,7 +53,7 @@ protected:
 	IFireEmitter* m_emitter = nullptr;
 };
 
-class IRReceiverBase : public IIRReceiver
+class IRReceiverBase : public IIRPhysicalReceiver
 {
 public:
 	void setCallback(IRReceiverCallback callback) { m_callback = callback; }

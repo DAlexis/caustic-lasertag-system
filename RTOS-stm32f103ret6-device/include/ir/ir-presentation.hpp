@@ -19,9 +19,10 @@ class IIRPresentationReceiver : public IInterrogatable
 public:
 	virtual ~IIRPresentationReceiver() {}
 	virtual void init() = 0;
-	virtual void setPhysicalReceiver(IIRReceiver* receiver) = 0;
+	virtual void setPhysicalReceiver(IIRPhysicalReceiver* receiver) = 0;
 	virtual void assignReceiversGroup(IPresentationReceiversGroup& group) = 0;
 	virtual void setDamageCoefficient(const FloatParameter* coefficient) = 0;
+	virtual void setVibroEngine(IIOPin* pin) = 0;
 };
 
 /**
@@ -47,17 +48,19 @@ public:
 class IRPresentationReceiverBase : public IIRPresentationReceiver
 {
 public:
-	void setPhysicalReceiver(IIRReceiver* receiver) {
+	void setPhysicalReceiver(IIRPhysicalReceiver* receiver) {
 		m_physicalReceiver = receiver;
 		m_physicalReceiver->setCallback(
 				[this](const uint8_t* data, uint16_t size)
 				{ receiverCallback(data, size); }
 		);
 	}
+	void setVibroEngine(IIOPin* pin) { m_vibro = pin; }
 
 protected:
 	virtual void receiverCallback(const uint8_t* data, uint16_t size) = 0;
-	IIRReceiver* m_physicalReceiver = nullptr;
+	IIRPhysicalReceiver* m_physicalReceiver = nullptr;
+	IIOPin* m_vibro = nullptr;
 };
 
 class IRPresentationTransmitterBase : public IIRPresentationTransmitter

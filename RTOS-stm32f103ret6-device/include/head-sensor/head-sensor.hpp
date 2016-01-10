@@ -20,8 +20,8 @@
 #include "core/device-initializer.hpp"
 
 
-#include "ir/ir-physical-tv.hpp"
-#include "ir/ir-presentation-mt2.hpp"
+#include "ir/ir-physical.hpp"
+#include "ir/ir-presentation.hpp"
 #include <set>
 
 class WeaponManager : public IWeaponObresver
@@ -79,6 +79,7 @@ public:
 private:
 
 	constexpr static uint32_t heartbeatPeriod = 2000000;
+	constexpr static uint8_t killZonesCount = 6;
 	// Test functions
 	void testDie(const char*);
 
@@ -94,16 +95,6 @@ private:
 
 	RGBLeds m_leds{playerConfig.teamId};
 
-	//MilesTag2Receiver m_killZone1;
-
-	KillZonesManager m_killZonesManager{
-		playerConfig.zone1DamageCoeff,
-		playerConfig.zone2DamageCoeff,
-		playerConfig.zone3DamageCoeff,
-		playerConfig.zone4DamageCoeff,
-		playerConfig.zone5DamageCoeff,
-		playerConfig.zone6DamageCoeff
-	};
 
 	Time m_shockDelayBegin = 0;
 	TasksPool m_tasksPool;
@@ -120,9 +111,12 @@ private:
 
 		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, plyerMT2Id)* m_pId;
 	};
-	IRReceiverTV physicalReceiver;
-	IRPresentationReceiverMT2 presReceiver;
-	PresentationReceiversGroupMT2 presGroup;
+
+	IIRPhysicalReceiver* m_irPhysicalReceivers[killZonesCount];
+	IIRPresentationReceiver* m_irPresentationReceivers[killZonesCount];
+	IPresentationReceiversGroup* m_irPresentationReceiversGroup = nullptr;
+
+	Interrogator m_killZonesInterogator;
 };
 
 

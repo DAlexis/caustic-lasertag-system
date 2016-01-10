@@ -41,12 +41,14 @@ public:
 	void setDamageCoefficient(const FloatParameter* coefficient);
 
 private:
+	constexpr static uint32_t vibroPeriod = 200000;
 	void receiverCallback(const uint8_t* data, uint16_t size);
 	void parseShot(const uint8_t* data, uint16_t size);
 	void parseMT2Command(const uint8_t* data, uint16_t size);
 	void parseSetTeam(const uint8_t* data, uint16_t size);
 	void parseAddHealth(const uint8_t* data, uint16_t size);
 	void parseRCSP(const uint8_t* data, uint16_t size);
+	void enableVibro();
 
 
 	uint8_t decodeDamage(uint8_t damage);
@@ -55,6 +57,7 @@ private:
 	PresentationReceiversGroupMT2* m_group = nullptr;
 	static FloatParameter defaultDamageCoefficient;
 	const FloatParameter* m_damageCoefficient = &defaultDamageCoefficient;
+	Time m_vibroEnabledTime = 0;
 };
 
 class PresentationReceiversGroupMT2 : public IPresentationReceiversGroup

@@ -26,7 +26,7 @@ KillZonesManager::KillZonesManager(
 
 	m_interrogateTask.setStackSize(1024);
 	m_interrogateTask.setTask(std::bind(&KillZonesManager::interrogate, this));
-	m_interrogateTask.run(50, 2, 2);
+	//m_interrogateTask.run(50, 2, 2);
 }
 
 void KillZonesManager::enableKillZone(uint8_t zone, IIOPin *input, IIOPin* vibro)

@@ -268,7 +268,6 @@ bool NetworkLayer::checkIfIdStoredAndStore(uint16_t id)
 
 void NetworkLayer::interrogate()
 {
-	ScopedTag tag("radio-interrogate");
 	sendNext();
 	nrf.interrogate();
 	receiveIncoming();

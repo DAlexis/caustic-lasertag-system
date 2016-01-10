@@ -95,7 +95,8 @@ void IRTransmitterTV::emitterCallback(bool wasOnState)
 void IRReceiverTV::init()
 {
 	resetReceiver();
-	m_input->setExtiCallback(std::bind(&IRReceiverTV::interruptHandler, this, std::placeholders::_1), false);
+	/// For debugging "true" should be replaced by "false" to disable direct call from IRQ
+	m_input->setExtiCallback(std::bind(&IRReceiverTV::interruptHandler, this, std::placeholders::_1), true);
 }
 
 void IRReceiverTV::setEnabled(bool enabled)

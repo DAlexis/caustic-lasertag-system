@@ -12,6 +12,9 @@
 #include "core/logging.hpp"
 #include "core/device-initializer.hpp"
 
+#include "ir/ir-physical-tv.hpp"
+#include "ir/ir-presentation-mt2.hpp"
+
 #include <stdio.h>
 
 #include <math.h>
@@ -93,86 +96,43 @@ void HeadSensor::init(const Pinout &_pinout)
 
 	info << "Configuring kill zones";
 
-	const Pinout::PinDescr& zone1 = _pinout["zone1"];
-	const Pinout::PinDescr& zone1vibro = _pinout["zone1_vibro"];
+	m_irPresentationReceiversGroup = new PresentationReceiversGroupMT2;
+	m_killZonesInterogator.setStackSize(512);
 
-	physicalReceiver.setIOPin(IOPins->getIOPin(zone1.port, zone1.pin));
-	physicalReceiver.init();
-	physicalReceiver.setEnabled(true);
+	m_killZonesInterogator.registerObject(m_irPresentationReceiversGroup);
 
-	presReceiver.setPhysicalReceiver(&physicalReceiver);
-	presReceiver.init();
+	auto initKillZone = [this](uint8_t index, IIOPin* pin, IIOPin* vibroPin, FloatParameter* damageCoefficient) {
+		m_irPhysicalReceivers[index] = new IRReceiverTV;
+		m_irPhysicalReceivers[index]->setIOPin(pin);
+		m_irPhysicalReceivers[index]->init();
+		m_irPhysicalReceivers[index]->setEnabled(true);
 
-	presGroup.connectReceiver(presReceiver);
+		m_irPresentationReceivers[index] = new IRPresentationReceiverMT2;
+		m_irPresentationReceivers[index]->setPhysicalReceiver(m_irPhysicalReceivers[index]);
+		m_irPresentationReceivers[index]->setDamageCoefficient(damageCoefficient);
+		m_irPresentationReceivers[index]->setVibroEngine(vibroPin);
+		m_irPresentationReceivers[index]->init();
 
-	m_tasksPool.add([this]() { presGroup.interrogate(); }, 10000 );
-	/*
-	receiver.setIOPin(IOPins->getIOPin(zone1.port, zone1.pin));
-	receiver.init();
+		m_irPresentationReceiversGroup->connectReceiver(*(m_irPresentationReceivers[index]));
+	};
 
-	receiver.setCallback([](const uint8_t* b, uint16_t s){
-		info << "|||||||||||||||||||||||==========||||||||||||||||||||||";
-		printHex(b, ceil(s / 8.0));
-	});
-	receiver.setEnabled(true);
-	m_tasksPool.add([this](){ receiver.interrogate(); }, 1, 1);
-
-	const Pinout::PinDescr& zone1 = _pinout["zone1"];
-	const Pinout::PinDescr& zone1vibro = _pinout["zone1_vibro"];
-	IIOPin* zone1vibroPin = zone1vibro ? IOPins->getIOPin(zone1vibro.port, zone1vibro.pin) : nullptr;
-	if (zone1)
-		m_killZonesManager.enableKillZone(
-				0,
-				IOPins->getIOPin(zone1.port, zone1.pin),
-				zone1vibroPin
+	for (int i=0; i<6; i++)
+	{
+		char zoneName[10];
+		char vibroName[20];
+		sprintf(zoneName, "zone%d", i+1);
+		sprintf(vibroName, "zone%d_vibro", i+1);
+		const Pinout::PinDescr& zone = _pinout[zoneName];
+		const Pinout::PinDescr& zoneVibro = _pinout[vibroName];
+		if (zone)
+		{
+			initKillZone(i,
+					IOPins->getIOPin(zone.port, zone.pin),
+					IOPins->getIOPin(zoneVibro.port, zoneVibro.pin),
+					&playerConfig.zone1DamageCoeff
 				);
-/*
-	const Pinout::PinDescr& zone2 = _pinout["zone2"];
-	const Pinout::PinDescr& zone2vibro = _pinout["zone2_vibro"];
-	if (zone2)
-		m_killZonesManager.enableKillZone(
-				1,
-				IOPins->getIOPin(zone2.port, zone2.pin),
-				zone2vibro ? IOPins->getIOPin(zone2vibro.port, zone2vibro.pin) : zone1vibroPin
-				);
-
-	const Pinout::PinDescr& zone3 = _pinout["zone3"];
-	const Pinout::PinDescr& zone3vibro = _pinout["zone3_vibro"];
-	if (zone3)
-		m_killZonesManager.enableKillZone(
-				2,
-				IOPins->getIOPin(zone3.port, zone3.pin),
-				zone3vibro ? IOPins->getIOPin(zone3vibro.port, zone3vibro.pin) : zone1vibroPin
-				);
-
-	const Pinout::PinDescr& zone4 = _pinout["zone4"];
-	const Pinout::PinDescr& zone4vibro = _pinout["zone4_vibro"];
-	if (zone4)
-		m_killZonesManager.enableKillZone(
-				3,
-				IOPins->getIOPin(zone4.port, zone4.pin),
-				zone4vibro ? IOPins->getIOPin(zone4vibro.port, zone4vibro.pin) : zone1vibroPin
-				);
-
-	const Pinout::PinDescr& zone5 = _pinout["zone5"];
-	const Pinout::PinDescr& zone5vibro = _pinout["zone5_vibro"];
-	if (zone5)
-		m_killZonesManager.enableKillZone(
-				4,
-				IOPins->getIOPin(zone5.port, zone5.pin),
-				zone5vibro ? IOPins->getIOPin(zone5vibro.port, zone5vibro.pin) : zone1vibroPin
-				);
-
-	const Pinout::PinDescr& zone6 = _pinout["zone6"];
-	const Pinout::PinDescr& zone6vibro = _pinout["zone6_vibro"];
-	if (zone6)
-		m_killZonesManager.enableKillZone(
-				5,
-				IOPins->getIOPin(zone6.port, zone6.pin),
-				zone6vibro ? IOPins->getIOPin(zone6vibro.port, zone6vibro.pin) : zone1vibroPin
-				);
-*/
-	//m_mainSensor.enableDebug(true);
+		}
+	}
 
 
 	info << "Parsing config file";
@@ -222,6 +182,7 @@ void HeadSensor::init(const Pinout &_pinout)
 	m_tasksPool.run();
 	StateSaver::instance().runSaver(8000);
 
+	m_killZonesInterogator.run();
 	info << "Head sensor ready to use";
 }
 
