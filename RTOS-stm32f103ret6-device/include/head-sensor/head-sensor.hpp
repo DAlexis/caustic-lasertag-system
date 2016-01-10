@@ -11,7 +11,6 @@
 #include "head-sensor/resources.hpp"
 #include "head-sensor/player-config-and-state.hpp"
 #include "device/device.hpp"
-#include "head-sensor/kill-zones.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
