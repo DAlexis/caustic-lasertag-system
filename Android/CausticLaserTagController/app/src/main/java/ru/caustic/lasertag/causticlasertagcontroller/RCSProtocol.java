@@ -791,7 +791,7 @@ public class RCSProtocol {
     }
 
     public static class FunctionsContainer implements IDescriptionsHolder {
-        public Map<Integer, FunctionDescription> funcions = new TreeMap<>();
+        public Map<Integer, FunctionDescription> functions = new TreeMap<>();
 
         public void register(IDescription descr) {
             FunctionDescription funcDescr = null;
@@ -800,12 +800,12 @@ public class RCSProtocol {
             } else {
                 return;
             }
-            funcions.put(funcDescr.getId(), funcDescr);
+            functions.put(funcDescr.getId(), funcDescr);
         }
 
         public int serializeCall(int id, String argument, byte[] memory, int position, int maxPosition)
         {
-            FunctionDescription func = funcions.get(id);
+            FunctionDescription func = functions.get(id);
             if (func == null)
                 return 0;
             int size = func.size();

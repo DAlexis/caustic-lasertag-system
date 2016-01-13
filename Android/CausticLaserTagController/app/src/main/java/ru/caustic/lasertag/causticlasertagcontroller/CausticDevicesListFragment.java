@@ -109,7 +109,7 @@ public class CausticDevicesListFragment extends Fragment {
         public void checkAndAddToSettingsEditorContext() {
             if (deviceName.isChecked()) {
                 int selectedType = Integer.parseInt(
-                        CausticDevicesManager.getInstance().devices2.get(device.address).parameters.get(
+                        CausticDevicesManager.getInstance().devices.get(device.address).parameters.get(
                                 RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
                         ).getValue()
                 );

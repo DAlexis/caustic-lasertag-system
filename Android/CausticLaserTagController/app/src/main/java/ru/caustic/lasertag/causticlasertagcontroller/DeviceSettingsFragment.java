@@ -32,13 +32,89 @@ public class DeviceSettingsFragment extends Fragment {
     private Button buttonApply;
     private Button buttonCancel;
     private LinearLayout deviceSettingsLinearLayout;
-    private TextView textViewSelectDevices;
+    private LinearLayout selectDevicesPromptLinearLayout;
+    private LinearLayout loadingLinearLayout;
+
+    private CausticDevicesManager.AsyncDataPopper dataPopper = null;
 
     boolean isActive = false;
 
     public static SettingsEditorContext editorContext = new SettingsEditorContext();
 
-    public static abstract class ParametersListElement {
+    public static class SettingsEditorContext {
+        public Set<BridgeConnector.DeviceAddress> devices = new HashSet<>();
+        public ArrayList<ParameterEntry> parameters = new ArrayList<>();
+
+        private boolean entriesCreated = false;
+        public void clear() {
+            devices.clear();
+        }
+        public void selectForEditing(BridgeConnector.DeviceAddress addr) {
+            devices.add(addr);
+            entriesCreated = false;
+        }
+        public void deselectForEditing(BridgeConnector.DeviceAddress addr) {
+            devices.remove(addr);
+        }
+        public BridgeConnector.DeviceAddress getAnyAddress() {
+            for (BridgeConnector.DeviceAddress addr : devices) {
+                return addr;
+            }
+            return null;
+        }
+        public int getDeviceType() {
+            if (devices.isEmpty()) {
+                return RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED;
+            }
+
+            return Integer.parseInt(
+                    CausticDevicesManager.getInstance().devices.get(getAnyAddress()).parameters.get(
+                            RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
+                    ).getValue()
+            );
+        }
+        public void createEntries() {
+            /// @todo add check that all devices are homogeneous
+            if (devices.isEmpty())
+                return;
+
+            /*if (entriesCreated)
+                return;*/
+            parameters.clear();
+
+            BridgeConnector.DeviceAddress someAddress = getAnyAddress();
+
+            CausticDevicesManager.CausticDevice dev = CausticDevicesManager.getInstance().devices.get(someAddress);
+
+            // We need to output parameters sorted by original order
+            for (int id : dev.parameters.orderedIds) {
+                RCSProtocol.ParameterDescription descr = dev.parameters.allParameters.get(id).getDescription();
+
+                if (!descr.isEditable())
+                    continue;
+
+                ParameterEntry newParameter = new ParameterEntry(this, descr);
+                newParameter.init();
+
+                /// @todo Combine this to containers and classes those contain
+                parameters.add(newParameter);
+            }
+            entriesCreated = true;
+        }
+        public void pushValues() {
+            // Reading modified values
+            for (ParameterEntry entry : parameters) {
+                entry.uiListElement.pickValue();
+                entry.pushValue();
+            }
+            // Sending values to devices
+            for (BridgeConnector.DeviceAddress address : devices) {
+                CausticDevicesManager.getInstance().devices.get(address).pushToDevice();
+            }
+        }
+    }
+
+    private static abstract class ParametersListElement {
         public View convertView = null;
         protected ParameterEntry parameterEntry = null;
         public boolean initialized() {
@@ -48,7 +124,7 @@ public class DeviceSettingsFragment extends Fragment {
         public abstract void update();
         public abstract void pickValue();
     }
-    public static abstract class ParametersListElementSeekBar extends ParametersListElement {
+    private static abstract class ParametersListElementSeekBar extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
         SeekBar seekBar = null;
@@ -176,7 +252,7 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
-    public static class ParametersListElementInteger extends ParametersListElementSeekBar {
+    private static class ParametersListElementInteger extends ParametersListElementSeekBar {
         private int min() {
             return ((RCSProtocol.UintParameter) descr).minValue;
         }
@@ -228,7 +304,7 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min() + " to " + max();
         }
     }
-    public static class ParametersListElementTimeInterval extends ParametersListElementSeekBar {
+    private static class ParametersListElementTimeInterval extends ParametersListElementSeekBar {
         private static int k = 1000;
         private long min() {
             return ((RCSProtocol.TimeIntervalParameter) descr).minValue;
@@ -270,7 +346,7 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min()/k + "ms to " + max()/k + "ms";
         }
     }
-    public static class ParametersListElementFloat extends ParametersListElementSeekBar {
+    private static class ParametersListElementFloat extends ParametersListElementSeekBar {
         private static int progressElements = 1000;
         private float min() {
             return ((RCSProtocol.FloatParameter) descr).minValue;
@@ -311,7 +387,7 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min() + " to " + max();
         }
     }
-    public static class ParametersListElementBoolean extends ParametersListElement {
+    private static class ParametersListElementBoolean extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
         Switch boolSwitch = null;
@@ -358,7 +434,7 @@ public class DeviceSettingsFragment extends Fragment {
             parameterEntry.setValue(boolSwitch.isChecked() ? "true" : "false");
         }
     }
-    public static class ParametersListElementEnum extends ParametersListElement {
+    private static class ParametersListElementEnum extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
         Spinner variants = null;
@@ -434,7 +510,7 @@ public class DeviceSettingsFragment extends Fragment {
             );
         }
     }
-    public static class ParametersListElementUnsupported extends ParametersListElement {
+    private static class ParametersListElementUnsupported extends ParametersListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
 
@@ -470,7 +546,7 @@ public class DeviceSettingsFragment extends Fragment {
         return new ParametersListElementUnsupported();
     }
 
-    public static class ParameterEntry {
+    private static class ParameterEntry {
         SettingsEditorContext context;
         RCSProtocol.ParameterDescription description;
         // If all the devices has the same parameters value, it should be shown. Otherwise "Different" will be shown
@@ -504,7 +580,7 @@ public class DeviceSettingsFragment extends Fragment {
             hasInitialValue = true; // We suppose that all values are the same
             for (BridgeConnector.DeviceAddress addr : context.devices) {
                 String thisDeviceValue
-                        = CausticDevicesManager.getInstance().devices2
+                        = CausticDevicesManager.getInstance().devices
                         .get(addr).parameters
                         .get(description.getId()).getValue();
                 if (!valueInitialized) {
@@ -543,7 +619,7 @@ public class DeviceSettingsFragment extends Fragment {
 
             for (BridgeConnector.DeviceAddress addr : context.devices) {
                 RCSProtocol.AnyParameterSerializer par
-                        = CausticDevicesManager.getInstance().devices2
+                        = CausticDevicesManager.getInstance().devices
                         .get(addr).parameters
                         .get(description.getId());
                 par.setValue(currentValue);
@@ -551,81 +627,27 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
-    public static class SettingsEditorContext {
-        public Set<BridgeConnector.DeviceAddress> devices = new HashSet<>();
-        public ArrayList<ParameterEntry> parameters = new ArrayList<>();
-
-        private boolean entriesCreated = false;
-        public void clear() {
-            devices.clear();
+    private class ListEntriesCreator implements Runnable {
+        @Override
+        public void run() {
+            showList();
+            editorContext.createEntries();
+            mAdapter.notifyDataSetChanged();
         }
-        public void selectForEditing(BridgeConnector.DeviceAddress addr) {
-            devices.add(addr);
-            entriesCreated = false;
-        }
-        public void deselectForEditing(BridgeConnector.DeviceAddress addr) {
-            devices.remove(addr);
-        }
-        public BridgeConnector.DeviceAddress getAnyAddress() {
-            for (BridgeConnector.DeviceAddress addr : devices) {
-                return addr;
-            }
-            return null;
-        }
-        public int getDeviceType() {
-            if (devices.isEmpty()) {
-                return RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED;
-            }
+    }
 
-            return Integer.parseInt(
-                    CausticDevicesManager.getInstance().devices2.get(getAnyAddress()).parameters.get(
-                            RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
-                    ).getValue()
-            );
-        }
-        public void createEntries() {
-            /// @todo add check that all devices are homogeneous
-            if (devices.isEmpty())
-                return;
-
-            /*if (entriesCreated)
-                return;*/
-            parameters.clear();
-
-            BridgeConnector.DeviceAddress someAddress = getAnyAddress();
-
-            CausticDevicesManager.CausticDevice dev = CausticDevicesManager.getInstance().devices2.get(someAddress);
-
-            // We need to output parameters sorted by original order
-            for (int id : dev.parameters.orderedIds) {
-                RCSProtocol.ParameterDescription descr = dev.parameters.allParameters.get(id).getDescription();
-
-                if (!descr.isEditable())
-                    continue;
-
-                ParameterEntry newParameter = new ParameterEntry(this, descr);
-                newParameter.init();
-
-                /// @todo Combine this to containers and classes those contain
-                parameters.add(newParameter);
-            }
-            entriesCreated = true;
-        }
-        public void pushValues() {
-            // Reading modified values
-            for (ParameterEntry entry : parameters) {
-                entry.uiListElement.pickValue();
-                entry.pushValue();
-            }
-            // Sending values to devices
-            for (BridgeConnector.DeviceAddress address : devices) {
-                CausticDevicesManager.getInstance().devices2.get(address).pushToDevice();
+    private class ParametersListUpdater implements CausticDevicesManager.SynchronizationEndHandler {
+        @Override
+        public void onSynchronizationEnd(boolean isSuccess) {
+            if (isSuccess) {
+                getActivity().runOnUiThread(new ListEntriesCreator());
             }
         }
     }
 
     public DeviceSettingsFragment() {
         super();
+        dataPopper = CausticDevicesManager.getInstance().new AsyncDataPopper(new ParametersListUpdater(), editorContext.devices);
     }
 
     @Override
@@ -648,7 +670,8 @@ public class DeviceSettingsFragment extends Fragment {
         buttonApply = (Button) view.findViewById(R.id.buttonApplySettings);
         buttonCancel = (Button) view.findViewById(R.id.buttonCancelSettings);
         deviceSettingsLinearLayout = (LinearLayout) view.findViewById(R.id.deviceSettingsLinearLayout);
-        textViewSelectDevices = (TextView) view.findViewById(R.id.textViewSelectDevices);
+        selectDevicesPromptLinearLayout = (LinearLayout) view.findViewById(R.id.selectDevicesPromptLinearLayout);
+        loadingLinearLayout = (LinearLayout) view.findViewById(R.id.loadingLinearLayout);
 
         buttonApply.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -744,21 +767,29 @@ public class DeviceSettingsFragment extends Fragment {
 
         if (editorContext.devices.isEmpty())
         {
-            setSettingsControlsInvisible();
+            showPrompt();
         } else {
-            setSettingsControlsVisible();
-            editorContext.createEntries();
-            mAdapter.notifyDataSetChanged();
+            showLoading();
+            dataPopper.start();
         }
     }
 
-    public void setSettingsControlsVisible() {
-        textViewSelectDevices.setVisibility(View.GONE);
+    private void showPrompt() {
+        deviceSettingsLinearLayout.setVisibility(View.GONE);
+        loadingLinearLayout.setVisibility(View.GONE);
+        selectDevicesPromptLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showLoading() {
+        deviceSettingsLinearLayout.setVisibility(View.GONE);
+        selectDevicesPromptLinearLayout.setVisibility(View.GONE);
+        loadingLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showList() {
+        selectDevicesPromptLinearLayout.setVisibility(View.GONE);
+        loadingLinearLayout.setVisibility(View.GONE);
         deviceSettingsLinearLayout.setVisibility(View.VISIBLE);
     }
 
-    public void setSettingsControlsInvisible() {
-        deviceSettingsLinearLayout.setVisibility(View.GONE);
-        textViewSelectDevices.setVisibility(View.VISIBLE);
-    }
 }

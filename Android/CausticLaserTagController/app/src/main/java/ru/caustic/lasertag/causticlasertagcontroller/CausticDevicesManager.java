@@ -1,11 +1,13 @@
 package ru.caustic.lasertag.causticlasertagcontroller;
 
 import android.os.Handler;
+import android.os.SystemClock;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by alexey on 20.09.15.
@@ -31,7 +33,7 @@ public class CausticDevicesManager {
         String taskText();
     }
 
-    public class RCSPStream {
+    public static class RCSPStream {
         int requestSize = 23;
         byte[] request = new byte[requestSize];
         int cursor = 0;
@@ -96,7 +98,7 @@ public class CausticDevicesManager {
                 BridgeConnector.getInstance().sendMessage(addr, request, cursor);
         }
     }
-    public class RCSPMultiStream {
+    public static class RCSPMultiStream {
         List<RCSPStream> streams = new ArrayList<>();
 
         public RCSPMultiStream() {
@@ -125,12 +127,14 @@ public class CausticDevicesManager {
         }
     }
 
-    /////////////////////////
-    // New version
-    public Map<BridgeConnector.DeviceAddress, CausticDevice> devices2 = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
+    public Map<BridgeConnector.DeviceAddress, CausticDevice> devices = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
     private Handler devicesListUpdated = null;
 
-    public class CausticDevice {
+    public interface SynchronizationEndHandler {
+        void onSynchronizationEnd(boolean isSuccess);
+    }
+
+    public static class CausticDevice {
         private boolean parametersAreAdded = false;
         public BridgeConnector.DeviceAddress address = new BridgeConnector.DeviceAddress();
         public RCSProtocol.ParametersContainer parameters = new RCSProtocol.ParametersContainer();
@@ -201,6 +205,64 @@ public class CausticDevicesManager {
             }
             stream.send(address);
         }
+
+        public boolean areParametersSync()
+        {
+            for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : parameters.entrySet()) {
+                if (!entry.getValue().isSync())
+                    return false;
+            }
+            return true;
+        }
+    }
+
+    public class AsyncDataPopper extends Thread {
+        private final SynchronizationEndHandler handler;
+        public final Set<BridgeConnector.DeviceAddress> devicesToPop;
+
+        public AsyncDataPopper(SynchronizationEndHandler endHandler, Set<BridgeConnector.DeviceAddress> devices) {
+            handler = endHandler;
+            devicesToPop = devices;
+        }
+
+        @Override
+        public void run() {
+            if (devicesToPop == null)
+                return;
+            boolean syncSuccess = true;
+            // Giving 'pop' command for every device
+            for (BridgeConnector.DeviceAddress addr : devicesToPop) {
+                CausticDevice dev = devices.get(addr);
+                if (dev != null) {
+                    dev.popFromDevice();
+                }
+                if (!waitForDeviceSync(dev)) {
+                    syncSuccess = false;
+                }
+
+            }
+            if (handler != null)
+                handler.onSynchronizationEnd(syncSuccess);
+        }
+
+        private final int timeout = 10000;
+        private boolean needStop;
+        public void stopWaiting() {
+            needStop = true;
+        }
+
+        private boolean waitForDeviceSync(CausticDevice device) {
+            // @todo Add timeout and handler support here
+            needStop = false;
+            for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : device.parameters.entrySet()) {
+                while (!entry.getValue().isSync()) {
+                    SystemClock.sleep(30);
+                    if (needStop)
+                        return false;
+                }
+            }
+            return true;
+        }
     }
 
     public boolean updateDevicesList(Handler devicesListUpdated) {
@@ -221,7 +283,7 @@ public class CausticDevicesManager {
             RCSPStream stream = new RCSPStream();
             stream.addObjectRequest(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId());
             stream.addObjectRequest(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId());
-            devices2.clear();
+            devices.clear();
             stream.send(BridgeConnector.Broadcasts.any);
         }
     }
@@ -238,11 +300,11 @@ public class CausticDevicesManager {
         public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
         {
             //boolean newDeviceAdded = false;
-            CausticDevice dev = devices2.get(address);
+            CausticDevice dev = devices.get(address);
             if (dev == null) {
                 dev = new CausticDevice();
                 dev.address = new BridgeConnector.DeviceAddress(address);
-                devices2.put(address, dev);
+                devices.put(address, dev);
                 //newDeviceAdded = true;
             }
 
@@ -254,8 +316,8 @@ public class CausticDevicesManager {
                 // Device is ready to operate with it: we know address, type and name
                 dev.addDeviceRelatedParameters();
                 //addPreferenceHeaderForDevice(dev);
-                dev.popFromDevice();
-                devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices2).sendToTarget();
+                //dev.popFromDevice();
+                devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
             }
         }
     }
