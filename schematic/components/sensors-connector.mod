@@ -1,11 +1,11 @@
-PCBNEW-LibModule-V1  Пт 20 ноя 2015 01:03:52
+PCBNEW-LibModule-V1  Пт 22 янв 2016 11:58:55
 # encoding utf-8
 Units mm
 $INDEX
 Sensors-connector-10x
 $EndINDEX
 $MODULE Sensors-connector-10x
-Po 0 0 0 15 564E4742 00000000 ~~
+Po 0 0 0 15 56A1EF34 00000000 ~~
 Li Sensors-connector-10x
 Sc 0
 AR 
@@ -22,70 +22,70 @@ DS -11.25 -10 -2.5 -10 0.15 21
 $PAD
 Sh "5" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00888000
+At SMD N 00C88000
 Ne 0 ""
 Po 0 0
 $EndPAD
 $PAD
 Sh "7" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00888000
+At SMD N 00C88000
 Ne 0 ""
 Po 0 -2.54
 $EndPAD
 $PAD
 Sh "9" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00888000
+At SMD N 00C88000
 Ne 0 ""
 Po 0 -5.08
 $EndPAD
 $PAD
 Sh "3" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00888000
+At SMD N 00C88000
 Ne 0 ""
 Po 0 2.54
 $EndPAD
 $PAD
 Sh "1" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00888000
+At SMD N 00C88000
 Ne 0 ""
 Po 0 5.08
 $EndPAD
 $PAD
 Sh "2" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00880001
+At SMD N 00C80001
 Ne 0 ""
 Po 0 5.08
 $EndPAD
 $PAD
 Sh "4" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00880001
+At SMD N 00C80001
 Ne 0 ""
 Po 0 2.54
 $EndPAD
 $PAD
 Sh "6" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00880001
+At SMD N 00C80001
 Ne 0 ""
 Po 0 0
 $EndPAD
 $PAD
 Sh "8" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00880001
+At SMD N 00C80001
 Ne 0 ""
 Po 0 -2.54
 $EndPAD
 $PAD
 Sh "10" R 3.5 2 0 0 0
 Dr 0 0 0
-At SMD N 00880001
+At SMD N 00C80001
 Ne 0 ""
 Po 0 -5.08
 $EndPAD

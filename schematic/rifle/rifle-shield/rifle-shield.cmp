@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пн 18 янв 2016 12:10:24
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пт 22 янв 2016 10:40:47
 
 BeginCmp
 TimeStamp = /56994020;
@@ -158,7 +158,7 @@ BeginCmp
 TimeStamp = /569B5E56;
 Reference = P8;
 ValeurCmp = EXTENSION-CONNECTOR;
-IdModule  = PIN_ARRAY_5x2;
+IdModule  = PIN_ARRAY_5x2_SOCKET;
 EndCmp
 
 BeginCmp

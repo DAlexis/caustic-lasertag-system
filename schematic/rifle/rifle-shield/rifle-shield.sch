@@ -45,9 +45,9 @@ EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 1
-Title ""
+Title "Caustic lasertag system rifle shield"
 Date "20 jan 2016"
-Rev ""
+Rev "4"
 Comp ""
 Comment1 ""
 Comment2 ""

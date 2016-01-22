@@ -1,13 +1,8 @@
-update=Вс 17 янв 2016 12:39:17
+update=Пт 22 янв 2016 10:40:37
 version=1
-last_client=pcbnew
+last_client=cvpcb
 [general]
 version=1
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -77,7 +72,6 @@ DrawSegmentWidth="    0,200000"
 BoardOutlineThickness="    0,150000"
 ModuleOutlineThickness="    0,150000"
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -99,3 +93,10 @@ LibName18=../../components/pin-array-10x2
 LibName19=../../components/pin-arr-large-pads-2,5mm
 LibName20=../../components/pin-arr-large-pads-3,5mm
 LibName21=../../components/terminals
+LibName22=/home/alexey/Projects/lazertag/schematic/components/pin-arr-5x2-socket
+LibDir=
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
