@@ -39,7 +39,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 1
 Title "Caustic LT MCU boart"
-Date "14 nov 2015"
+Date "24 jan 2016"
 Rev "1.0"
 Comp ""
 Comment1 ""
@@ -61,12 +61,12 @@ $EndComp
 $Comp
 L C C6
 U 1 1 55641DCE
-P 8150 7000
-F 0 "C6" H 8150 7100 40  0000 L CNN
-F 1 "0.1uF" H 8156 6915 40  0000 L CNN
-F 2 "~" H 8188 6850 30  0000 C CNN
-F 3 "~" H 8150 7000 60  0000 C CNN
-	1    8150 7000
+P 11900 1850
+F 0 "C6" H 11900 1950 40  0000 L CNN
+F 1 "0.1uF" H 11906 1765 40  0000 L CNN
+F 2 "~" H 11938 1700 30  0000 C CNN
+F 3 "~" H 11900 1850 60  0000 C CNN
+	1    11900 1850
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -444,35 +444,21 @@ F 3 "~" H 4050 2450 60  0000 C CNN
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	8150 6800 8150 6700
-Wire Wire Line
-	8150 6700 9350 6700
-Wire Wire Line
 	9350 6700 9350 6800
 Wire Wire Line
 	8450 6800 8450 6700
-Connection ~ 8450 6700
 Wire Wire Line
 	8750 6600 8750 6800
-Connection ~ 8750 6700
 Wire Wire Line
-	9050 6800 9050 6700
-Connection ~ 9050 6700
-Wire Wire Line
-	8150 7200 8150 7300
-Wire Wire Line
-	8150 7300 9350 7300
+	9050 6700 9050 6800
 Wire Wire Line
 	9350 7300 9350 7200
 Wire Wire Line
 	8450 7200 8450 7300
-Connection ~ 8450 7300
 Wire Wire Line
 	8750 7200 8750 7400
-Connection ~ 8750 7300
 Wire Wire Line
-	9050 7200 9050 7300
-Connection ~ 9050 7300
+	9050 7300 9050 7200
 Wire Wire Line
 	8400 5850 8400 5950
 Wire Wire Line
@@ -494,21 +480,15 @@ Connection ~ 8550 5950
 Wire Wire Line
 	8400 1750 8400 1700
 Wire Wire Line
-	8400 1700 9150 1700
-Wire Wire Line
-	9150 1700 9150 1750
+	9150 1550 9150 1750
 Wire Wire Line
 	8550 1750 8550 1700
-Connection ~ 8550 1700
 Wire Wire Line
-	8700 1750 8700 1700
-Connection ~ 8700 1700
+	8700 1700 8700 1750
 Wire Wire Line
-	8850 1750 8850 1700
-Connection ~ 8850 1700
+	8850 1700 8850 1750
 Wire Wire Line
-	8750 1600 8750 1700
-Connection ~ 8750 1700
+	8750 1700 8750 1600
 Wire Wire Line
 	7100 1900 6750 1900
 Wire Wire Line
@@ -1020,4 +1000,59 @@ Wire Wire Line
 	4900 900  4900 800 
 Wire Wire Line
 	4900 800  5050 800 
+Wire Wire Line
+	8450 6700 9350 6700
+Connection ~ 8750 6700
+Connection ~ 9050 6700
+Wire Wire Line
+	8450 7300 9350 7300
+Connection ~ 8750 7300
+Connection ~ 9050 7300
+$Comp
+L GND #PWR?
+U 1 1 56A481F6
+P 11900 2150
+F 0 "#PWR?" H 11900 2150 30  0001 C CNN
+F 1 "GND" H 11900 2080 30  0001 C CNN
+F 2 "" H 11900 2150 60  0000 C CNN
+F 3 "" H 11900 2150 60  0000 C CNN
+	1    11900 2150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8400 1700 8850 1700
+Connection ~ 8550 1700
+Connection ~ 8700 1700
+Connection ~ 8750 1700
+$Comp
+L FILTER FB?
+U 1 1 56A4868A
+P 12500 1550
+F 0 "FB?" H 12500 1700 60  0000 C CNN
+F 1 "FILTER" H 12500 1450 60  0000 C CNN
+F 2 "~" H 12500 1550 60  0000 C CNN
+F 3 "~" H 12500 1550 60  0000 C CNN
+	1    12500 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 56A48699
+P 13000 1550
+F 0 "#PWR?" H 13000 1510 30  0001 C CNN
+F 1 "+3.3V" H 13000 1660 30  0000 C CNN
+F 2 "" H 13000 1550 60  0000 C CNN
+F 3 "" H 13000 1550 60  0000 C CNN
+	1    13000 1550
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	11900 1650 11900 1550
+Wire Wire Line
+	9150 1550 12150 1550
+Wire Wire Line
+	11900 2050 11900 2150
+Wire Wire Line
+	12850 1550 13000 1550
+Connection ~ 11900 1550
 $EndSCHEMATC
