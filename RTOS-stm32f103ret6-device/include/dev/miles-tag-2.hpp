@@ -8,7 +8,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_DEV_MILES_TAG_2_HPP_
 
-#include "dev/MT2-base-types.hpp"
+#include "ir/MT2-base-types.hpp"
 #include "hal/fire-emitter.hpp"
 #include "hal/io-pins.hpp"
 #include "core/os-wrappers.hpp"

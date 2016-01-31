@@ -10,7 +10,7 @@
 
 #include "hal/io-pins.hpp"
 #include "core/os-wrappers.hpp"
-#include "dev/MT2-base-types.hpp"
+#include "ir/MT2-base-types.hpp"
 #include <stdint.h>
 
 class RGBLeds
