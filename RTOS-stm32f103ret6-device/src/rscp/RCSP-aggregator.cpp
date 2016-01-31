@@ -29,7 +29,7 @@ void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, 
 			error << "Only parameter\'s values can save states!";
 			return;
 		}
-		StateSaver::instance().addValue(code);
+		MainStateSaver::instance().addValue(code);
 	}
 }
 

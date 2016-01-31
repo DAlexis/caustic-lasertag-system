@@ -134,7 +134,6 @@ void HeadSensor::init(const Pinout &_pinout)
 		}
 	}
 
-
 	info << "Parsing config file";
 
 	if (!RCSPAggregator::instance().readIni("config.ini"))
@@ -143,18 +142,17 @@ void HeadSensor::init(const Pinout &_pinout)
 		playerConfig.setDefault();
 	}
 
-
 	info << "Restoring last state and config";
-	StateSaver::instance().setFilename("state-save");
+	MainStateSaver::instance().setFilename("state-save");
 	// State restoring is always after config reading, so not stored data will be default
-	if (StateSaver::instance().tryRestore())
+	if (MainStateSaver::instance().tryRestore())
 	{
 		info << "  restored";
 	} else {
 		error << "  restoring failed, using default config";
 		// setting player state to default
 		playerState.reset();
-		StateSaver::instance().saveState();
+		MainStateSaver::instance().saveState();
 	}
 
 	info << "Initializing visual effects";
@@ -166,7 +164,7 @@ void HeadSensor::init(const Pinout &_pinout)
 			);
 	m_leds.blink(blinkPatterns.init);
 
-	info << "Other initialization";
+	info << "Network initialization";
 	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
 	NetworkLayer::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
 	NetworkLayer::instance().registerBroadcast(broadcast.any);
@@ -174,13 +172,19 @@ void HeadSensor::init(const Pinout &_pinout)
 	NetworkLayer::instance().registerBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
 	NetworkLayer::instance().init();
 
+	info << "Other initialization";
 	m_tasksPool.add(
 			[this]() { sendHeartbeat(); },
 			heartbeatPeriod
 	);
 
+	info << "Stats restoring";
+	m_statsCounter.restoreFromFile();
+
+	MainStateSaver::instance().registerStateSaver(&m_statsCounter);
+
 	m_tasksPool.run();
-	StateSaver::instance().runSaver(8000);
+	MainStateSaver::instance().runSaver(8000);
 
 	m_killZonesInterogator.run();
 	info << "Head sensor ready to use";
@@ -197,8 +201,8 @@ void HeadSensor::resetToDefaults()
 		playerConfig.setDefault();
 	}
 	playerState.reset();
-	StateSaver::instance().resetSaves();
-	StateSaver::instance().saveState();
+	MainStateSaver::instance().resetSaves();
+	MainStateSaver::instance().saveState();
 }
 
 
@@ -222,6 +226,8 @@ void HeadSensor::catchShot(ShotMessage msg)
 			msg.damage *= playerConfig.frendlyFireCoeff;
 		}
 
+		UintParameter healthBeforeDamage = playerState.healthCurrent;
+
 		playerState.damage(msg.damage);
 
 		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent;
@@ -233,6 +239,8 @@ void HeadSensor::catchShot(ShotMessage msg)
 			{
 				m_shockDelayBegin = systemClock->getTime();
 				weaponWoundAndShock();
+				m_statsCounter.registerHit(msg.playerId);
+				m_statsCounter.registerDamage(msg.playerId, msg.damage);
 			}
 			m_leds.blink(blinkPatterns.wound);
 			notifyDamager(msg.playerId, msg.teamId, DamageNotification::injured);
@@ -241,6 +249,8 @@ void HeadSensor::catchShot(ShotMessage msg)
 			info << "xx Player died";
 			dieWeapons();
 			notifyDamager(msg.playerId, msg.teamId, DamageNotification::killed);
+			m_statsCounter.registerKill(msg.playerId);
+			m_statsCounter.registerDamage(msg.playerId, healthBeforeDamage);
 			m_leds.blink(blinkPatterns.death);
 			/// @todo reenable
 			//Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
@@ -280,6 +290,17 @@ void HeadSensor::playerKill()
 	catchShot(ShotMessage());
 	dieWeapons();
 	info << "Player killed";
+}
+
+void HeadSensor::resetStats()
+{
+	m_statsCounter.clear();
+}
+
+void HeadSensor::readStats(DeviceAddress addr)
+{
+
+	/// @todo implement here
 }
 
 void HeadSensor::dieWeapons()

@@ -9,6 +9,7 @@
 #define INCLUDE_RCSP_RCSP_STATE_SAVER_HPP_
 
 #include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/state-saver-interface.hpp"
 #include "core/os-wrappers.hpp"
 #include "utils/macro.hpp"
 #include "fatfs.h"
@@ -21,10 +22,10 @@
  *        This class has singleton interface, but can be instantiated directly
  *        if user need it anywhere.
   */
-class StateSaver
+class MainStateSaver : public IAnyStateSaver
 {
 public:
-	StateSaver();
+	MainStateSaver();
     void addValue(OperationCode code);
     void setFilename(const std::string& filename);
 
@@ -36,9 +37,12 @@ public:
     bool tryRestore();
     void resetSaves();
 
-    SIGLETON_IN_CLASS(StateSaver)
+    void registerStateSaver(IAnyStateSaver* saver);
+
+    SIGLETON_IN_CLASS(MainStateSaver)
 
 private:
+    void saveAll();
     bool tryRestore(uint8_t variant);
     FIL m_fil;
 
@@ -48,6 +52,7 @@ private:
     uint8_t m_current = 0, m_next = 1;
 
     std::list<OperationCode> m_codes;
+    std::list<IAnyStateSaver*> m_savers;
     TaskCycled m_savingTask;
 };
 

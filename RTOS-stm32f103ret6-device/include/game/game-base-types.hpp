@@ -18,8 +18,9 @@ namespace GameLog
 	struct PvPDamageResults
 	{
 		PlayerMT2Id player = 0;
-		uint16_t killsCount = 0;
-		uint16_t woundsCount = 0;
+		uint16_t killsCount = 0; //< Players bullet killed player
+		uint16_t hitsCount = 0; //< hits except kills
+		uint32_t totalDamage = 0;
 	};
 
 	struct ShotsCounter

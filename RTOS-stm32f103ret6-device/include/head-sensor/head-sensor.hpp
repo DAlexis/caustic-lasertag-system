@@ -15,6 +15,7 @@
 #include "rcsp/operation-codes.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
 #include "network/broadcast.hpp"
+#include "game/game-log.hpp"
 #include "dev/rgb-leds.hpp"
 #include "core/device-initializer.hpp"
 
@@ -62,6 +63,8 @@ public:
 	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn);
 	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset);
 	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
+	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats);
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats);
 	FUNCION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults);
 
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon);
@@ -116,6 +119,8 @@ private:
 	IPresentationReceiversGroup* m_irPresentationReceiversGroup = nullptr;
 
 	Interrogator m_killZonesInterogator;
+
+	GameLog::BaseStatsCounter m_statsCounter;
 };
 
 

@@ -14,20 +14,21 @@
 
 #include <string.h>
 
-SINGLETON_IN_CPP(StateSaver)
+SINGLETON_IN_CPP(MainStateSaver)
 
-StateSaver::StateSaver()
+MainStateSaver::MainStateSaver()
 {
-	m_savingTask.setTask(std::bind(&StateSaver::saveState, this));
+	m_savers.push_back(this);
+	m_savingTask.setTask(std::bind(&MainStateSaver::saveAll, this));
 	m_savingTask.setStackSize(512);
 }
 
-void StateSaver::addValue(OperationCode code)
+void MainStateSaver::addValue(OperationCode code)
 {
 	m_codes.push_back(code);
 }
 
-void StateSaver::setFilename(const std::string& filename)
+void MainStateSaver::setFilename(const std::string& filename)
 {
 	m_file[0] = filename + "_1.bin";
 	m_file[1] = filename + "_2.bin";
@@ -38,26 +39,10 @@ void StateSaver::setFilename(const std::string& filename)
 
 }
 
-void StateSaver::saveState()
+void MainStateSaver::saveState()
 {
 	info << "Saving state";
 	FRESULT res = FR_OK;
-	/*
-	info << "Fake state saving";
-	res = f_open(&m_fil, "test.txt", FA_WRITE);
-	if (res)
-	{
-		error << "Error f_open: " << parseFRESULT(res);
-		return;
-	}
-	UINT bw = 0;
-	res = f_write(&m_fil, "Test!11", 7, &bw);
-	if (res)
-	{
-		error << "Error f_write: " << parseFRESULT(res);
-		return;
-	}
-	f_close(&m_fil);*/
 
 	// Creating lock file
 	res = f_open(&m_fil, m_fileLock[m_current].c_str(), FA_CREATE_NEW);
@@ -102,7 +87,7 @@ void StateSaver::saveState()
 
 }
 
-bool StateSaver::tryRestore(uint8_t variant)
+bool MainStateSaver::tryRestore(uint8_t variant)
 {
 	// Check if we have not deleted lock file
 	if (f_stat(m_fileLock[variant].c_str(), nullptr) == FR_OK)
@@ -144,7 +129,7 @@ bool StateSaver::tryRestore(uint8_t variant)
 	return false;
 }
 
-bool StateSaver::tryRestore()
+bool MainStateSaver::tryRestore()
 {
 	if (f_stat(m_fileCurrent[0].c_str(), nullptr) == FR_OK)
 	{
@@ -153,7 +138,7 @@ bool StateSaver::tryRestore()
 	return tryRestore(1) ? true : tryRestore(0);
 }
 
-void StateSaver::resetSaves()
+void MainStateSaver::resetSaves()
 {
 	f_unlink(m_fileLock[0].c_str());
 	f_unlink(m_file[0].c_str());
@@ -161,13 +146,24 @@ void StateSaver::resetSaves()
 	f_unlink(m_file[1].c_str());
 }
 
-void StateSaver::runSaver(uint32_t period)
+void MainStateSaver::runSaver(uint32_t period)
 {
 	info << "State saver run with period " << period;
 	m_savingTask.run(period, period, period, 0);
 }
 
-void StateSaver::stopSaver()
+void MainStateSaver::saveAll()
+{
+	for (auto it = m_savers.begin(); it != m_savers.end(); it++)
+		(*it)->saveState();
+}
+
+void MainStateSaver::registerStateSaver(IAnyStateSaver* saver)
+{
+	m_savers.push_back(saver);
+}
+
+void MainStateSaver::stopSaver()
 {
 	/*
 	if (m_savingTask)

@@ -20,6 +20,7 @@
 #include "rifle/rifle-base-types.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "ir/MT2-base-types.hpp"
+#include "game/game-base-types.hpp"
 
 /*
  *
@@ -48,6 +49,7 @@ namespace ConfigCodes
 			FUNC_CODE_NP(resetToDefaults,   2100)
 		}
 	}
+
 	namespace Rifle
 	{
 		namespace Configuration
@@ -198,6 +200,9 @@ namespace ConfigCodes
 			FUNC_CODE_NP(playerRespawn,      1204)
 			FUNC_CODE_NP(playerKill,         1205)
 
+			FUNC_CODE_NP(resetStats,         1210)
+			FUNC_CODE_1P(readStats,  DeviceAddress,  1211)
+
 			FUNC_CODE_1P(addMaxHealth, IntParameter, 1220)
 			FUNC_CODE_1P(setTeam,      TeamMT2Id,    1221)
 
@@ -209,6 +214,14 @@ namespace ConfigCodes
 			FUNC_CODE_NP(rifleToHeadSensorHeartbeat, 1500)
 		}
 	}
+
+	namespace Base
+	{
+		namespace Functions
+		{
+			FUNC_CODE_1P(getPvPResults, GameLog::PvPDamageResults, 3001)
+		}
+	};
 }
 
 

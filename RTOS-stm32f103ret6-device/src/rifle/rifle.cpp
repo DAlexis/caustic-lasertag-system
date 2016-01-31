@@ -216,9 +216,9 @@ void Rifle::init(const Pinout& pinout)
 	RCSPAggregator::instance().readIni("config.ini");
 
 	info << "Restoring state";
-	StateSaver::instance().setFilename("state-save");
+	MainStateSaver::instance().setFilename("state-save");
 	/// @todo Chack that rife is turned on/off correctly anway
-	if (StateSaver::instance().tryRestore())
+	if (MainStateSaver::instance().tryRestore())
 	{
 		info  << "  restored";
 	} else {
@@ -350,7 +350,7 @@ void Rifle::init(const Pinout& pinout)
 
 	updatePlayerState();
 
-	StateSaver::instance().runSaver(8000);
+	MainStateSaver::instance().runSaver(8000);
 	m_tasksPool.run();
 	info << "Rifle ready to use\n";
 }
