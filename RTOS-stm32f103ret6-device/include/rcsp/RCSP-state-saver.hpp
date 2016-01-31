@@ -17,6 +17,8 @@
 #include <list>
 #include <string>
 
+#define TWO_FILES_STATE_SAVER
+
 /**
  * @brief Class provides saving state of device that is devices parameters.
  *        This class has singleton interface, but can be instantiated directly
@@ -46,10 +48,14 @@ private:
     bool tryRestore(uint8_t variant);
     FIL m_fil;
 
+#ifdef TWO_FILES_STATE_SAVER
     std::string m_file[2];
     std::string m_fileLock[2];
     std::string m_fileCurrent[2];
     uint8_t m_current = 0, m_next = 1;
+#else
+    std::string m_filename;
+#endif
 
     std::list<OperationCode> m_codes;
     std::list<IAnyStateSaver*> m_savers;

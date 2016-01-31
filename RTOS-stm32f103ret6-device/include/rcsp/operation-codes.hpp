@@ -156,7 +156,7 @@ namespace ConfigCodes
 			PAR_CODE(TimeInterval, shockDelayInactive, 1025)
 
 
-			PAR_CODE(UintParameter, plyerId,        1030)
+			//PAR_CODE(UintParameter, plyerId,        1030)
 			PAR_CODE(PlayerMT2Id,   plyerMT2Id,     1031)
 			PAR_CODE(TeamMT2Id,     teamId,         1032)
 

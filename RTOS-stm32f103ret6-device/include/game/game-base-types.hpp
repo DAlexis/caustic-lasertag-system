@@ -12,6 +12,7 @@
 
 namespace GameLog
 {
+#pragma pack(push, 1)
 	/**
 	 * Description of players damage by one concrete other player
 	 */
@@ -27,6 +28,7 @@ namespace GameLog
 	{
 		uint16_t count = 0;
 	};
+#pragma pack(pop)
 }
 
 

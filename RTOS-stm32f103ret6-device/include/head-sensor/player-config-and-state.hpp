@@ -39,7 +39,7 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, postRespawnDelay);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, autoRespawn);
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerId);
+	//PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerId);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerMT2Id);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, teamId);
 
