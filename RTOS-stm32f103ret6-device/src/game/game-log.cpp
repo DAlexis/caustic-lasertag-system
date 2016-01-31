@@ -6,6 +6,8 @@
  */
 
 #include "game/game-log.hpp"
+#include "rcsp/RCSP-stream.hpp"
+#include "rcsp/operation-codes.hpp"
 #include "core/logging.hpp"
 #include "string.h"
 
@@ -20,6 +22,7 @@ void BaseStatsCounter::checkAndCreate(PlayerMT2Id player)
 	{
 		m_results[player] = PvPDamageResults();
 		m_results[player].player = player;
+		m_iteratorCorrupted = true;
 	}
 }
 
@@ -50,6 +53,7 @@ void BaseStatsCounter::clear()
 void BaseStatsCounter::saveState()
 {
 	FRESULT res = FR_OK;
+	info << "<Save stats> Saving stats";
 	res = f_open(&m_file, filename, FA_CREATE_ALWAYS | FA_WRITE);
 	if (res != FR_OK)
 	{
@@ -115,19 +119,85 @@ void BaseStatsCounter::interrogate()
 {
 	switch(m_sendingState)
 	{
-	case S_IN_PROCESS:
-
-	case S_NEED_RESET:
-
+	case S_READY_TO_TRANSMIT:
+		sendNextPackage();
+		break;
+	case S_WAIT_DELAY_AFTER_CHUNK:
+		waitDelay();
+		break;
 	case S_NOTHING:
 	default:
-		return;
+		break;
 	}
 }
 
-void BaseStatsCounter::sentStats()
+void BaseStatsCounter::sendStats()
+{
+	prepareTransmission();
+}
+
+
+void BaseStatsCounter::sendNextPackage()
+{
+	ScopedLock<CritialSection> lock(m_iteratorCheck);
+		if (m_iteratorCorrupted)
+		{
+			prepareTransmission();
+			return;
+		}
+		// Iterator is fine here
+		if (m_sendingIterator == m_results.end())
+		{
+			// All data transmitted
+			m_sendingState = S_NOTHING;
+			return;
+		}
+
+		PvPDamageResults target = m_sendingIterator->second;
+		m_sendingIterator++;
+		// Now we have valid object and we can send it
+	lock.unlock();
+
+	m_sendingState = S_WAITING_FOR_TRANSMISSIO_RESULT;
+	RCSPStream::remoteCall(
+		m_statsReceiver,
+		ConfigCodes::Base::Functions::getPvPResults,
+		target,
+		true,
+		[this](PackageId, bool isSuccess) {
+			if (isSuccess)
+				onTransmissionSucceeded();
+			else
+				onTransmissionBroken();
+		}
+	);
+
+}
+
+void BaseStatsCounter::prepareTransmission()
 {
 	m_sendingIterator = m_results.begin();
+	m_iteratorCorrupted = false;
+	m_sendingState = S_READY_TO_TRANSMIT;
+}
+
+void BaseStatsCounter::waitDelay()
+{
+	if (systemClock->getTime() - m_waitingBeginned >= delayAfterChunk)
+	{
+		m_sendingState = S_READY_TO_TRANSMIT;
+	}
+}
+
+void BaseStatsCounter::onTransmissionBroken()
+{
+	m_sendingState = S_NOTHING;
+}
+
+void BaseStatsCounter::onTransmissionSucceeded()
+{
+	m_waitingBeginned = systemClock->getTime();
+	m_sendingState = S_WAIT_DELAY_AFTER_CHUNK;
 }
 
 Event::Event()

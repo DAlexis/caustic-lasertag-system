@@ -52,7 +52,7 @@ public:
 	{
 		if (m_enabled)
 		{
-			ScopedLock lock(Loggers::loggersMutex);
+			ScopedLock<Mutex> lock(Loggers::loggersMutex);
 			Loggers::uart->transmitSync((uint8_t*)"\n[", 2);
 			Loggers::uart->transmitSync((uint8_t*)m_loggerName, strlen(m_loggerName));
 			Loggers::uart->transmitSync((uint8_t*)"] ", 2);

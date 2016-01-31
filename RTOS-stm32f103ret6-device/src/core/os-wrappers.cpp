@@ -265,7 +265,7 @@ TasksPool::TaskId TasksPool::add(STask&& newTask, uint32_t period, uint32_t firs
 
 	context.repetitionsCountMax = count;
 
-	ScopedLock lck(m_taskModifyMutex);
+	ScopedLock<Mutex> lck(m_taskModifyMutex);
 	m_tasksToAdd.push_back(context);
 	return context.taskId;
 }
@@ -288,7 +288,7 @@ void TasksPool::run(uint32_t sleepTime)
 
 void TasksPool::stop(TaskId id)
 {
-	ScopedLock lck(m_taskModifyMutex);
+	ScopedLock<Mutex> lck(m_taskModifyMutex);
 	m_idsToDelete.push_back(id);
 }
 

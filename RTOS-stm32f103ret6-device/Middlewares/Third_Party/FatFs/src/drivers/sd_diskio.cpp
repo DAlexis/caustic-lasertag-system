@@ -261,7 +261,7 @@ DSTATUS SD_status(void)
   */
 DRESULT SD_read(BYTE *buff, DWORD sector, UINT count)
 {
-	ScopedLock lck(SDCardBusy);
+	ScopedLock<Mutex> lck(SDCardBusy);
 	if(count==1)
 	{
 		/// @todo [low] Put critical section deeper (all crit. sections below)
@@ -306,7 +306,7 @@ DRESULT SD_read(BYTE *buff, DWORD sector, UINT count)
 #if _USE_WRITE == 1
 DRESULT SD_write(const BYTE *buff, DWORD sector, UINT count)
 {
-	ScopedLock lck(SDCardBusy);
+	ScopedLock<Mutex> lck(SDCardBusy);
 	if(count==1)
 	{
 		taskENTER_CRITICAL();
@@ -356,7 +356,7 @@ DRESULT SD_ioctl(BYTE cmd, void *buff)
 	{
 	case CTRL_SYNC:
 		{
-			ScopedLock lck(SDCardBusy);
+			ScopedLock<Mutex> lck(SDCardBusy);
 			while(SDIO_GetResponse(SDIO_RESP1)==0);//(SD_WaitReady
 	//        {
 				res = RES_OK;

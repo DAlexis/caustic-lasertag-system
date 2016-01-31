@@ -13,6 +13,7 @@
 #include "rcsp/state-saver-interface.hpp"
 #include "hal/system-clock.hpp"
 #include "network/network-base-types.hpp"
+#include "core/os-wrappers.hpp"
 #include "fatfs.h"
 
 #include <map>
@@ -32,27 +33,38 @@ namespace GameLog
 
 		void setStatsReceiver(DeviceAddress addr);
 		void interrogate();
-		void sentStats();
+		void sendStats();
 
 	private:
 		static const char* filename;
+		constexpr static uint32_t delayAfterChunk = 50000;
 
 		enum StatsSendingState {
 			S_NOTHING = 0,
-			S_IN_PROCESS = 1,
-			S_NEED_RESET = 2,
-			S_WAIT_FOR_RESTART = 3
+			S_READY_TO_TRANSMIT,
+			S_WAITING_FOR_TRANSMISSIO_RESULT,
+			S_WAIT_DELAY_AFTER_CHUNK
 		};
+
+		void sendNextPackage();
+		void prepareTransmission();
+		void waitDelay();
+		void onTransmissionBroken();
+		void onTransmissionSucceeded();
 
 		void checkAndCreate(PlayerMT2Id player);
 
 		std::map<PlayerMT2Id, PvPDamageResults> m_results;
 		std::map<PlayerMT2Id, PvPDamageResults>::iterator m_sendingIterator;
+		bool m_iteratorCorrupted = false;
 
 		FIL m_file;
 
 		DeviceAddress m_statsReceiver;
 		StatsSendingState m_sendingState;
+
+		CritialSection m_iteratorCheck;
+		Time m_waitingBeginned = 0;
 	};
 
 	struct Event

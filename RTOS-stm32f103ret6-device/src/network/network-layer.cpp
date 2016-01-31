@@ -142,7 +142,7 @@ PackageId NetworkLayer::send(
 	{
 		Time time = systemClock->getTime();
 		details.needAck = 1;
-		ScopedLock lock(m_packagesQueueMutex);
+		ScopedLock<Mutex> lock(m_packagesQueueMutex);
 		m_packages[details.packageId] = WaitingPackage();
 		WaitingPackage& waitingPackage = m_packages[details.packageId];
 		waitingPackage.wasCreated = time;
@@ -164,7 +164,7 @@ PackageId NetworkLayer::send(
 		//trace << "Ack-using package queued";
 		return details.packageId;
 	} else {
-		ScopedLock lock(m_packagesQueueMutex);
+		ScopedLock<Mutex> lock(m_packagesQueueMutex);
 		m_packagesNoAck.push_back(Package());
 		m_packagesNoAck.back().sender = *m_selfAddress;
 		m_packagesNoAck.back().target = target;
@@ -202,7 +202,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 	if (ackDispatcher->isAck())
 	{
 		radio << "<== Ack for " << ackDispatcher->packageId << " from " << ADDRESS_TO_STREAM(received.sender);
-		ScopedLock lock(m_packagesQueueMutex);
+		ScopedLock<Mutex> lock(m_packagesQueueMutex);
 		auto it = m_packages.find(ackDispatcher->packageId);
 		if (it == m_packages.end())
 		{
@@ -237,7 +237,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 		ack.details.packageId = generatePackageId();
 		memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
 		memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
-		ScopedLock lock(m_packagesQueueMutex);
+		ScopedLock<Mutex> lock(m_packagesQueueMutex);
 		// Adding ack package to list for sending
 		m_packagesNoAck.push_back(ack);
 	}
@@ -295,7 +295,7 @@ void NetworkLayer::sendNext()
 		return;
 	}
 
-	ScopedLock lock(m_packagesQueueMutex);
+	ScopedLock<Mutex> lock(m_packagesQueueMutex);
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
 	{
@@ -404,7 +404,7 @@ bool NetworkLayer::isBroadcast(const DeviceAddress& addr)
 
 bool NetworkLayer::stopSending(PackageId packageId)
 {
-	ScopedLock lock(m_packagesQueueMutex);
+	ScopedLock<Mutex> lock(m_packagesQueueMutex);
 	auto it = m_packages.find(packageId);
 	if (it != m_packages.end())
 	{
@@ -416,7 +416,7 @@ bool NetworkLayer::stopSending(PackageId packageId)
 
 bool NetworkLayer::updateTimeout(PackageId packageId)
 {
-	ScopedLock lock(m_packagesQueueMutex);
+	ScopedLock<Mutex> lock(m_packagesQueueMutex);
 	auto it = m_packages.find(packageId);
 	if (it != m_packages.end())
 	{

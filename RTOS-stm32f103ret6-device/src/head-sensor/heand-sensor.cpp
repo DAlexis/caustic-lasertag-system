@@ -178,6 +178,11 @@ void HeadSensor::init(const Pinout &_pinout)
 			heartbeatPeriod
 	);
 
+	m_tasksPool.add(
+			[this]() { m_statsCounter.interrogate(); },
+			200000
+	);
+
 	info << "Stats restoring";
 	m_statsCounter.restoreFromFile();
 

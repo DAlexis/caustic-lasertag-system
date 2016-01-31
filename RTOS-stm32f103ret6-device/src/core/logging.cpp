@@ -53,7 +53,7 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(const char* str)
 {
 	if (enabled)
 	{
-		ScopedLock lock(Loggers::loggersMutex);
+		ScopedLock<Mutex> lock(Loggers::loggersMutex);
 		Loggers::uart->transmitSync((uint8_t*)str, strlen(str));
 	}
 	return *this;

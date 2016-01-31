@@ -158,10 +158,22 @@ private:
 	xSemaphoreHandle handle = nullptr;
 };
 
+class CritialSection
+{
+public:
+	void lock() { taskENTER_CRITICAL(); m_isLocked = true; }
+	void unlock() { taskEXIT_CRITICAL(); m_isLocked = false; }
+	bool isLocked() { return m_isLocked; }
+
+private:
+	bool m_isLocked = false;
+};
+
+template<typename Lockable>
 class ScopedLock
 {
 public:
-	ScopedLock(Mutex& mutex) :
+	ScopedLock(Lockable& mutex) :
 		m_mutex(mutex)
 	{
 		m_mutex.lock();
@@ -179,7 +191,7 @@ public:
 	}
 
 private:
-	Mutex& m_mutex;
+	Lockable& m_mutex;
 };
 
 template<typename T>
