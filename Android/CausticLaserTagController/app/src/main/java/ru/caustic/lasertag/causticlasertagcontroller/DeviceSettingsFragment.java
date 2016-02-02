@@ -37,6 +37,8 @@ public class DeviceSettingsFragment extends Fragment {
 
     private CausticDevicesManager.AsyncDataPopper dataPopper = null;
 
+    private ParametersListUpdater parametersListUpdater = null;
+
     boolean isActive = false;
 
     public static SettingsEditorContext editorContext = new SettingsEditorContext();
@@ -647,7 +649,8 @@ public class DeviceSettingsFragment extends Fragment {
 
     public DeviceSettingsFragment() {
         super();
-        dataPopper = CausticDevicesManager.getInstance().new AsyncDataPopper(new ParametersListUpdater(), editorContext.devices);
+        //dataPopper = CausticDevicesManager.getInstance().new AsyncDataPopper(new ParametersListUpdater(), editorContext.devices);
+        parametersListUpdater = new ParametersListUpdater();
     }
 
     @Override
@@ -770,6 +773,8 @@ public class DeviceSettingsFragment extends Fragment {
             showPrompt();
         } else {
             showLoading();
+            // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
+            dataPopper =  CausticDevicesManager.getInstance().new AsyncDataPopper(parametersListUpdater, editorContext.devices);
             dataPopper.start();
         }
     }

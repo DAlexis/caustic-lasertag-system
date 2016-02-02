@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 
+@Deprecated
 public class CausticConnectorService extends Service {
     private static String TAG = "CC.CausticConnectorService";
 

@@ -26,7 +26,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Deprecated
 public class CausticDeviceSettings extends PreferenceActivity {
 
     public final String TAG = "CC.CausticDeviceSettings";
