@@ -95,6 +95,8 @@ public:
 	void registerBroadcast(const DeviceAddress& address);
 	void registerBroadcastTester(Broadcast::IBroadcastTester* tester);
 
+	void enableRegularNRFReinit(bool enabled = true);
+
 	SIGLETON_IN_CLASS(NetworkLayer);
 private:
 
@@ -127,6 +129,7 @@ private:
 
 
 	constexpr static uint32_t lastReceivedIdsBufferSize = 30;
+	constexpr static uint32_t NRFReinitPeriod = 1000000;
 
 	void interrogate();
 	uint16_t generatePackageId();
@@ -138,9 +141,10 @@ private:
 	bool isTranslationAllowed();
 	void temproraryProhibitTransmission();
 	bool isBroadcast(const DeviceAddress& addr);
+	void printAndSend(Package& package);
 
 	/// @todo Remove this function after some time
-	//void reinitNRF();
+	void reinitNRF();
 
 	Time m_transmissionProhibitedTime = 0;
 	Time m_transmissionProhibitionPeriod = 0;
@@ -164,6 +168,10 @@ private:
 	ReceivePackageCallback m_receivePackageCallback = nullptr;
 
 	TaskCycled m_modemTask{std::bind(&NetworkLayer::interrogate, this)};
+
+	bool m_regularNRFReinit = false;
+	Time m_lastNRFReinitializationTime = 0;
+
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_ */

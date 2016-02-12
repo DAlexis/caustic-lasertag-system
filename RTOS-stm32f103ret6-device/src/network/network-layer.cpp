@@ -10,6 +10,7 @@
 
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
+#include "core/string-utils.hpp"
 
 #include "dev/random.hpp"
 
@@ -97,7 +98,7 @@ void NetworkLayer::init()
 		2,
 		true
 	);
-	nrf.enableDebug();
+	//nrf.enableDebug();
 	info << "Starting m_modemTask";
 	m_modemTask.run(0, 1, 1);
 }
@@ -110,6 +111,11 @@ void NetworkLayer::registerBroadcast(const DeviceAddress& address)
 void NetworkLayer::registerBroadcastTester(Broadcast::IBroadcastTester* tester)
 {
 	m_broadcastTesters.push_back(tester);
+}
+
+void NetworkLayer::enableRegularNRFReinit(bool enabled)
+{
+	m_regularNRFReinit = enabled;
 }
 
 uint16_t NetworkLayer::generatePackageId()
@@ -197,6 +203,11 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 	if (received.target != *m_selfAddress && !isBroadcast(received.target))
 		return;
 
+	if (trace.isEnabled() && radio.isEnabled())
+	{
+		trace << "<== incoming package: ";
+		printHex((const uint8_t*) &received, sizeof(received));
+	}
 	// Dispatching if this is acknoledgement
 	AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(received.payload);
 	if (ackDispatcher->isAck())
@@ -271,6 +282,14 @@ void NetworkLayer::interrogate()
 	sendNext();
 	nrf.interrogate();
 	receiveIncoming();
+
+	if (m_regularNRFReinit && (systemClock->getTime() - m_lastNRFReinitializationTime) > NRFReinitPeriod)
+	{
+		debug << "NRF module reinitializing to prevent broken states";
+		reinitNRF();
+		m_lastNRFReinitializationTime = systemClock->getTime();
+	}
+
 	/// @todo Remove comment below after some time
 	/*
 	static int i=0;
@@ -303,11 +322,13 @@ void NetworkLayer::sendNext()
 		AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(m_packagesNoAck.front().payload);
 		if (ackDispatcher->isAck())
 		{
-			radio << "==> Ack to " << ackDispatcher->packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target);
+			radio << "==> Ack to " << ackDispatcher->packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target) << " ";
 		} else {
-			radio << "==> No-ack package " << m_packagesNoAck.front().details.packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target);
+			radio << "==> No-ack package " << m_packagesNoAck.front().details.packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target) << " ";
 		}
-		nrf.sendData(Package::packageLength, (uint8_t*) &(m_packagesNoAck.front()));
+
+		printAndSend(m_packagesNoAck.front());
+
 		m_packagesNoAck.pop_front();
 		isSendingNow = true;
 		// Tell that now we are sending no-response package
@@ -340,7 +361,9 @@ void NetworkLayer::sendNext()
 			currentlySendingPackageId = it->first;
 			isSendingNow = true;
 			it->second.nextTransmission = time + it->second.timings.resendTime + Random::random(it->second.timings.resendTimeDelta);
-			nrf.sendData(Package::packageLength, (uint8_t*) &(it->second.package));
+
+			printAndSend(it->second.package);
+
 			return;
 		}
 	}
@@ -402,6 +425,16 @@ bool NetworkLayer::isBroadcast(const DeviceAddress& addr)
 	return false;
 }
 
+void NetworkLayer::printAndSend(Package& package)
+{
+	if (trace.isEnabled() && radio.isEnabled())
+	{
+		trace << "payload: ";
+		printHex((const uint8_t*) &package, Package::packageLength);
+	}
+	nrf.sendData(Package::packageLength, (uint8_t*) &package);
+}
+
 bool NetworkLayer::stopSending(PackageId packageId)
 {
 	ScopedLock<Mutex> lock(m_packagesQueueMutex);
@@ -427,7 +460,7 @@ bool NetworkLayer::updateTimeout(PackageId packageId)
 }
 
 /// @todo Remove this code after some time
-/*
+
 void NetworkLayer::reinitNRF()
 {
 	TXDoneCallback();
@@ -439,4 +472,3 @@ void NetworkLayer::reinitNRF()
 		true
 	);
 }
-*/

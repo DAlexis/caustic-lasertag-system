@@ -46,6 +46,7 @@ public:
 	Logger(const char* loggerName) : m_loggerName(loggerName) {}
 
 	void enable(bool enabled = true);
+	bool isEnabled();
 
 	template<class T>
 	LoggerUnnamed& operator<<(T&& data)

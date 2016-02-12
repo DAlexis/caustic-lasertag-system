@@ -295,7 +295,9 @@ public class BluetoothManager {
         /* Call this from the main activity to send data to the remote device */
         public void write(byte[] message) {
             try {
+
                 mmOutStream.write(message);
+                Log.d(TAG, "Data seems sent");
             } catch (IOException e) {
                 Log.e(TAG, "Bluetooth data sending error: " + e.getMessage() + "...");
             }

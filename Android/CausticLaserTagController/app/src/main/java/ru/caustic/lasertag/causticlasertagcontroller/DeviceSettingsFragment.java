@@ -27,6 +27,7 @@ import java.util.Set;
 
 
 public class DeviceSettingsFragment extends Fragment {
+    private static final String TAG = "CC.DevSetFragment";
     private ParametersListAdapter mAdapter;
     private ListView parsList;
     private Button buttonApply;
@@ -116,7 +117,7 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
-    private static abstract class ParametersListElement {
+    private static abstract class UIListElement {
         public View convertView = null;
         protected ParameterEntry parameterEntry = null;
         public boolean initialized() {
@@ -126,14 +127,14 @@ public class DeviceSettingsFragment extends Fragment {
         public abstract void update();
         public abstract void pickValue();
     }
-    private static abstract class ParametersListElementSeekBar extends ParametersListElement {
+
+    private static abstract class UIListElementSeekBar extends UIListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
         SeekBar seekBar = null;
         EditText parameterValue = null;
         TextView notEqual = null;
         ImageButton revert = null;
-
 
         RCSProtocol.ParameterDescription descr = null;
 
@@ -163,13 +164,37 @@ public class DeviceSettingsFragment extends Fragment {
             parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
             notEqual = (TextView) convertView.findViewById(R.id.notEqual);
             revert = (ImageButton) convertView.findViewById(R.id.revert);
+/*
+            notEqual.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });*/
 
             seekBar.setMax(maxProgress());
+
+            // First setting values for SeekBar and TextView, than setting listeners to prevent picking values before
+            // user enter it manually. When many devices selected for editing this cause setting not equal parameters
+            // to zero and picking it to device.
+            parameterName.setText(parameterEntry.description.getName());
+            parameterSummary.setText(getSummary());
+            if (parameterEntry.hasInitialValue) {
+                parameterValue.setText(valueToText(parameterEntry.getValue()));
+                notEqual.setVisibility(View.GONE);
+                updateProgress(parameterEntry.getValue());
+            } else {
+                parameterValue.setText("");
+                seekBar.setProgress(0);
+                notEqual.setVisibility(View.VISIBLE);
+            }
+
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (fromUser) {
                         updateText(progressToValue(progress));
+                        Log.d(TAG, "onProgressChanged from user");
                         pickValue();
                     }
                 }
@@ -196,6 +221,7 @@ public class DeviceSettingsFragment extends Fragment {
 
                 @Override
                 public void afterTextChanged(Editable s) {
+                    Log.d(TAG, "afterTextChanged");
                     String str = s.toString();
                     if (s.toString().isEmpty())
                         return;
@@ -208,22 +234,14 @@ public class DeviceSettingsFragment extends Fragment {
             revert.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    updateText(parameterEntry.getInitialValue());
-                    updateProgress(parameterEntry.getInitialValue());
+                    if (parameterEntry.hasInitialValue) {
+                        updateText(parameterEntry.getInitialValue());
+                        updateProgress(parameterEntry.getInitialValue());
+                    } // TODO add here code for multiply selection
                 }
             });
 
-            parameterName.setText(parameterEntry.description.getName());
-            parameterSummary.setText(getSummary());
-            if (parameterEntry.hasInitialValue) {
-                parameterValue.setText(valueToText(parameterEntry.getValue()));
-                notEqual.setVisibility(View.GONE);
-                updateProgress(parameterEntry.getValue());
-            } else {
-                parameterValue.setText("");
-                seekBar.setProgress(0);
-                notEqual.setVisibility(View.VISIBLE);
-            }
+
         }
 
         public void update() {/*
@@ -254,7 +272,7 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
-    private static class ParametersListElementInteger extends ParametersListElementSeekBar {
+    private static class UIListElementInteger extends UIListElementSeekBar {
         private int min() {
             return ((RCSProtocol.UintParameter) descr).minValue;
         }
@@ -306,7 +324,7 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min() + " to " + max();
         }
     }
-    private static class ParametersListElementTimeInterval extends ParametersListElementSeekBar {
+    private static class UIListElementTimeInterval extends UIListElementSeekBar {
         private static int k = 1000;
         private long min() {
             return ((RCSProtocol.TimeIntervalParameter) descr).minValue;
@@ -348,7 +366,7 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min()/k + "ms to " + max()/k + "ms";
         }
     }
-    private static class ParametersListElementFloat extends ParametersListElementSeekBar {
+    private static class UIListElementFloat extends UIListElementSeekBar {
         private static int progressElements = 1000;
         private float min() {
             return ((RCSProtocol.FloatParameter) descr).minValue;
@@ -389,7 +407,7 @@ public class DeviceSettingsFragment extends Fragment {
             return "From " + min() + " to " + max();
         }
     }
-    private static class ParametersListElementBoolean extends ParametersListElement {
+    private static class UIListElementBoolean extends UIListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
         Switch boolSwitch = null;
@@ -436,7 +454,7 @@ public class DeviceSettingsFragment extends Fragment {
             parameterEntry.setValue(boolSwitch.isChecked() ? "true" : "false");
         }
     }
-    private static class ParametersListElementEnum extends ParametersListElement {
+    private static class UIListElementEnum extends UIListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
         Spinner variants = null;
@@ -512,7 +530,7 @@ public class DeviceSettingsFragment extends Fragment {
             );
         }
     }
-    private static class ParametersListElementUnsupported extends ParametersListElement {
+    private static class UIListElementUnsupported extends UIListElement {
         TextView parameterName = null;
         TextView parameterSummary = null;
 
@@ -533,19 +551,19 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
-    private static ParametersListElement createListElement(RCSProtocol.ParameterDescription description) {
+    private static UIListElement createListElement(RCSProtocol.ParameterDescription description) {
         if (description instanceof RCSProtocol.UintParameter) {
-            return new ParametersListElementInteger();
+            return new UIListElementInteger();
         } else if (description instanceof RCSProtocol.BooleanParameter) {
-            return new ParametersListElementBoolean();
+            return new UIListElementBoolean();
         } else if (description instanceof RCSProtocol.TimeIntervalParameter) {
-            return new ParametersListElementTimeInterval();
+            return new UIListElementTimeInterval();
         } else if (description instanceof RCSProtocol.EnumParameter) {
-            return new ParametersListElementEnum();
+            return new UIListElementEnum();
         } else if (description instanceof RCSProtocol.FloatParameter) {
-            return new ParametersListElementFloat();
+            return new UIListElementFloat();
         }
-        return new ParametersListElementUnsupported();
+        return new UIListElementUnsupported();
     }
 
     private static class ParameterEntry {
@@ -558,7 +576,7 @@ public class DeviceSettingsFragment extends Fragment {
         String currentValue = differentValueStr;
         String initialValue = currentValue;
 
-        private ParametersListElement uiListElement = null;//new ParametersListElementInteger();
+        private UIListElement uiListElement = null;
 
         public String getValue() {
             return currentValue;
@@ -606,7 +624,7 @@ public class DeviceSettingsFragment extends Fragment {
             uiListElement.init(inflater, this);
         }
 
-        public ParametersListElement getUiListElement() {
+        public UIListElement getUiListElement() {
             return uiListElement;
         }
 

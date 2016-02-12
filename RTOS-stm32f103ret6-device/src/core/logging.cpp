@@ -139,6 +139,11 @@ void Logger::enable(bool enabled)
 	m_unnamedLogger.enabled = enabled;
 }
 
+bool Logger::isEnabled()
+{
+	return m_enabled;
+}
+
 //////////////////////
 // ScoppedTag
 ScopedTag::ScopedTag(const char* newTag)

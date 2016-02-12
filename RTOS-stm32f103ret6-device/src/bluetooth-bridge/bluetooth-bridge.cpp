@@ -42,7 +42,7 @@ void BluetoothBridge::init(const Pinout& pinout)
 	NetworkLayer::instance().registerBroadcast(broadcast.any);
 	NetworkLayer::instance().registerBroadcast(broadcast.bluetoothBridges);
 	NetworkLayer::instance().init();
-
+	NetworkLayer::instance().enableRegularNRFReinit();
 
 
 	m_bluetoothPort = UARTSFactory->create();
@@ -99,6 +99,7 @@ void BluetoothBridge::receiveNetworkPackage(DeviceAddress sender, uint8_t* paylo
 		[this, msgBuffer] ()
 		{
 			sendBluetoothMessage(msgBuffer);
+			systemClock->wait_us(1000);
 			delete msgBuffer;
 		}
 	);
