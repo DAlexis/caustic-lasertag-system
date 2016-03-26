@@ -264,10 +264,12 @@ void IRPresentationReceiverMT2::parseMT2Command(const uint8_t* data, uint16_t si
 	case MT2Extended::Commands::restoreDefaults:
 		updateOperationCallback([]() { RCSPAggregator::instance().doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults); });
 		break;
+	case MT2Extended::Commands::fullHealth:
+	case MT2Extended::Commands::initializePlayer:
+	case MT2Extended::Commands::newGameReady:
+	case MT2Extended::Commands::newGameImmediate:
 	case MT2Extended::Commands::respawn:
 		updateOperationCallback([]() { RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn); });
-		break;
-	case MT2Extended::Commands::newGameImmediate:
 		break;
 	case MT2Extended::Commands::fullAmmo:
 		break;
@@ -275,13 +277,7 @@ void IRPresentationReceiverMT2::parseMT2Command(const uint8_t* data, uint16_t si
 		break;
 	case MT2Extended::Commands::resetClock:
 		break;
-	case MT2Extended::Commands::initializePlayer:
-		break;
 	case MT2Extended::Commands::explodePlayer:
-		break;
-	case MT2Extended::Commands::newGameReady:
-		break;
-	case MT2Extended::Commands::fullHealth:
 		break;
 	case MT2Extended::Commands::fullArmor:
 		break;
