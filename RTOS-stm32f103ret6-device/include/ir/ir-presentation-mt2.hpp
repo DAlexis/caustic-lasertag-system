@@ -60,7 +60,7 @@ private:
 	Time m_vibroEnabledTime = 0;
 };
 
-class PresentationReceiversGroupMT2 : public IPresentationReceiversGroup
+class PresentationReceiversGroupMT2 : public PresentationReceiversGroupBase
 {
 friend IRPresentationReceiverMT2;
 public:

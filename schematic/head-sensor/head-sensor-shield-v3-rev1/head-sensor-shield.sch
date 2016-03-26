@@ -45,7 +45,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 1
 Title "Head sensor shield"
-Date "21 jan 2016"
+Date "14 feb 2016"
 Rev "3.1"
 Comp ""
 Comment1 ""
@@ -1240,4 +1240,17 @@ Wire Wire Line
 Wire Wire Line
 	6600 2550 5700 2550
 Connection ~ 5700 2550
+$Comp
+L GND #PWR?
+U 1 1 56C0AB66
+P 1650 10600
+F 0 "#PWR?" H 1650 10600 30  0001 C CNN
+F 1 "GND" H 1650 10530 30  0001 C CNN
+F 2 "" H 1650 10600 60  0000 C CNN
+F 3 "" H 1650 10600 60  0000 C CNN
+	1    1650 10600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1650 10500 1650 10600
 $EndSCHEMATC

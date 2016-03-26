@@ -34,6 +34,7 @@ class IPresentationReceiversGroup : public IInterrogatable
 public:
 	virtual ~IPresentationReceiversGroup() {}
 	virtual void connectReceiver(IIRPresentationReceiver& receiver) = 0;
+	virtual void enableLoggingUnknownCommands(bool enable = true) = 0;
 };
 
 class IIRPresentationTransmitter
@@ -59,8 +60,18 @@ public:
 
 protected:
 	virtual void receiverCallback(const uint8_t* data, uint16_t size) = 0;
+
 	IIRPhysicalReceiver* m_physicalReceiver = nullptr;
 	IIOPin* m_vibro = nullptr;
+};
+
+class PresentationReceiversGroupBase : public IPresentationReceiversGroup
+{
+public:
+	void enableLoggingUnknownCommands(bool enable = true) { m_logUnknown = enable; }
+
+protected:
+	bool m_logUnknown = false;
 };
 
 class IRPresentationTransmitterBase : public IIRPresentationTransmitter

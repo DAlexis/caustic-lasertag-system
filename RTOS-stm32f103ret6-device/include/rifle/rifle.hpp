@@ -136,6 +136,8 @@ private:
 
 	MilesTag2Transmitter m_mt2Transmitter{config.outputPower};
 
+	SoundPlayer m_systemReadySound;
+	SoundPlayer m_connectedToHeadSensorSound;
 	SoundPlayer m_shootingSound;
 	SoundPlayer m_reloadingSound;
 	SoundPlayer m_noAmmoSound;

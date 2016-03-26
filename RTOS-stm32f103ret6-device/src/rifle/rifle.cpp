@@ -386,6 +386,8 @@ void Rifle::loadConfig()
 
 void Rifle::initSounds()
 {
+	m_systemReadySound.readVariants("sound/startup-", ".wav", 1);
+	m_connectedToHeadSensorSound.readVariants("sound/connected-", ".wav", 0);
 	m_shootingSound.readVariants("sound/shoot-", ".wav", 0);
 	m_reloadingSound.readVariants("sound/reload-", ".wav", 0);
 	m_noAmmoSound.readVariants("sound/no-ammo-", ".wav", 0);
