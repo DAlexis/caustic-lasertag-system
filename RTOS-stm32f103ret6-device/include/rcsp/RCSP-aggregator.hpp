@@ -237,6 +237,25 @@ public:
 		return dispatchOperation(&size, &code, reinterpret_cast<uint8_t*>(&arg));
 	}
 
+	template <typename T>
+	DetailedResult<T> getLocalObject(OperationCode code)
+	{
+		T result;
+		OperationCode objReq = RCSPCodeManipulator::makeSetObject(code);
+		auto it = m_accessorsByOpCode.find(code);
+		if (it == m_accessorsByOpCode.end())
+			return DetailedResult<T>(result, "Opcode not found");
+
+		if (!it->second->isReadable())
+			return DetailedResult<T>(result, "Object not readable");
+
+		if (it->second->getSize() != sizeof(result))
+			return DetailedResult<T>(result, "Object type size != required");
+
+		it->second->serialize(&result);
+		return DetailedResult<T>(result);
+	}
+
 	SIGLETON_IN_CLASS(RCSPAggregator)
 private:
 	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits

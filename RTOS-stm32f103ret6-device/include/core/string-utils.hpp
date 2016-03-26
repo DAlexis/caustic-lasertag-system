@@ -18,6 +18,9 @@
 void printHex(const uint8_t* buffer, size_t size);
 const char* parseFRESULT(int res);
 
+void floatToString(char* buffer, float value, int bufferSize, int fracDigits);
+void doubleToString(char* buffer, double value, int bufferSize, int fracDigits);
+
 inline char lower(char c)
 {
 	if (c >= 0x41 && c <= 0x5A)

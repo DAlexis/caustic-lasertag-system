@@ -18,6 +18,34 @@ void printHex(const uint8_t* buffer, size_t size)
 	printf("\n");
 }
 
+void floatToString(char* buffer, float value, int bufferSize, int fracDigits)
+{
+	doubleToString(buffer, value, bufferSize, fracDigits);
+}
+
+void doubleToString(char* buffer, double value, int bufferSize, int fracDigits)
+{
+	unsigned int digits = value * 100.0;
+	int pointPosition = 0;
+
+	for (int p = bufferSize-1; p>=0; p--)
+	{
+		if (digits == 0 && pointPosition-p > 1)
+			buffer[p] = ' ';
+		else
+		{
+			buffer[p] = digits % 10 + '0';
+			digits /= 10;
+		}
+
+		if (p == bufferSize-1 - 1)
+		{
+			buffer[--p] = '.';
+			pointPosition = p;
+		}
+	}
+}
+
 const char* parseFRESULT(int res)
 {
 	switch (res)

@@ -6,6 +6,8 @@
  */
 
 #include "hw/adc-hw.hpp"
+#include "core/logging.hpp"
+#include "utils/memory.hpp"
 
 ADCBuilder builder;
 IADCBuilder* ADCs = &builder;
@@ -19,11 +21,12 @@ Result ADC::init(uint8_t port, uint8_t pin)
 {
 	/// @todo Add here code for ADC chanel selection
 	ADC_ChannelConfTypeDef sConfig;
-
+	zerify(m_hadc);
 	// Common config
 	m_hadc.Instance = ADC1;
 	m_hadc.Init.ScanConvMode = ADC_SCAN_DISABLE;
-	m_hadc.Init.ContinuousConvMode = DISABLE;
+	//m_hadc.Init.ContinuousConvMode = DISABLE;
+	m_hadc.Init.ContinuousConvMode = ENABLE;
 	m_hadc.Init.DiscontinuousConvMode = DISABLE;
 	m_hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
 	m_hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
@@ -42,7 +45,9 @@ UintParameter ADC::get()
 {
 	uint32_t result = 0;
 	HAL_ADC_Start(&m_hadc);
-	HAL_ADC_PollForConversion(&m_hadc, 100);
+	HAL_StatusTypeDef status = HAL_ADC_PollForConversion(&m_hadc, 5000);
+	if (status != HAL_OK)
+		error << "HAL_ADC_PollForConversion returned " << status;
 	result = HAL_ADC_GetValue(&m_hadc);
 	HAL_ADC_Stop(&m_hadc);
 	return result;
@@ -50,5 +55,5 @@ UintParameter ADC::get()
 
 UintParameter ADC::max()
 {
-	return 0b111111111111;
+	return (1<<12) - 1;
 }

@@ -6,8 +6,10 @@
  */
 
 #include "core/logging.hpp"
+#include "core/string-utils.hpp"
 #include <stdio.h>
 #include <string.h>
+#include <algorithm>
 
 
 IUARTManager *Loggers::uart = nullptr;
@@ -90,14 +92,18 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(uint32_t d)
 Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(float f)
 {
 	char buffer[numbersBufferSize];
-	sprintf(buffer, "%f", f);
+	int size = std::min(5, (int)numbersBufferSize-1);
+	floatToString(buffer, f, size, 2);
+	buffer[size] = '\0';
 	return *this << buffer;
 }
 
 Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(double f)
 {
 	char buffer[numbersBufferSize];
-	sprintf(buffer, "%lf", f);
+	int size = std::min(5, (int)numbersBufferSize-1);
+	doubleToString(buffer, f, size, 2);
+	buffer[size] = '\0';
 	return *this << buffer;
 }
 

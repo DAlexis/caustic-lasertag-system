@@ -42,11 +42,21 @@ namespace ConfigCodes
 			PAR_CODE(DeviceAddress, devAddr,           2000)
 			PAR_CODE(DeviceName,    deviceName,        2001)
 			PAR_CODE(UintParameter, deviceType,        2002)
+
+			PAR_CODE(FloatParameter, supplyVoltageMin, 2010)
+			PAR_CODE(FloatParameter, supplyVoltageMax, 2011)
+			PAR_CODE(FloatParameter, adcCalibrationCoeff, 2013)
 		}
 
 		namespace Functions
 		{
 			FUNC_CODE_NP(resetToDefaults,   2100)
+		}
+
+		namespace State
+		{
+			PAR_CODE(FloatParameter, supplyVoltage,    2015)
+			PAR_CODE(UintParameter,  chargePercent,    2016)
 		}
 	}
 

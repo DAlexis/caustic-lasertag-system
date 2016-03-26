@@ -11,6 +11,7 @@
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
 #include "core/device-initializer.hpp"
+#include "core/power-monitor.hpp"
 
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
@@ -94,6 +95,9 @@ void HeadSensor::init(const Pinout &_pinout)
 {
 	//debug.enable();
 
+	info << "Configuring power monitor";
+	PowerMonitor::instance().interrogate();
+
 	info << "Configuring kill zones";
 
 	m_irPresentationReceiversGroup = new PresentationReceiversGroupMT2;
@@ -174,13 +178,18 @@ void HeadSensor::init(const Pinout &_pinout)
 
 	info << "Other initialization";
 	m_tasksPool.add(
-			[this]() { sendHeartbeat(); },
+			[this] { sendHeartbeat(); },
 			heartbeatPeriod
 	);
 
 	m_tasksPool.add(
-			[this]() { m_statsCounter.interrogate(); },
+			[this] { m_statsCounter.interrogate(); },
 			200000
+	);
+
+	m_tasksPool.add(
+			[] { PowerMonitor::instance().interrogate(); },
+			100000
 	);
 
 	info << "Stats restoring";

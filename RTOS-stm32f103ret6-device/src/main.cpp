@@ -39,6 +39,7 @@
 #include "dev/wav-player.hpp"
 #include "hal/adc.hpp"
 #include "hal/rtc.hpp"
+#include "core/power-monitor.hpp"
 
 #include <functional>
 #include <stdio.h>
@@ -55,9 +56,10 @@ TaskCycled alive([](){
 	RTCManager->getTime(t);
 	RTCDate d;
 	RTCManager->getDate(d);
-	uint16_t val=adc->get();
 	info << "I'm alive now " << t.hours << ":" << t.mins << ":" << t.secs << "; "
-			<< d.day << "." << d.month << "." << d.year << ", v=" << val;
+			<< d.day << "." << d.month << "." << d.year
+			<< ", voltage =" << PowerMonitor::instance().supplyVoltage
+			<< ", " << PowerMonitor::instance().chargePercent << "%";
 	info << "FreeRTOS free heap: " << xPortGetFreeHeapSize() << ", min: " << xPortGetMinimumEverFreeHeapSize();
 
 });
@@ -95,8 +97,7 @@ int main(void)
 
 	alive.setStackSize(200);
 	alive.run(0, 500, 500, 0);
-	adc = ADCs->create();
-	adc->init(0,0);
+
 	//HAL_Delay(10);
 
 	Kernel::instance().run();
