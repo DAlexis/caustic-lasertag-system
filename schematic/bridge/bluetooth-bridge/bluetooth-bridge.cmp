@@ -1,0 +1,241 @@
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вт 16 фев 2016 10:11:42
+
+BeginCmp
+TimeStamp = /56AE570E;
+Reference = C1;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0A815;
+Reference = C2;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0C0A4;
+Reference = C3;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0C0B3;
+Reference = C4;
+ValeurCmp = 100uF;
+IdModule  = c_tant_C;
+EndCmp
+
+BeginCmp
+TimeStamp = /56AE571D;
+Reference = C5;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56AE572C;
+Reference = C6;
+ValeurCmp = 100uF;
+IdModule  = c_tant_C;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0C0CC;
+Reference = C7;
+ValeurCmp = 100uF;
+IdModule  = c_tant_C;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0C103;
+Reference = C8;
+ValeurCmp = 0.1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AB5E;
+Reference = C9;
+ValeurCmp = 47uF;
+IdModule  = c_tant_C;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0CAA7;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = LED-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0CAB6;
+Reference = D2;
+ValeurCmp = LED;
+IdModule  = LED-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AA7D;
+Reference = D3;
+ValeurCmp = LED;
+IdModule  = LED-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0C595;
+Reference = FB1;
+ValeurCmp = FILTER;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0C3DC;
+Reference = FB2;
+ValeurCmp = FILTER;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0A76A;
+Reference = K1;
+ValeurCmp = Battery;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /56AE56C8;
+Reference = P1;
+ValeurCmp = MCU1;
+IdModule  = pin_array_10x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0B187;
+Reference = P2;
+ValeurCmp = USART1;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AA4B;
+Reference = P3;
+ValeurCmp = USB;
+IdModule  = PIN_ARRAY-4X1-2mm-horiz;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AC39;
+Reference = P4;
+ValeurCmp = MCU2;
+IdModule  = pin_array_10x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0B57B;
+Reference = P5;
+ValeurCmp = EXTENSION-CONNECTOR;
+IdModule  = PIN_ARRAY_5x2_SOCKET;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0B394;
+Reference = P6;
+ValeurCmp = NRF24L01;
+IdModule  = pin_array_4x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /56AE573B;
+Reference = Q1;
+ValeurCmp = MOSFET_P;
+IdModule  = SOT23GDS;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0A790;
+Reference = R1;
+ValeurCmp = 10k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0A79F;
+Reference = R2;
+ValeurCmp = 10k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0C92B;
+Reference = R3;
+ValeurCmp = 10k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0CA98;
+Reference = R4;
+ValeurCmp = 470;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0CA7A;
+Reference = R5;
+ValeurCmp = 470;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AE28;
+Reference = R6;
+ValeurCmp = 1.5k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AA5A;
+Reference = R7;
+ValeurCmp = 470;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AAF6;
+Reference = R8;
+ValeurCmp = 2k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A5C889;
+Reference = U1;
+ValeurCmp = ITEAD_HC-05;
+IdModule  = ITEAD_HC-05;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0A8B3;
+Reference = U2;
+ValeurCmp = NCP551;
+IdModule  = SOT23-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AA1E;
+Reference = U3;
+ValeurCmp = USBLC6-4;
+IdModule  = SOT23_6;
+EndCmp
+
+BeginCmp
+TimeStamp = /56C0AA0F;
+Reference = U4;
+ValeurCmp = MCP73831;
+IdModule  = SOT23-5;
+EndCmp
+
+EndListe
