@@ -24,6 +24,12 @@ void Kernel::yeld()
 		taskYIELD();
 }
 
+int Kernel::getTasksCount()
+{
+	return uxTaskGetNumberOfTasks();
+}
+
+
 void Kernel::assert(bool shouldBeTrue, const char* message)
 {
 	if (shouldBeTrue)
@@ -136,8 +142,16 @@ bool TaskOnce::run(STime delay, osPriority priority)
 	info << "Running new task, stack: " << (int)m_stackSize;
 	ADD_BITS(m_state, runningNow);
 	m_firstRunDelay = delay;
-	osThreadDef(newTask, runTaskOnce, priority, 0, m_stackSize);
-	m_taskId = osThreadCreate(osThread(newTask), reinterpret_cast<void*>(this));
+	//osThreadDef(newTask, runTaskOnce, priority, 0, m_stackSize);
+
+	os_thread_def threadDef;
+	threadDef.name = m_name;
+	threadDef.pthread = runTaskOnce;
+	threadDef.tpriority = priority;
+	threadDef.instances = 0;
+	threadDef.stacksize = m_stackSize;
+
+	m_taskId = osThreadCreate(&threadDef, reinterpret_cast<void*>(this));
 	if (m_taskId == NULL)
 	{
 		REMOVE_BITS(m_state, runningNow);
@@ -156,8 +170,16 @@ bool TaskCycled::run(STime firstRunDelay, STime periodMin, STime periodMax, uint
 	m_periodMin = periodMin;
 	m_periodMax = periodMax;
 	m_cyclesCount = cyclesCount;
-	osThreadDef(newTask, runTaskInCycle, osPriorityNormal, 0, m_stackSize);
-	m_taskId = osThreadCreate(osThread(newTask), reinterpret_cast<void*>(this));
+	//osThreadDef(newTask, runTaskInCycle, osPriorityNormal, 0, m_stackSize);
+
+	os_thread_def threadDef;
+	threadDef.name = m_name;
+	threadDef.pthread = runTaskInCycle;
+	threadDef.tpriority = osPriorityNormal;
+	threadDef.instances = 0;
+	threadDef.stacksize = m_stackSize;
+
+	m_taskId = osThreadCreate(&threadDef, reinterpret_cast<void*>(this));
 	if (m_taskId == NULL)
 	{
 		REMOVE_BITS(m_state, runningNow);
@@ -232,6 +254,12 @@ void Interrogator::setStackSize(uint32_t stackSize)
 	m_task.setStackSize(stackSize);
 }
 
+void Interrogator::setName(const char* name)
+{
+	m_task.setName(name);
+}
+
+
 void Interrogator::interrogateAll()
 {
 	for (auto it = m_objects.begin(); it != m_objects.end(); it++)
@@ -243,7 +271,8 @@ void Interrogator::interrogateAll()
 
 //////////////////////
 // TasksPool
-TasksPool::TasksPool()
+TasksPool::TasksPool(const char *name) :
+	m_name(const_cast<char*>(name))
 {
 	m_poolThread.setTask([this](){ main(); });
 }
@@ -281,8 +310,15 @@ void TasksPool::setStackSize(uint16_t stackSize)
 	m_poolThread.setStackSize(stackSize);
 }
 
+void TasksPool::setName(char *name)
+{
+	m_name = name;
+}
+
+
 void TasksPool::run(uint32_t sleepTime)
 {
+	m_poolThread.setName(m_name);
 	m_poolThread.run(0, sleepTime, sleepTime);
 }
 

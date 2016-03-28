@@ -178,6 +178,7 @@ IOPinsPool::IOPinsPool()
 		extisListeners[i] = nullptr;
 
 	m_callbackCaller.setStackSize(512);
+    m_callbackCaller.setName("IOcc");
 	m_callbackCaller.run();
 }
 

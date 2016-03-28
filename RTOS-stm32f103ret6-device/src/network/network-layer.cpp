@@ -60,6 +60,7 @@ void DeviceAddress::convertFromString(const char* str)
 NetworkLayer::NetworkLayer()
 {
 	m_modemTask.setStackSize(1024);
+	m_modemTask.setName("NetLay");
 	m_modemTask.setTask(std::bind(&NetworkLayer::interrogate, this));
 }
 
@@ -118,6 +119,11 @@ void NetworkLayer::enableRegularNRFReinit(bool enabled)
 	m_regularNRFReinit = enabled;
 }
 
+void NetworkLayer::enableDebug(bool debug)
+{
+	m_debug = debug;
+}
+
 uint16_t NetworkLayer::generatePackageId()
 {
 	uint16_t id = (systemClock->getTime()) & 0xFFFF;
@@ -136,6 +142,7 @@ PackageId NetworkLayer::send(
 	PackageTimings timings
 )
 {
+	m_stager.stage("send()");
 	if (size > Package::payloadLength)
 	{
 		error << "Error: too long payload!";
@@ -149,6 +156,7 @@ PackageId NetworkLayer::send(
 		Time time = systemClock->getTime();
 		details.needAck = 1;
 		ScopedLock<Mutex> lock(m_packagesQueueMutex);
+		m_stager.stage("send(): +ack lock");
 		m_packages[details.packageId] = WaitingPackage();
 		WaitingPackage& waitingPackage = m_packages[details.packageId];
 		waitingPackage.wasCreated = time;
@@ -168,9 +176,11 @@ PackageId NetworkLayer::send(
 			memset(&(waitingPackage.package.payload[size]), 0, Package::payloadLength-size);
 		}
 		//trace << "Ack-using package queued";
+		m_stager.stage("send(): +ack queued");
 		return details.packageId;
 	} else {
 		ScopedLock<Mutex> lock(m_packagesQueueMutex);
+		m_stager.stage("send(): -ack lock");
 		m_packagesNoAck.push_back(Package());
 		m_packagesNoAck.back().sender = *m_selfAddress;
 		m_packagesNoAck.back().target = target;
@@ -180,6 +190,7 @@ PackageId NetworkLayer::send(
 		{
 			memset(m_packagesNoAck.back().payload+size, 0, Package::payloadLength-size); //< fixed third argument
 		}
+		m_stager.stage("send(): -ack queued");
 		//trace << "No-ack package queued";
 		return 0;
 	}
@@ -188,15 +199,18 @@ PackageId NetworkLayer::send(
 void NetworkLayer::TXDoneCallback()
 {
 	isSendingNow = false;
+	/// @TODO be shure that this line improve stability or remove it
+	temproraryProhibitTransmission(1000);
 }
 
 void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 {
 	UNUSED_ARG(channel);
+	m_stager.stage("RXCallback()");
 	Package received;
 	memcpy(&received, data, sizeof(Package));
 
-	temproraryProhibitTransmission();
+	temproraryProhibitTransmission(8000);
 
 	// Skipping packages for other devices
 	//received.target.print();
@@ -283,12 +297,20 @@ void NetworkLayer::interrogate()
 	nrf.interrogate();
 	receiveIncoming();
 
-	if (m_regularNRFReinit && (systemClock->getTime() - m_lastNRFReinitializationTime) > NRFReinitPeriod)
+	if ((systemClock->getTime() - m_lastNRFReinitializationTime) > NRFReinitPeriod)
 	{
-		debug << "NRF module reinitializing to prevent broken states";
-		reinitNRF();
+		if (m_debug)
+			nrf.printStatus();
+
+		if (m_regularNRFReinit)
+		{
+			m_stager.stage("interrogate(): reinit module");
+			debug << "NRF module reinitializing to prevent broken states";
+			reinitNRF();
+		}
 		m_lastNRFReinitializationTime = systemClock->getTime();
 	}
+
 
 	/// @todo Remove comment below after some time
 	/*
@@ -308,16 +330,17 @@ void NetworkLayer::interrogate()
 
 void NetworkLayer::sendNext()
 {
-	ScopedTag tag("radio-send-next");
+	m_stager.stage("sendNext()");
 	if (!isTranslationAllowed())
 	{
+		m_stager.stage("sendNext(): Transmission disallowed");
 		return;
 	}
-
 	ScopedLock<Mutex> lock(m_packagesQueueMutex);
 	// First, sending packages without response
 	if (!m_packagesNoAck.empty())
 	{
+		m_stager.stage("sendNext(): sending no ack");
 		// If it is ack (only for output, may be removed by #ifdef DEBUG later)
 		AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(m_packagesNoAck.front().payload);
 		if (ackDispatcher->isAck())
@@ -356,6 +379,7 @@ void NetworkLayer::sendNext()
 		// If it is time to (re)send package
 		if (it->second.nextTransmission < time)
 		{
+			m_stager.stage("sendNext(): sending with ack");
 			radio << "==> Need-ack package " << it->second.package.details.packageId << " for " << ADDRESS_TO_STREAM(it->second.package.target);
 			//radio << "Transmitting " << it->second.package.details.packageId;
 			currentlySendingPackageId = it->first;
@@ -402,7 +426,7 @@ bool NetworkLayer::isTranslationAllowed()
 			);
 }
 
-void NetworkLayer::temproraryProhibitTransmission()
+void NetworkLayer::temproraryProhibitTransmission(uint32_t delay)
 {
 	m_transmissionProhibitedTime = systemClock->getTime();
 	/**
@@ -412,7 +436,7 @@ void NetworkLayer::temproraryProhibitTransmission()
 	 * 8000 is enough, but may be too large
 	 *
 	 */
-	m_transmissionProhibitionPeriod = 8000;
+	m_transmissionProhibitionPeriod = delay;
 }
 
 bool NetworkLayer::isBroadcast(const DeviceAddress& addr)
@@ -427,6 +451,7 @@ bool NetworkLayer::isBroadcast(const DeviceAddress& addr)
 
 void NetworkLayer::printAndSend(Package& package)
 {
+	m_stager.stage("printAndSend()");
 	if (trace.isEnabled() && radio.isEnabled())
 	{
 		trace << "payload: ";

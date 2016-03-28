@@ -79,8 +79,9 @@ public:
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, catchShot);
 
 private:
-
-	constexpr static uint32_t heartbeatPeriod = 2000000;
+	/// DEBUG! Fix this line after debug done
+	//constexpr static uint32_t heartbeatPeriod = 2000000;
+	constexpr static uint32_t heartbeatPeriod = 200000;
 	constexpr static uint8_t killZonesCount = 6;
 	// Test functions
 	void testDie(const char*);
@@ -99,7 +100,7 @@ private:
 
 
 	Time m_shockDelayBegin = 0;
-	TasksPool m_tasksPool;
+	TasksPool m_tasksPool{"HStpool"};
 
 	class TeamBroadcastTester : public Broadcast::IBroadcastTester
 	{

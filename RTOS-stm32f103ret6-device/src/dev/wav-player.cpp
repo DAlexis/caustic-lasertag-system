@@ -34,6 +34,7 @@ WavPlayer::WavPlayer()
 	m_nextBuffer = m_buffer2;
 
 	m_loader.setStackSize(256);
+	m_loader.setName("WavLdr");
 
 }
 

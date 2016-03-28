@@ -21,6 +21,7 @@ MainStateSaver::MainStateSaver()
 	m_savers.push_back(this);
 	m_savingTask.setTask(std::bind(&MainStateSaver::saveAll, this));
 	m_savingTask.setStackSize(512);
+	m_savingTask.setName("StatSav");
 }
 
 void MainStateSaver::addValue(OperationCode code)

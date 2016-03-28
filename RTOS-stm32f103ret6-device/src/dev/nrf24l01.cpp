@@ -162,7 +162,7 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
     m_chipSelectPin = chipSelectPin;
     m_IRQPin = IRQPin;
     m_spi = SPIs->getSPI(SPIIndex);
-    m_spi->init(ISPIManager::BaudRatePrescaler16, chipSelectPin);
+    m_spi->init(ISPIManager::BaudRatePrescaler32, chipSelectPin);
 
     //////////////////////
     // Chip enable line init
@@ -309,6 +309,7 @@ void NRF24L01Manager::readReg(unsigned char reg, unsigned char size, unsigned ch
 
 void NRF24L01Manager::updateStatus()
 {
+	m_stager.stage("updateStatus()");
     chipSelect();
     m_status = m_spi->TransmitReceive(NRF_NOP);
     chipDeselect();
@@ -621,6 +622,7 @@ void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 
 void NRF24L01Manager::receiveData(unsigned char size, unsigned char* data)
 {
+	m_stager.stage("receiveData()");
     chipEnableOff();
     chipSelect();
     m_status = m_spi->TransmitReceive(R_RX_PAYLOAD);
@@ -691,6 +693,27 @@ void NRF24L01Manager::interrogate()
 			return;
 	}*/
 
+
+
+	if (m_IRQPin->state() == true)
+		return;
+
+    updateStatus();
+    if (isRXDataReady())
+    {
+    	onRXDataReady();
+    }
+    updateStatus();
+    if (isMaxRetriesReached())
+    {
+    	onMaxRetriesReached();
+    }
+    updateStatus();
+    if (isTXDataSent())
+	{
+		onTXDataSent();
+	}
+
 	// This is a workaround for strange behavior of some (all?) nrf24l01 modules:
 	// sometimes module does not reset IRQ pin in case of TX data sent AND does not set
 	// proper flag, so we simply check a timeout
@@ -701,36 +724,23 @@ void NRF24L01Manager::interrogate()
 
 	if (softwareDetectionOfTXDataSent)
 	{
+		m_stager.stage("interrogate(): WA for TX freeze");
 		onTXDataSent();
 		return;
 	}
 
-	if (m_IRQPin->state() == true)
-		return;
-
-    updateStatus();
-    if (isTXDataSent())
-	{
-    	onTXDataSent();
-	}
-    if (isRXDataReady())
-    {
-    	onRXDataReady();
-    }
-    if (isMaxRetriesReached())
-    {
-    	onMaxRetriesReached();
-    }
     //resetAllIRQ();
 }
 
 
 void NRF24L01Manager::onTXDataSent()
 {
-	m_waitingForTransmissionEnd = false;
+	m_stager.stage("onTXDataSent()");
 	// Returning to default state: receiver
 	resetTXDataSent();
 	switchToRX();
+	m_waitingForTransmissionEnd = false;
+
 	if (m_TXDoneCallback == nullptr) {
 		printf("TX done; no cb\n");
 	} else
@@ -739,6 +749,7 @@ void NRF24L01Manager::onTXDataSent()
 
 void NRF24L01Manager::onRXDataReady()
 {
+	m_stager.stage("onRXDataReady()");
 	//info << "RX data ready";
 	unsigned char pipe = getPipeNumberAvaliableForRXFIFO();
 	unsigned char data[payloadSize];
@@ -764,6 +775,7 @@ void NRF24L01Manager::onRXDataReady()
 
 void NRF24L01Manager::onMaxRetriesReached()
 {
+	m_stager.stage("onMaxRetriesReached()");
 	if (m_TXMaxRTcallback == nullptr) {
 		printf("Max RT; no cb\n");
 	} else {

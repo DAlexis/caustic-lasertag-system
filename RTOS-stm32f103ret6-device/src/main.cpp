@@ -36,6 +36,7 @@
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/device-initializer.hpp"
+#include "core/diagnostic.hpp"
 #include "dev/wav-player.hpp"
 #include "hal/adc.hpp"
 #include "hal/rtc.hpp"
@@ -47,22 +48,6 @@
 DeviceInitializer deviceInitializer;
 
 IADC* adc = nullptr;
-
-void placeholder() {}
-
-TaskCycled alive([](){
-
-	RTCTime t;
-	RTCManager->getTime(t);
-	RTCDate d;
-	RTCManager->getDate(d);
-	info << "I'm alive now " << t.hours << ":" << t.mins << ":" << t.secs << "; "
-			<< d.day << "." << d.month << "." << d.year
-			<< ", voltage =" << PowerMonitor::instance().supplyVoltage
-			<< ", " << PowerMonitor::instance().chargePercent << "%";
-	info << "FreeRTOS free heap: " << xPortGetFreeHeapSize() << ", min: " << xPortGetMinimumEverFreeHeapSize();
-
-});
 
 TaskOnce sound([](){
 	info << "Sound here";
@@ -95,8 +80,7 @@ int main(void)
 
 	IAnyDevice* device = deviceInitializer.initDevice("device.ini");
 
-	alive.setStackSize(200);
-	alive.run(0, 500, 500, 0);
+	SystemMonitor::instance().run();
 
 	//HAL_Delay(10);
 

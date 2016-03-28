@@ -25,24 +25,27 @@ using STaskId = osThreadId;
 class Kernel
 {
 public:
-	Kernel() {}
-
 	static void yeld();
 
 	void run();
 	inline bool isRunning() const { return m_isRunning; }
+	int getTasksCount();
+
 	void assert(bool shouldBeTrue, const char* message);
+
 	SIGLETON_IN_CLASS(Kernel);
 
 private:
+	Kernel() {}
 	bool m_isRunning = false;
 };
 
 class TaskBase
 {
 public:
-	TaskBase(const STask& task = nullptr) :
-		m_task(task)
+	TaskBase(const STask& task = nullptr, const char* name = "Unknown") :
+		m_task(task),
+		m_name(const_cast<char*>(name))
 	{ }
 
 	inline bool isRunning() const { return m_state & runningNow; }
@@ -55,6 +58,7 @@ public:
 	}
 	inline void setTask(const STask& _task) { m_task = _task; }
 	inline void setStackSize(uint32_t stackSize) { m_stackSize = stackSize; }
+	void setName(const char* name) { m_name = const_cast<char*>(name); }
 	inline STaskId taskId() { return m_taskId; }
 
 	/**
@@ -80,6 +84,7 @@ protected:
 	uint32_t m_stackSize = 128;
 	STaskId m_taskId = nullptr;
 	uint8_t m_state = 0;
+	char* m_name;
 };
 
 class TaskOnce : public TaskBase
@@ -256,6 +261,7 @@ public:
 	void registerObject(IInterrogatable* object);
 	void run(uint32_t period = 1);
 	void setStackSize(uint32_t stackSize);
+	void setName(const char* name);
 
 private:
 	void interrogateAll();
@@ -268,11 +274,12 @@ class TasksPool
 {
 public:
 	using TaskId = uint16_t;
-	TasksPool();
+	TasksPool(const char *name = "UnkPool");
 	TaskId add(STask&& newTask, uint32_t period, uint32_t firstDelay = 0, uint32_t count = 0, uint32_t lifetime = 0);
 	TaskId addOnce(STask&& newTask, uint32_t firstDelay);
 	void stop(TaskId id);
 	void setStackSize(uint16_t stackSize);
+	void setName(char *name);
 	void run(uint32_t sleepTime = 1);
 
 private:
@@ -297,6 +304,7 @@ private:
 	TaskId m_nextTaskId = 1;
 
 	TaskCycled m_poolThread;
+	char* m_name;
 };
 
 class Worker
@@ -317,6 +325,7 @@ public:
 	{
 		m_queue.pushBackFromISR(std::forward<WTask>(task));
 	}
+	void setName(const char* name) { m_workerThread.setName(name); }
 
 private:
 	void mainLoop();

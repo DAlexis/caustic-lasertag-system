@@ -11,6 +11,7 @@
 #include "hal/spi.hpp"
 #include "hal/io-pins.hpp"
 #include "hal/system-clock.hpp"
+#include "core/diagnostic.hpp"
 
 #define RADIO_ADDRESS_SIZE  5
 #define RADIO_CHANNEL       1
@@ -226,6 +227,8 @@ private:
 	bool m_waitingForTransmissionEnd = false;
 
 	bool m_debug = false;
+
+	Stager m_stager{"NRF24L01Manager"};
 };
 
 

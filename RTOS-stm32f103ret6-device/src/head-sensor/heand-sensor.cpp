@@ -12,6 +12,7 @@
 #include "core/logging.hpp"
 #include "core/device-initializer.hpp"
 #include "core/power-monitor.hpp"
+#include "core/diagnostic.hpp"
 
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
@@ -102,6 +103,7 @@ void HeadSensor::init(const Pinout &_pinout)
 
 	m_irPresentationReceiversGroup = new PresentationReceiversGroupMT2;
 	m_killZonesInterogator.setStackSize(512);
+	m_killZonesInterogator.setName("KZintrg");
 
 	m_killZonesInterogator.registerObject(m_irPresentationReceiversGroup);
 
@@ -176,6 +178,12 @@ void HeadSensor::init(const Pinout &_pinout)
 	NetworkLayer::instance().registerBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
 	NetworkLayer::instance().init();
 
+#ifdef DEBUG
+	NetworkLayer::instance().enableDebug(true);
+#endif
+
+	//NetworkLayer::instance().enableRegularNRFReinit(true);
+
 	info << "Other initialization";
 	m_tasksPool.add(
 			[this] { sendHeartbeat(); },
@@ -190,6 +198,11 @@ void HeadSensor::init(const Pinout &_pinout)
 	m_tasksPool.add(
 			[] { PowerMonitor::instance().interrogate(); },
 			100000
+	);
+
+	m_tasksPool.add(
+			[] { SystemMonitor::instance().printSummary(); },
+			1000000
 	);
 
 	info << "Stats restoring";

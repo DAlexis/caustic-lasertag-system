@@ -336,6 +336,10 @@ void Rifle::init(const Pinout& pinout)
 	NetworkLayer::instance().registerBroadcast(broadcast.rifles);
 	NetworkLayer::instance().init();
 
+#ifdef DEBUG
+	NetworkLayer::instance().enableDebug(true);
+#endif
+
 	info << "Other initialization";
 	rifleTurnOff();
 

@@ -14,6 +14,7 @@ RGBLeds::RGBLeds(const TeamMT2Id& teamId) :
 {
 	m_blinkingTask.setTask(std::bind(&RGBLeds::blinkingTask, this));
 	m_blinkingTask.setStackSize(128);
+	m_blinkingTask.setName("LEDBlink");
 }
 
 void RGBLeds::init(IIOPin* red, IIOPin* green, IIOPin* blue)

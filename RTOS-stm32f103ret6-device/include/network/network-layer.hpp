@@ -15,6 +15,7 @@
 #include "hal/system-clock.hpp"
 #include "utils/macro.hpp"
 #include "core/os-wrappers.hpp"
+#include "core/diagnostic.hpp"
 #include "core/string-utils.hpp"
 #include <list>
 #include <map>
@@ -96,6 +97,7 @@ public:
 	void registerBroadcastTester(Broadcast::IBroadcastTester* tester);
 
 	void enableRegularNRFReinit(bool enabled = true);
+	void enableDebug(bool debug = true);
 
 	SIGLETON_IN_CLASS(NetworkLayer);
 private:
@@ -129,7 +131,7 @@ private:
 
 
 	constexpr static uint32_t lastReceivedIdsBufferSize = 30;
-	constexpr static uint32_t NRFReinitPeriod = 1000000;
+	constexpr static uint32_t NRFReinitPeriod = 5000000;
 
 	void interrogate();
 	uint16_t generatePackageId();
@@ -139,7 +141,7 @@ private:
 	void receiveIncoming();
 	bool checkIfIdStoredAndStore(uint16_t id);
 	bool isTranslationAllowed();
-	void temproraryProhibitTransmission();
+	void temproraryProhibitTransmission(uint32_t delay);
 	bool isBroadcast(const DeviceAddress& addr);
 	void printAndSend(Package& package);
 
@@ -170,8 +172,10 @@ private:
 	TaskCycled m_modemTask{std::bind(&NetworkLayer::interrogate, this)};
 
 	bool m_regularNRFReinit = false;
+	bool m_debug = false;
 	Time m_lastNRFReinitializationTime = 0;
 
+	Stager m_stager{"Network layer"};
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_ */
