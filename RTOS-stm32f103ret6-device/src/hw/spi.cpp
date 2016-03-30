@@ -12,7 +12,6 @@
 
 #include "core/logging.hpp"
 
-
 static SPIsPool pool;
 
 ISPIsPool* SPIs = &pool;
@@ -191,23 +190,62 @@ bool SPIManager::TransmitReceive(uint8_t* txbuf, uint8_t* rxbuf, uint16_t len, u
 
 
 #else
+
+SPI_HandleTypeDef hspi1;
+SPI_HandleTypeDef hspi2;
+SPI_HandleTypeDef hspi3;
+
+SPIManager *managers[3] = {nullptr, nullptr, nullptr};
+
+static SPIManager *getManager(SPI_HandleTypeDef* hspi)
+{
+	if (hspi == &hspi1)
+		return managers[0];
+	if (hspi == &hspi2)
+		return managers[1];
+	if (hspi == &hspi3)
+		return managers[2];
+
+	return nullptr;
+}
+
+static void operationDone_ISR(SPI_HandleTypeDef* hspi)
+{
+	SPIManager *mgr = getManager(hspi);
+	if (mgr)
+		mgr->operationDone_ISR();
+}
+
+
 SPIManager::SPIManager(uint8_t SPIindex)
 {
-	zerify(m_hspi);
 	switch(SPIindex)
 	{
-	case 1: m_hspi.Instance = SPI1; break;
-	case 2: m_hspi.Instance = SPI2; break;
-	case 3: m_hspi.Instance = SPI3; break;
+	case 1:
+		m_hspi = &hspi1;
+		zerify(*m_hspi);
+		m_hspi->Instance = SPI1;
+		break;
+	case 2:
+		m_hspi = &hspi2;
+		zerify(*m_hspi);
+		m_hspi->Instance = SPI2;
+		break;
+	case 3:
+		m_hspi = &hspi3;
+		zerify(*m_hspi);
+		m_hspi->Instance = SPI3;
+		break;
 	default:
 		error << "Invalid SPI number";
 		return;
 	}
-
+	managers[SPIindex-1] = this;
 }
 
 void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin)
 {
+	m_stager.stage("init");
 	uint32_t baudratePrescaler;
 
 	switch(prescaler)
@@ -224,59 +262,113 @@ void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin)
 		return;
 	}
 
-	m_hspi.Init.Mode = SPI_MODE_MASTER;
-	m_hspi.Init.Direction = SPI_DIRECTION_2LINES;
-	m_hspi.Init.DataSize = SPI_DATASIZE_8BIT;
-	m_hspi.Init.CLKPolarity = SPI_POLARITY_LOW;
-	m_hspi.Init.CLKPhase = SPI_PHASE_1EDGE;
-	m_hspi.Init.NSS = SPI_NSS_SOFT;
-	m_hspi.Init.BaudRatePrescaler = baudratePrescaler;
-	m_hspi.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	m_hspi.Init.TIMode = SPI_TIMODE_DISABLED;
-	m_hspi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLED;
-	m_hspi.Init.CRCPolynomial = 7;
-	HAL_SPI_Init(&m_hspi);
+	m_hspi->Init.Mode = SPI_MODE_MASTER;
+	m_hspi->Init.Direction = SPI_DIRECTION_2LINES;
+	m_hspi->Init.DataSize = SPI_DATASIZE_8BIT;
+	m_hspi->Init.CLKPolarity = SPI_POLARITY_LOW;
+	m_hspi->Init.CLKPhase = SPI_PHASE_1EDGE;
+	m_hspi->Init.NSS = SPI_NSS_SOFT;
+	m_hspi->Init.BaudRatePrescaler = baudratePrescaler;
+	m_hspi->Init.FirstBit = SPI_FIRSTBIT_MSB;
+	m_hspi->Init.TIMode = SPI_TIMODE_DISABLED;
+	m_hspi->Init.CRCCalculation = SPI_CRCCALCULATION_DISABLED;
+	m_hspi->Init.CRCPolynomial = 7;
+	HAL_SPI_Init(m_hspi);
 
 	m_NSSPin = NSSPin;
 	m_NSSPin->switchToOutput();
-	m_NSSPin->reset();
+	m_NSSPin->set();
+	m_stager.stage("init done");
 }
 
 bool SPIManager::Transmit(uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
-	m_NSSPin->reset();
-	HAL_StatusTypeDef res = HAL_SPI_Transmit(&m_hspi, pData, Size, Timeout);
-	m_NSSPin->set();
+	m_stager.stage("Transmit");
+	m_operationDone = false;
+	taskENTER_CRITICAL();
+		HAL_StatusTypeDef res = HAL_SPI_Transmit_IT(m_hspi, pData, Size);
+	taskEXIT_CRITICAL();
+
+	waitForISR();
+
+	/// @TODO: fix code below to work with interrupts
 	if (res == HAL_OK)
+	{
+		m_stager.stage("Transmit ok");
 		return true;
-	else {
-		error << "SPI failed:" << res;
+	} else {
+		m_stager.stage("Transmit fail");
+		error << "SPI transmission failed: " << res;
 		return false;
 	}
 }
 
 bool SPIManager::Receive(uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
-//	uint8_t buff[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-	HAL_StatusTypeDef res = HAL_SPI_Receive(&m_hspi, pData, Size, Timeout);
-	//HAL_StatusTypeDef res = HAL_SPI_TransmitReceive(&m_hspi, buff, pData, Size, Timeout);
+	m_stager.stage("Receive");
+	m_operationDone = false;
+	taskENTER_CRITICAL();
+		HAL_StatusTypeDef res = HAL_SPI_Receive_IT(m_hspi, pData, Size);
+	taskEXIT_CRITICAL();
+
+	waitForISR();
+
 	if (res == HAL_OK)
+	{
+		m_stager.stage("Receive end ok");
 		return true;
-	else {
-		error << "SPI failed:" << res;
+	} else {
+		m_stager.stage("Receive end fail");
+		error << "SPI receiving failed: " << res;
 		return false;
 	}
-	return true;
 }
 
 bool SPIManager::TransmitReceive(uint8_t *pTxData, uint8_t *pRxData, uint16_t Size, uint32_t Timeout)
 {
-	HAL_StatusTypeDef res = HAL_SPI_TransmitReceive(&m_hspi, pTxData, pRxData, Size, Timeout);
+	m_stager.stage("TransmitReceive");
+	m_operationDone = false;
+	taskENTER_CRITICAL();
+		HAL_StatusTypeDef res = HAL_SPI_TransmitReceive_IT(m_hspi, pTxData, pRxData, Size);
+	taskEXIT_CRITICAL();
+
+	waitForISR();
+
 	if (res == HAL_OK)
+	{
+		m_stager.stage("TransmitReceive ok");
 		return true;
-	else {
-		error << "SPI failed:" << res;
+	} else {
+		m_stager.stage("TransmitReceive fail");
+		error << "SPI transmit&receive failed:" << res;
 		return false;
+	}
+}
+
+void SPIManager::operationDone_ISR()
+{
+	m_operationDone = true;
+}
+
+void SPIManager::waitForISR()
+{
+	while (!m_operationDone) { }
+}
+
+extern "C" {
+	void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+	{
+		operationDone_ISR(hspi);
+	}
+
+	void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
+	{
+		operationDone_ISR(hspi);
+	}
+
+	void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+	{
+		operationDone_ISR(hspi);
 	}
 }
 

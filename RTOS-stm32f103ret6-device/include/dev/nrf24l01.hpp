@@ -228,7 +228,7 @@ private:
 
 	bool m_debug = false;
 
-	Stager m_stager{"NRF24L01Manager"};
+	Stager m_stager{"NRF24L01Manager", 1000000};
 };
 
 

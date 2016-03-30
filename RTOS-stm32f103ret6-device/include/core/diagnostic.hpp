@@ -16,10 +16,19 @@
 #include <list>
 #include <stdint.h>
 
+class StagerStub
+{
+public:
+	StagerStub(const char* name = "", Time aliveCheckPeriod = 0) {}
+	void stage(const char* description) {}
+	void setName(const char* name) {}
+	void printStages() const {}
+};
+
 class Stager
 {
 public:
-	Stager(const char* name = "");
+	Stager(const char* name = "", Time aliveCheckPeriod = 0);
 	void stage(const char* description);
 	void setName(const char* name);
 	void printStages() const;
@@ -27,7 +36,7 @@ public:
 private:
 	struct StagerRec
 	{
-		Time t =0;
+		Time t = 0;
 		const char* description = "";
 	};
 	constexpr static uint8_t ringBufferSize = 10;
@@ -36,6 +45,7 @@ private:
 	uint8_t m_pointer = 0;
 
 	const char* m_name;
+	Time m_aliveCheckPeriod = 0;
 };
 
 class SystemMonitor

@@ -122,6 +122,8 @@ private:
 	Interrogator m_killZonesInterogator;
 
 	GameLog::BaseStatsCounter m_statsCounter;
+	Stager m_taskPoolStager{"HS task pool"};
+	Stager m_callbackStager{"HS callbacks"};
 };
 
 

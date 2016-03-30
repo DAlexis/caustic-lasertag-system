@@ -628,6 +628,7 @@ void NRF24L01Manager::receiveData(unsigned char size, unsigned char* data)
     m_status = m_spi->TransmitReceive(R_RX_PAYLOAD);
     m_spi->Receive(data, size);
     chipDeselect();
+    m_stager.stage("receiveData() end");
 }
 
 void NRF24L01Manager::flushTX()
@@ -695,8 +696,18 @@ void NRF24L01Manager::interrogate()
 
 
 
-	if (m_IRQPin->state() == true)
+	// This is a workaround for strange behavior of some (all?) nrf24l01 modules:
+	// sometimes module does not reset IRQ pin in case of TX data sent AND does not set
+	// proper flag, so we simply check a timeout
+	bool softwareDetectionOfTXDataSent = (
+		m_waitingForTransmissionEnd
+		&& (systemClock->getTime() - m_lastTransmissionTime) > timeEnoughForTransmission
+	);
+
+	if (!softwareDetectionOfTXDataSent && m_IRQPin->state() == true)
 		return;
+
+	m_stager.stage("IRQ detected");
 
     updateStatus();
     if (isRXDataReady())
@@ -713,14 +724,6 @@ void NRF24L01Manager::interrogate()
 	{
 		onTXDataSent();
 	}
-
-	// This is a workaround for strange behavior of some (all?) nrf24l01 modules:
-	// sometimes module does not reset IRQ pin in case of TX data sent AND does not set
-	// proper flag, so we simply check a timeout
-	bool softwareDetectionOfTXDataSent = (
-			m_waitingForTransmissionEnd
-			&& (systemClock->getTime() - m_lastTransmissionTime) > timeEnoughForTransmission
-		);
 
 	if (softwareDetectionOfTXDataSent)
 	{

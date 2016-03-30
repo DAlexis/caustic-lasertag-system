@@ -175,7 +175,7 @@ private:
 	bool m_debug = false;
 	Time m_lastNRFReinitializationTime = 0;
 
-	Stager m_stager{"Network layer"};
+	Stager m_stager{"Network layer", 5000000};
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_ */

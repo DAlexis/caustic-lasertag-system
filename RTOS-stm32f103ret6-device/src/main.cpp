@@ -67,7 +67,7 @@ int main(void)
 #ifdef DEBUG
 	debug.enable();
 	radio.enable();
-	trace.enable();
+	//trace.enable();
 #endif
 	info << "=============== Device initialization ===============";
 	/* USER CODE BEGIN RTOS_TIMERS */

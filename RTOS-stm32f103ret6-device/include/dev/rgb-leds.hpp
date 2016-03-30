@@ -62,6 +62,7 @@ private:
 	const TeamMT2Id& m_teamId;
 	BlinkPattern m_currentPattern;
 
+	unsigned int blinksCount = 0;
 	TaskCycled m_blinkingTask;
 };
 

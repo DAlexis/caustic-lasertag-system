@@ -11,12 +11,13 @@
 #include "hal/spi.hpp"
 #include "hal/io-pins.hpp"
 
-#define USE_STDPERIPH_SPI
+//#define USE_STDPERIPH_SPI
 
 #ifdef USE_STDPERIPH_SPI
 	#include "stm32f10x.h"
 #else
 	#include "stm32f1xx_hal.h"
+	#include "core/diagnostic.hpp"
 #endif
 
 
@@ -30,13 +31,22 @@ public:
 	bool Transmit(uint8_t *pData, uint16_t Size, uint32_t Timeout = 0xFFFFFFFF);
 	bool Receive(uint8_t *pData, uint16_t Size, uint32_t Timeout = 0xFFFFFFFF);
 	bool TransmitReceive(uint8_t *pTxData, uint8_t *pRxData, uint16_t Size, uint32_t Timeout = 0xFFFFFFFF);
+
+	void operationDone_ISR();
+
 private:
-#ifndef USE_STDPERIPH_SPI
-	SPI_HandleTypeDef m_hspi;
+#ifdef USE_STDPERIPH_SPI
+	SPI_TypeDef* m_SPI = nullptr;
+#else
+	void waitForISR();
+
+	SPI_HandleTypeDef* m_hspi;
+	Stager m_stager{"SPIManager"};
+	bool m_operationDone = false;
 #endif
 	uint8_t m_portNumber = 1;
 	IIOPin* m_NSSPin = nullptr;
-	SPI_TypeDef* m_SPI = nullptr;
+
 	uint8_t sendByte(uint8_t byte);
 	uint8_t receiveByte();
 };

@@ -186,23 +186,18 @@ void HeadSensor::init(const Pinout &_pinout)
 
 	info << "Other initialization";
 	m_tasksPool.add(
-			[this] { sendHeartbeat(); },
+			[this] { m_taskPoolStager.stage("sendHeartbeat()"); sendHeartbeat(); },
 			heartbeatPeriod
 	);
 
 	m_tasksPool.add(
-			[this] { m_statsCounter.interrogate(); },
+			[this] { m_taskPoolStager.stage("m_statsCounter.interrogate()"); m_statsCounter.interrogate(); },
 			200000
 	);
 
 	m_tasksPool.add(
-			[] { PowerMonitor::instance().interrogate(); },
+			[this] { m_taskPoolStager.stage("PowerMonitor::interrogate()"); PowerMonitor::instance().interrogate(); },
 			100000
-	);
-
-	m_tasksPool.add(
-			[] { SystemMonitor::instance().printSummary(); },
-			1000000
 	);
 
 	info << "Stats restoring";
@@ -219,6 +214,7 @@ void HeadSensor::init(const Pinout &_pinout)
 
 void HeadSensor::resetToDefaults()
 {
+	m_callbackStager.stage("reset");
 	//ScopedTag tag("reset");
 	info << "Resetting configuration to default";
 	m_leds.blink(blinkPatterns.anyCommand);
@@ -235,6 +231,7 @@ void HeadSensor::resetToDefaults()
 
 void HeadSensor::catchShot(ShotMessage msg)
 {
+	m_callbackStager.stage("shot");
 	//ScopedTag tag("shot-cb");
 	info << "** Shot - team: " << msg.teamId << ", player: " << msg.playerId << ", damage: " << msg.damage;
 	Time currentTime = systemClock->getTime();
@@ -287,7 +284,7 @@ void HeadSensor::catchShot(ShotMessage msg)
 
 void HeadSensor::playerRespawn()
 {
-	ScopedTag tag("respawn");
+	m_callbackStager.stage("respawn");
 	playerState.respawn();
 	m_leds.blink(blinkPatterns.respawn);
 	respawnWeapons();
@@ -332,7 +329,7 @@ void HeadSensor::readStats(DeviceAddress addr)
 
 void HeadSensor::dieWeapons()
 {
-	ScopedTag tag("die-weapons");
+	m_callbackStager.stage("die weapons");
 	/// Notifying weapons
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
@@ -344,6 +341,7 @@ void HeadSensor::dieWeapons()
 
 void HeadSensor::respawnWeapons()
 {
+	m_callbackStager.stage("respawn weapons");
 	/// Notifying weapons
 	ScopedTag tag("reset-weapons");
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
@@ -366,6 +364,7 @@ void HeadSensor::turnOffWeapons()
 
 void HeadSensor::weaponWoundAndShock()
 {
+	m_callbackStager.stage("weaponWoundAndShock");
 	info << "Weapons shock delay notification";
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{

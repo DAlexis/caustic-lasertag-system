@@ -13,13 +13,13 @@
 
 SINGLETON_IN_CPP(SystemMonitor)
 
-Stager::Stager(const char* name) :
-	m_name(name)
+Stager::Stager(const char* name, Time aliveCheckPeriod) :
+	m_name(name),
+	m_aliveCheckPeriod(aliveCheckPeriod)
 {
 	for (int i=0; i<ringBufferSize; i++)
 		stage("Nothing");
 
-	memset(m_stagesRingBuffer, 0, sizeof(m_stagesRingBuffer[0]) * ringBufferSize);
 	SystemMonitor::instance().registerStager(this);
 }
 
@@ -41,8 +41,18 @@ void Stager::setName(const char* name)
 
 void Stager::printStages() const
 {
-	uint8_t current = m_pointer;
+	uint8_t current = m_pointer != 0 ? m_pointer-1 : ringBufferSize-1;
+
 	debug << "Stages history: " << m_name;
+
+	if (m_aliveCheckPeriod != 0)
+	{
+		if (m_stagesRingBuffer[current].t - systemClock->getTime() > m_aliveCheckPeriod)
+			debug << "Seems alive";
+		else
+			debug << "Seems dead!";
+	}
+
 	for (uint8_t i=0; i<ringBufferSize; i++)
 	{
 		debug << i << ": [" << m_stagesRingBuffer[current].t << "] " << m_stagesRingBuffer[current].description;
