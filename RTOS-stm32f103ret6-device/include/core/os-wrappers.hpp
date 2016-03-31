@@ -257,7 +257,7 @@ private:
 class Interrogator
 {
 public:
-	Interrogator();
+	Interrogator(const char* name = "UnkIntr");
 	void registerObject(IInterrogatable* object);
 	void run(uint32_t period = 1);
 	void setStackSize(uint32_t stackSize);

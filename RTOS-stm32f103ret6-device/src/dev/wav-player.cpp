@@ -17,7 +17,6 @@ SINGLETON_IN_CPP(WavPlayer)
 
 WavPlayer::WavPlayer()
 {
-	ScopedTag tag("wav-player-init");
 	debug << "Creating audio buffers";
 	m_buffer1 = new SoundSample[audioBufferSize];
 	m_buffer2 = new SoundSample[audioBufferSize];
@@ -33,7 +32,7 @@ WavPlayer::WavPlayer()
 	m_currentBuffer = m_buffer1;
 	m_nextBuffer = m_buffer2;
 
-	m_loader.setStackSize(256);
+	m_loader.setStackSize(512);
 	m_loader.setName("WavLdr");
 
 }

@@ -11,14 +11,9 @@
 #include "hal/spi.hpp"
 #include "hal/io-pins.hpp"
 
-//#define USE_STDPERIPH_SPI
+#include "stm32f1xx_hal.h"
+#include "core/diagnostic.hpp"
 
-#ifdef USE_STDPERIPH_SPI
-	#include "stm32f10x.h"
-#else
-	#include "stm32f1xx_hal.h"
-	#include "core/diagnostic.hpp"
-#endif
 
 
 class SPIManager : public ISPIManager
@@ -35,15 +30,13 @@ public:
 	void operationDone_ISR();
 
 private:
-#ifdef USE_STDPERIPH_SPI
-	SPI_TypeDef* m_SPI = nullptr;
-#else
-	void waitForISR();
+	constexpr static uint32_t timeout = 1000000;
+	bool waitForISR(uint32_t timeout = 0);
 
 	SPI_HandleTypeDef* m_hspi;
-	Stager m_stager{"SPIManager"};
+	StagerStub m_stager{"SPIManager"};
 	bool m_operationDone = false;
-#endif
+
 	uint8_t m_portNumber = 1;
 	IIOPin* m_NSSPin = nullptr;
 

@@ -234,8 +234,9 @@ void TaskDeferredFromISR::taskBody(void* arg, uint32_t argSize)
 	object->m_task = 0;
 }
 
-Interrogator::Interrogator()
+Interrogator::Interrogator(const char* name)
 {
+	m_task.setName(name);
 	m_task.setTask(std::bind(&Interrogator::interrogateAll, this));
 }
 

@@ -16,6 +16,12 @@
 #include <list>
 #include <stdint.h>
 
+#ifdef DEBUG
+	#define STAGER Stager
+#else
+	#define STAGER StagerStub
+#endif
+
 class StagerStub
 {
 public:

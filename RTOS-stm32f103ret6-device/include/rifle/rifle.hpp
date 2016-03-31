@@ -156,8 +156,8 @@ private:
 	uint8_t m_state = WeaponState::ready;
 	uint8_t m_currentMagazineNumber = 0; ///< zero means no magazine
 
-	Interrogator m_buttonsInterrogator;
-	TasksPool m_tasksPool;
+	Interrogator m_buttonsInterrogator{"BtnsIntr"};
+	TasksPool m_tasksPool{"RiflPool"};
 	Time m_lastHSHeartBeat = 0;
 
 	/// If current time > m_unshockTime, player is not shocked now
