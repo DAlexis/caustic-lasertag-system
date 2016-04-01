@@ -23,14 +23,14 @@ public:
 	~SPIManager() {}
 
 	void init(uint32_t prescaler, IIOPin* NSSPin);
-	bool Transmit(uint8_t *pData, uint16_t Size, uint32_t Timeout = 0xFFFFFFFF);
-	bool Receive(uint8_t *pData, uint16_t Size, uint32_t Timeout = 0xFFFFFFFF);
-	bool TransmitReceive(uint8_t *pTxData, uint8_t *pRxData, uint16_t Size, uint32_t Timeout = 0xFFFFFFFF);
+	bool Transmit(uint8_t *pData, uint16_t Size, uint32_t Timeout = defaultTimeout);
+	bool Receive(uint8_t *pData, uint16_t Size, uint32_t Timeout = defaultTimeout);
+	bool TransmitReceive(uint8_t *pTxData, uint8_t *pRxData, uint16_t Size, uint32_t Timeout = defaultTimeout);
 
 	void operationDone_ISR();
 
 private:
-	constexpr static uint32_t timeout = 1000000;
+	constexpr static uint32_t defaultTimeout = 100000;
 	bool waitForISR(uint32_t timeout = 0);
 
 	SPI_HandleTypeDef* m_hspi;

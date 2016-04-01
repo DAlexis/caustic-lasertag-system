@@ -123,7 +123,7 @@ bool SPIManager::Transmit(uint8_t *pData, uint16_t Size, uint32_t Timeout)
 		return false;
 	}
 	m_stager.stage("Transmit: waiting for it");
-	if (!waitForISR(timeout))
+	if (!waitForISR(Timeout))
 	{
 		error << "SPI Transmit timeout!";
 		return false;
@@ -148,7 +148,7 @@ bool SPIManager::Receive(uint8_t *pData, uint16_t Size, uint32_t Timeout)
 		return false;
 	}
 	m_stager.stage("Receive: waiting for it");
-	if (!waitForISR(timeout))
+	if (!waitForISR(Timeout))
 	{
 		error << "SPI Receive timeout!";
 		return false;
@@ -173,7 +173,7 @@ bool SPIManager::TransmitReceive(uint8_t *pTxData, uint8_t *pRxData, uint16_t Si
 		return false;
 	}
 	m_stager.stage("TransmitReceive: waiting for it");
-	if (!waitForISR(timeout))
+	if (!waitForISR(Timeout))
 	{
 		error << "SPI TransmitReceive timeout!";
 		return false;
