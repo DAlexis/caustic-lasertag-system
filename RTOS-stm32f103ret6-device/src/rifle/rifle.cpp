@@ -213,6 +213,9 @@ void Rifle::init(const Pinout& pinout)
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
 
+	info << "Display initialization";
+	m_display.init();
+
 	info << "Loading default config";
 	RCSPAggregator::instance().readIni("config.ini");
 
@@ -227,10 +230,17 @@ void Rifle::init(const Pinout& pinout)
 		rifleReset();
 	}
 
+	m_tasksPool.add([this](){
+			m_display.update();
+		},
+		500000
+	);
+
 	m_tasksPool.add(
 			[this]() {
 				playerState.print();
 				updatePlayerState();
+
 			},
 			5000000
 	);
@@ -633,7 +643,7 @@ void Rifle::updatePlayerState()
 void Rifle::rifleTurnOff()
 {
 	info << "Rifle turned OFF\n";
-	m_isEnabled = false;
+	state.isEnabled = false;
 	m_fireButton->turnOff();
 	m_reloadButton->turnOff();
 }
@@ -641,7 +651,7 @@ void Rifle::rifleTurnOff()
 void Rifle::rifleTurnOn()
 {
 	info << "Rifle turned ON\n";
-	m_isEnabled = true;
+	state.isEnabled = true;
 	m_fireButton->turnOn();
 	m_reloadButton->turnOn();
 	detectRifleState();
@@ -667,7 +677,7 @@ void Rifle::rifleDie()
 {
 	ScopedTag tag("rifle-die");
 	info << "\'Rifle die\' activated\n";
-	if (!m_isEnabled)
+	if (!state.isEnabled)
 		return;
 
 	rifleTurnOff();
@@ -718,13 +728,13 @@ void Rifle::checkHeartBeat()
 	if (systemClock->getTime() - m_lastHSHeartBeat > maxNoHeartbeatDelay)
 	{
 		m_noHeartbeat.play();
-		if (m_isEnabled)
+		if (state.isEnabled)
 		{
 			info << "No heartbeat! Turning off";
 			rifleTurnOff();
 		}
 	} else {
-		if (!m_isEnabled)
+		if (!state.isEnabled)
 		{
 			info << "I listen heartbeat again!";
 			if (playerState.isAlive())

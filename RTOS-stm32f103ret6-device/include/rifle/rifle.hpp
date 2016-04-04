@@ -11,6 +11,7 @@
 #include "rifle/rifle-config-and-state.hpp"
 #include "rifle/resources.hpp"
 #include "rifle/rifle-base-types.hpp"
+#include "rifle/rifle-display.hpp"
 #include "device/device.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "dev/buttons.hpp"
@@ -21,28 +22,6 @@
 
 #include <stdint.h>
 
-class PlayerPartialState
-{
-public:
-	PlayerPartialState(const DeviceAddress& headSensorAddress);
-	void syncAll();
-	void print();
-	bool isAlive();
-
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthMax);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorMax);
-
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, healthCurrent);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, armorCurrent);
-
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, killsCount);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount);
-
-private:
-	const DeviceAddress* m_headSensorAddress;
-};
 
 class Rifle : public IAnyDevice
 {
@@ -122,7 +101,6 @@ private:
 	void checkHeartBeat();
 	bool isShocked();
 
-	bool m_isEnabled = true;
 
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;
@@ -162,6 +140,7 @@ private:
 
 	/// If current time > m_unshockTime, player is not shocked now
 	Time m_unshockTime = 0;
+	RifleLCD5110Display m_display{&rifleOwner, &state, &playerState};
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

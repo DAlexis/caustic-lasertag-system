@@ -1,0 +1,73 @@
+/**
+
+\page AddingDevice Adding a new device
+
+\section AddingDevice Adding a new device
+
+Before you add a device, you should make sure you have set up your controller code.
+
+To add a custom device (microcontroller) implementation, you may wish to check out the source code of the existing devices for some guidance. Note that references to "device" refers to a microcontroller, not the graphics controller.
+
+The device specific code is stored under:
+
+    devices/
+	
+For example, files relating to NXP LPC111x are `devices/LPC111x.c` and `devices/LPC111x.h`
+
+\subsection DeviceRequiredFunctions Required functions
+
+These files define behaviour which are specific to that device. Behaviour specific to a type of device should be <b>not</b> placed in any other directory other than this.
+
+These files should have functions for all those declared in by `glcd_devices.h`.
+
+This currently only includes, in the case of SPI operation:
+
+	glcd_init(void)
+	glcd_reset(void)
+	glcd_spi_write(uint8_t c)
+
+In the case of parallel chipset operation `glcd_parallel_write(uint8_t c)` is used instead of ` glcd_spi_write(uint8_t c)`.
+
+For chipsets that may not need ay of the functions above, you'll still need to define the function in your code, even if you just leave it blank.
+
+The corresponding `devices/mydevice.h` should be used as well to store all required constants. Try and avoid using "magic numbers" in the code. This header file should also be used to store port and pin information for the implementation.
+
+Example:
+
+\code
+#define PCD8544_SPI_PORT_NUMBER 1
+#define PCD8544_MOSI_PORT LPC_GPIO2
+#define PCD8544_MOSI_PIN  3
+#define PCD8544_MISO_PORT LPC_GPIO2
+#define PCD8544_MISO_PIN  2
+#define PCD8544_SCK_PORT  LPC_GPIO2
+#define PCD8544_SCK_PIN   1
+#define PCD8544_SS_PORT   LPC_GPIO2
+#define PCD8544_SS_PIN    0
+#define PCD8544_DC_PORT   LPC_GPIO2
+#define PCD8544_DC_PIN    4
+#define PCD8544_RST_PORT  LPC_GPIO2
+#define PCD8544_RST_PIN   5
+\endcode
+ 
+If certain code is specific to a controller and is not universal, use ifdef statements to isolate them e.g:
+
+\code
+#if defined(GLCD_CONTROLLER_PCD8544)
+	/* insert code */
+#else
+	/* Use a meaningful error message */
+	#error "Controller not supported for LPC111x"
+#endif
+\endcode
+
+## Updating glcd.h
+
+After adding your device and controller, you'll also need to edit glcd.h, and make any additions as needed. Take a look at the existing code to see what needs to be done. Devices specific such as preprocessor macros, compiler specific include statements can be added here.
+
+## Overriding configurations
+
+Coming soon.
+
+
+*/

@@ -80,12 +80,36 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, heatnessCurrent);
 
 	uint32_t lastReloadTime;
+	bool isEnabled = false;
+	const RifleConfiguration& config() { return *m_config; }
 
 private:
 	RifleConfiguration* m_config = nullptr;
 };
 
 
+class PlayerPartialState
+{
+public:
+	PlayerPartialState(const DeviceAddress& headSensorAddress);
+	void syncAll();
+	void print();
+	bool isAlive();
+
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthMax);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorMax);
+
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, healthCurrent);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, armorCurrent);
+
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, killsCount);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount);
+
+private:
+	const DeviceAddress* m_headSensorAddress;
+};
 
 
 

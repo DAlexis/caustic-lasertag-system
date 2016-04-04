@@ -46,6 +46,7 @@ namespace ConfigCodes
 			PAR_CODE(FloatParameter, supplyVoltageMin, 2010)
 			PAR_CODE(FloatParameter, supplyVoltageMax, 2011)
 			PAR_CODE(FloatParameter, adcCalibrationCoeff, 2013)
+			PAR_CODE(UintParameter, lcdContrast,       2020)
 		}
 
 		namespace Functions
