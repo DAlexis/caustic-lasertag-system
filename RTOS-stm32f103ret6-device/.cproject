@@ -61,6 +61,10 @@
 									<listOptionValue builtIn="false" value="../include/system-config"/>
 									<listOptionValue builtIn="false" value="../Drivers/stm32f1-stdperiph/include"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src/sd-stdperiph"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/fonts}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/devices/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/controllers}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.779926560" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
@@ -68,6 +72,8 @@
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F103xE"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_SDCARD"/>
+									<listOptionValue builtIn="false" value="GLCD_DEVICE_STM32F10X"/>
+									<listOptionValue builtIn="false" value="GLCD_CONTROLLER_PCD8544"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.2128920" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
 							</tool>
@@ -85,6 +91,10 @@
 									<listOptionValue builtIn="false" value="../include/system-config"/>
 									<listOptionValue builtIn="false" value="../Drivers/stm32f1-stdperiph/include"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src/sd-stdperiph"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/fonts}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/devices/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/controllers}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.407845983" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
@@ -94,6 +104,8 @@
 									<listOptionValue builtIn="false" value="HSE_VALUE=8000000"/>
 									<listOptionValue builtIn="false" value="STM32F103xE"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_SDCARD"/>
+									<listOptionValue builtIn="false" value="GLCD_DEVICE_STM32F10X"/>
+									<listOptionValue builtIn="false" value="GLCD_CONTROLLER_PCD8544"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1028176831" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -111,6 +123,10 @@
 									<listOptionValue builtIn="false" value="../include/system-config"/>
 									<listOptionValue builtIn="false" value="../Drivers/stm32f1-stdperiph/include"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src/sd-stdperiph"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/fonts}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/devices/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/controllers}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.2002912397" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.822921084" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -124,6 +140,8 @@
 									<listOptionValue builtIn="false" value="HSE_VALUE=8000000"/>
 									<listOptionValue builtIn="false" value="STM32F103xE"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_SDCARD"/>
+									<listOptionValue builtIn="false" value="GLCD_DEVICE_STM32F10X"/>
+									<listOptionValue builtIn="false" value="GLCD_CONTROLLER_PCD8544"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.934038541" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
@@ -152,7 +170,7 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano.1645079130" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat.1579089358" name="Use float with nano printf (-u _printf_float)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat" value="false" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usescanffloat.399129668" name="Use float with nano scanf (-u _scanf_float)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usescanffloat" value="false" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.55107398" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs" valueType="libs"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.55107398" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input.299449474" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -245,6 +263,10 @@
 									<listOptionValue builtIn="false" value="../include/system-config"/>
 									<listOptionValue builtIn="false" value="../Drivers/stm32f1-stdperiph/include"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src/sd-stdperiph"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/fonts}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/devices/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/controllers}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.421165666" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="STM32F10X_HD"/>
@@ -252,6 +274,8 @@
 									<listOptionValue builtIn="false" value="HSE_VALUE=8000000"/>
 									<listOptionValue builtIn="false" value="STM32F103xE"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_SDCARD"/>
+									<listOptionValue builtIn="false" value="GLCD_DEVICE_STM32F10X"/>
+									<listOptionValue builtIn="false" value="GLCD_CONTROLLER_PCD8544"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.1455336077" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
 							</tool>
@@ -272,6 +296,10 @@
 									<listOptionValue builtIn="false" value="../include/system-config"/>
 									<listOptionValue builtIn="false" value="../Drivers/stm32f1-stdperiph/include"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src/sd-stdperiph"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/fonts}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/devices/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/controllers}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.497672618" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="STM32F10X_HD"/>
@@ -279,6 +307,8 @@
 									<listOptionValue builtIn="false" value="HSE_VALUE=8000000"/>
 									<listOptionValue builtIn="false" value="STM32F103xE"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_SDCARD"/>
+									<listOptionValue builtIn="false" value="GLCD_DEVICE_STM32F10X"/>
+									<listOptionValue builtIn="false" value="GLCD_CONTROLLER_PCD8544"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.755619170" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -299,6 +329,10 @@
 									<listOptionValue builtIn="false" value="../include/system-config"/>
 									<listOptionValue builtIn="false" value="../Drivers/stm32f1-stdperiph/include"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src/sd-stdperiph"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/fonts}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/devices/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOS-stm32f103ret6-device/Middlewares/Third_Party/glcd/controllers}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.309741594" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.259480901" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -310,6 +344,8 @@
 									<listOptionValue builtIn="false" value="HSE_VALUE=8000000"/>
 									<listOptionValue builtIn="false" value="STM32F103xE"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_SDCARD"/>
+									<listOptionValue builtIn="false" value="GLCD_DEVICE_STM32F10X"/>
+									<listOptionValue builtIn="false" value="GLCD_CONTROLLER_PCD8544"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1706253098" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
@@ -336,7 +372,7 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.nostart.316083573" name="Do not use standard start files (-nostartfiles)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.nostart" value="false" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano.1031457483" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano" value="true" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.660350998" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs" valueType="libs"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.660350998" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input.1201897315" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

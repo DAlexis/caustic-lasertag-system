@@ -42,7 +42,7 @@ void BluetoothBridge::init(const Pinout& pinout)
 	NetworkLayer::instance().registerBroadcast(broadcast.any);
 	NetworkLayer::instance().registerBroadcast(broadcast.bluetoothBridges);
 	NetworkLayer::instance().init();
-	NetworkLayer::instance().enableRegularNRFReinit();
+	//NetworkLayer::instance().enableRegularNRFReinit();
 
 
 	m_bluetoothPort = UARTSFactory->create();

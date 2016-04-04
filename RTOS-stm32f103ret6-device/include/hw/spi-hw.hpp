@@ -22,7 +22,7 @@ public:
 	SPIManager(uint8_t SPIindex);
 	~SPIManager() {}
 
-	void init(uint32_t prescaler, IIOPin* NSSPin);
+	void init(uint32_t prescaler, IIOPin* NSSPin, uint8_t SPIPhase = SPIPhase1edge);
 	bool Transmit(uint8_t *pData, uint16_t Size, uint32_t Timeout = defaultTimeout);
 	bool Receive(uint8_t *pData, uint16_t Size, uint32_t Timeout = defaultTimeout);
 	bool TransmitReceive(uint8_t *pTxData, uint8_t *pRxData, uint16_t Size, uint32_t Timeout = defaultTimeout);

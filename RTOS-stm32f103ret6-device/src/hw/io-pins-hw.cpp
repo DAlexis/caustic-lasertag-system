@@ -197,8 +197,10 @@ IIOPin* IOPinsPool::getIOPin(uint8_t portNumber, uint8_t pinNumber)
 		IIOPin* newPin = new IOPin(portNumber, pinNumber);
 		m_interfaces[std::pair<uint8_t, uint8_t>(portNumber, pinNumber)] = newPin;
 		return newPin;
-	} else
+	} else {
+		warning << "Double use of pin " << portNumber << ":" << pinNumber;
 		return it->second;
+	}
 }
 
 void IOPinsPool::resetAllPins()

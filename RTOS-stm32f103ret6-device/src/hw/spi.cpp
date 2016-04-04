@@ -69,7 +69,7 @@ SPIManager::SPIManager(uint8_t SPIindex)
 	managers[SPIindex-1] = this;
 }
 
-void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin)
+void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin, uint8_t SPIPhase)
 {
 	m_stager.stage("init");
 	uint32_t baudratePrescaler;
@@ -92,7 +92,7 @@ void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin)
 	m_hspi->Init.Direction = SPI_DIRECTION_2LINES;
 	m_hspi->Init.DataSize = SPI_DATASIZE_8BIT;
 	m_hspi->Init.CLKPolarity = SPI_POLARITY_LOW;
-	m_hspi->Init.CLKPhase = SPI_PHASE_1EDGE;
+	m_hspi->Init.CLKPhase = SPIPhase == SPIPhase1edge ? SPI_PHASE_1EDGE : SPI_PHASE_2EDGE;
 	m_hspi->Init.NSS = SPI_NSS_SOFT;
 	m_hspi->Init.BaudRatePrescaler = baudratePrescaler;
 	m_hspi->Init.FirstBit = SPI_FIRSTBIT_MSB;
@@ -101,9 +101,13 @@ void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin)
 	m_hspi->Init.CRCPolynomial = 7;
 	HAL_SPI_Init(m_hspi);
 
+
 	m_NSSPin = NSSPin;
-	m_NSSPin->switchToOutput();
-	m_NSSPin->set();
+	if (m_NSSPin)
+	{
+		m_NSSPin->switchToOutput();
+		m_NSSPin->set();
+	}
 	m_stager.stage("init done");
 }
 

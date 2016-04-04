@@ -210,6 +210,15 @@ void HeadSensor::init(const Pinout &_pinout)
 
 	m_killZonesInterogator.run();
 	info << "Head sensor ready to use";
+	info << "LCD initializing";
+	LCD5110Controller::LcdIO lcdio;
+	lcdio.spi = SPIs->getSPI(3);
+	lcdio.dataCommand = IOPins->getIOPin(1, 9);
+	lcdio.reset = IOPins->getIOPin(1, 10);
+	lcdio.chipEnable = IOPins->getIOPin(1, 11);
+
+	m_lcd.init(lcdio);
+	info << "LCD init done";
 }
 
 void HeadSensor::resetToDefaults()

@@ -10,6 +10,7 @@
 #include "rcsp/RCSP-stream.hpp"
 #include "network/broadcast.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
+#include "core/power-monitor.hpp"
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
 #include "dev/miles-tag-2.hpp"
@@ -232,6 +233,11 @@ void Rifle::init(const Pinout& pinout)
 				updatePlayerState();
 			},
 			5000000
+	);
+
+	m_tasksPool.add(
+			[this] { PowerMonitor::instance().interrogate(); },
+			100000
 	);
 
 	info << "Configuring buttons";

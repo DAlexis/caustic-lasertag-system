@@ -17,6 +17,7 @@
 #include "network/broadcast.hpp"
 #include "game/game-log.hpp"
 #include "dev/rgb-leds.hpp"
+#include "dev/lcd5110.hpp"
 #include "core/device-initializer.hpp"
 
 
@@ -124,6 +125,7 @@ private:
 	GameLog::BaseStatsCounter m_statsCounter;
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
+	LCD5110Controller m_lcd;
 };
 
 

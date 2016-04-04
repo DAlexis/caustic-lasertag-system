@@ -190,7 +190,7 @@ public class BluetoothManager {
                 // THIS code ony works on ZTE!!
                 // This code block is for solving "[JSR82] write: write() failed" problem.
                 // See https://stackoverflow.com/questions/20078457/android-bluetoothsocket-write-fails-on-4-2-2
-                /*
+
                 btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
                 Field f = btSocket.getClass().getDeclaredField("mFdHandle");
                 f.setAccessible(true);
@@ -198,7 +198,7 @@ public class BluetoothManager {
                 btSocket.close();
                 Thread.sleep(1000); // Just in case the socket was really connected
                 // end of that block
-*/
+
                 btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
             /*Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
             BluetoothSocket connection = (BluetoothSocket)m.invoke(device, MY_UUID);*/
