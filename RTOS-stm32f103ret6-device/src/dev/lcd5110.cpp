@@ -95,6 +95,11 @@ LCD5110Controller::LCD5110Controller()
 	lcdContrast = 72; // This worked for one module...
 }
 
+void LCD5110Controller::configureSPI()
+{
+	lcdio.spi->init(ISPIManager::BaudRatePrescaler32, lcdio.chipEnable, ISPIManager::SPIPhase2edge);
+}
+
 void LCD5110Controller::init(const LcdIO& io)
 {
 	lcdio = io;

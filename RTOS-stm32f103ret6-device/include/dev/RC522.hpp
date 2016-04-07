@@ -142,7 +142,7 @@ const byte FM17522_firmware_reference[] PROGMEM = {
 	0x56, 0x9A, 0x98, 0x82, 0x26, 0xEA, 0x2A, 0x62
 };
 
-class MFRC522 {
+class MFRC522 : public ISPIUser {
 public:
 	// MFRC522 registers. Described in chapter 9 of the datasheet.
 	// When using SPI all addresses are shifted one bit left in the "SPI address byte" (section 8.1.2.3)
@@ -337,10 +337,10 @@ public:
 	static const byte FIFO_SIZE = 64;		// The FIFO is 64 bytes.
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	// Functions for setting up the Arduino
+	// Functions for setting up hardware
 	/////////////////////////////////////////////////////////////////////////////////////
 	MFRC522();
-	MFRC522(byte chipSelectPin, byte resetPowerDownPin);
+	void configureSPI() override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Basic interface functions for communicating with the MFRC522

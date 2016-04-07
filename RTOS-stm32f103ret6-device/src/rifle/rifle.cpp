@@ -748,6 +748,25 @@ bool Rifle::isShocked()
 	return systemClock->getTime() <= m_unshockTime;
 }
 
+void Rifle::onCardReaded(uint8_t* buffer, uint16_t size)
+{
+	info << "RFID card detected";
+	if (size < sizeof(DeviceAddress))
+		return;
+
+	DeviceAddress* pAddr = static_cast<DeviceAddress*>(static_cast<void*>(buffer));
+	if (*pAddr == config.headSensorAddr)
+	{
+		info << "Head sensor switch is not needed";
+		return;
+	}
+
+	config.headSensorAddr = *pAddr;
+	info << "Switching head sensor to " << ADDRESS_TO_STREAM(config.headSensorAddr);
+	rifleTurnOff();
+	registerWeapon();
+}
+
 void Rifle::riflePlayEnemyDamaged(uint8_t state)
 {
 	info << "Player damaged with state: " << state;

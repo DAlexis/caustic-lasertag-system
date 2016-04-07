@@ -492,6 +492,14 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 	stream.send(weaponAddress, true);
 }
 
+void HeadSensor::deregisterWeapon(DeviceAddress weaponAddress)
+{
+	info << "Deregistering weapon " << ADDRESS_TO_STREAM(weaponAddress);
+	auto it = playerState.weaponsList.weapons().find(weaponAddress);
+	if (it != playerState.weaponsList.weapons().end())
+		playerState.weaponsList.remove(weaponAddress);
+}
+
 void HeadSensor::setTeam(uint8_t teamId)
 {
 	info << "Setting team id";

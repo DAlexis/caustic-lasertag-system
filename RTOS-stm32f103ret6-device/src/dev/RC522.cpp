@@ -21,17 +21,10 @@ using word = uint32_t;
 MFRC522::MFRC522() {
 } // End constructor
 
-/**
- * Constructor.
- * Prepares the output pins.
- */
-MFRC522::MFRC522(	byte chipSelectPin,		///< Arduino pin connected to MFRC522's SPI slave select input (Pin 24, NSS, active low)
-					byte resetPowerDownPin	///< Arduino pin connected to MFRC522's reset and power down input (Pin 6, NRSTPD, active low)
-				) {
-	_chipSelectPin = chipSelectPin;
-	_resetPowerDownPin = resetPowerDownPin;
-} // End constructor
-
+void MFRC522::configureSPI()
+{
+	m_io.spi->init(ISPIManager::BaudRatePrescaler128, m_io.chipSelect, ISPIManager::SPIPhase1edge);
+}
 /////////////////////////////////////////////////////////////////////////////////////
 // Basic interface functions for communicating with the MFRC522
 /////////////////////////////////////////////////////////////////////////////////////
@@ -249,10 +242,9 @@ void MFRC522::PCD_Init(const RC522IO& io) {
 	// Set the chipSelectPin as digital output, do not select the slave yet
 	m_io.chipSelect->switchToOutput();
 	m_io.chipSelect->set();
-	m_io.spi->init(ISPIManager::BaudRatePrescaler128, m_io.chipSelect, ISPIManager::SPIPhase1edge);
 	// Set the resetPowerDownPin as digital output, do not reset or power down.
 	m_io.resetPowerDown->switchToOutput();
-
+	configureSPI();
 	//pinMode(_resetPowerDownPin, OUTPUT);
 
 	if (m_io.resetPowerDown->state() == false) {	//The MFRC522 chip is in power down mode.

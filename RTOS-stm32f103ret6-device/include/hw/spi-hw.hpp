@@ -32,6 +32,8 @@ public:
 private:
 	constexpr static uint32_t defaultTimeout = 100000;
 	bool waitForISR(uint32_t timeout = 0);
+	uint8_t sendByte(uint8_t byte);
+	uint8_t receiveByte();
 
 	SPI_HandleTypeDef* m_hspi;
 	StagerStub m_stager{"SPIManager"};
@@ -40,8 +42,7 @@ private:
 	uint8_t m_portNumber = 1;
 	IIOPin* m_NSSPin = nullptr;
 
-	uint8_t sendByte(uint8_t byte);
-	uint8_t receiveByte();
+	uint32_t m_configHash = 0;
 };
 
 class SPIsPool : public ISPIsPool

@@ -13,7 +13,7 @@
 #include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
 
-class LCD5110Controller
+class LCD5110Controller : public ISPIUser
 {
 public:
 	struct LcdIO
@@ -33,6 +33,8 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::AnyDevice::Configuration, lcdContrast);
 
 	LCD5110Controller();
+
+	void configureSPI() override;
 
 	void init(const LcdIO& io);
 	void line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color);

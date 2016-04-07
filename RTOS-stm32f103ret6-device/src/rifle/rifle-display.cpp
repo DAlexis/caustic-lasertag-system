@@ -29,6 +29,7 @@ void RifleLCD5110Display::init()
 
 void RifleLCD5110Display::update()
 {
+	m_lcd.configureSPI();
 	m_lcd.clearBuffer();
 	m_lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
 	m_lcd.stringXY(10, 0, "Caustic LTS");

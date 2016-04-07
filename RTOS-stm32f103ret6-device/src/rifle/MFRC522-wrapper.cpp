@@ -33,7 +33,10 @@ void RC552Wrapper::init()
 void RC552Wrapper::interrogate()
 {
 	if (m_currentLoop)
+	{
+		m_mfrc.configureSPI();
 		m_currentLoop();
+	}
 }
 
 void RC552Wrapper::readBlock(DataReadingDoneCallback callback, byte size)

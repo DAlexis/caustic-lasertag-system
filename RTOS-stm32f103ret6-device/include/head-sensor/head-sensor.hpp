@@ -69,6 +69,7 @@ public:
 	FUNCION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults);
 
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon);
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, deregisterWeapon);
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam);
 
 	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth);

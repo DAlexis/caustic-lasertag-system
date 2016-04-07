@@ -217,7 +217,8 @@ namespace ConfigCodes
 			FUNC_CODE_1P(addMaxHealth, IntParameter, 1220)
 			FUNC_CODE_1P(setTeam,      TeamMT2Id,    1221)
 
-			FUNC_CODE_1P(registerWeapon,  DeviceAddress,      1300)
+			FUNC_CODE_1P(registerWeapon,    DeviceAddress,  1300)
+			FUNC_CODE_1P(deregisterWeapon,  DeviceAddress,  1301)
 
 			FUNC_CODE_1P(notifyIsDamager, DamageNotification, 1400)
 			FUNC_CODE_1P(catchShot, ShotMessage, 1401)

@@ -53,6 +53,13 @@ public:
 	}
 };
 
+class ISPIUser
+{
+public:
+	virtual ~ISPIUser() {}
+	virtual void configureSPI() = 0;
+};
+
 class ISPIsPool
 {
 public:

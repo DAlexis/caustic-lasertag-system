@@ -72,6 +72,11 @@ SPIManager::SPIManager(uint8_t SPIindex)
 void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin, uint8_t SPIPhase)
 {
 	m_stager.stage("init");
+	// May be there is no need to reconfigure hardware...
+	uint32_t hash = hashLy(prescaler, NSSPin, SPIPhase);
+	if (hash == m_configHash)
+		return;
+
 	uint32_t baudratePrescaler;
 
 	switch(prescaler)
@@ -108,6 +113,8 @@ void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin, uint8_t SPIPhase)
 		m_NSSPin->switchToOutput();
 		m_NSSPin->set();
 	}
+
+	m_configHash = hash;
 	m_stager.stage("init done");
 }
 

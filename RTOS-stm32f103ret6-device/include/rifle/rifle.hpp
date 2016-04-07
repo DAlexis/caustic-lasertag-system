@@ -101,6 +101,7 @@ private:
 	void checkHeartBeat();
 	bool isShocked();
 
+	void onCardReaded(uint8_t* buffer, uint16_t size);
 
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;
