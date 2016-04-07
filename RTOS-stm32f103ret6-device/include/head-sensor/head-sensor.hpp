@@ -19,7 +19,7 @@
 #include "dev/rgb-leds.hpp"
 #include "dev/RC522.hpp"
 #include "core/device-initializer.hpp"
-
+#include "rifle/MFRC522-wrapper.hpp"
 
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
@@ -125,7 +125,7 @@ private:
 	GameLog::BaseStatsCounter m_statsCounter;
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
-	MFRC522 m_mfrc;
+	RC552Wrapper m_mfrcWrapper;
 };
 
 

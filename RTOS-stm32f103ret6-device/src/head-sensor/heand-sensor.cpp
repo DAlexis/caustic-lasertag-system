@@ -200,6 +200,11 @@ void HeadSensor::init(const Pinout &_pinout)
 			100000
 	);
 
+	m_tasksPool.add(
+			[this] { m_mfrcWrapper.interrogate(); },
+			10000
+	);
+
 	info << "Stats restoring";
 	m_statsCounter.restoreFromFile();
 
@@ -212,8 +217,19 @@ void HeadSensor::init(const Pinout &_pinout)
 	info << "Head sensor ready to use";
 
 
+	m_mfrcWrapper.init();
+	m_mfrcWrapper.readBlock([](uint8_t* data, uint16_t size)
+			{
+				printHex(data, size);
+			}
+	, 18);
+/*
+	static uint8_t b[16];
+	memset(b, 0, 16);
+	m_mfrcWrapper.writeBlock(b, 16);*/
 //#define TESTING_MFRC522
 #ifdef TESTING_MFRC522
+	MFRC522 m_mfrc;
 	info << "MFRC522 initializing";
 	MFRC522::RC522IO io;
 	io.spi = SPIs->getSPI(3);
