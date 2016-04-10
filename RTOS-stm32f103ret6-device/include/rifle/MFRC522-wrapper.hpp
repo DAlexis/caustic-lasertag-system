@@ -24,6 +24,7 @@ public:
 	void writeBlock(uint8_t* data, uint16_t size);
 
 private:
+	constexpr static Time reinitPeriod = 10000000;
 	using LoopFunc = std::function<void()>;
 
 	constexpr static uint16_t inputBufferMaxSize = 32;
@@ -49,6 +50,8 @@ private:
 	LoopFunc m_currentLoop = nullptr;
 
 	MFRC522::MIFARE_Key m_key;
+
+	Time m_lastReinitTime = 0;
 };
 
 

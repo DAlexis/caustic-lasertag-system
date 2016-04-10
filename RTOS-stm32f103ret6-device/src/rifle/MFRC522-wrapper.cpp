@@ -32,6 +32,14 @@ void RC552Wrapper::init()
 
 void RC552Wrapper::interrogate()
 {
+	Time nowtime = systemClock->getTime();
+	if (nowtime - m_lastReinitTime > reinitPeriod)
+	{
+		info << "RFID reader reinit to prevent broken state";
+		init();
+		m_lastReinitTime = nowtime;
+	}
+
 	if (m_currentLoop)
 	{
 		m_mfrc.configureSPI();
@@ -68,7 +76,7 @@ void RC552Wrapper::readBlockLoop()
 		return;
 	}
 
-	debug << "Reading data from block " << blockAddr << "...";
+	debug << "Reading data from block " << blockAddr << " with size " << m_inputBufferSize;
 	status = (MFRC522::StatusCode) m_mfrc.MIFARE_Read(blockAddr, m_inputBuffer, &m_inputBufferSize);
 	if (status != MFRC522::STATUS_OK) {
 		error << "MIFARE_Read() failed: " << m_mfrc.GetStatusCodeName(status);

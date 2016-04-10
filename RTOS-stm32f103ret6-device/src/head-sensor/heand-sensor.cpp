@@ -218,75 +218,7 @@ void HeadSensor::init(const Pinout &_pinout)
 
 
 	m_mfrcWrapper.init();
-	m_mfrcWrapper.readBlock([](uint8_t* data, uint16_t size)
-			{
-				printHex(data, size);
-			}
-	, 18);
-/*
-	static uint8_t b[16];
-	memset(b, 0, 16);
-	m_mfrcWrapper.writeBlock(b, 16);*/
-//#define TESTING_MFRC522
-#ifdef TESTING_MFRC522
-	MFRC522 m_mfrc;
-	info << "MFRC522 initializing";
-	MFRC522::RC522IO io;
-	io.spi = SPIs->getSPI(3);
-	io.chipSelect = IOPins->getIOPin(0, 15);
-	io.resetPowerDown = IOPins->getIOPin(1, 11);
-	m_mfrc.PCD_Init(io);
-	m_mfrc.PCD_SetAntennaGain(0x07<<4);
-
-	info << "MFRC522 init done. testing...";
-	byte nuidPICC[3];
-	bool done = false;
-	do {
-		  if ( ! m_mfrc.PICC_IsNewCardPresent())
-			continue;
-
-		  // Verify if the NUID has been readed
-		  if ( ! m_mfrc.PICC_ReadCardSerial())
-			  continue;
-
-		  info << "PICC type: ";
-		  MFRC522::PICC_Type piccType = m_mfrc.PICC_GetType(m_mfrc.uid.sak);
-		  info << m_mfrc.PICC_GetTypeName(piccType);
-
-		  // Check is the PICC of Classic MIFARE type
-		  if (piccType != MFRC522::PICC_TYPE_MIFARE_MINI &&
-			piccType != MFRC522::PICC_TYPE_MIFARE_1K &&
-			piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
-			info << "Your tag is not of type MIFARE Classic.";
-			continue;
-		  }
-
-		  if (m_mfrc.uid.uidByte[0] != nuidPICC[0] ||
-				  m_mfrc.uid.uidByte[1] != nuidPICC[1] ||
-				  m_mfrc.uid.uidByte[2] != nuidPICC[2] ||
-				  m_mfrc.uid.uidByte[3] != nuidPICC[3] ) {
-			info << "A new card has been detected.";
-
-			// Store NUID into nuidPICC array
-			for (byte i = 0; i < 4; i++) {
-			  nuidPICC[i] = m_mfrc.uid.uidByte[i];
-			}
-
-			info << "The NUID tag is:";
-
-			printHex(m_mfrc.uid.uidByte, m_mfrc.uid.size);
-
-		  }
-		  else info << "Card read previously.";
-
-		  // Halt PICC
-		  m_mfrc.PICC_HaltA();
-
-		  // Stop encryption on PCD
-		  m_mfrc.PCD_StopCrypto1();
-
-	} while(true/*!done*/);
-#endif
+	setFRIDToWriteAddr();
 }
 
 void HeadSensor::resetToDefaults()
@@ -482,6 +414,7 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 	RCSPStream stream;
 	stream.addValue(ConfigCodes::HeadSensor::Configuration::plyerMT2Id);
 	stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
+	stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
 
 	if (playerState.isAlive())
 	{
@@ -498,6 +431,7 @@ void HeadSensor::deregisterWeapon(DeviceAddress weaponAddress)
 	auto it = playerState.weaponsList.weapons().find(weaponAddress);
 	if (it != playerState.weaponsList.weapons().end())
 		playerState.weaponsList.remove(weaponAddress);
+	NetworkLayer::instance().dropAllForAddress(weaponAddress);
 }
 
 void HeadSensor::setTeam(uint8_t teamId)
@@ -559,6 +493,13 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 				notification.state;
 		RCSPStream::remoteCall(playerState.weaponsList.weapons().begin()->first, ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged, sound);
 	}
+
+}
+
+void HeadSensor::setFRIDToWriteAddr()
+{
+	memcpy(m_RFIDWriteBuffer, &deviceConfig.devAddr, sizeof(DeviceAddress));
+	m_mfrcWrapper.writeBlock(m_RFIDWriteBuffer, RFIDWriteBufferSize);
 
 }
 

@@ -85,6 +85,7 @@ private:
 	constexpr static uint32_t heartbeatPeriod = 2000000;
 	//constexpr static uint32_t heartbeatPeriod = 200000;
 	constexpr static uint8_t killZonesCount = 6;
+	constexpr static uint16_t RFIDWriteBufferSize = 16;
 	// Test functions
 	void testDie(const char*);
 
@@ -93,6 +94,7 @@ private:
 	void turnOffWeapons();
 	void notifyDamager(PlayerMT2Id player, uint8_t damagerTeam, uint8_t state = 0);
 	void weaponWoundAndShock();
+	void setFRIDToWriteAddr();
 
 	void sendHeartbeat();
 
@@ -127,6 +129,8 @@ private:
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
 	RC552Wrapper m_mfrcWrapper;
+
+	uint8_t m_RFIDWriteBuffer[RFIDWriteBufferSize];
 };
 
 

@@ -232,6 +232,11 @@ extern "C" {
 
 ISPIManager* SPIsPool::getSPI(uint8_t portNumber)
 {
-	return new SPIManager(portNumber);
+	if (m_spis[portNumber-1] == nullptr)
+	{
+		m_spis[portNumber-1] = new SPIManager(portNumber);
+	}
+
+	return m_spis[portNumber-1];
 }
 

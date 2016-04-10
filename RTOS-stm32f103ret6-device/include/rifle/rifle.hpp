@@ -12,6 +12,7 @@
 #include "rifle/resources.hpp"
 #include "rifle/rifle-base-types.hpp"
 #include "rifle/rifle-display.hpp"
+#include "rifle/MFRC522-wrapper.hpp"
 #include "device/device.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "dev/buttons.hpp"
@@ -102,6 +103,9 @@ private:
 	bool isShocked();
 
 	void onCardReaded(uint8_t* buffer, uint16_t size);
+	/// This function could be called any time when head sensor is connected. Double calling does not hurt anything
+	void onHSConnected();
+	void onHSDisconnected();
 
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;
@@ -116,6 +120,7 @@ private:
 	MilesTag2Transmitter m_mt2Transmitter{config.outputPower};
 
 	SoundPlayer m_systemReadySound;
+	SoundPlayer m_RFIDCardReaded;
 	SoundPlayer m_connectedToHeadSensorSound;
 	SoundPlayer m_shootingSound;
 	SoundPlayer m_reloadingSound;
@@ -142,6 +147,8 @@ private:
 	/// If current time > m_unshockTime, player is not shocked now
 	Time m_unshockTime = 0;
 	RifleLCD5110Display m_display{&rifleOwner, &state, &playerState};
+
+	RC552Wrapper m_mfrcWrapper;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

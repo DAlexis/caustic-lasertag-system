@@ -91,6 +91,7 @@ public:
 	);
 
 	bool stopSending(PackageId packageId);
+	void dropAllForAddress(const DeviceAddress& address);
 	bool updateTimeout(PackageId packageId);
 
 	void registerBroadcast(const DeviceAddress& address);

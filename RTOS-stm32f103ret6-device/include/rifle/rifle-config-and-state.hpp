@@ -81,6 +81,7 @@ public:
 
 	uint32_t lastReloadTime;
 	bool isEnabled = false;
+	bool isHSConnected = false;
 	const RifleConfiguration& config() { return *m_config; }
 
 private:

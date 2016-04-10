@@ -21,7 +21,7 @@ void RifleLCD5110Display::init()
 	lcdio.spi = SPIs->getSPI(3);
 	lcdio.dataCommand = IOPins->getIOPin(1, 9);
 	lcdio.reset = IOPins->getIOPin(1, 10);
-	lcdio.chipEnable = IOPins->getIOPin(1, 11);
+	lcdio.chipEnable = IOPins->getIOPin(1, 6);
 
 	m_lcd.init(lcdio);
 
@@ -34,7 +34,7 @@ void RifleLCD5110Display::update()
 	m_lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
 	m_lcd.stringXY(10, 0, "Caustic LTS");
 
-	if (m_state->isEnabled)
+	if (m_state->isHSConnected)
 	{
 		m_lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
 		char buffer[15];

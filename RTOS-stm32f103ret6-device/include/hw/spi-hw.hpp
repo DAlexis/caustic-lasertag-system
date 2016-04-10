@@ -52,6 +52,7 @@ public:
 	/// Get SPI manager. SPI enumerated from 0, so MCU port called "SPI_1" has portNumber == 0
 	ISPIManager* getSPI(uint8_t portNumber);
 private:
+	ISPIManager* m_spis[3] = {nullptr, nullptr, nullptr};
 	/// @Todo add spis pool here
 };
 

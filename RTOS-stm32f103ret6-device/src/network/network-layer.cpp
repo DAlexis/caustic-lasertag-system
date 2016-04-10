@@ -472,6 +472,19 @@ bool NetworkLayer::stopSending(PackageId packageId)
 	return false;
 }
 
+void NetworkLayer::dropAllForAddress(const DeviceAddress& address)
+{
+	ScopedLock<Mutex> lock(m_packagesQueueMutex);
+	for(auto it = m_packages.begin(); it != m_packages.end(); )
+	{
+		if (it->second.package.target == address) {
+			m_packages.erase(it++);
+		} else {
+			++it;
+	}
+}
+}
+
 bool NetworkLayer::updateTimeout(PackageId packageId)
 {
 	ScopedLock<Mutex> lock(m_packagesQueueMutex);
