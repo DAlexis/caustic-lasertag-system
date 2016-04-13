@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Пт 22 янв 2016 10:40:47
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Ср 13 апр 2016 11:22:34
 
 BeginCmp
 TimeStamp = /56994020;
@@ -31,7 +31,7 @@ EndCmp
 BeginCmp
 TimeStamp = /556D7214;
 Reference = C5;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = SM0805;
 EndCmp
 
@@ -46,14 +46,14 @@ BeginCmp
 TimeStamp = /556D6EF1;
 Reference = C7;
 ValeurCmp = CP1;
-IdModule  = c_tant_C;
+IdModule  = c_tant_E;
 EndCmp
 
 BeginCmp
 TimeStamp = /556EBE15;
 Reference = C8;
 ValeurCmp = 470uF;
-IdModule  = c_tant_C;
+IdModule  = c_tant_E;
 EndCmp
 
 BeginCmp
@@ -67,7 +67,7 @@ BeginCmp
 TimeStamp = /556D6EE2;
 Reference = C10;
 ValeurCmp = CP1;
-IdModule  = c_tant_C;
+IdModule  = c_tant_E;
 EndCmp
 
 BeginCmp
@@ -78,10 +78,17 @@ IdModule  = SM0805;
 EndCmp
 
 BeginCmp
+TimeStamp = /570D58F2;
+Reference = C12;
+ValeurCmp = 470uF;
+IdModule  = c_tant_E;
+EndCmp
+
+BeginCmp
 TimeStamp = /56993A9E;
 Reference = D1;
 ValeurCmp = LED;
-IdModule  = LED-0805;
+IdModule  = LED-1206;
 EndCmp
 
 BeginCmp
@@ -89,6 +96,13 @@ TimeStamp = /56993803;
 Reference = FB1;
 ValeurCmp = FILTER;
 IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /570DEFE4;
+Reference = JP1;
+ValeurCmp = nRF_ON;
+IdModule  = GS2;
 EndCmp
 
 BeginCmp
@@ -239,6 +253,13 @@ IdModule  = SOT23GDS;
 EndCmp
 
 BeginCmp
+TimeStamp = /570DEF97;
+Reference = Q8;
+ValeurCmp = MOSFET_N;
+IdModule  = SOT23GDS;
+EndCmp
+
+BeginCmp
 TimeStamp = /556ECE7B;
 Reference = R1;
 ValeurCmp = 10k;
@@ -262,14 +283,14 @@ EndCmp
 BeginCmp
 TimeStamp = /556EF6D2;
 Reference = R4;
-ValeurCmp = R;
+ValeurCmp = 10k;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /556EF6E1;
 Reference = R5;
-ValeurCmp = R;
+ValeurCmp = 10k;
 IdModule  = SM0805;
 EndCmp
 

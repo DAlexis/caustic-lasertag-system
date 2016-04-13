@@ -46,7 +46,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 1
 Title "Caustic lasertag system rifle shield"
-Date "20 jan 2016"
+Date "13 apr 2016"
 Rev "4"
 Comp ""
 Comment1 ""
@@ -132,26 +132,15 @@ F 3 "~" H 8400 4950 60  0000 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L GND #PWR05
-U 1 1 556D6CFE
-P 7750 5400
-F 0 "#PWR05" H 7750 5400 30  0001 C CNN
-F 1 "GND" H 7750 5330 30  0001 C CNN
-F 2 "" H 7750 5400 60  0000 C CNN
-F 3 "" H 7750 5400 60  0000 C CNN
-	1    7750 5400
-	1    0    0    -1  
-$EndComp
-$Comp
 L +3.3V #PWR06
 U 1 1 556D6D28
-P 7750 5200
-F 0 "#PWR06" H 7750 5160 30  0001 C CNN
-F 1 "+3.3V" H 7750 5310 30  0000 C CNN
-F 2 "" H 7750 5200 60  0000 C CNN
-F 3 "" H 7750 5200 60  0000 C CNN
-	1    7750 5200
-	0    -1   -1   0   
+P 6950 5150
+F 0 "#PWR06" H 6950 5110 30  0001 C CNN
+F 1 "+3.3V" H 6950 5260 30  0000 C CNN
+F 2 "" H 6950 5150 60  0000 C CNN
+F 3 "" H 6950 5150 60  0000 C CNN
+	1    6950 5150
+	1    0    0    -1  
 $EndComp
 $Comp
 L CP1 C10
@@ -1512,11 +1501,7 @@ Wire Wire Line
 Wire Wire Line
 	7850 4700 7300 4700
 Wire Wire Line
-	7750 5200 7850 5200
-Wire Wire Line
-	7750 5300 7850 5300
-Wire Wire Line
-	7750 5400 7750 5300
+	6950 5200 7850 5200
 Wire Wire Line
 	7700 2400 7900 2400
 Wire Wire Line
@@ -1671,4 +1656,94 @@ Wire Wire Line
 	6600 1000 6450 1000
 Wire Wire Line
 	6450 1200 6450 1300
+$Comp
+L CP1 C?
+U 1 1 570D58F2
+P 7050 5450
+F 0 "C?" H 7100 5550 50  0000 L CNN
+F 1 "CP1" H 7100 5350 50  0000 L CNN
+F 2 "~" H 7050 5450 60  0000 C CNN
+F 3 "~" H 7050 5450 60  0000 C CNN
+	1    7050 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 570DE656
+P 7050 5750
+F 0 "#PWR?" H 7050 5750 30  0001 C CNN
+F 1 "GND" H 7050 5680 30  0001 C CNN
+F 2 "" H 7050 5750 60  0000 C CNN
+F 3 "" H 7050 5750 60  0000 C CNN
+	1    7050 5750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7050 5650 7050 5750
+Wire Wire Line
+	6950 5200 6950 5150
+Wire Wire Line
+	7050 5250 7050 5200
+Connection ~ 7050 5200
+$Comp
+L MOSFET_N Q?
+U 1 1 570DEF97
+P 7050 800
+F 0 "Q?" H 7060 970 60  0000 R CNN
+F 1 "MOSFET_N" H 7060 650 60  0000 R CNN
+F 2 "~" H 7050 800 60  0000 C CNN
+F 3 "~" H 7050 800 60  0000 C CNN
+	1    7050 800 
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 570DEFB3
+P 6400 750
+F 0 "#PWR?" H 6400 750 30  0001 C CNN
+F 1 "GND" H 6400 680 30  0001 C CNN
+F 2 "" H 6400 750 60  0000 C CNN
+F 3 "" H 6400 750 60  0000 C CNN
+	1    6400 750 
+	1    0    0    -1  
+$EndComp
+$Comp
+L JUMPER JP?
+U 1 1 570DEFE4
+P 6750 900
+F 0 "JP?" H 6750 1050 60  0000 C CNN
+F 1 "JUMPER" H 6750 820 40  0000 C CNN
+F 2 "~" H 6750 900 60  0000 C CNN
+F 3 "~" H 6750 900 60  0000 C CNN
+	1    6750 900 
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	6400 750  6400 550 
+Wire Wire Line
+	6400 550  6950 550 
+Wire Wire Line
+	6950 550  6950 600 
+Wire Wire Line
+	6750 600  6750 550 
+Connection ~ 6750 550 
+Wire Wire Line
+	6750 1200 6750 1250
+Wire Wire Line
+	6750 1250 6950 1250
+Wire Wire Line
+	6950 1000 6950 4000
+Wire Wire Line
+	7850 5300 7400 5300
+Wire Wire Line
+	7400 5300 7400 4000
+Wire Wire Line
+	7400 4000 6950 4000
+Connection ~ 6950 1250
+Wire Wire Line
+	7900 1400 7350 1400
+Wire Wire Line
+	7350 1400 7350 800 
+Wire Wire Line
+	7350 800  7250 800 
 $EndSCHEMATC
