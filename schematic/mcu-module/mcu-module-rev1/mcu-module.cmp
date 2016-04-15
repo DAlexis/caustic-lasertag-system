@@ -1,10 +1,10 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вс 24 янв 2016 10:20:25
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Чт 14 апр 2016 11:51:21
 
 BeginCmp
-TimeStamp = /55643130;
+TimeStamp = /570F5C31;
 Reference = C1;
-ValeurCmp = 0.1uF;
-IdModule  = SM0805;
+ValeurCmp = 100uF;
+IdModule  = c_tant_B;
 EndCmp
 
 BeginCmp
@@ -36,10 +36,10 @@ IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /55641DCE;
+TimeStamp = /570F5744;
 Reference = C6;
-ValeurCmp = 0.1uF;
-IdModule  = SM0805;
+ValeurCmp = 100uF;
+IdModule  = c_tant_B;
 EndCmp
 
 BeginCmp
@@ -73,13 +73,6 @@ EndCmp
 BeginCmp
 TimeStamp = /564783BA;
 Reference = FB1;
-ValeurCmp = FILTER;
-IdModule  = SM0805;
-EndCmp
-
-BeginCmp
-TimeStamp = /56A4868A;
-Reference = FB2;
 ValeurCmp = FILTER;
 IdModule  = SM0805;
 EndCmp
@@ -144,6 +137,13 @@ BeginCmp
 TimeStamp = /55643978;
 Reference = R5;
 ValeurCmp = 47k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /570F5753;
+Reference = R6;
+ValeurCmp = 100;
 IdModule  = SM0805;
 EndCmp
 
