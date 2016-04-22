@@ -25,7 +25,7 @@ void RC552Wrapper::init()
 	MFRC522::RC522IO io;
 	io.spi = SPIs->getSPI(3);
 	io.chipSelect = IOPins->getIOPin(0, 15);
-	io.resetPowerDown = IOPins->getIOPin(1, 11);
+	io.resetPowerDown = IOPins->getIOPin(1, 6);
 	m_mfrc.PCD_Init(io);
 	m_mfrc.PCD_SetAntennaGain(0x07<<4);
 }

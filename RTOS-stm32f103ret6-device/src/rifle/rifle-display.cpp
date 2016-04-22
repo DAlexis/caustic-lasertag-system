@@ -21,7 +21,8 @@ void RifleLCD5110Display::init()
 	lcdio.spi = SPIs->getSPI(3);
 	lcdio.dataCommand = IOPins->getIOPin(1, 9);
 	lcdio.reset = IOPins->getIOPin(1, 10);
-	lcdio.chipEnable = IOPins->getIOPin(1, 6);
+	//lcdio.chipEnable = IOPins->getIOPin(1, 6);
+	lcdio.chipEnable = IOPins->getIOPin(1, 11);
 
 	m_lcd.init(lcdio);
 
