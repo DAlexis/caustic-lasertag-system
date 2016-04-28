@@ -237,7 +237,7 @@ MFRC522::StatusCode MFRC522::PCD_CalculateCRC(	byte *data,		///< In: Pointer to 
 /**
  * Initializes the MFRC522 chip.
  */
-void MFRC522::PCD_Init(const RC522IO& io) {
+bool MFRC522::PCD_Init(const RC522IO& io) {
 	m_io = io;
 	// Set the chipSelectPin as digital output, do not select the slave yet
 	m_io.chipSelect->switchToOutput();
@@ -253,7 +253,8 @@ void MFRC522::PCD_Init(const RC522IO& io) {
 		systemClock->wait_us(50*1000); //delay(50);
 	}
 	else { // Perform a soft reset
-		PCD_Reset();
+		if (!PCD_Reset())
+			return false;
 	}
 
 	/*
@@ -285,22 +286,27 @@ void MFRC522::PCD_Init(const RC522IO& io) {
 	PCD_WriteRegister(TxASKReg, 0x40);		// Default 0x00. Force a 100 % ASK modulation independent of the ModGsPReg register setting
 	PCD_WriteRegister(ModeReg, 0x3D);		// Default 0x3F. Set the preset value for the CRC coprocessor for the CalcCRC command to 0x6363 (ISO 14443-3 part 6.2.4)
 	PCD_AntennaOn();						// Enable the antenna driver pins TX1 and TX2 (they were disabled by the reset)
-
+	return true;
 } // End PCD_Init()
 
 /**
  * Performs a soft reset on the MFRC522 chip and waits for it to be ready again.
  */
-void MFRC522::PCD_Reset() {
+bool MFRC522::PCD_Reset() {
 	PCD_WriteRegister(CommandReg, PCD_SoftReset);	// Issue the SoftReset command.
 	// The datasheet does not mention how long the SoftRest command takes to complete.
 	// But the MFRC522 might have been in soft power-down mode (triggered by bit 4 of CommandReg)
 	// Section 8.8.2 in the datasheet says the oscillator start-up time is the start up time of the crystal + 37,74�s. Let us be generous: 50ms.
 	systemClock->wait_us(50*1000); //delay(50);
 	// Wait for the PowerDown bit in CommandReg to be cleared
+	Time waitingBegin = systemClock->getTime();
+	uint32_t timeout = 500000;
 	while (PCD_ReadRegister(CommandReg) & (1<<4)) {
 		// PCD still restarting - unlikely after waiting 50ms, but better safe than sorry.
+		if (systemClock->getTime() - waitingBegin > timeout)
+			return false;
 	}
+	return true;
 } // End PCD_Reset()
 
 /**

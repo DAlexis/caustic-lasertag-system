@@ -46,6 +46,7 @@ public:
 
 	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged);      ///< Play enemy damaged sound
 	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);      ///< Play enemy damaged sound
+	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS);      ///< Play enemy damaged sound
 
 	DeviceConfiguration deviceConfig;
 	RifleConfiguration config;

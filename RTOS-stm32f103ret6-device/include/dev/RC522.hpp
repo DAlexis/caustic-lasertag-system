@@ -357,8 +357,8 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Functions for manipulating the MFRC522
 	/////////////////////////////////////////////////////////////////////////////////////
-	void PCD_Init(const RC522IO& io);
-	void PCD_Reset();
+	bool PCD_Init(const RC522IO& io);
+	bool PCD_Reset();
 	void PCD_AntennaOn();
 	void PCD_AntennaOff();
 	byte PCD_GetAntennaGain();

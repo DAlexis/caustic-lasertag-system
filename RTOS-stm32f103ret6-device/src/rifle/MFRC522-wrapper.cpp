@@ -26,12 +26,17 @@ void RC552Wrapper::init()
 	io.spi = SPIs->getSPI(3);
 	io.chipSelect = IOPins->getIOPin(0, 15);
 	io.resetPowerDown = IOPins->getIOPin(1, 6);
-	m_mfrc.PCD_Init(io);
+	m_initResult = m_mfrc.PCD_Init(io);
+	if (m_initResult == false)
+		return;
 	m_mfrc.PCD_SetAntennaGain(0x07<<4);
 }
 
 void RC552Wrapper::interrogate()
 {
+	if (m_initResult == false)
+		return;
+
 	Time nowtime = systemClock->getTime();
 	if (nowtime - m_lastReinitTime > reinitPeriod)
 	{
@@ -47,17 +52,18 @@ void RC552Wrapper::interrogate()
 	}
 }
 
-void RC552Wrapper::readBlock(DataReadingDoneCallback callback, byte size)
+void RC552Wrapper::readBlock(RWDoneCallback callback, byte size)
 {
 	m_readCallback = callback;
 	m_inputBufferSize = size;
 	m_currentLoop = [this] { readBlockLoop(); };
 }
 
-void RC552Wrapper::writeBlock(uint8_t* data, uint16_t size)
+void RC552Wrapper::writeBlock(uint8_t* data, uint16_t size, RWDoneCallback callback)
 {
 	m_dataToWrite = data;
 	m_dataToWriteSize = size;
+	m_writeDoneCallback = callback;
 	m_currentLoop = [this] { writeBlockLoop(); };
 }
 
@@ -90,13 +96,16 @@ void RC552Wrapper::readBlockLoop()
 	debug << "Card reading done";
 
 	if (m_readCallback)
+	{
 		m_readCallback(m_inputBuffer, m_inputBufferSize);
+		m_readCallback = nullptr;
+	}
 }
 
 void RC552Wrapper::writeBlockLoop()
 {
 	if (!cardReadyToOperate())
-			return;
+		return;
 
 	MFRC522::StatusCode status;
 
@@ -144,6 +153,11 @@ void RC552Wrapper::writeBlockLoop()
 	m_mfrc.PCD_StopCrypto1();
 
 	debug << "Card writing done";
+	if (m_writeDoneCallback)
+	{
+		m_writeDoneCallback(m_dataToWrite, m_dataToWriteSize);
+		m_writeDoneCallback = nullptr;
+	}
 }
 
 bool RC552Wrapper::cardReadyToOperate()

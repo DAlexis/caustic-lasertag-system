@@ -171,12 +171,22 @@ public:
 
 	/**
 	 * Serialize variable or other object with accessor and put it to stream
-	 * @param stream Array where to put
-	 * @param code Code of variable/accessible object
-	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
+	 * @param stream       Array where to put
+	 * @param code         Code of variable/accessible object
+	 * @param freeSpace    Max available space in stream. Will be decremented after successful adding
+	 * @param actualSize   Resulting size of added data
+	 * @param pCustomValue Pointer to custom value of parameter that should be put into stream. Using
+	 * this parameter means that serialization is trivial, so data of size = arctual parameter size will be
+	 * copied to stream from pCustomValue
 	 * @return result of operation
 	 */
-	ResultType serializeObject(uint8_t* stream, OperationCode code, uint16_t freeSpace, uint16_t& actualSize);
+	ResultType serializeObject(
+			uint8_t* stream,
+			OperationCode code,
+			uint16_t freeSpace,
+			uint16_t& actualSize,
+			const uint8_t* pCustomValue = nullptr
+		);
 
 	/**
 	 * Put to stream request for variable
@@ -194,7 +204,12 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	ResultType serializeCallRequest(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize);
+	ResultType serializeCallRequest(
+			uint8_t* stream,
+			OperationCode functionCode,
+			uint16_t freeSpace,
+			uint16_t& actualSize
+		);
 
 	/**
 	 * Put to stream request for function call with parameter
@@ -205,7 +220,13 @@ public:
 	 * @return result of operation
 	 */
 	template<typename Type>
-	ResultType serializeCallRequest(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize, const Type& parameter)
+	ResultType serializeCallRequest(
+			uint8_t* stream,
+			OperationCode functionCode,
+			uint16_t freeSpace,
+			uint16_t& actualSize,
+			const Type& parameter
+		)
 	{
 		/// @todo [refactor] Remove code duplication with functionCallwithout parameters
 		actualSize = 0;

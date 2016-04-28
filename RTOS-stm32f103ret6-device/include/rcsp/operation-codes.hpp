@@ -128,6 +128,7 @@ namespace ConfigCodes
 
 			FUNC_CODE_1P(riflePlayEnemyDamaged, uint8_t,  210)
 			FUNC_CODE_NP(headSensorToRifleHeartbeat,      220)
+			FUNC_CODE_1P(rifleChangeHS, DeviceAddress,    225)
 		}
 	}
 

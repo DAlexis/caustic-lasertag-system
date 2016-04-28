@@ -16,12 +16,12 @@ class RC552Wrapper : public IInterrogatable
 {
 public:
 	RC552Wrapper();
-	using DataReadingDoneCallback = std::function<void(uint8_t*, uint16_t)>;
+	using RWDoneCallback = std::function<void(uint8_t*, uint16_t)>;
 	void init();
 
 	void interrogate() override;
-	void readBlock(DataReadingDoneCallback callback, byte size);
-	void writeBlock(uint8_t* data, uint16_t size);
+	void readBlock(RWDoneCallback callback, byte size);
+	void writeBlock(uint8_t* data, uint16_t size, RWDoneCallback callback = nullptr);
 
 private:
 	constexpr static Time reinitPeriod = 10000000;
@@ -37,7 +37,10 @@ private:
 	void readBlockLoop();
 	void writeBlockLoop();
 
-	DataReadingDoneCallback m_readCallback = nullptr;
+	bool m_initResult = false;
+
+	RWDoneCallback m_readCallback = nullptr;
+	RWDoneCallback m_writeDoneCallback = nullptr;
 	uint8_t* m_dataToWrite = nullptr;
 	uint16_t m_dataToWriteSize = 0;
 

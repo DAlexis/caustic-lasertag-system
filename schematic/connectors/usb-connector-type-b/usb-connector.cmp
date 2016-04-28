@@ -1,0 +1,17 @@
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вс 17 апр 2016 09:35:19
+
+BeginCmp
+TimeStamp = /57132E3E;
+Reference = J1;
+ValeurCmp = USB;
+IdModule  = USB_B;
+EndCmp
+
+BeginCmp
+TimeStamp = /57132E55;
+Reference = P1;
+ValeurCmp = CONN_4;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+EndListe

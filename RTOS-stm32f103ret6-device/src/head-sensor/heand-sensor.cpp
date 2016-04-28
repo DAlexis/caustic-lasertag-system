@@ -498,9 +498,25 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 
 void HeadSensor::setFRIDToWriteAddr()
 {
-	memcpy(m_RFIDWriteBuffer, &deviceConfig.devAddr, sizeof(DeviceAddress));
-	m_mfrcWrapper.writeBlock(m_RFIDWriteBuffer, RFIDWriteBufferSize);
-
+	uint16_t size = sizeof(m_RFIDWriteBuffer[0])*RFIDWriteBufferSize;
+	memset(m_RFIDWriteBuffer, 0, size);
+	uint16_t actualSize = 0;
+	RCSPAggregator::instance().serializeCallRequest(
+			m_RFIDWriteBuffer,
+			ConfigCodes::Rifle::Functions::rifleChangeHS,
+			size,
+			actualSize,
+			deviceConfig.devAddr
+		);
+	m_mfrcWrapper.writeBlock(
+			m_RFIDWriteBuffer,
+			RFIDWriteBufferSize,
+			[this](uint8_t* data, uint16_t size)
+			{
+				UNUSED_ARG(data); UNUSED_ARG(size);
+				m_leds.blink(blinkPatterns.anyCommand);
+			}
+		);
 }
 
 void HeadSensor::setDafaultPinout(Pinout& pinout)

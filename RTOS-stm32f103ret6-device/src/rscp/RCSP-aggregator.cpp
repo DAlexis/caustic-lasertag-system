@@ -160,7 +160,12 @@ Result RCSPAggregator::parseSring(const char* key, const char* value)
 	return Result();
 }
 
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(uint8_t* stream, OperationCode code, uint16_t freeSpace, uint16_t& actualSize)
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(
+		uint8_t* stream,
+		OperationCode code,
+		uint16_t freeSpace,
+		uint16_t& actualSize,
+		const uint8_t* pCustomValue)
 {
 	actualSize = 0;
 	auto it = m_accessorsByOpCode.find(code);
@@ -183,7 +188,12 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(uin
 	stream += sizeof(OperationSize);
 	memcpy(stream, &code, sizeof(OperationCode));
 	stream += sizeof(OperationCode);
-	it->second->serialize(stream);
+	if (pCustomValue == nullptr)
+	{
+		it->second->serialize(stream);
+	} else {
+		memcpy(stream, pCustomValue, size);
+	}
 
 	actualSize = sizeof(OperationSize) + sizeof(OperationCode) + size;
 	return DetailedResult<AddingResult>(OK);

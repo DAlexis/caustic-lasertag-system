@@ -791,49 +791,8 @@ void Rifle::onCardReaded(uint8_t* buffer, uint16_t size)
 
 	printHex(buffer, size);
 
-	DeviceAddress* pAddr = reinterpret_cast<DeviceAddress*>(buffer);
-	debug << "Rfid tell adress " << ADDRESS_TO_STREAM(*pAddr);
-	if (*pAddr == config.headSensorAddr)
-	{
-		info << "Head sensor switch is not needed";
-		return;
-	}
+	RCSPAggregator::instance().dispatchStream(buffer, size);
 
-	DeviceAddress oldAddr = config.headSensorAddr;
-	config.headSensorAddr = *pAddr;
-
-	NetworkLayer::instance().dropAllForAddress(oldAddr);
-
-	info << "Switching head sensor to " << ADDRESS_TO_STREAM(config.headSensorAddr);
-
-	RCSPStream::remoteCall(
-			oldAddr,
-			ConfigCodes::HeadSensor::Functions::deregisterWeapon,
-			deviceConfig.devAddr
-	);
-
-
-	onHSDisconnected();
-	if (m_registerWeaponPAckageId != 0)
-	{
-		NetworkLayer::instance().stopSending(m_registerWeaponPAckageId);
-		m_registerWeaponPAckageId = 0;
-	}
-	registerWeapon();
-
-/*
-	m_registerWeaponPAckageId = RCSPStream::remoteCall(
-		oldAddr,
-		ConfigCodes::HeadSensor::Functions::deregisterWeapon,
-		deviceConfig.devAddr,
-		true,
-		[this](PackageId packageId, bool result) -> void
-		{
-			m_registerWeaponPAckageId = 0;
-			registerWeapon();
-		},
-		std::forward<PackageTimings>(riflePackageTimings.deregistration)
-	);*/
 }
 
 void Rifle::riflePlayEnemyDamaged(uint8_t state)
@@ -849,6 +808,36 @@ void Rifle::rifleShock(uint32_t delay)
 		return; // May be head sensor mistaked?
 
 	m_unshockTime = systemClock->getTime() + delay;
+}
+
+void Rifle::rifleChangeHS(DeviceAddress newAddr)
+{
+	if (newAddr == config.headSensorAddr)
+	{
+		debug << "Head sensor switch not needed";
+		return;
+	}
+
+	// Adress was changed
+	debug << "Switching HS to " << ADDRESS_TO_STREAM(config.headSensorAddr);
+
+	NetworkLayer::instance().dropAllForAddress(config.headSensorAddr);
+
+	info << "Switching head sensor to " << ADDRESS_TO_STREAM(config.headSensorAddr);
+
+	RCSPStream::remoteCall(
+			config.headSensorAddr,
+			ConfigCodes::HeadSensor::Functions::deregisterWeapon,
+			deviceConfig.devAddr
+	);
+	config.headSensorAddr = newAddr;
+	onHSDisconnected();
+	if (m_registerWeaponPAckageId != 0)
+	{
+		NetworkLayer::instance().stopSending(m_registerWeaponPAckageId);
+		m_registerWeaponPAckageId = 0;
+	}
+	registerWeapon();
 }
 
 void Rifle::registerWeapon()
@@ -867,6 +856,7 @@ void Rifle::registerWeapon()
 			true,
 			[this](PackageId packageId, bool result) -> void
 			{
+				UNUSED_ARG(packageId); UNUSED_ARG(result);
 				m_registerWeaponPAckageId = 0;
 			},
 			std::forward<PackageTimings>(riflePackageTimings.registration)

@@ -25,9 +25,9 @@
 class StagerStub
 {
 public:
-	StagerStub(const char* name = "", Time aliveCheckPeriod = 0) {}
-	void stage(const char* description) {}
-	void setName(const char* name) {}
+	StagerStub(const char* name = "", Time aliveCheckPeriod = 0) { UNUSED_ARG(name); UNUSED_ARG(aliveCheckPeriod); }
+	void stage(const char* description) { UNUSED_ARG(description); }
+	void setName(const char* name) { UNUSED_ARG(name); }
 	void printStages() const {}
 };
 
