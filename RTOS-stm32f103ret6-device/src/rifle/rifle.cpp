@@ -264,7 +264,7 @@ void Rifle::init(const Pinout& pinout)
 			pinout[PinoutTexts::trigger].port,
 			pinout[PinoutTexts::trigger].pin
 	);
-	m_fireButton->useEXTI(true);
+	m_fireButton->useEXTI(false);
 	m_fireButton->setPressedState(pinout[PinoutTexts::trigger].inverted);
 	m_fireButton->setAutoRepeat(config.automaticAllowed);
 	m_fireButton->setRepeatPeriod(config.firePeriod);
