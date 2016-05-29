@@ -98,7 +98,6 @@ void RC552Wrapper::readBlockLoop()
 	if (m_readCallback)
 	{
 		m_readCallback(m_inputBuffer, m_inputBufferSize);
-		m_readCallback = nullptr;
 	}
 }
 

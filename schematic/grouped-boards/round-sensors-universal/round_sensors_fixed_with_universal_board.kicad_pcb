@@ -3,7 +3,7 @@
   (general
     (links 385)
     (no_connects 88)
-    (area 55.169999 28.044218 249.493001 72.211001)
+    (area 85.279 44.427218 181.2766 140.421282)
     (thickness 1.6)
     (drawings 193)
     (tracks 1384)
@@ -83,7 +83,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory plot/))
+      (outputdirectory /home/alexey/Projects/lazertag/schematic/grouped-boards/round-sensors-universal/plot/))
   )
 
   (net 0 "")
