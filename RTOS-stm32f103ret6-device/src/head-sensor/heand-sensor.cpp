@@ -252,15 +252,18 @@ void HeadSensor::catchShot(ShotMessage msg)
 
 		if (msg.playerId == playerConfig.plyerMT2Id)
 		{
+			debug << "self-shot";
 			msg.damage *= playerConfig.selfShotCoeff;
 		}
 		else if (msg.teamId == playerConfig.teamId)
 		{
+			debug << "friendly fire";
 			msg.damage *= playerConfig.frendlyFireCoeff;
 		}
 
 		UintParameter healthBeforeDamage = playerState.healthCurrent;
 
+		debug << "total damage: " << msg.damage;
 		playerState.damage(msg.damage);
 
 		info << "health: " <<  playerState.healthCurrent << " armor: " << playerState.armorCurrent;

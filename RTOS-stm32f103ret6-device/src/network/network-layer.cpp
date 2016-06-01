@@ -59,7 +59,7 @@ void DeviceAddress::convertFromString(const char* str)
 // NetworkLayer
 NetworkLayer::NetworkLayer()
 {
-	m_modemTask.setStackSize(1024);
+	m_modemTask.setStackSize(800);
 	m_modemTask.setName("NetLay");
 	m_modemTask.setTask(std::bind(&NetworkLayer::interrogate, this));
 }

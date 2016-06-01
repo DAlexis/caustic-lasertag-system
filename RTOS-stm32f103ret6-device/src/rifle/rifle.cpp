@@ -157,7 +157,7 @@ void RifleState::reset()
 Rifle::Rifle()
 {
 	deviceConfig.deviceType = DeviceTypes::rifle;
-	m_tasksPool.setStackSize(256);
+	m_tasksPool.setStackSize(400);
 }
 
 void Rifle::setDafaultPinout(Pinout& pinout)
@@ -819,11 +819,9 @@ void Rifle::rifleChangeHS(DeviceAddress newAddr)
 	}
 
 	// Adress was changed
-	debug << "Switching HS to " << ADDRESS_TO_STREAM(config.headSensorAddr);
+	info << "Switching HS to " << ADDRESS_TO_STREAM(newAddr);
 
 	NetworkLayer::instance().dropAllForAddress(config.headSensorAddr);
-
-	info << "Switching head sensor to " << ADDRESS_TO_STREAM(config.headSensorAddr);
 
 	RCSPStream::remoteCall(
 			config.headSensorAddr,
@@ -842,8 +840,6 @@ void Rifle::rifleChangeHS(DeviceAddress newAddr)
 
 void Rifle::registerWeapon()
 {
-	ScopedTag tag("rifle-register");
-
 	if (m_registerWeaponPAckageId != 0)
 		return;
 

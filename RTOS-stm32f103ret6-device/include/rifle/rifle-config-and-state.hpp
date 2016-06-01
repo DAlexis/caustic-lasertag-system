@@ -65,7 +65,7 @@ public:
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, fireFlashPeriod);
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, fireVibroPeriod);
 
-	PAR_CL(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, headSensorAddr);
+	PAR_CL(RESTORABLE, ConfigCodes::Rifle::Configuration, headSensorAddr);
 
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, outputPower);
 };
