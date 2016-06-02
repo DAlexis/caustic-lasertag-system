@@ -12,6 +12,7 @@
 #include "hal/io-pins.hpp"
 #include "hal/system-clock.hpp"
 #include "core/diagnostic.hpp"
+#include "network/radio-physical.hpp"
 
 #define RADIO_ADDRESS_SIZE  5
 #define RADIO_CHANNEL       1
@@ -20,7 +21,7 @@ using DataReceiveCallback = std::function<void(uint8_t/* channel*/, uint8_t*/* d
 using TXMaxRetriesCallback = std::function<void(void)>;
 using TXDoneCallback = std::function<void(void)>;
 
-class NRF24L01Manager
+class NRF24L01Manager : public IRadioPhysicalDevice
 {
 public:
     enum EnableDisable
@@ -33,16 +34,16 @@ public:
 
     NRF24L01Manager();
 
-    void init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, uint8_t SPIIndex, bool useInterrupts);
-    void printStatus();
-    void setDataReceiveCallback(DataReceiveCallback callback);
-    void setTXMaxRetriesCallback(TXMaxRetriesCallback callback);
-    void setTXDoneCallback(TXDoneCallback callback);
-    void sendData(uint8_t size, uint8_t* data);
+    void setDataReceiveCallback(DataReceiveCallback callback) override;
+    void setTXDoneCallback(TXDoneCallback callback) override;
+	void sendData(uint8_t size, uint8_t* data) override;
+    void setRXAddress(uint8_t channel, uint8_t* address) override;
+    void setTXAddress(uint8_t* address) override;
+    void printStatus() override;
 
+    void init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, uint8_t SPIIndex, bool useInterrupts);
+    void setTXMaxRetriesCallback(TXMaxRetriesCallback callback);
     void resetAllIRQ();
-    void setRXAddress(uint8_t channel, uint8_t* address);
-    void setTXAddress(uint8_t* address);
 
     void interrogate();
 
