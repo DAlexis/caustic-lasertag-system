@@ -1,0 +1,192 @@
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вс 29 май 2016 23:14:49
+
+BeginCmp
+TimeStamp = /556DA9A3;
+Reference = BT1;
+ValeurCmp = BATTERY;
+IdModule  = CR1220-smd;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DA789;
+Reference = C1;
+ValeurCmp = 1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DA77A;
+Reference = C2;
+ValeurCmp = 100uF;
+IdModule  = c_tant_C;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DA76B;
+Reference = C3;
+ValeurCmp = 100uF;
+IdModule  = c_tant_C;
+EndCmp
+
+BeginCmp
+TimeStamp = /5644F81F;
+Reference = C4;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A0A094;
+Reference = C5;
+ValeurCmp = 4.7uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A09A63;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = LED-1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /574B4C8F;
+Reference = J1;
+ValeurCmp = USB;
+IdModule  = USB_B_fixed;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A095EC;
+Reference = K1;
+ValeurCmp = Power;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DA534;
+Reference = P3;
+ValeurCmp = MCU1;
+IdModule  = pin_array_10x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A0B5D3;
+Reference = P4;
+ValeurCmp = USART1;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DA543;
+Reference = P6;
+ValeurCmp = MCU2;
+IdModule  = pin_array_10x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DA61D;
+Reference = P8;
+ValeurCmp = NRF24L01;
+IdModule  = pin_array_4x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /5643A06A;
+Reference = P9;
+ValeurCmp = Zone1;
+IdModule  = pin_array_4x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DBCCA;
+Reference = Q1;
+ValeurCmp = MOSFET_P;
+IdModule  = SOT23GDS;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DB460;
+Reference = Q2;
+ValeurCmp = MOS_N;
+IdModule  = SOT23GDS;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DB479;
+Reference = Q3;
+ValeurCmp = MOS_N;
+IdModule  = SOT23GDS;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DB488;
+Reference = Q4;
+ValeurCmp = MOS_N;
+IdModule  = SOT23GDS;
+EndCmp
+
+BeginCmp
+TimeStamp = /556DB03C;
+Reference = Q5;
+ValeurCmp = MOS_N;
+IdModule  = SOT23GDS;
+EndCmp
+
+BeginCmp
+TimeStamp = /5644F539;
+Reference = R1;
+ValeurCmp = 10k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5644F52A;
+Reference = R2;
+ValeurCmp = 10k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A09A72;
+Reference = R3;
+ValeurCmp = 470;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A0A510;
+Reference = R4;
+ValeurCmp = 1.5k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A0A067;
+Reference = R6;
+ValeurCmp = 2k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5644F15B;
+Reference = U1;
+ValeurCmp = NCP551;
+IdModule  = SOT23-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A09786;
+Reference = U2;
+ValeurCmp = USBLC6-4;
+IdModule  = SOT23_6;
+EndCmp
+
+BeginCmp
+TimeStamp = /56A09A4A;
+Reference = U3;
+ValeurCmp = MCP73831;
+IdModule  = SOT23-5;
+EndCmp
+
+EndListe
