@@ -279,12 +279,18 @@ void HeadSensor::catchShot(ShotMessage msg)
 				m_statsCounter.registerDamage(msg.playerId, msg.damage);
 			}
 			m_leds.blink(blinkPatterns.wound);
-			notifyDamager(msg.playerId, msg.teamId, DamageNotification::injured);
+			if (msg.playerId != playerConfig.plyerMT2Id)
+			{
+				notifyDamager(msg.playerId, msg.teamId, DamageNotification::injured);
+			}
 		} else {
 			//Player was killed
 			info << "xx Player died";
 			dieWeapons();
-			notifyDamager(msg.playerId, msg.teamId, DamageNotification::killed);
+			if (msg.playerId != playerConfig.plyerMT2Id)
+			{
+				notifyDamager(msg.playerId, msg.teamId, DamageNotification::killed);
+			}
 			m_statsCounter.registerKill(msg.playerId);
 			m_statsCounter.registerDamage(msg.playerId, healthBeforeDamage);
 			m_leds.blink(blinkPatterns.death);
@@ -471,19 +477,24 @@ void HeadSensor::addMaxHealth(int16_t delta)
 void HeadSensor::notifyDamager(PlayerMT2Id damager, uint8_t damagerTeam, uint8_t state)
 {
 	UNUSED_ARG(damagerTeam);
-	ScopedTag tag("notify-damager");
 	DamageNotification notification;
 	notification.damager = damager;
 	notification.damagedTeam = playerConfig.teamId;
 	notification.state = state;
 	notification.target = playerConfig.plyerMT2Id;
 	info << "Notifying damager";
-	RCSPStream::remoteCall(broadcast.headSensors, ConfigCodes::HeadSensor::Functions::notifyIsDamager, notification, false);
+	RCSPStream::remoteCall(
+			broadcast.headSensors,
+			ConfigCodes::HeadSensor::Functions::notifyIsDamager,
+			notification,
+			true,
+			nullptr,
+			std::move(headSensorPackageTimings.damagerNotificationBroadcast)
+			);
 }
 
 void HeadSensor::notifyIsDamager(DamageNotification notification)
 {
-	ScopedTag tag("notify-damaged");
 	info << "By the time " << notification.damager << " damaged " << notification.target;
 	if (notification.damager != playerConfig.plyerMT2Id)
 		return;
@@ -491,9 +502,10 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 	if (!playerState.weaponsList.weapons().empty())
 	{
 		uint8_t sound =
-			notification.damagedTeam == playerConfig.teamId ?
+			(notification.damagedTeam == playerConfig.teamId) ? // testing for friendly fire
 				NotificationSoundCase::friendInjured :
 				notification.state;
+		// Now notifying over first attached weapon
 		RCSPStream::remoteCall(playerState.weaponsList.weapons().begin()->first, ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged, sound);
 	}
 

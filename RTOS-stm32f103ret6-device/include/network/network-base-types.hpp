@@ -52,8 +52,8 @@ struct DeviceAddress
 
 struct PackageTimings
 {
-	constexpr static uint32_t defaultTimeout = 20000000;
-	constexpr static uint32_t defaultResendTime = 500000;
+	constexpr static uint32_t defaultTimeout = 10000000;
+	constexpr static uint32_t defaultResendTime = 200000;
 	constexpr static uint32_t defaultResendTimeDelta = 100000;
 
 	PackageTimings(

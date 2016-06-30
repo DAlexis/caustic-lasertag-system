@@ -360,7 +360,8 @@ void NetworkLayer::sendNext()
 	}
 
 	Time time = systemClock->getTime();
-	for (auto it=m_packages.begin(); it!=m_packages.end(); it++)
+	for (auto it=m_packages.begin(); it!=m_packages.end(); )
+		// ++it in the end of cycle body for case when we removing outdated packages
 	{
 		// If timeout
 		if (!it->second.timings.infiniteResend && time - it->second.wasCreated > it->second.timings.timeout)
@@ -368,13 +369,10 @@ void NetworkLayer::sendNext()
 			PackageSendingDoneCallback callback = it->second.callback;
 			uint16_t timeoutedPackageId = it->second.package.details.packageId;
 			radio << "==| Package " << timeoutedPackageId << " timeouted";
-			m_packages.erase(it);
+			m_packages.erase(it++); // We can increment iterator
 			if (callback)
 				callback(timeoutedPackageId, false);
-
-			/// @todo Improve code somehow and remove this return
-			// Return because iterators are bad now
-			return;
+			continue; // we alredy did ++it so go to next iteration
 		}
 		// If it is time to (re)send package
 		if (it->second.nextTransmission < time)
@@ -390,6 +388,7 @@ void NetworkLayer::sendNext()
 
 			return;
 		}
+		++it; // Now can increment
 	}
 }
 

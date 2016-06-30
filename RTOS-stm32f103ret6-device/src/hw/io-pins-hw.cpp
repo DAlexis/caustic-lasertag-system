@@ -77,6 +77,8 @@ void IOPin::enableExti(bool enable)
 
 	switch(maskToPinNumber(m_pinMask))
 	{
+	default:
+		error << "Attempt to enable EXTI on invalid IOPin object";
 	case 0: irq = EXTI0_IRQn; break;
 	case 1: irq = EXTI1_IRQn; break;
 	case 2: irq = EXTI2_IRQn; break;
@@ -86,8 +88,6 @@ void IOPin::enableExti(bool enable)
 		irq = EXTI9_5_IRQn; break;
 	case 10: case 11: case 12: case 13: case 14: case 15:
 		irq = EXTI15_10_IRQn; break;
-	default:
-		error << "Attempt to enable EXTI on invalid IOPin object";
 	}
 
 	if (m_extiEnabled)
