@@ -1,0 +1,3 @@
+[submodule "usb-bootloader"]
+	path = usb-bootloader
+	url = git://github.com/DAlexis/stm32-usb-bootloader.git
