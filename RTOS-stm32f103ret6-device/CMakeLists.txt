@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-
-project(universal-device)
+project(universal-device C CXX ASM)
 
 set(EXE_SOURCES
     Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/gcc/startup_stm32f103xe.asm
@@ -149,32 +148,8 @@ set(MAP_NAME ${PROJECT_NAME}.map)
 
 # -mcpu=cortex-m3 -mthumb -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -ffreestanding -Wall -Wextra -g3 -std=c++0x -g -fno-move-loop-invariants
 # -mcpu=cortex-m3 -mthumb -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -ffreestanding -fno-move-loop-invariants -Wall -Wextra  -g3 -DUSE_FULL_ASSERT -DHSE_VALUE=8000000 -std=gnu++11 -fabi-version=0 -fno-exceptions -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics -MMD -MP -MF"src/head-sensor/heand-sensor.d" -MT"src/head-sensor/heand-sensor.o" -c -o "src/head-sensor/heand-sensor.o" "../src/head-sensor/heand-sensor.cpp"
-set(CMAKE_C_COMPILER arm-none-eabi-gcc)
-set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER arm-none-eabi-g++)
 
-# To remove -rdynamic
-SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
-SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 
-set(CMAKE_C_CXX_FLAGS "-mcpu=cortex-m3 -mthumb -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -ffreestanding -Wall -Wextra -g3")
-set(CMAKE_C_CXX_FLAGS_DEBUG   "-fno-move-loop-invariants -g -DDEBUG -Os")
-set(CMAKE_C_CXX_FLAGS_RELEASE "-Os")
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_CXX_FLAGS}")
-set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} ${CMAKE_C_CXX_FLAGS_DEBUG}" )
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${CMAKE_C_CXX_FLAGS_RELEASE}" )
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_CXX_FLAGS} -std=gnu++11")
-set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_C_CXX_FLAGS_DEBUG}" )
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_C_CXX_FLAGS_RELEASE}" )
-
-set(CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} -x assembler-with-cpp")
-set(CMAKE_ASM_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}" )
-set(CMAKE_ASM_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
-
-add_definitions(-DSTM32F103xE)
-add_definitions(-DSTM32F10X_HD)
 add_definitions(-DGLCD_DEVICE_STM32F10X)
 add_definitions(-DGLCD_CONTROLLER_PCD8544)
 add_definitions(-DUSE_STDPERIPH_DRIVER)
