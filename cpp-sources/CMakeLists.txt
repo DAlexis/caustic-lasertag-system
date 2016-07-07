@@ -39,7 +39,7 @@ add_definitions(-DSTM32F103xE)
 add_definitions(-DSTM32F10X_HD)
 
 
-add_subdirectory(usb-bootloader/bootloader-usb)
-add_subdirectory(RTOS-stm32f103ret6-device)
+add_subdirectory(bootloader-usb/bootloader-usb)
+add_subdirectory(universal-device)
 
 
