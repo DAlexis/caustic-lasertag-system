@@ -213,9 +213,6 @@ void Rifle::init(const Pinout& pinout)
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
 
-	info << "Display initialization";
-	m_display.init();
-
 	info << "Loading default config";
 	RCSPAggregator::instance().readIni("config.ini");
 
@@ -229,12 +226,6 @@ void Rifle::init(const Pinout& pinout)
 		warning << "  restoring failed";
 		rifleReset();
 	}
-
-	m_tasksPool.add([this](){
-			m_display.update();
-		},
-		500000
-	);
 
 	m_tasksPool.add(
 			[this]() {
@@ -391,6 +382,15 @@ void Rifle::init(const Pinout& pinout)
 			{ onCardReaded(data, size); },
 		18
 	);
+
+	info << "Display initialization";
+	m_display.init();
+	m_tasksPool.add([this](){
+			m_display.update();
+		},
+		500000
+	);
+
 	info << "Rifle ready to use\n";
 }
 
