@@ -6,6 +6,7 @@
  */
 
 #include "rifle/rifle-display.hpp"
+#include "core/pinout.hpp"
 #include <stdio.h>
 
 RifleLCD5110Display::RifleLCD5110Display(const RifleOwnerConfiguration *owner, const RifleState *state, const PlayerPartialState *playerState) :
@@ -18,10 +19,19 @@ RifleLCD5110Display::RifleLCD5110Display(const RifleOwnerConfiguration *owner, c
 void RifleLCD5110Display::init()
 {
 	LCD5110Controller::LcdIO lcdio;
-	lcdio.spi = SPIs->getSPI(3);
-	lcdio.dataCommand = IOPins->getIOPin(1, 9);
-	lcdio.reset = IOPins->getIOPin(1, 10);
-	lcdio.chipEnable = IOPins->getIOPin(1, 11);
+	lcdio.spi = SPIs->getSPI(UniversalConnectorPinout::instance().SPIindex);
+	lcdio.dataCommand = IOPins->getIOPin(
+		UniversalConnectorPinout::instance().lcd5110.D_C.port,
+		UniversalConnectorPinout::instance().lcd5110.D_C.pin
+	);
+	lcdio.reset = IOPins->getIOPin(
+		UniversalConnectorPinout::instance().lcd5110.RST.port,
+		UniversalConnectorPinout::instance().lcd5110.RST.pin
+	);
+	lcdio.chipEnable = IOPins->getIOPin(
+		UniversalConnectorPinout::instance().lcd5110.CE.port,
+		UniversalConnectorPinout::instance().lcd5110.CE.pin
+	);
 
 	m_lcd.init(lcdio);
 

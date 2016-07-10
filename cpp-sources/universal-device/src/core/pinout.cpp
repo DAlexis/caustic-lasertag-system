@@ -11,8 +11,7 @@
 #include <functional>
 
 ///////////////////
-//
-
+// Pinout
 Result Pinout::readIni(const char* filename)
 {
 	IniParcer* parcer = new IniParcer;
@@ -87,3 +86,10 @@ DetailedResult<std::string> Pinout::getParameter(const char* name) const
 	}
 	return DetailedResult<std::string>(it->second);
 }
+
+UniversalConnectorPinout& UniversalConnectorPinout::instance()
+{
+	static UniversalConnectorPinout ucp;
+	return ucp;
+}
+

@@ -16,6 +16,7 @@
 class Pinout
 {
 public:
+	/// Note: GPIOA has port number 0, GPIOB has 1, ...
 	struct PinDescr
 	{
 		/// Special pin number for pins that are disabled on PCB
@@ -75,10 +76,26 @@ private:
 
 };
 
+class UniversalConnectorPinout
+{
+public:
+	struct RFID
+	{
+		Pinout::PinDescr CE{0, 14};
+		Pinout::PinDescr RST{1, 5};
+	};
+	struct LCD5110
+	{
+		Pinout::PinDescr D_C{1, 9};
+		Pinout::PinDescr RST{1, 10};
+		Pinout::PinDescr CE{1, 11};
+	};
 
+	const uint8_t SPIindex = 3;
+	const RFID rfid;
+	const LCD5110 lcd5110;
 
-
-
-
+	static UniversalConnectorPinout& instance();
+};
 
 #endif /* INCLUDE_CORE_PINOUT_HPP_ */
