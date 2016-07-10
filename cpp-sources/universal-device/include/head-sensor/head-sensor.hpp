@@ -19,8 +19,7 @@
 #include "dev/rgb-leds.hpp"
 #include "dev/RC522.hpp"
 #include "core/device-initializer.hpp"
-#include "rifle/MFRC522-wrapper.hpp"
-
+#include "dev/MFRC522-wrapper.hpp"
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
 #include <set>

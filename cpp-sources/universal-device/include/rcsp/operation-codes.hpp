@@ -228,13 +228,21 @@ namespace ConfigCodes
 		}
 	}
 
+	namespace SmartPoint
+	{
+		namespace Configuration
+		{
+
+		}
+	}
+
 	namespace Base
 	{
 		namespace Functions
 		{
 			FUNC_CODE_1P(getPvPResults, GameLog::PvPDamageResults, 3001)
 		}
-	};
+	}
 }
 
 

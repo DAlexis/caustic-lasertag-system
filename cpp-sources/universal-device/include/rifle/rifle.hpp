@@ -12,7 +12,7 @@
 #include "rifle/resources.hpp"
 #include "rifle/rifle-base-types.hpp"
 #include "rifle/rifle-display.hpp"
-#include "rifle/MFRC522-wrapper.hpp"
+#include "dev/MFRC522-wrapper.hpp"
 #include "device/device.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "dev/buttons.hpp"

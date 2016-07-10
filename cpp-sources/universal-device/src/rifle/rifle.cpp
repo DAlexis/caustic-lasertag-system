@@ -187,13 +187,11 @@ bool Rifle::checkPinout(const Pinout& pinout)
 		result = false;
 	}
 
-
 	if (!pinout[PinoutTexts::automatic].exists())
 	{
 		error << "Aitomatic switch pin is not set";
 		result = false;
 	}
-
 
 	if (!pinout[PinoutTexts::semiAutomatic].exists())
 	{
@@ -231,7 +229,6 @@ void Rifle::init(const Pinout& pinout)
 			[this]() {
 				playerState.print();
 				updatePlayerState();
-
 			},
 			5000000
 	);

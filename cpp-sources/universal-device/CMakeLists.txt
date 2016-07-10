@@ -73,7 +73,6 @@ set(EXE_SOURCES
     Middlewares/Third_Party/FatFs/src/sd-stdperiph/sdcard-low-level.cpp
     Middlewares/Third_Party/FatFs/src/sd-stdperiph/sdcard.cpp
     src/rifle/rifle.cpp
-    src/rifle/MFRC522-wrapper.cpp
     src/rifle/rifle-display.cpp
     src/rifle/packages-timings.cpp
     src/player/player.cpp
@@ -82,6 +81,7 @@ set(EXE_SOURCES
     src/network/network-layer.cpp
     src/network/broadcast.cpp
     src/device/device.cpp
+    src/dev/MFRC522-wrapper.cpp
     src/dev/random.cpp
     src/dev/buttons.cpp
     src/dev/nrf24l01.cpp
@@ -120,6 +120,7 @@ set(EXE_SOURCES
     src/head-sensor/heand-sensor.cpp
     src/head-sensor/parameters.cpp
     src/head-sensor/head-sensor-base-types.cpp
+    src/smart-point/smart-point.cpp
 )
 
 include_directories(

@@ -23,6 +23,8 @@ public:
 
 	const DeviceAddress bluetoothBridges{255, 255, 20};
 
+	const DeviceAddress smartPoint{255, 255, 30};
+
 	const DeviceAddress any{255, 255, 255};
 
 	bool isBroadcast(const DeviceAddress& addr);

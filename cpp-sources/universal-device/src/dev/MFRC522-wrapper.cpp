@@ -5,7 +5,7 @@
  *      Author: alexey
  */
 
-#include "rifle/MFRC522-wrapper.hpp"
+#include "dev/MFRC522-wrapper.hpp"
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
 

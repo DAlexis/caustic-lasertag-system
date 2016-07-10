@@ -12,6 +12,7 @@
 #include "hal/rtc.hpp"
 #include "hal/hardware-initializer.hpp"
 #include "head-sensor/head-sensor.hpp"
+#include "smart-point/smart-point.hpp"
 #include "rifle/rifle.hpp"
 #include "bluetooth-bridge/bluetooth-bridge.hpp"
 #include "cmsis_os.h"
@@ -68,6 +69,16 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 					{
 						info << "Creating RIFLE device";
 						resultDevice = new Rifle;
+					}
+					else if (0 == strcmp(value, "smart_point"))
+					{
+						info << "Creating SMART POINT device";
+						resultDevice = new SmartPoint;
+					}
+					else if (0 == strcmp(value, "bluetooth_bridge"))
+					{
+						info << "Creating BLUETOOTH BRIDGE device";
+						resultDevice = new BluetoothBridge;
 					}
 					else
 						resultDevice = nullptr;
