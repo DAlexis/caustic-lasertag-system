@@ -91,6 +91,7 @@ set(EXE_SOURCES
     src/dev/miles-tag-2-transmitter.cpp
     src/dev/lcd5110.cpp
     src/dev/RC522.cpp
+    src/dev/matrix-keyboard.cpp
     src/hw/rtc-hw.cpp
     src/hw/adc-hw.cpp
     src/hw/fire-emitter.cpp
@@ -121,6 +122,9 @@ set(EXE_SOURCES
     src/head-sensor/parameters.cpp
     src/head-sensor/head-sensor-base-types.cpp
     src/smart-point/smart-point.cpp
+    src/smart-point/smart-point-display.cpp
+    src/smart-point/smart-point-config-and-state.cpp
+    src/smart-point/smart-point-ui.cpp
 )
 
 include_directories(
