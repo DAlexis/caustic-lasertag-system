@@ -17,7 +17,8 @@
 #include "dev/wav-player.hpp"
 #include "dev/matrix-keyboard.hpp"
 
-
+#include "ir/ir-physical.hpp"
+#include "ir/ir-presentation.hpp"
 
 class SmartPoint : public IAnyDevice
 {
@@ -33,12 +34,19 @@ public:
 	SmartPointState state{samrtPointConfig};
 	SmartPointUI ui{state};
 
+	FUNCION_1P(ConfigCodes::HeadSensor::Functions, SmartPoint, catchShot);
+
 private:
 	void initSounds();
 
 	TasksPool m_tasksPool{"SmPntPl"};
 	SoundPlayer m_systemReadySound;
 	SmartPointUI m_ui{state};
+
+	IIRPhysicalReceiver* m_irPhysicalReceiver = nullptr;
+	IIRPresentationReceiver* m_irPresentationReceiver = nullptr;
+	IPresentationReceiversGroup* m_irPresentationReceiversGroup = nullptr;
+	Interrogator m_MT2Interogator{"MT2Itrg"};
 };
 
 

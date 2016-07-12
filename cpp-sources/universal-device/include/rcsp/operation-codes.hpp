@@ -240,6 +240,10 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, team2TimeLeft,    1852)
 			PAR_CODE(UintParameter, team3TimeLeft,    1853)
 			PAR_CODE(UintParameter, team4TimeLeft,    1854)
+
+			PAR_CODE(TeamMT2Id, currentTeam,    1860)
+			PAR_CODE(uint8_t, gameState,    1861)
+
 		}
 	}
 

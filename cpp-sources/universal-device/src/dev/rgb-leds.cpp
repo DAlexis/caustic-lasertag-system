@@ -15,7 +15,6 @@ RGBLeds::RGBLeds(const TeamMT2Id& teamId) :
 	m_blinkingTask.setTask(std::bind(&RGBLeds::blinkingTask, this));
 	m_blinkingTask.setStackSize(128);
 	m_blinkingTask.setName("LEDBlink");
-	m_blinkingTask.run();
 }
 
 void RGBLeds::init(IIOPin* red, IIOPin* green, IIOPin* blue)
@@ -26,6 +25,10 @@ void RGBLeds::init(IIOPin* red, IIOPin* green, IIOPin* blue)
 	m_red->switchToOutput();
 	m_green->switchToOutput();
 	m_blue->switchToOutput();
+	m_red->reset();
+	m_green->reset();
+	m_blue->reset();
+	m_blinkingTask.run();
 }
 
 void RGBLeds::changeState(uint8_t state)
@@ -85,6 +88,11 @@ uint8_t RGBLeds::getTeamColor(TeamMT2Id teamId)
 	case 1: return RGBLeds::blue;
 	case 2: return RGBLeds::red | RGBLeds::green;
 	case 3: return RGBLeds::green;
-	default: return RGBLeds::red | RGBLeds::green | RGBLeds::blue;
+	default: return RGBLeds::silence;
 	}
+}
+
+void RGBLeds::stop()
+{
+	blinksCount = 0;
 }

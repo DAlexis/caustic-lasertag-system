@@ -16,6 +16,7 @@
 #include <stdlib.h>
 
 void printHex(const uint8_t* buffer, size_t size);
+void formatTime(char* buffer, uint16_t min, uint16_t sec);
 const char* parseFRESULT(int res);
 
 void floatToString(char* buffer, float value, int bufferSize, int fracDigits);

@@ -11,6 +11,9 @@
 #include "core/logging.hpp"
 #include "rcsp/RCSP-stream.hpp"
 
+#include "ir/ir-physical-tv.hpp"
+#include "ir/ir-presentation-mt2.hpp"
+
 SmartPoint::SmartPoint()
 {
 	deviceConfig.deviceType = DeviceTypes::smartPoint;
@@ -19,8 +22,30 @@ SmartPoint::SmartPoint()
 
 void SmartPoint::init(const Pinout& pinout)
 {
+	if (!RCSPAggregator::instance().readIni("config.ini"))
+	{
+		error << "Cannot read config file, so setting default values";
+		samrtPointConfig.resetToDefault();
+	}
+
+	m_MT2Interogator.setStackSize(512);
+
+	m_irPhysicalReceiver = new IRReceiverTV;
+	m_irPhysicalReceiver->setIOPin(IOPins->getIOPin(0, 0));
+	m_irPhysicalReceiver->init();
+	m_irPhysicalReceiver->setEnabled(true);
+
+	m_irPresentationReceiver = new IRPresentationReceiverMT2;
+	m_irPresentationReceiver->setPhysicalReceiver(m_irPhysicalReceiver);
+	m_irPresentationReceiver->init();
+
+	m_irPresentationReceiversGroup = new PresentationReceiversGroupMT2;
+	m_irPresentationReceiversGroup->connectReceiver(*m_irPresentationReceiver);
+	m_MT2Interogator.registerObject(m_irPresentationReceiversGroup);
+
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
+
 
 	info << "RCSP modem initialization";
 	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
@@ -42,11 +67,19 @@ void SmartPoint::init(const Pinout& pinout)
 	info << "UI initialization";
 	m_ui.init();
 
+	m_MT2Interogator.run();
+
 	m_tasksPool.add([this](){
 			m_ui.doIteration();
 		},
-		50000,
+		100000,
 		500000
+	);
+	m_tasksPool.add([this](){
+			state.ticTime();
+		},
+		50000,
+		0
 	);
 /*
 	m_tasksPool.add([this](){
@@ -66,6 +99,12 @@ bool SmartPoint::checkPinout(const Pinout& pinout)
 {
 	/// @todo Implement here
 	return true;
+}
+
+void SmartPoint::catchShot(ShotMessage msg)
+{
+	info << "** Shot from team " << msg.teamId;
+	state.acitateByTeam(msg.teamId);
 }
 
 void SmartPoint::initSounds()

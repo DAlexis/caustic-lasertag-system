@@ -16,21 +16,42 @@ class SmartPointConfig
 {
 public:
 	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::Configuration, secondsToWin);
+	void resetToDefault();
 };
 
 class SmartPointState
 {
 public:
+	constexpr static uint8_t gameStateInProcess = 1;
+	constexpr static uint8_t gameStateEnd = 2;
+
 	SmartPointState(const SmartPointConfig& config);
 
+	// This variables to be displayed or read remotely, but real calculations are in us
 	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team1TimeLeft);
 	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team2TimeLeft);
 	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team3TimeLeft);
 	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team4TimeLeft);
 
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, currentTeam);
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, gameState);
+
+	void beginGame();
 	void resetAllTime();
+	void ticTime();
+	void acitateByTeam(TeamMT2Id team);
+
 private:
 	const SmartPointConfig& m_config;
+	void timeLeftUsToSec();
+
+
+	Time m_lastTimeTick = 0;
+
+	Time m_team1TimeLeftus = 0;
+	Time m_team2TimeLeftus = 0;
+	Time m_team3TimeLeftus = 0;
+	Time m_team4TimeLeftus = 0;
 };
 
 

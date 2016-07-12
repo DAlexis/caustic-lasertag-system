@@ -8,6 +8,8 @@
 #include "smart-point/smart-point-ui.hpp"
 #include "core/pinout.hpp"
 
+SmartPointBlinkPatterns SmartPointUI::patterns;
+
 UIStateBase::UIStateBase(SmartPointUI& ui) :
 	m_ui(ui)
 {
@@ -15,7 +17,8 @@ UIStateBase::UIStateBase(SmartPointUI& ui) :
 
 
 SmartPointUI::SmartPointUI(SmartPointState& sps) :
-	smartPointState(sps)
+	smartPointState(sps),
+	leds(smartPointState.currentTeam)
 {
 
 }
@@ -24,6 +27,9 @@ void SmartPointUI::init()
 {
 	initKbd();
 	initLCD();
+	initLEDs();
+	m_uiState = &initScreen;
+	leds.blink(SmartPointUI::patterns.hello, RGBLeds::red | RGBLeds::green | RGBLeds::blue);
 }
 
 void SmartPointUI::initKbd()
@@ -59,8 +65,17 @@ void SmartPointUI::initLCD()
 	);
 
 	lcd.init(lcdio);
-	m_uiState = &initScreen;
 }
+
+void SmartPointUI::initLEDs()
+{
+	leds.init(
+		IOPins->getIOPin(1, 0),
+		IOPins->getIOPin(1, 1),
+		IOPins->getIOPin(1, 2)
+	);
+}
+
 
 void SmartPointUI::doIteration()
 {
@@ -84,7 +99,7 @@ UIStateBase* UIInitScreen::doIteration()
 		m_ui.lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
 		m_ui.lcd.stringXY(10, 0, "Caustic LTS");
 		m_ui.lcd.stringXY(0, 1, "Select mode:");
-		m_ui.lcd.stringXY(0, 2, "A: Capture");
+		m_ui.lcd.stringXY(0, 2, "A: Start");
 		m_ui.lcd.stringXY(0, 3, "B: Program");
 		m_ui.lcd.write();
 		m_screenUpdated = true;
@@ -96,6 +111,9 @@ UIStateBase* UIInitScreen::doIteration()
 	{
 		if (key == 'A')
 		{
+			m_ui.smartPointState.beginGame();
+			//m_ui.leds.blink(SmartPointUI::patterns.hello, RGBLeds::red | RGBLeds::green | RGBLeds::blue);
+			m_ui.leds.blink(SmartPointUI::patterns.hello);
 			return &m_ui.timeLeftScreen;
 		}
 	}
@@ -118,14 +136,28 @@ UIStateBase* UITimeLeftScreen::doIteration()
 		m_ui.lcd.configureSPI();
 		m_ui.lcd.clearBuffer();
 		m_ui.lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
+		char buffer[10];
+
 		m_ui.lcd.stringXY(0, 0, "Red:");
-		m_ui.lcd.stringXY(0, 1, "10:00");
-		m_ui.lcd.stringXY(0, 2, "Blue:");
-		m_ui.lcd.stringXY(0, 3, "10:00");
+		formatTime(buffer, m_ui.smartPointState.team1TimeLeft / 60, m_ui.smartPointState.team1TimeLeft % 60);
+		m_ui.lcd.stringXY(0, 1, buffer);
 		m_ui.lcd.write();
-		m_screenUpdated = true;
+
+		m_ui.lcd.stringXY(0, 2, "Blue:");
+		formatTime(buffer, m_ui.smartPointState.team2TimeLeft / 60, m_ui.smartPointState.team2TimeLeft % 60);
+		m_ui.lcd.stringXY(0, 3, buffer);
+		m_ui.lcd.write();
+
+		//m_screenUpdated = true;
 	}
 
+	// If leader team changed
+	if (m_lastLeader != m_ui.smartPointState.currentTeam)
+	{
+		m_lastLeader = m_ui.smartPointState.currentTeam;
+
+		m_ui.leds.blink(SmartPointUI::patterns.teamHasPoint);
+	}
 
 	return this;
 }
