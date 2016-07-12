@@ -37,6 +37,7 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, gameState);
 
 	void beginGame();
+	void stopGame();
 	void resetAllTime();
 	void ticTime();
 	void acitateByTeam(TeamMT2Id team);
@@ -44,7 +45,7 @@ public:
 private:
 	const SmartPointConfig& m_config;
 	void timeLeftUsToSec();
-
+	void win(TeamMT2Id team);
 
 	Time m_lastTimeTick = 0;
 

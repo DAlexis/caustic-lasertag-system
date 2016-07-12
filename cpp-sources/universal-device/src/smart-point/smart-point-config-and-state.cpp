@@ -6,12 +6,13 @@
  */
 
 #include "smart-point/smart-point-config-and-state.hpp"
+#include "core/logging.hpp"
 
 ///////////////////////
 //
 void SmartPointConfig::resetToDefault()
 {
-	secondsToWin = 3*60;
+	secondsToWin = 1*60;
 }
 
 SmartPointState::SmartPointState(const SmartPointConfig& config) :
@@ -24,6 +25,12 @@ void SmartPointState::beginGame()
 	resetAllTime();
 	gameState = gameStateInProcess;
 	m_lastTimeTick = systemClock->getTime();
+}
+
+void SmartPointState::stopGame()
+{
+	resetAllTime();
+	gameState = gameStateEnd;
 }
 
 void SmartPointState::resetAllTime()
@@ -51,7 +58,7 @@ void SmartPointState::ticTime()
 		if (delta >= m_team1TimeLeftus)
 		{
 			m_team1TimeLeftus = 0;
-			gameState = gameStateEnd;
+			win(currentTeam);
 		} else {
 			m_team1TimeLeftus -= delta;
 		}
@@ -61,7 +68,7 @@ void SmartPointState::ticTime()
 		if (delta >= m_team2TimeLeftus)
 		{
 			m_team2TimeLeftus = 0;
-			gameState = gameStateEnd;
+			win(currentTeam);
 		} else {
 			m_team2TimeLeftus -= delta;
 		}
@@ -71,7 +78,7 @@ void SmartPointState::ticTime()
 		if (delta >= m_team3TimeLeftus)
 		{
 			m_team3TimeLeftus = 0;
-			gameState = gameStateEnd;
+			win(currentTeam);
 		} else {
 			m_team3TimeLeftus -= delta;
 		}
@@ -81,7 +88,7 @@ void SmartPointState::ticTime()
 		if (delta >= m_team4TimeLeftus)
 		{
 			m_team4TimeLeftus = 0;
-			gameState = gameStateEnd;
+			win(currentTeam);
 		} else {
 			m_team4TimeLeftus -= delta;
 		}
@@ -92,7 +99,6 @@ void SmartPointState::ticTime()
 
 void SmartPointState::acitateByTeam(TeamMT2Id team)
 {
-
 	if (gameState == gameStateInProcess)
 	{
 		currentTeam = team;
@@ -105,4 +111,11 @@ void SmartPointState::timeLeftUsToSec()
 	team2TimeLeft = m_team2TimeLeftus / 1e6;
 	team3TimeLeft = m_team3TimeLeftus / 1e6;
 	team4TimeLeft = m_team4TimeLeftus / 1e6;
+}
+
+void SmartPointState::win(TeamMT2Id team)
+{
+	info << "Team " << team << " wins";
+	currentTeam = team;
+	gameState = gameStateEnd;
 }

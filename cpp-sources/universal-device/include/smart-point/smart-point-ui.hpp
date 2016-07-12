@@ -22,6 +22,7 @@ public:
 	UIStateBase(SmartPointUI& ui);
 	virtual ~UIStateBase() {}
 	virtual UIStateBase* doIteration() = 0;
+	virtual void prepare() { m_screenUpdated = false; }
 
 protected:
 	SmartPointUI& m_ui;
@@ -40,9 +41,11 @@ class UITimeLeftScreen : public UIStateBase
 public:
 	UITimeLeftScreen(SmartPointUI& ui);
 	UIStateBase* doIteration() override;
+	void prepare() override;
 
 private:
 	TeamMT2Id m_lastLeader = MT2NotATeam;
+	bool m_winRegisered = false;
 };
 
 class SmartPointBlinkPatterns
@@ -50,6 +53,7 @@ class SmartPointBlinkPatterns
 public:
 	const RGBLeds::BlinkPattern hello{100000, 100000, 5};
 	const RGBLeds::BlinkPattern teamHasPoint{100000, 500000, 10000};
+	const RGBLeds::BlinkPattern teamWin{1000000, 1000000, 10000};
 };
 
 class SmartPointUI

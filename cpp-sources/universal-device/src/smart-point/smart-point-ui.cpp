@@ -7,6 +7,7 @@
 
 #include "smart-point/smart-point-ui.hpp"
 #include "core/pinout.hpp"
+#include "core/logging.hpp"
 
 SmartPointBlinkPatterns SmartPointUI::patterns;
 
@@ -112,8 +113,7 @@ UIStateBase* UIInitScreen::doIteration()
 		if (key == 'A')
 		{
 			m_ui.smartPointState.beginGame();
-			//m_ui.leds.blink(SmartPointUI::patterns.hello, RGBLeds::red | RGBLeds::green | RGBLeds::blue);
-			m_ui.leds.blink(SmartPointUI::patterns.hello);
+			m_ui.timeLeftScreen.prepare();
 			return &m_ui.timeLeftScreen;
 		}
 	}
@@ -140,12 +140,34 @@ UIStateBase* UITimeLeftScreen::doIteration()
 
 		m_ui.lcd.stringXY(0, 0, "Red:");
 		formatTime(buffer, m_ui.smartPointState.team1TimeLeft / 60, m_ui.smartPointState.team1TimeLeft % 60);
-		m_ui.lcd.stringXY(0, 1, buffer);
-		m_ui.lcd.write();
+		m_ui.lcd.stringXY(40, 0, buffer);
 
-		m_ui.lcd.stringXY(0, 2, "Blue:");
+
+		m_ui.lcd.stringXY(0, 1, "Blue:");
 		formatTime(buffer, m_ui.smartPointState.team2TimeLeft / 60, m_ui.smartPointState.team2TimeLeft % 60);
-		m_ui.lcd.stringXY(0, 3, buffer);
+		m_ui.lcd.stringXY(40, 1, buffer);
+
+
+		m_ui.lcd.stringXY(0, 2, "Yellow:");
+		formatTime(buffer, m_ui.smartPointState.team3TimeLeft / 60, m_ui.smartPointState.team3TimeLeft % 60);
+		m_ui.lcd.stringXY(40, 2, buffer);
+
+
+		m_ui.lcd.stringXY(0, 3, "Green:");
+		formatTime(buffer, m_ui.smartPointState.team4TimeLeft / 60, m_ui.smartPointState.team4TimeLeft % 60);
+		m_ui.lcd.stringXY(40, 3, buffer);
+
+		if (m_winRegisered)
+		{
+			switch (m_ui.smartPointState.currentTeam)
+			{
+			case 0: m_ui.lcd.stringXY(0, 5, "Red wins!"); break;
+			case 1: m_ui.lcd.stringXY(0, 5, "Blue wins!"); break;
+			case 2: m_ui.lcd.stringXY(0, 5, "Yellow wins!"); break;
+			case 3: m_ui.lcd.stringXY(0, 5, "Green wins!"); break;
+			default: break;
+			}
+		}
 		m_ui.lcd.write();
 
 		//m_screenUpdated = true;
@@ -159,6 +181,31 @@ UIStateBase* UITimeLeftScreen::doIteration()
 		m_ui.leds.blink(SmartPointUI::patterns.teamHasPoint);
 	}
 
+	if (!m_winRegisered && m_ui.smartPointState.gameState == SmartPointState::gameStateEnd)
+	{
+		m_ui.leds.blink(SmartPointUI::patterns.teamWin);
+		m_winRegisered = true;
+	}
+
+	uint8_t key = m_ui.keyboard.getKeyPressed();
+	if (key != MatrixKeyboard::keyNotPressed)
+	{
+		if (key == '#')
+		{
+			m_ui.smartPointState.stopGame();
+			m_ui.leds.blink(SmartPointUI::patterns.hello, RGBLeds::red | RGBLeds::green | RGBLeds::blue);
+			m_ui.initScreen.prepare();
+			return &m_ui.initScreen;
+		}
+	}
+
 	return this;
+}
+
+void UITimeLeftScreen::prepare()
+{
+	UIStateBase::prepare();
+	m_lastLeader = MT2NotATeam;
+	m_winRegisered = false;
 }
 

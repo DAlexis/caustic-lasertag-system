@@ -21,15 +21,21 @@ void printHex(const uint8_t* buffer, size_t size)
 void formatTime(char* buffer, uint16_t min, uint16_t sec)
 {
 	unsigned int i=0;
-	for (; min != 0; min /= 10)
+	if (min == 0)
 	{
-		buffer[i++] = min % 10 + '0';
+		buffer[i++] = '0';
+	} else {
+		for (; min != 0; min /= 10)
+		{
+			buffer[i++] = min % 10 + '0';
+		}
+
+		for (int j=0; j<i/2; j++)
+		{
+			std::swap(buffer[j], buffer[i-1-j]);
+		}
 	}
 
-	for (int j=0; j<i/2; j++)
-	{
-		std::swap(buffer[j], buffer[i-1-j]);
-	}
 	buffer[i++] = ':';
 	buffer[i++] = sec / 10 + '0';
 	buffer[i++] = sec % 10 + '0';
