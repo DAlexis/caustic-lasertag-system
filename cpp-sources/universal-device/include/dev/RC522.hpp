@@ -4,7 +4,7 @@
  * Created by Miguel Balboa (circuitito.com), Jan, 2012.
  * Rewritten by Søren Thing Andersen (access.thing.dk), fall of 2013 (Translation to English, refactored, comments, anti collision, cascade levels.)
  * Extended by Tom Clement with functionality to write to sector 0 of UID changeable Mifare cards.
- * Adopted to STM32 by Aleksey Bulatov
+ * Adopted to STM32 and Caustic Lasertag project by Aleksey Bulatov
  * Released into the public domain.
  *
  * Please read this file for an overview and then MFRC522.cpp for comments on the specific functions.
