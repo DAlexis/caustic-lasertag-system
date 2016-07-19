@@ -102,21 +102,44 @@ UIStateBase* UIInitScreen::doIteration()
 		m_ui.lcd.stringXY(0, 1, "Select mode:");
 		m_ui.lcd.stringXY(0, 2, "A: Start");
 		m_ui.lcd.stringXY(0, 3, "B: Program");
+		char buffer[20];
+		sprintf(buffer, "1/2: Cont %d", (int) m_ui.lcd.lcdContrast);
+		m_ui.lcd.stringXY(0, 5, buffer);
 		m_ui.lcd.write();
 		m_screenUpdated = true;
 	}
 
 
 	uint8_t key = m_ui.keyboard.getKeyPressed();
-	if (key != MatrixKeyboard::keyNotPressed)
+	if (key == 'A')
 	{
-		if (key == 'A')
+		m_ui.smartPointState.beginGame();
+		m_ui.timeLeftScreen.prepare();
+		return &m_ui.timeLeftScreen;
+	}
+
+	if (key == 1)
+	{
+		if (m_ui.lcd.lcdContrast > 1)
 		{
-			m_ui.smartPointState.beginGame();
-			m_ui.timeLeftScreen.prepare();
-			return &m_ui.timeLeftScreen;
+			m_ui.lcd.lcdContrast--;
+			m_ui.lcd.updateContrast();
+			debug << "Contrast dec";
+			m_screenUpdated = false;
 		}
 	}
+
+	if (key == 2)
+	{
+		if (m_ui.lcd.lcdContrast < 127)
+		{
+			m_ui.lcd.lcdContrast++;
+			m_ui.lcd.updateContrast();
+			debug << "Contrast inc";
+			m_screenUpdated = false;
+		}
+	}
+
 
 	return this;
 }

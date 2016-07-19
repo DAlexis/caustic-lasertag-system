@@ -50,10 +50,11 @@ public:
 	void setFont(uint8_t font);
 
 	void clearBuffer();
+	void updateContrast();
 
 	void write();
 private:
-	bool m_fontIsTiny;
+	bool m_fontIsTiny = true;
 };
 
 

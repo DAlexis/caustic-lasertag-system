@@ -70,7 +70,6 @@ extern "C"
 		glcd_PCD8544_init();
 		glcd_select_screen(glcd_buffer, &glcd_bbox);
 		glcd_clear();
-		info << "glcd_init done";
 	}
 
 	void glcd_spi_write(uint8_t c)
@@ -105,8 +104,13 @@ void LCD5110Controller::init(const LcdIO& io)
 	lcdio = io;
 	glcd_init();
 
-	glcd_set_contrast(lcdContrast);
+	updateContrast();
 	setFont(LCD5110Controller::fontStandardAscii5x7);
+}
+
+void LCD5110Controller::updateContrast()
+{
+	glcd_set_contrast(lcdContrast);
 }
 
 void LCD5110Controller::line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color)

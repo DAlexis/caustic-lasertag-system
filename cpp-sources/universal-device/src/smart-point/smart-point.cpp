@@ -10,6 +10,7 @@
 #include "network/network-layer.hpp"
 #include "core/logging.hpp"
 #include "rcsp/RCSP-stream.hpp"
+#include "rcsp/RCSP-state-saver.hpp"
 
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
@@ -22,10 +23,21 @@ SmartPoint::SmartPoint()
 
 void SmartPoint::init(const Pinout& pinout)
 {
+	info << "Loading default config";
 	if (!RCSPAggregator::instance().readIni("config.ini"))
 	{
 		error << "Cannot read config file, so setting default values";
 		samrtPointConfig.resetToDefault();
+	}
+
+	info << "Restoring state";
+	MainStateSaver::instance().setFilename("state-save");
+	/// @todo Chack that rife is turned on/off correctly anway
+	if (MainStateSaver::instance().tryRestore())
+	{
+		info  << "  restored";
+	} else {
+		warning << "  restoring failed";
 	}
 
 	m_MT2Interogator.setStackSize(512);
@@ -61,6 +73,8 @@ void SmartPoint::init(const Pinout& pinout)
 			100000,
 			1
 	);
+
+	MainStateSaver::instance().runSaver(8000);
 
 	m_tasksPool.run();
 
