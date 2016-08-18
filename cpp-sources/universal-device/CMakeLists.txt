@@ -118,7 +118,7 @@ set(EXE_SOURCES
     src/core/power-monitor.cpp
     src/core/pinout.cpp
     src/core/os-wrappers.cpp
-    src/head-sensor/heand-sensor.cpp
+    src/head-sensor/head-sensor.cpp
     src/head-sensor/parameters.cpp
     src/head-sensor/head-sensor-base-types.cpp
     src/smart-point/smart-point.cpp

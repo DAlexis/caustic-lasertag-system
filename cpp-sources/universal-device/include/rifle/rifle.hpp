@@ -50,19 +50,19 @@ public:
 	void setDafaultPinout(Pinout& pinout);
 	bool checkPinout(const Pinout& pinout);
 
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset);    ///< Make rifle absolutely new
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn);  ///< Do all things than needed on respawn (+play sound)
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);      ///< Say to rifle that player was killed
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset);    ///< Make rifle absolutely new
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn);  ///< Do all things than needed on respawn (+play sound)
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);      ///< Say to rifle that player was killed
 
 	/// Heartbeat head sensor -> rifle
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
-	FUNCION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound);
 
-	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged);      ///< Play enemy damaged sound
-	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);      ///< Play enemy damaged sound
-	FUNCION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS);      ///< Play enemy damaged sound
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged);      ///< Play enemy damaged sound
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);      ///< Play enemy damaged sound
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS);      ///< Play enemy damaged sound
 
 	DeviceConfiguration deviceConfig;
 	RifleConfiguration config;

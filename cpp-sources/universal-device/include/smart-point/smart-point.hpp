@@ -50,7 +50,7 @@ public:
 	SmartPointState state{samrtPointConfig};
 	SmartPointUI ui{state};
 
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, SmartPoint, catchShot);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, SmartPoint, catchShot);
 
 private:
 	void initSounds();

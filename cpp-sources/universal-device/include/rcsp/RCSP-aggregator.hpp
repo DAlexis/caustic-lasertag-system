@@ -100,13 +100,13 @@
                                                        DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, textName, &name}
 */
 /// Create function in class with 1 parameter and connect it to configs aggregator
-#define FUNCION_1P(NameSpace, ClassName, functionName)    void functionName(NameSpace::functionName##Arg1Type argument); \
+#define FUNCTION_1P(NameSpace, ClassName, functionName)    void functionName(NameSpace::functionName##Arg1Type argument); \
                                                           DefaultFunctionAccessor<NameSpace::functionName##Arg1Type> \
                                                               functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
                                                                   std::bind(&ClassName::functionName, this, std::placeholders::_1)}
 
 /// Create function in class with no parameters and connect it to configs aggregator
-#define FUNCION_NP(NameSpace, ClassName, functionName)     void functionName(); \
+#define FUNCTION_NP(NameSpace, ClassName, functionName)     void functionName(); \
                                                            DefaultFunctionAccessor<> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
                                                            std::bind(&ClassName::functionName, this)}
 

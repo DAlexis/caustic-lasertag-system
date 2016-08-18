@@ -76,24 +76,24 @@ public:
 	PlayerState playerState{&playerConfig};
 	//DeviceParameters device;
 
-	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn);
-	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset);
-	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
-	FUNCION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats);
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats);
-	FUNCION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats);
+	FUNCTION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults);
 
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon);
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, deregisterWeapon);
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, deregisterWeapon);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam);
 
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth);
 
 	/// Feedback when player was damaged or killed
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager);
 
 	/// Replacement for receive shot callback
-	FUNCION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, catchShot);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, catchShot);
 
 private:
 
