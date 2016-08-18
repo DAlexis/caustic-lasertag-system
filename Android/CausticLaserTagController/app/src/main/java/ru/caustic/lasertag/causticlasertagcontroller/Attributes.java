@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 /**
  * Created by alexey on 01.10.15.
  */
+@Deprecated
 public class Attributes {
     private static class Attrib {
 

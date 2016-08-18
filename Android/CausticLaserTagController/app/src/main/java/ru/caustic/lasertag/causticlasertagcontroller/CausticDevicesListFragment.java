@@ -17,6 +17,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Map;
 
+import ru.caustic.lasertag.controlcore.BridgeConnector;
+import ru.caustic.lasertag.controlcore.CausticDevicesManager;
+import ru.caustic.lasertag.controlcore.RCSProtocol;
 
 public class CausticDevicesListFragment extends Fragment {
 

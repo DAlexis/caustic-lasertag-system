@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import ru.caustic.lasertag.causticlasertagcontroller.RCSProtocol;
+import ru.caustic.lasertag.controlcore.RCSProtocol;
 
 /**
  * Created by alexey on 19.09.15.

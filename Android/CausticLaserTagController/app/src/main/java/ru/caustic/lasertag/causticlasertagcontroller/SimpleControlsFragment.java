@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import ru.caustic.lasertag.controlcore.BridgeConnector;
+import ru.caustic.lasertag.controlcore.CausticDevicesManager;
+import ru.caustic.lasertag.controlcore.RCSProtocol;
 
 public class SimpleControlsFragment extends Fragment {
 

@@ -20,6 +20,10 @@ import android.widget.Toast;
 
 import java.util.Map;
 
+import ru.caustic.lasertag.controlcore.BridgeConnector;
+import ru.caustic.lasertag.controlcore.CausticDevicesManager;
+import ru.caustic.lasertag.controlcore.RCSProtocol;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "CC.CausticMain";

@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import ru.caustic.lasertag.controlcore.BridgeConnector;
+import ru.caustic.lasertag.controlcore.CausticDevicesManager;
+import ru.caustic.lasertag.controlcore.RCSProtocol;
 
 public class DeviceSettingsFragment extends Fragment {
     private static final String TAG = "CC.DevSetFragment";
