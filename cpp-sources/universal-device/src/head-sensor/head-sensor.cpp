@@ -241,7 +241,6 @@ void HeadSensor::init(const Pinout &_pinout)
 void HeadSensor::resetToDefaults()
 {
 	m_callbackStager.stage("reset");
-	//ScopedTag tag("reset");
 	info << "Resetting configuration to default";
 	m_leds.blink(blinkPatterns.anyCommand);
 	if (!RCSPAggregator::instance().readIni("config.ini"))
@@ -258,7 +257,6 @@ void HeadSensor::resetToDefaults()
 void HeadSensor::catchShot(ShotMessage msg)
 {
 	m_callbackStager.stage("shot");
-	//ScopedTag tag("shot-cb");
 	info << "** Shot - team: " << msg.teamId << ", player: " << msg.playerId << ", damage: " << msg.damage;
 	Time currentTime = systemClock->getTime();
 	if (currentTime - m_shockDelayBegin < playerConfig.shockDelayImmortal)
@@ -378,7 +376,6 @@ void HeadSensor::respawnWeapons()
 {
 	m_callbackStager.stage("respawn weapons");
 	/// Notifying weapons
-	ScopedTag tag("reset-weapons");
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Resetting weapon...";
@@ -389,7 +386,6 @@ void HeadSensor::respawnWeapons()
 
 void HeadSensor::turnOffWeapons()
 {
-	ScopedTag tag("turn-off");
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Turning off weapon...";
@@ -474,7 +470,6 @@ void HeadSensor::setTeam(uint8_t teamId)
 
 void HeadSensor::addMaxHealth(int16_t delta)
 {
-	ScopedTag tag("set-team");
 	info << "Adding health: " << delta;
 	if (delta < 0 && playerConfig.healthMax < -delta)
 	{

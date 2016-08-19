@@ -223,7 +223,6 @@ bool Rifle::checkPinout(const Pinout& pinout)
 void Rifle::init(const Pinout& pinout)
 {
 
-	ScopedTag tag("rifle-configure");
 
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
@@ -458,7 +457,6 @@ void Rifle::initSounds()
 
 void Rifle::makeShot(bool isFirst)
 {
-	ScopedTag tag("shot");
 	switch(m_state)
 	{
 	case WeaponState::magazineReturned:
@@ -532,7 +530,6 @@ void Rifle::makeShot(bool isFirst)
 
 void Rifle::distortBolt(bool)
 {
-	ScopedTag tag("reload");
 	switch(m_state)
 	{
 	case WeaponState::magazineEmpty:
@@ -709,7 +706,6 @@ void Rifle::rifleRespawn()
 
 void Rifle::rifleDie()
 {
-	ScopedTag tag("rifle-die");
 	info << "\'Rifle die\' activated\n";
 	if (!state.isEnabled)
 		return;

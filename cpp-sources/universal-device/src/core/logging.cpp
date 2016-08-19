@@ -167,22 +167,6 @@ bool Logger::isEnabled()
 	return m_enabled;
 }
 
-//////////////////////
-// ScoppedTag
-ScopedTag::ScopedTag(const char* newTag)
-{
-	/*
-	m_oldTag = Loggers::tag;
-	Loggers::tag = newTag;*/
-	//Loggers::tags.push_back(newTag);
-}
-
-ScopedTag::~ScopedTag()
-{
-	//Loggers::tag = m_oldTag;
-	//Loggers::tags.pop_back();
-}
-
 extern "C" ssize_t
 _write (int fd __attribute__((unused)), const char* buf __attribute__((unused)),
 	size_t nbyte __attribute__((unused)))

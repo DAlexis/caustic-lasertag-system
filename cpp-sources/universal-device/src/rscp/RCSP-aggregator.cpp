@@ -36,7 +36,6 @@ SINGLETON_IN_CPP(RCSPAggregator)
 
 void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor, bool restorable)
 {
-	ScopedTag tag("reg-accessor");
 	m_accessorsByOpCode[code] = accessor;
 	m_accessorsByOpText[textName] = accessor;
 	if (restorable)
@@ -93,7 +92,6 @@ const uint8_t* RCSPAggregator::extractNextOperation(
 
 bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream)
 {
-	ScopedTag tag("dispatch-op");
 	if (RCSPCodeManipulator::isObjectRequest(*code))
 	{
 		if (answerStream)

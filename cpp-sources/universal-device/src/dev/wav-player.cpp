@@ -290,7 +290,6 @@ void SoundPlayer::readVariants(const char* filenamePrefix, const char* filenameS
 
 void SoundPlayer::play()
 {
-	ScopedTag tag("play-sound");
 	if (m_variants.empty())
 	{
 		warning << "No sound set";

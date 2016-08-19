@@ -104,24 +104,11 @@ private:
 	bool m_enabled = false;
 };
 
-class ScopedTag
-{
-public:
-	ScopedTag(const char* newTag);
-	~ScopedTag();
-
-private:
-	const char* m_oldTag = nullptr;
-};
-
 extern Logger error;
 extern Logger warning;
 extern Logger info;
 extern Logger debug;
 extern Logger radio;
 extern Logger trace;
-
-
-
 
 #endif /* INCLUDE_CORE_LOGGING_HPP_ */
