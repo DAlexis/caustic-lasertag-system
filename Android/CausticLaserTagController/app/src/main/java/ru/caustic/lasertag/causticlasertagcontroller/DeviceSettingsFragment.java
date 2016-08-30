@@ -714,6 +714,7 @@ public class DeviceSettingsFragment extends Fragment {
         mAdapter = new ParametersListAdapter();
         parsList.setAdapter(mAdapter);
 
+        isActive = true;
         updateContent();
         return view;
     }

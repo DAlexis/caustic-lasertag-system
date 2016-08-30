@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-public class CausticDevicesListActivity extends AppCompatActivity {
+public class DevicesListActivity extends AppCompatActivity {
 
     DeviceSettingsFragment deviceSettingsFragment = null;
 

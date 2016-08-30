@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void causticDevsListClicked(View view) {
-        Intent intent = new Intent (MainActivity.this, CausticDevicesListActivity.class);
+        Intent intent = new Intent (MainActivity.this, DevicesListActivity.class);
         //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);
         startActivityForResult(intent, 0);
     }
@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonDevicesSettingsClick(View view) {
-        Intent intent = new Intent (MainActivity.this, CausticDevicesListActivity.class);
+        Intent intent = new Intent (MainActivity.this, DevicesListActivity.class);
         //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);
         startActivity(intent);
     }

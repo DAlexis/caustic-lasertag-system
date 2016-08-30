@@ -59,7 +59,7 @@
                 android:value="ru.caustic.lasertag.causticlasertagcontroller.CausticDevicesList" />
         </activity>
         <activity
-            android:name=".CausticDevicesListActivity"
+            android:name=".DevicesListActivity"
             android:label="@string/title_activity_caustic_devices_list"
             android:parentActivityName=".MainActivity" >
             <meta-data
@@ -69,10 +69,10 @@
         <activity
             android:name=".DeviceSettingsActivity"
             android:label="@string/title_activity_device_settings"
-            android:parentActivityName=".CausticDevicesListActivity" >
+            android:parentActivityName=".DevicesListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.caustic.lasertag.causticlasertagcontroller.CausticDevicesListActivity" />
+                android:value=".DevicesListActivity" />
         </activity>
         <activity
             android:name=".SimpleControlsActivity"

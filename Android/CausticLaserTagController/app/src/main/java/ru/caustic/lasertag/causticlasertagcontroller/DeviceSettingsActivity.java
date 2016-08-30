@@ -6,6 +6,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+/**
+ * Activity to show only device settings fragment
+ */
 public class DeviceSettingsActivity extends AppCompatActivity {
 
     @Override

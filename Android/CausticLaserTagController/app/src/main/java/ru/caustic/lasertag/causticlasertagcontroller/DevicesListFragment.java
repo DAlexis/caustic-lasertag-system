@@ -21,13 +21,13 @@ import ru.caustic.lasertag.controlcore.BridgeConnector;
 import ru.caustic.lasertag.controlcore.CausticDevicesManager;
 import ru.caustic.lasertag.controlcore.RCSProtocol;
 
-public class CausticDevicesListFragment extends Fragment {
+public class DevicesListFragment extends Fragment {
 
     private DevicesListAdapter adapter;
     private ListView devicesList;
     private Button buttonConfigureDevice;
 
-    private CausticDevicesListActivity activity = null;
+    private DevicesListActivity activity = null;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ public class CausticDevicesListFragment extends Fragment {
         devicesList = (ListView) view.findViewById(R.id.listViewDevices);
         buttonConfigureDevice = (Button) view.findViewById(R.id.buttonConfigureDevice);
 
-        activity = (CausticDevicesListActivity) getActivity();
+        activity = (DevicesListActivity) getActivity();
         buttonConfigureDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,13 +120,15 @@ public class CausticDevicesListFragment extends Fragment {
                         || DeviceSettingsFragment.editorContext.getDeviceType() == selectedType)
                 {
                     DeviceSettingsFragment.editorContext.selectForEditing(device.address);
-                    activity.deviceSettingsFragment.updateContent();
+                    if (activity.deviceSettingsFragment != null)
+                        activity.deviceSettingsFragment.updateContent();
                 } else {
                     deviceName.setChecked(false);
                 }
             } else {
                 DeviceSettingsFragment.editorContext.deselectForEditing(device.address);
-                activity.deviceSettingsFragment.updateContent();
+                if (activity.deviceSettingsFragment != null)
+                    activity.deviceSettingsFragment.updateContent();
             }
         }
     }
