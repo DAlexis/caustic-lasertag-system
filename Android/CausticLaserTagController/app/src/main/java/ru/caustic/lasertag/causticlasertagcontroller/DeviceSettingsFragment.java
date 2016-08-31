@@ -642,9 +642,9 @@ public class DeviceSettingsFragment extends Fragment {
 
             for (BridgeConnector.DeviceAddress addr : context.devices) {
                 RCSProtocol.AnyParameterSerializer par
-                        = CausticDevicesManager.getInstance().devices
-                        .get(addr).parameters
-                        .get(description.getId());
+                        = CausticDevicesManager.getInstance()
+                        .devices.get(addr)
+                        .parameters.get(description.getId());
                 par.setValue(currentValue);
             }
         }
