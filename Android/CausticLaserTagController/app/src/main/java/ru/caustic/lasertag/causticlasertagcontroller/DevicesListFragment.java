@@ -53,7 +53,7 @@ public class DevicesListFragment extends Fragment {
         adapter = new DevicesListAdapter();
         devicesList.setAdapter(adapter);
 
-        DeviceSettingsFragment.editorContext.devices.clear();
+        DeviceSettingsFragment.editorContext.clearSelectedToEdit();
 
         CausticDevicesManager.getInstance().updateDevicesList(
                 new Handler() {

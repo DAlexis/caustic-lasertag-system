@@ -223,7 +223,7 @@ public class CausticDevicesManager {
         private final SynchronizationEndHandler handler;
         public final Set<BridgeConnector.DeviceAddress> devicesToPop;
 
-        public AsyncDataPopper(SynchronizationEndHandler endHandler, Set<BridgeConnector.DeviceAddress> devices) {
+        public AsyncDataPopper(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
             handler = endHandler;
             devicesToPop = devices;
         }

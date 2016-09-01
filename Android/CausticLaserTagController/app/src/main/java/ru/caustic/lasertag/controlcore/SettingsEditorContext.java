@@ -11,13 +11,9 @@ import java.util.Set;
 public class SettingsEditorContext {
 
     /**
-     * This class provide data picking from interface elements to ParameterEntry
+     * Interface to communicate with GUI element representing parameter
      */
     public static abstract class UIDataPicker {
-        public void setParameterEntry(ParameterEntry parameterEntry) {
-            this.parameterEntry = parameterEntry;
-        }
-
         /**
          * Update UI element when containment changed
          */
@@ -31,24 +27,29 @@ public class SettingsEditorContext {
         protected ParameterEntry parameterEntry = null;
     }
 
-    public interface UIDataPickerFactory {
+    /**
+     * Abstract factory to build realizations of UIDataPicker
+     */
+    public interface IUIDataPickerFactory {
         UIDataPicker create(RCSProtocol.ParameterDescription description);
     }
 
     /**
-     * This class represent ONE parameter for ALL devices selected to edit
+     * This class represent ONE parameter for ALL devices selected to edit.
+     * It store all information to create UI list entry, current state of editing,
+     * reference to UIDataPicker implementer in Activiry(Fragment) class.
      */
     public static class ParameterEntry {
-        SettingsEditorContext context;
-        RCSProtocol.ParameterDescription description;
+        public SettingsEditorContext context;
+        public RCSProtocol.ParameterDescription description;
         // If all the devices has the same parameters value, it should be shown. Otherwise "Different" will be shown
-        boolean hasInitialValue = false;
-        boolean wasChanged = false;
+        public boolean hasInitialValue = false;
+        public boolean wasChanged = false;
         final String differentValueStr = "Different";
-        String currentValue = differentValueStr;
+        public String currentValue = differentValueStr;
         String initialValue = currentValue;
 
-        private UIDataPicker uiListElement = null;
+        public UIDataPicker uiListElement = null;
 
 
         public String getValue() {
@@ -68,7 +69,7 @@ public class SettingsEditorContext {
          * Interrogate all devices included to current SettingsEditorContext abd determine if they
          * have the same or different value
          */
-        public void init(UIDataPickerFactory factory) {
+        public void init(IUIDataPickerFactory factory) {
             boolean valueInitialized = false;
             hasInitialValue = true; // We suppose that all values are the same
             for (BridgeConnector.DeviceAddress addr : context.devices) {
@@ -121,11 +122,23 @@ public class SettingsEditorContext {
         }
     }
 
-    public Set<BridgeConnector.DeviceAddress> devices = new HashSet<>();
+
+    /**
+     * Set of devices selected to editing
+     */
+    private Set<BridgeConnector.DeviceAddress> devices = new HashSet<>();
+
+    /**
+     * Set of parameters avaliable to edit
+     */
     public ArrayList<ParameterEntry> parameters = new ArrayList<>();
 
     private boolean entriesCreated = false;
-    public void clear() {
+
+    /**
+     * Accessors for devices, selected to edit
+     */
+    public void clearSelectedToEdit() {
         devices.clear();
     }
     public void selectForEditing(BridgeConnector.DeviceAddress addr) {
@@ -135,12 +148,29 @@ public class SettingsEditorContext {
     public void deselectForEditing(BridgeConnector.DeviceAddress addr) {
         devices.remove(addr);
     }
+    public boolean isSomethingSelectedToEdit() {
+        return !devices.isEmpty();
+    }
+    public final Set<BridgeConnector.DeviceAddress> getDevicesSelectedToEdit() {
+        return devices;
+    }
+    // End of accessors for devices
+
+    /**
+     * Get any one of addresses of devices seslected to edit
+     * @return device address
+     */
     public BridgeConnector.DeviceAddress getAnyAddress() {
         for (BridgeConnector.DeviceAddress addr : devices) {
             return addr;
         }
         return null;
     }
+
+    /**
+     * Get type of devices that are selected to edit to the present momentum
+     * @return See RCSProtocol.Operations.AnyDevice.Configuration: DEV_TYPE_UNDEFINED, DEV_TYPE_RIFLE, DEV_TYPE_HEAD_SENSOR, ...
+     */
     public int getDeviceType() {
         if (devices.isEmpty()) {
             return RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED;
@@ -152,7 +182,13 @@ public class SettingsEditorContext {
                 ).getValue()
         );
     }
-    public void createEntries(UIDataPickerFactory factory) {
+
+    /**
+     * Create parameters list entries
+     * @param factory Realization of IUIDataPickerFactory that builds real UI list elements
+     *                that implements UIDataPicker
+     */
+    public void createEntries(IUIDataPickerFactory factory) {
         /// @todo add check that all devices are homogeneous
         if (devices.isEmpty())
             return;
@@ -180,6 +216,10 @@ public class SettingsEditorContext {
         }
         entriesCreated = true;
     }
+
+    /**
+     * Pushing all changes made by user to devices
+     */
     public void pushValues() {
         // Reading modified values
         for (ParameterEntry entry : parameters) {

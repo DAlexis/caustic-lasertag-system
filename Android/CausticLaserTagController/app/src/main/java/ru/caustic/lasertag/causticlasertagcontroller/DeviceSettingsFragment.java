@@ -21,13 +21,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import ru.caustic.lasertag.controlcore.BridgeConnector;
 import ru.caustic.lasertag.controlcore.CausticDevicesManager;
 import ru.caustic.lasertag.controlcore.RCSProtocol;
+import ru.caustic.lasertag.controlcore.SettingsEditorContext;
 
 public class DeviceSettingsFragment extends Fragment {
     private static final String TAG = "CC.DevSetFragment";
@@ -47,88 +43,12 @@ public class DeviceSettingsFragment extends Fragment {
 
     public static SettingsEditorContext editorContext = new SettingsEditorContext();
 
-    public static class SettingsEditorContext {
-        public Set<BridgeConnector.DeviceAddress> devices = new HashSet<>();
-        public ArrayList<ParameterEntry> parameters = new ArrayList<>();
-
-        private boolean entriesCreated = false;
-        public void clear() {
-            devices.clear();
-        }
-        public void selectForEditing(BridgeConnector.DeviceAddress addr) {
-            devices.add(addr);
-            entriesCreated = false;
-        }
-        public void deselectForEditing(BridgeConnector.DeviceAddress addr) {
-            devices.remove(addr);
-        }
-        public BridgeConnector.DeviceAddress getAnyAddress() {
-            for (BridgeConnector.DeviceAddress addr : devices) {
-                return addr;
-            }
-            return null;
-        }
-        public int getDeviceType() {
-            if (devices.isEmpty()) {
-                return RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED;
-            }
-
-            return Integer.parseInt(
-                    CausticDevicesManager.getInstance().devices.get(getAnyAddress()).parameters.get(
-                            RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
-                    ).getValue()
-            );
-        }
-        public void createEntries() {
-            /// @todo add check that all devices are homogeneous
-            if (devices.isEmpty())
-                return;
-
-            /*if (entriesCreated)
-                return;*/
-            parameters.clear();
-
-            BridgeConnector.DeviceAddress someAddress = getAnyAddress();
-
-            CausticDevicesManager.CausticDevice dev = CausticDevicesManager.getInstance().devices.get(someAddress);
-
-            // We need to output parameters sorted by original order
-            for (int id : dev.parameters.orderedIds) {
-                RCSProtocol.ParameterDescription descr = dev.parameters.allParameters.get(id).getDescription();
-
-                if (!descr.isEditable())
-                    continue;
-
-                ParameterEntry newParameter = new ParameterEntry(this, descr);
-                newParameter.init();
-
-                /// @todo Combine this to containers and classes those contain
-                parameters.add(newParameter);
-            }
-            entriesCreated = true;
-        }
-        public void pushValues() {
-            // Reading modified values
-            for (ParameterEntry entry : parameters) {
-                entry.uiListElement.pickValue();
-                entry.pushValue();
-            }
-            // Sending values to devices
-            for (BridgeConnector.DeviceAddress address : devices) {
-                CausticDevicesManager.getInstance().devices.get(address).pushToDevice();
-            }
-        }
-    }
-
-    private static abstract class UIListElement {
+    /**
+     * UI superstructure over UIDataPicker -- adds field used by any UI list element and init() method
+     */
+    private static abstract class UIListElement extends SettingsEditorContext.UIDataPicker {
         public View convertView = null;
-        protected ParameterEntry parameterEntry = null;
-        public boolean initialized() {
-            return convertView != null;
-        }
-        public abstract void init(LayoutInflater inflater, ParameterEntry parameterEntry);
-        public abstract void update();
-        public abstract void pickValue();
+        public abstract void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry _parameterEntry);
     }
 
     private static abstract class UIListElementSeekBar extends UIListElement {
@@ -156,7 +76,8 @@ public class DeviceSettingsFragment extends Fragment {
             parameterValue.setText(valueToText(value));
         }
 
-        public void init(LayoutInflater inflater, final ParameterEntry _parameterEntry) {
+        @Override
+        public void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry _parameterEntry) {
             this.parameterEntry = _parameterEntry;
             descr = parameterEntry.description;
 
@@ -419,7 +340,8 @@ public class DeviceSettingsFragment extends Fragment {
 
         RCSProtocol.BooleanParameter descr = null;
 
-        public void init(LayoutInflater inflater, ParameterEntry _parameterEntry) {
+        @Override
+        public void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry _parameterEntry) {
             this.parameterEntry = _parameterEntry;
             this.convertView = inflater.inflate(R.layout.parameters_list_boolean_item, null);
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
@@ -470,7 +392,8 @@ public class DeviceSettingsFragment extends Fragment {
 
         int initialPosition = 0;
 
-        public void init(LayoutInflater inflater, ParameterEntry _parameterEntry) {
+        @Override
+        public void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry _parameterEntry) {
             this.parameterEntry = _parameterEntry;
             descr = (RCSProtocol.EnumParameter) parameterEntry.description;
 
@@ -539,7 +462,8 @@ public class DeviceSettingsFragment extends Fragment {
 
         RCSProtocol.BooleanParameter descr = null;
 
-        public void init(LayoutInflater inflater, ParameterEntry parameterEntry) {
+        @Override
+        public void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry parameterEntry) {
             this.parameterEntry = parameterEntry;
             this.convertView = inflater.inflate(R.layout.parameters_list_unsupported_item, null);
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
@@ -554,111 +478,41 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
-    private static UIListElement createListElement(RCSProtocol.ParameterDescription description) {
-        if (description instanceof RCSProtocol.UintParameter) {
-            return new UIListElementInteger();
-        } else if (description instanceof RCSProtocol.BooleanParameter) {
-            return new UIListElementBoolean();
-        } else if (description instanceof RCSProtocol.TimeIntervalParameter) {
-            return new UIListElementTimeInterval();
-        } else if (description instanceof RCSProtocol.EnumParameter) {
-            return new UIListElementEnum();
-        } else if (description instanceof RCSProtocol.FloatParameter) {
-            return new UIListElementFloat();
-        }
-        return new UIListElementUnsupported();
-    }
-
-    private static class ParameterEntry {
-        SettingsEditorContext context;
-        RCSProtocol.ParameterDescription description;
-        // If all the devices has the same parameters value, it should be shown. Otherwise "Different" will be shown
-        boolean hasInitialValue = false;
-        boolean wasChanged = false;
-        final String differentValueStr = "Different";
-        String currentValue = differentValueStr;
-        String initialValue = currentValue;
-
-        private UIListElement uiListElement = null;
-
-        public String getValue() {
-            return currentValue;
-        }
-
-        public String getInitialValue() {
-            return initialValue;
-        }
-
-        public ParameterEntry(SettingsEditorContext context, RCSProtocol.ParameterDescription description) {
-            this.context = context;
-            this.description = description;
-        }
-
-        /**
-         * Interrogate all devices included to current SettingsEditorContext abd determine if they
-         * have the same or different value
-         */
-        public void init() {
-            boolean valueInitialized = false;
-            hasInitialValue = true; // We suppose that all values are the same
-            for (BridgeConnector.DeviceAddress addr : context.devices) {
-                String thisDeviceValue
-                        = CausticDevicesManager.getInstance().devices
-                        .get(addr).parameters
-                        .get(description.getId()).getValue();
-                if (!valueInitialized) {
-                    currentValue = thisDeviceValue;
-                    valueInitialized = true;
-                }
-
-                if (hasInitialValue && !currentValue.equals(thisDeviceValue)) {
-                    hasInitialValue = false;
-                    currentValue = differentValueStr;
-                    break;
-                }
+    private static class UIDataPickerFactory implements SettingsEditorContext.IUIDataPickerFactory
+    {
+        @Override
+        public SettingsEditorContext.UIDataPicker create(RCSProtocol.ParameterDescription description)
+        {
+            if (description instanceof RCSProtocol.UintParameter) {
+                return new UIListElementInteger();
+            } else if (description instanceof RCSProtocol.BooleanParameter) {
+                return new UIListElementBoolean();
+            } else if (description instanceof RCSProtocol.TimeIntervalParameter) {
+                return new UIListElementTimeInterval();
+            } else if (description instanceof RCSProtocol.EnumParameter) {
+                return new UIListElementEnum();
+            } else if (description instanceof RCSProtocol.FloatParameter) {
+                return new UIListElementFloat();
             }
-            initialValue = currentValue;
-            wasChanged = false;
-            uiListElement = createListElement(description);
-        }
-
-        public void initUiListElement(LayoutInflater inflater) {
-            // Here will be parameter type specification code
-            uiListElement.init(inflater, this);
-        }
-
-        public UIListElement getUiListElement() {
-            return uiListElement;
-        }
-
-        public void setValue(String newValue) {
-            wasChanged = true;
-            currentValue = newValue;
-        }
-
-        public void pushValue() {
-            if (!wasChanged)
-                return;
-
-            for (BridgeConnector.DeviceAddress addr : context.devices) {
-                RCSProtocol.AnyParameterSerializer par
-                        = CausticDevicesManager.getInstance()
-                        .devices.get(addr)
-                        .parameters.get(description.getId());
-                par.setValue(currentValue);
-            }
+            return new UIListElementUnsupported();
         }
     }
 
+    /**
+     * Runnable to be called from UI thread. Creating list entries for loaded configuration
+     */
     private class ListEntriesCreator implements Runnable {
         @Override
         public void run() {
             showList();
-            editorContext.createEntries();
+            editorContext.createEntries(new UIDataPickerFactory());
             mAdapter.notifyDataSetChanged();
         }
     }
 
+    /**
+     * Hold message when all settings are loaded from devices and entries ready to be created
+     */
     private class ParametersListUpdater implements CausticDevicesManager.SynchronizationEndHandler {
         @Override
         public void onSynchronizationEnd(boolean isSuccess) {
@@ -666,6 +520,102 @@ public class DeviceSettingsFragment extends Fragment {
                 getActivity().runOnUiThread(new ListEntriesCreator());
             }
         }
+    }
+
+    private class ParametersListAdapter extends BaseAdapter {
+
+        private LayoutInflater mInflater;
+
+        public ParametersListAdapter() {
+            mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getCount() {
+            return editorContext.parameters.size();
+        }
+
+        @Override
+        public String getItem(int position) {
+            return editorContext.parameters.get(position).description.getName();
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            Log.i("getView", "position: "+ position+ " convertView: "+ convertView);
+
+            SettingsEditorContext.ParameterEntry entry = editorContext.parameters.get(position);
+            UIListElement uiListElement = (UIListElement) entry.getUIDataPicker();
+
+            if (uiListElement.convertView == null) {
+                // If real ui list element not initialized, initialize it
+                //entry.initUiListElement(mInflater);
+                uiListElement.init(mInflater, entry);
+
+                uiListElement.update();
+                //convertView.setTag(entry.getUiListElement());
+            }
+
+            uiListElement.update();
+
+            return uiListElement.convertView;
+
+/*
+            if (convertView == null || entry.getUiListElement().convertView == null) {
+
+                if (entry.getUiListElement().convertView == null) {
+                    convertView = mInflater.inflate(R.layout.parameters_list_base_item, null);
+                    entry.initUiListElement(convertView);
+                } else {
+                    convertView = entry.getUiListElement().convertView;
+                }
+                convertView.setTag(entry.getUiListElement());
+
+            }
+            ( (ParametersListElementBase) convertView.getTag() ).update();
+            //entry.getUiListElement().update();
+            return convertView;*/
+        }
+
+    }
+
+    public void updateContent() {
+        if (!isActive)
+            return;
+
+        if (editorContext.isSomethingSelectedToEdit())
+        {
+            showLoading();
+            // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
+            dataPopper =  CausticDevicesManager.getInstance().new AsyncDataPopper(parametersListUpdater, editorContext.getDevicesSelectedToEdit());
+            dataPopper.start();
+        } else {
+            showPrompt();
+        }
+    }
+
+    private void showPrompt() {
+        deviceSettingsLinearLayout.setVisibility(View.GONE);
+        loadingLinearLayout.setVisibility(View.GONE);
+        selectDevicesPromptLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showLoading() {
+        deviceSettingsLinearLayout.setVisibility(View.GONE);
+        selectDevicesPromptLinearLayout.setVisibility(View.GONE);
+        loadingLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showList() {
+        selectDevicesPromptLinearLayout.setVisibility(View.GONE);
+        loadingLinearLayout.setVisibility(View.GONE);
+        deviceSettingsLinearLayout.setVisibility(View.VISIBLE);
     }
 
     public DeviceSettingsFragment() {
@@ -724,99 +674,4 @@ public class DeviceSettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
-
-    private class ParametersListAdapter extends BaseAdapter {
-
-        private LayoutInflater mInflater;
-
-        public ParametersListAdapter() {
-            mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public int getCount() {
-            return editorContext.parameters.size();
-        }
-
-        @Override
-        public String getItem(int position) {
-            return editorContext.parameters.get(position).description.getName();
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            Log.i("getView", "position: "+ position+ " convertView: "+ convertView);
-
-            ParameterEntry entry = editorContext.parameters.get(position);
-
-            if (entry.getUiListElement().convertView == null) {
-                // If real ui list element not initialized, initialize it
-                entry.initUiListElement(mInflater);
-                entry.getUiListElement().update();
-                //convertView.setTag(entry.getUiListElement());
-            }
-
-            entry.getUiListElement().update();
-
-            return entry.getUiListElement().convertView;
-
-/*
-            if (convertView == null || entry.getUiListElement().convertView == null) {
-
-                if (entry.getUiListElement().convertView == null) {
-                    convertView = mInflater.inflate(R.layout.parameters_list_base_item, null);
-                    entry.initUiListElement(convertView);
-                } else {
-                    convertView = entry.getUiListElement().convertView;
-                }
-                convertView.setTag(entry.getUiListElement());
-
-            }
-            ( (ParametersListElementBase) convertView.getTag() ).update();
-            //entry.getUiListElement().update();
-            return convertView;*/
-        }
-
-    }
-
-    public void updateContent()
-    {
-        if (!isActive)
-            return;
-
-        if (editorContext.devices.isEmpty())
-        {
-            showPrompt();
-        } else {
-            showLoading();
-            // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
-            dataPopper =  CausticDevicesManager.getInstance().new AsyncDataPopper(parametersListUpdater, editorContext.devices);
-            dataPopper.start();
-        }
-    }
-
-    private void showPrompt() {
-        deviceSettingsLinearLayout.setVisibility(View.GONE);
-        loadingLinearLayout.setVisibility(View.GONE);
-        selectDevicesPromptLinearLayout.setVisibility(View.VISIBLE);
-    }
-
-    private void showLoading() {
-        deviceSettingsLinearLayout.setVisibility(View.GONE);
-        selectDevicesPromptLinearLayout.setVisibility(View.GONE);
-        loadingLinearLayout.setVisibility(View.VISIBLE);
-    }
-
-    private void showList() {
-        selectDevicesPromptLinearLayout.setVisibility(View.GONE);
-        loadingLinearLayout.setVisibility(View.GONE);
-        deviceSettingsLinearLayout.setVisibility(View.VISIBLE);
-    }
-
 }
