@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.controlcore;
+package ru.caustic.lasertag.core;
 
 import android.os.Handler;
 import android.os.SystemClock;

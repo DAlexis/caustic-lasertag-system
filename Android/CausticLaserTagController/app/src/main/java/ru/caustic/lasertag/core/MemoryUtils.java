@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.core;
 
 /**
  * Created by alexey on 19.09.15.

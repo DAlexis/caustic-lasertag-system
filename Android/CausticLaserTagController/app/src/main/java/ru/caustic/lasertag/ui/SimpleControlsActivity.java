@@ -1,33 +1,22 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
-import android.app.Fragment;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Toast;
 
-public class DevicesListActivity extends AppCompatActivity {
-
-    DeviceSettingsFragment deviceSettingsFragment = null;
+public class SimpleControlsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_caustic_devices_list);
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.fragmentDeviceSettingsWideScreen);
-
-        if (fragment != null && (fragment instanceof DeviceSettingsFragment))
-            deviceSettingsFragment = (DeviceSettingsFragment) fragment;
+        setContentView(R.layout.activity_simple_controls);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_caustic_devices_list, menu);
+        getMenuInflater().inflate(R.menu.menu_simple_controls, menu);
         return true;
     }
 

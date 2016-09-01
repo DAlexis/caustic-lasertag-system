@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,9 +21,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import ru.caustic.lasertag.controlcore.CausticDevicesManager;
-import ru.caustic.lasertag.controlcore.RCSProtocol;
-import ru.caustic.lasertag.controlcore.SettingsEditorContext;
+import ru.caustic.lasertag.core.CausticDevicesManager;
+import ru.caustic.lasertag.core.RCSProtocol;
+import ru.caustic.lasertag.core.SettingsEditorContext;
 
 public class DeviceSettingsFragment extends Fragment {
     private static final String TAG = "CC.DevSetFragment";

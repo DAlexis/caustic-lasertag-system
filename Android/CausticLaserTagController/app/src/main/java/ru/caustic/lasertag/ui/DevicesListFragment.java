@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,9 +17,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Map;
 
-import ru.caustic.lasertag.controlcore.BridgeConnector;
-import ru.caustic.lasertag.controlcore.CausticDevicesManager;
-import ru.caustic.lasertag.controlcore.RCSProtocol;
+import ru.caustic.lasertag.core.BridgeConnector;
+import ru.caustic.lasertag.core.CausticDevicesManager;
+import ru.caustic.lasertag.core.RCSProtocol;
 
 public class DevicesListFragment extends Fragment {
 

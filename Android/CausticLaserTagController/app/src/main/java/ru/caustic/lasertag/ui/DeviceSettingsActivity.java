@@ -1,10 +1,9 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 /**
  * Activity to show only device settings fragment

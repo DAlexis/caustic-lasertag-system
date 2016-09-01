@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -20,9 +20,9 @@ import android.widget.Toast;
 
 import java.util.Map;
 
-import ru.caustic.lasertag.controlcore.BridgeConnector;
-import ru.caustic.lasertag.controlcore.CausticDevicesManager;
-import ru.caustic.lasertag.controlcore.RCSProtocol;
+import ru.caustic.lasertag.core.BridgeConnector;
+import ru.caustic.lasertag.core.CausticDevicesManager;
+import ru.caustic.lasertag.core.RCSProtocol;
 
 public class MainActivity extends AppCompatActivity {
 

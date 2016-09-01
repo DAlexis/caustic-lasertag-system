@@ -9,7 +9,7 @@
     <fragment
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:name="ru.caustic.lasertag.causticlasertagcontroller.DevicesListFragment"
+        android:name="ru.caustic.lasertag.ui.DevicesListFragment"
         android:id="@+id/fragment"
         tools:layout="@layout/fragment_caustic_devices_list"
         android:layout_alignParentTop="true"

@@ -1,6 +1,4 @@
-package ru.caustic.lasertag.controlcore;
-
-import java.io.ByteArrayInputStream;
+package ru.caustic.lasertag.core;
 
 /**
  * Created by dalexies on 04.08.16.

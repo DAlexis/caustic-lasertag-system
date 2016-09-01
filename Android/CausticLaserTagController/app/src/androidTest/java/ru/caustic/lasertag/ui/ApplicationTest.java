@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

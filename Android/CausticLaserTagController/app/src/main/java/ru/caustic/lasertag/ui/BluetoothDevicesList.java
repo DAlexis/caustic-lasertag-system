@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -14,7 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +38,6 @@ public class BluetoothDevicesList extends AppCompatActivity {
 
         setContentView(R.layout.activity_bluetooth_devices_list);
 
-
-
         devicesList = (ListView) findViewById(R.id.devicesList);
         checkBoxAutoConnect = (CheckBox) findViewById(R.id.checkBoxAutoConnect);
 
@@ -58,7 +55,6 @@ public class BluetoothDevicesList extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
     @Override
@@ -107,7 +103,7 @@ public class BluetoothDevicesList extends AppCompatActivity {
         // через ListView
             your_array_list.add(device.getName()+"\n"+ device.getAddress());
         }
-        super.onResume();
 
+        super.onResume();
     }
 }

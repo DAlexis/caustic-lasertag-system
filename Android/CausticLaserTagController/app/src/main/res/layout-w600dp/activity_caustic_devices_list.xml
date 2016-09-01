@@ -14,7 +14,7 @@
         <fragment
             android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:name="ru.caustic.lasertag.causticlasertagcontroller.DevicesListFragment"
+            android:name="ru.caustic.lasertag.ui.DevicesListFragment"
             android:id="@+id/fragment"
             tools:layout="@layout/fragment_caustic_devices_list"
             android:layout_alignParentTop="true"
@@ -24,7 +24,7 @@
         <fragment
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:name="ru.caustic.lasertag.causticlasertagcontroller.DeviceSettingsFragment"
+            android:name="ru.caustic.lasertag.ui.DeviceSettingsFragment"
             android:id="@+id/fragmentDeviceSettingsWideScreen"
             tools:layout="@layout/fragment_device_settings"/>
     </LinearLayout>

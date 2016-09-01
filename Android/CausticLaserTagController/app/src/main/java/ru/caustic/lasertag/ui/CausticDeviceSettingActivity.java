@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

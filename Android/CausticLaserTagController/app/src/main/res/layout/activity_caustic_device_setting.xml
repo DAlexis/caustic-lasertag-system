@@ -4,9 +4,9 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="ru.caustic.lasertag.causticlasertagcontroller.CausticDeviceSettingActivity">
+    tools:context="ru.caustic.lasertag.ui.CausticDeviceSettingActivity">
 
-    <fragment android:name="ru.caustic.lasertag.causticlasertagcontroller.DeviceSettingsFragment"
+    <fragment android:name="ru.caustic.lasertag.ui.DeviceSettingsFragment"
         android:id="@+id/settings"
         android:layout_weight="1"
         android:layout_width="0dp"

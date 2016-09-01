@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.causticlasertagcontroller;
+package ru.caustic.lasertag.ui;
 
 import android.os.Bundle;
 import android.app.Fragment;
@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import ru.caustic.lasertag.controlcore.BridgeConnector;
-import ru.caustic.lasertag.controlcore.CausticDevicesManager;
-import ru.caustic.lasertag.controlcore.RCSProtocol;
+import ru.caustic.lasertag.core.BridgeConnector;
+import ru.caustic.lasertag.core.CausticDevicesManager;
+import ru.caustic.lasertag.core.RCSProtocol;
 
 public class SimpleControlsFragment extends Fragment {
 
