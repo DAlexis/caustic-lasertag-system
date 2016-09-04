@@ -1,0 +1,179 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L LED D1
+U 1 1 57C931A7
+P 2800 2050
+F 0 "D1" H 2800 2150 50  0000 C CNN
+F 1 "IR-LED" H 2800 1950 50  0000 C CNN
+F 2 "LEDs:LED-5MM" H 2800 2050 50  0000 C CNN
+F 3 "" H 2800 2050 50  0000 C CNN
+	1    2800 2050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L LED D2
+U 1 1 57C93386
+P 3500 2050
+F 0 "D2" H 3500 2150 50  0000 C CNN
+F 1 "LED" H 3500 1950 50  0000 C CNN
+F 2 "LEDs:LED_0805" H 3500 2050 50  0000 C CNN
+F 3 "" H 3500 2050 50  0000 C CNN
+	1    3500 2050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L LED D3
+U 1 1 57C933C7
+P 3800 2050
+F 0 "D3" H 3800 2150 50  0000 C CNN
+F 1 "LED" H 3800 1950 50  0000 C CNN
+F 2 "LEDs:LED_0805" H 3800 2050 50  0000 C CNN
+F 3 "" H 3800 2050 50  0000 C CNN
+	1    3800 2050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L LED D4
+U 1 1 57C93406
+P 4100 2050
+F 0 "D4" H 4100 2150 50  0000 C CNN
+F 1 "LED" H 4100 1950 50  0000 C CNN
+F 2 "LEDs:LED_0805" H 4100 2050 50  0000 C CNN
+F 3 "" H 4100 2050 50  0000 C CNN
+	1    4100 2050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L LED D5
+U 1 1 57C93451
+P 4400 2050
+F 0 "D5" H 4400 2150 50  0000 C CNN
+F 1 "LED" H 4400 1950 50  0000 C CNN
+F 2 "LEDs:LED_0805" H 4400 2050 50  0000 C CNN
+F 3 "" H 4400 2050 50  0000 C CNN
+	1    4400 2050
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	2800 1850 2800 1750
+Wire Wire Line
+	2800 1750 4650 1750
+Wire Wire Line
+	4400 1750 4400 1850
+Wire Wire Line
+	4100 1850 4100 1750
+Connection ~ 4100 1750
+Wire Wire Line
+	3800 1850 3800 1750
+Connection ~ 3800 1750
+Wire Wire Line
+	3500 1850 3500 1750
+Connection ~ 3500 1750
+$Comp
+L CONN_01X01 P3
+U 1 1 57C9351E
+P 4850 1750
+F 0 "P3" H 4850 1850 50  0000 C CNN
+F 1 "VCC" V 4950 1750 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x01" H 4850 1750 50  0001 C CNN
+F 3 "" H 4850 1750 50  0000 C CNN
+	1    4850 1750
+	1    0    0    -1  
+$EndComp
+Connection ~ 4400 1750
+$Comp
+L CONN_01X01 P1
+U 1 1 57C935DF
+P 2800 3000
+F 0 "P1" H 2800 3100 50  0000 C CNN
+F 1 "IR" V 2900 3000 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x01" H 2800 3000 50  0001 C CNN
+F 3 "" H 2800 3000 50  0000 C CNN
+	1    2800 3000
+	0    1    1    0   
+$EndComp
+$Comp
+L R R1
+U 1 1 57C93624
+P 3950 2500
+F 0 "R1" V 4030 2500 50  0000 C CNN
+F 1 "R" V 3950 2500 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 3880 2500 50  0000 C CNN
+F 3 "" H 3950 2500 50  0000 C CNN
+	1    3950 2500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3500 2250 3500 2300
+Wire Wire Line
+	3500 2300 4400 2300
+Wire Wire Line
+	3950 2300 3950 2350
+Wire Wire Line
+	3800 2250 3800 2300
+Connection ~ 3800 2300
+Wire Wire Line
+	4100 2300 4100 2250
+Connection ~ 3950 2300
+Wire Wire Line
+	4400 2300 4400 2250
+Connection ~ 4100 2300
+Wire Wire Line
+	2800 2250 2800 2800
+Wire Wire Line
+	3950 2650 3950 2800
+$Comp
+L CONN_01X01 P2
+U 1 1 57C93894
+P 3950 3000
+F 0 "P2" H 3950 3100 50  0000 C CNN
+F 1 "LIGHT" V 4050 3000 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x01" H 3950 3000 50  0001 C CNN
+F 3 "" H 3950 3000 50  0000 C CNN
+	1    3950 3000
+	0    1    1    0   
+$EndComp
+$EndSCHEMATC
