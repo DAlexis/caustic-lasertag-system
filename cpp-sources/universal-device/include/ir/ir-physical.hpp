@@ -38,7 +38,7 @@ class IIRTransmitter
 {
 public:
 	virtual ~IIRTransmitter() {}
-	virtual void init() = 0;
+	virtual void init(const Pinout& pinout) = 0;
 	virtual void setFireEmitter(IFireEmitter* emitter) = 0;
 	virtual void setPower(const UintParameter& power) = 0;
 	virtual void send(const uint8_t* buffer, uint16_t size) = 0;

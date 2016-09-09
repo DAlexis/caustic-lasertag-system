@@ -32,9 +32,9 @@ class IRTransmitterTV : public IRTransmitterBase
 public:
 	IRTransmitterTV();
 	~IRTransmitterTV();
-	void init();
-	void send(const uint8_t* buffer, uint16_t size);
-	bool busy();
+	void init(const Pinout& pinout) override;
+	void send(const uint8_t* buffer, uint16_t size) override;
+	bool busy() override;
 
 private:
 	constexpr static int bufferMaxSize = 100;

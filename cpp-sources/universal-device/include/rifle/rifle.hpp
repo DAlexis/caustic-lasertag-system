@@ -28,11 +28,12 @@
 #include "rifle/resources.hpp"
 #include "rifle/rifle-base-types.hpp"
 #include "rifle/rifle-display.hpp"
+#include "ir/ir-physical.hpp"
+#include "ir/ir-presentation.hpp"
 #include "dev/MFRC522-wrapper.hpp"
 #include "device/device.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "dev/buttons.hpp"
-#include "dev/miles-tag-2.hpp"
 #include "dev/wav-player.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/device-initializer.hpp"
@@ -102,6 +103,7 @@ private:
 	void loadConfig();
 	void initSounds();
 	void makeShot(bool isFirst);
+	void prepareAndSendShotMsg();
 	void distortBolt(bool isFirst);
 	void magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst);
 	uint8_t getCurrentMagazineNumber();
@@ -133,8 +135,8 @@ private:
 	IIOPin* m_vibroEngine = nullptr;
 	IIOPin* m_fireFlash = nullptr;
 
-
-	MilesTag2Transmitter m_mt2Transmitter{config.outputPower};
+	IIRTransmitter *m_irPhysicalTransmitter = nullptr;
+	IIRPresentationTransmitter *m_irPresentationTransmitter = nullptr;
 
 	SoundPlayer m_systemReadySound;
 	SoundPlayer m_RFIDCardReaded;

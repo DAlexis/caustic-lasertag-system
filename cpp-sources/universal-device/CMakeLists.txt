@@ -88,7 +88,6 @@ set(EXE_SOURCES
     src/dev/wav-player.cpp
     src/dev/io-pins-utils.cpp
     src/dev/rgb-leds.cpp
-    src/dev/miles-tag-2-transmitter.cpp
     src/dev/lcd5110.cpp
     src/dev/RC522.cpp
     src/dev/matrix-keyboard.cpp

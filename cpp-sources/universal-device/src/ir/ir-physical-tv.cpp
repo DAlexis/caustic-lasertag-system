@@ -35,9 +35,15 @@ IRTransmitterTV::IRTransmitterTV()
 	cursorToStart();
 }
 
-void IRTransmitterTV::init()
+IRTransmitterTV::~IRTransmitterTV()
+{
+
+}
+
+void IRTransmitterTV::init(const Pinout& pinout)
 {
 	m_emitter->setCallback(std::bind(&IRTransmitterTV::emitterCallback, this, std::placeholders::_1));
+	m_emitter->init(pinout);
 }
 
 void IRTransmitterTV::send(const uint8_t* buffer, uint16_t size)

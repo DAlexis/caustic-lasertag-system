@@ -30,11 +30,11 @@
 #include "core/power-monitor.hpp"
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
-#include "dev/miles-tag-2.hpp"
 #include "dev/wav-player.hpp"
 #include "dev/io-pins-utils.hpp"
+#include "ir/ir-physical-tv.hpp"
+#include "ir/ir-presentation-mt2.hpp"
 #include "hal/system-clock.hpp"
-
 
 #include <stdio.h>
 #include <string>
@@ -349,9 +349,15 @@ void Rifle::init(const Pinout& pinout)
 
 
 	info << "Configuring MT2 transmitter";
-	m_mt2Transmitter.init(pinout);
-	m_mt2Transmitter.setPlayerIdReference(rifleOwner.plyerMT2Id);
-	m_mt2Transmitter.setTeamIdReference(rifleOwner.teamId);
+
+	m_irPhysicalTransmitter = new IRTransmitterTV();
+	m_irPhysicalTransmitter->setFireEmitter(fireEmittersPool->getFireEmitter(0));
+	m_irPhysicalTransmitter->setPower(config.outputPower);
+	m_irPhysicalTransmitter->init(pinout);
+
+	m_irPresentationTransmitter = new IRPresentationTransmitterMT2();
+	m_irPresentationTransmitter->setPhysicalTransmitter(m_irPhysicalTransmitter);
+	m_irPresentationTransmitter->init();
 
 	info << "Looking for sound files...";
 	initSounds();
@@ -478,7 +484,9 @@ void Rifle::makeShot(bool isFirst)
 		{
 			state.bulletsInMagazineCurrent--;
 			info << "<----<< Sending bullet with damage " << config.damageMin;
-			m_mt2Transmitter.shot(config.damageMin);
+
+			prepareAndSendShotMsg();
+
 			if (m_fireFlash)
 			{
 				m_fireFlash->set();
@@ -526,6 +534,17 @@ void Rifle::makeShot(bool isFirst)
 		break;
 	}
 	trace << "State: " << m_state;
+}
+
+void Rifle::prepareAndSendShotMsg()
+{
+	RCSPStream stream;
+	ShotMessage msg;
+	msg.damage = config.damageMin;
+	msg.playerId = rifleOwner.plyerMT2Id;
+	msg.teamId = rifleOwner.teamId;
+	stream.addCall(ConfigCodes::HeadSensor::Functions::catchShot, msg);
+	m_irPresentationTransmitter->sendMessage(stream);
 }
 
 void Rifle::distortBolt(bool)

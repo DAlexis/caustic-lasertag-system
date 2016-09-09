@@ -128,7 +128,6 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 	if (isSdcardOk())
 	{
 		Result res = pinout->readIni("pinout.ini");
-		info << "Hey! Im here!11";
 		if (res)
 		{
 			pinoutReadingSucceeded = true;
@@ -153,7 +152,6 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 	resultDevice->init(*pinout);
 	delete pinout;
 	return resultDevice;
-	//resultDevice->
 }
 
 void DeviceInitializer::startOS()
