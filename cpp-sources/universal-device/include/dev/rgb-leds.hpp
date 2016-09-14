@@ -26,7 +26,7 @@
 
 #include "hal/io-pins.hpp"
 #include "core/os-wrappers.hpp"
-#include "ir/MT2-base-types.hpp"
+#include "game/game-base-types.hpp"
 #include <stdint.h>
 
 class RGBLeds
@@ -56,13 +56,13 @@ public:
 		bool infinite = false;
 	};
 
-	RGBLeds(const TeamMT2Id& teamId);
+	RGBLeds(const TeamGameId& teamId);
 	void init(IIOPin* red, IIOPin* green, IIOPin* blue);
 	void blink(const BlinkPattern& pattern, uint8_t color = selfColor);
 	void stop();
 
 	uint8_t getTeamColor();
-	uint8_t getTeamColor(TeamMT2Id teamId);
+	uint8_t getTeamColor(TeamGameId teamId);
 
 private:
 
@@ -75,7 +75,7 @@ private:
 
 	uint8_t m_color = red;
 
-	const TeamMT2Id& m_teamId;
+	const TeamGameId& m_teamId;
 	BlinkPattern m_currentPattern;
 
 	unsigned int blinksCount = 0;

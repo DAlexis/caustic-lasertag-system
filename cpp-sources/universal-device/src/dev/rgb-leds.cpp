@@ -25,7 +25,7 @@
 
 #include <stdio.h>
 
-RGBLeds::RGBLeds(const TeamMT2Id& teamId) :
+RGBLeds::RGBLeds(const TeamGameId& teamId) :
 	m_teamId(teamId)
 {
 	m_blinkingTask.setTask(std::bind(&RGBLeds::blinkingTask, this));
@@ -96,7 +96,7 @@ uint8_t RGBLeds::getTeamColor()
 	return getTeamColor(m_teamId);
 }
 
-uint8_t RGBLeds::getTeamColor(TeamMT2Id teamId)
+uint8_t RGBLeds::getTeamColor(TeamGameId teamId)
 {
 	switch (teamId)
 	{

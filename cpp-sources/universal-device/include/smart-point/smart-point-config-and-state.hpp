@@ -56,12 +56,12 @@ public:
 	void stopGame();
 	void resetAllTime();
 	void ticTime();
-	void acitateByTeam(TeamMT2Id team);
+	void acitateByTeam(TeamGameId team);
 
 private:
 	const SmartPointConfig& m_config;
 	void timeLeftUsToSec();
-	void win(TeamMT2Id team);
+	void win(TeamGameId team);
 
 	Time m_lastTimeTick = 0;
 

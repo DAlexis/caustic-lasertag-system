@@ -31,7 +31,7 @@ using namespace GameLog;
 
 const char* BaseStatsCounter::filename = "base-stat.bin";
 
-void BaseStatsCounter::checkAndCreate(PlayerMT2Id player)
+void BaseStatsCounter::checkAndCreate(PlayerGameId player)
 {
 	auto it = m_results.find(player);
 	if (it == m_results.end())
@@ -42,19 +42,19 @@ void BaseStatsCounter::checkAndCreate(PlayerMT2Id player)
 	}
 }
 
-void BaseStatsCounter::registerDamage(PlayerMT2Id player, uint16_t damage)
+void BaseStatsCounter::registerDamage(PlayerGameId player, uint16_t damage)
 {
 	checkAndCreate(player);
 	m_results[player].totalDamage += damage;
 }
 
-void BaseStatsCounter::registerHit(PlayerMT2Id player)
+void BaseStatsCounter::registerHit(PlayerGameId player)
 {
 	checkAndCreate(player);
 	m_results[player].hitsCount++;
 }
 
-void BaseStatsCounter::registerKill(PlayerMT2Id player)
+void BaseStatsCounter::registerKill(PlayerGameId player)
 {
 	checkAndCreate(player);
 	m_results[player].killsCount++;

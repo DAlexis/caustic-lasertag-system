@@ -107,7 +107,7 @@ private:
 	void dieWeapons();
 	void respawnWeapons();
 	void turnOffWeapons();
-	void notifyDamager(PlayerMT2Id player, uint8_t damagerTeam, uint8_t state = 0);
+	void notifyDamager(PlayerGameId player, uint8_t damagerTeam, uint8_t state = 0);
 	void weaponWoundAndShock();
 	void setFRIDToWriteAddr();
 

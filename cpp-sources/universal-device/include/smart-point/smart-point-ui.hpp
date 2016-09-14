@@ -60,7 +60,7 @@ public:
 	void prepare() override;
 
 private:
-	TeamMT2Id m_lastLeader = MT2NotATeam;
+	TeamGameId m_lastLeader = teamGameIdNotATeam;
 	bool m_winRegisered = false;
 };
 

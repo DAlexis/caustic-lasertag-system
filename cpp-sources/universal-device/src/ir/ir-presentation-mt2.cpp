@@ -246,7 +246,7 @@ void IRPresentationReceiverMT2::parseSetTeam(const uint8_t* data, uint16_t size)
 	if (data[1] & ~(0x03)) {
 		warning << "Team id byte contains non-zero upper bits";
 	}
-	TeamMT2Id team = data[1] & 0x03;
+	TeamGameId team = data[1] & 0x03;
 	updateOperationCallback([team]() mutable {
 		RCSPAggregator::instance().doOperation(
 				ConfigCodes::HeadSensor::Functions::setTeam,

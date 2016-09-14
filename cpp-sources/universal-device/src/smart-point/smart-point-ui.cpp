@@ -244,7 +244,7 @@ UIStateBase* UITimeLeftScreen::doIteration()
 void UITimeLeftScreen::prepare()
 {
 	UIStateBase::prepare();
-	m_lastLeader = MT2NotATeam;
+	m_lastLeader = teamGameIdNotATeam;
 	m_winRegisered = false;
 }
 

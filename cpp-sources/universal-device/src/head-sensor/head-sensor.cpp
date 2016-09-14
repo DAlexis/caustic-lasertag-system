@@ -486,7 +486,7 @@ void HeadSensor::addMaxHealth(int16_t delta)
 	m_leds.blink(blinkPatterns.anyCommand);
 }
 
-void HeadSensor::notifyDamager(PlayerMT2Id damager, uint8_t damagerTeam, uint8_t state)
+void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_t state)
 {
 	UNUSED_ARG(damagerTeam);
 	DamageNotification notification;

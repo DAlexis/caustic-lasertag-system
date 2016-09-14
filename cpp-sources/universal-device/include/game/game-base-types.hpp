@@ -27,6 +27,21 @@
 
 #include "ir/MT2-base-types.hpp"
 
+/// Player identifier for IR protocol
+using PlayerGameId = uint8_t;
+/// Team identifier. May be 1,2,3,4
+using TeamGameId = uint8_t;
+constexpr TeamGameId teamGameIdNotATeam = 5;
+
+struct ShotMessage {
+	ShotMessage(TeamGameId _teamId = 0, PlayerGameId _playerId = 0, UintParameter _damage = 0) :
+		teamId(_teamId), playerId(_playerId), damage(_damage)
+	{}
+	TeamGameId teamId;
+	PlayerGameId playerId;
+	UintParameter damage;
+};
+
 namespace GameLog
 {
 #pragma pack(push, 1)
@@ -35,7 +50,7 @@ namespace GameLog
 	 */
 	struct PvPDamageResults
 	{
-		PlayerMT2Id player = 0;
+		PlayerGameId player = 0;
 		uint16_t killsCount = 0; //< Players bullet killed player
 		uint16_t hitsCount = 0; //< hits except kills
 		uint32_t totalDamage = 0;

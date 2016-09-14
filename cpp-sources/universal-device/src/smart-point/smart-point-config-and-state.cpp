@@ -57,12 +57,12 @@ void SmartPointState::resetAllTime()
 	m_team4TimeLeftus = m_config.secondsToWin * 1e6;
 	timeLeftUsToSec();
 
-	currentTeam = MT2NotATeam;
+	currentTeam = teamGameIdNotATeam;
 }
 
 void SmartPointState::ticTime()
 {
-	if (currentTeam == MT2NotATeam || gameState != gameStateInProcess)
+	if (currentTeam == teamGameIdNotATeam || gameState != gameStateInProcess)
 		return;
 
 	Time currentTime = systemClock->getTime();
@@ -113,7 +113,7 @@ void SmartPointState::ticTime()
 	timeLeftUsToSec();
 }
 
-void SmartPointState::acitateByTeam(TeamMT2Id team)
+void SmartPointState::acitateByTeam(TeamGameId team)
 {
 	if (gameState == gameStateInProcess)
 	{
@@ -129,7 +129,7 @@ void SmartPointState::timeLeftUsToSec()
 	team4TimeLeft = m_team4TimeLeftus / 1e6;
 }
 
-void SmartPointState::win(TeamMT2Id team)
+void SmartPointState::win(TeamGameId team)
 {
 	info << "Team " << team << " wins";
 	currentTeam = team;

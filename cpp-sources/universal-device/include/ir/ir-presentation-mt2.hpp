@@ -26,7 +26,7 @@
 #define INCLUDE_IR_IR_PRESENTATION_MT2_HPP_
 
 #include "ir/ir-presentation.hpp"
-#include "ir/MT2-base-types.hpp"
+#include "game/game-base-types.hpp"
 
 class PresentationReceiversGroupMT2;
 

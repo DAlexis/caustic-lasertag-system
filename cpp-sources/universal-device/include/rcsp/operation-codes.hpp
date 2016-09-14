@@ -183,8 +183,8 @@ namespace ConfigCodes
 
 
 			//PAR_CODE(UintParameter, plyerId,        1030)
-			PAR_CODE(PlayerMT2Id,   plyerMT2Id,     1031)
-			PAR_CODE(TeamMT2Id,     teamId,         1032)
+			PAR_CODE(PlayerGameId,   plyerMT2Id,     1031)
+			PAR_CODE(TeamGameId,     teamId,         1032)
 
 			PAR_CODE(UintParameter, slot1MaxWeight,    1041)
 			PAR_CODE(UintParameter, slot2MaxWeight,    1042)
@@ -230,7 +230,7 @@ namespace ConfigCodes
 			FUNC_CODE_1P(readStats,  DeviceAddress,  1211)
 
 			FUNC_CODE_1P(addMaxHealth, IntParameter, 1220)
-			FUNC_CODE_1P(setTeam,      TeamMT2Id,    1221)
+			FUNC_CODE_1P(setTeam,      TeamGameId,    1221)
 
 			FUNC_CODE_1P(registerWeapon,    DeviceAddress,  1300)
 			FUNC_CODE_1P(deregisterWeapon,  DeviceAddress,  1301)
@@ -255,7 +255,7 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, team3TimeLeft,    1853)
 			PAR_CODE(UintParameter, team4TimeLeft,    1854)
 
-			PAR_CODE(TeamMT2Id, currentTeam,    1860)
+			PAR_CODE(TeamGameId, currentTeam,    1860)
 			PAR_CODE(uint8_t, gameState,    1861)
 
 		}

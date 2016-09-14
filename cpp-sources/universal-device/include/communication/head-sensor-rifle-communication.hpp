@@ -24,16 +24,16 @@
 #ifndef INCLUDE_LOGIC_HEAD_SENSOR_RIFLE_COMMUNICATION_HPP_
 #define INCLUDE_LOGIC_HEAD_SENSOR_RIFLE_COMMUNICATION_HPP_
 
-#include "ir/MT2-base-types.hpp"
+#include "game/game-base-types.hpp"
 
 struct DamageNotification
 {
 	constexpr static uint8_t injured = 0;
 	constexpr static uint8_t killed = 1;
 
-	PlayerMT2Id damager = 0;
+	PlayerGameId damager = 0;
 	uint8_t damagedTeam = 0;
-	PlayerMT2Id target = 0;
+	PlayerGameId target = 0;
 	uint8_t state = 0;
 };
 
