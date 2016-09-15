@@ -22,15 +22,11 @@ import java.util.Map;
 
 import ru.caustic.lasertag.core.BridgeConnector;
 import ru.caustic.lasertag.core.CausticDevicesManager;
-import ru.caustic.lasertag.core.RCSProtocol;
+import ru.caustic.lasertag.core.SystemInitializer;
 
-public class MainActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity {
 
     private static final String TAG = "CC.CausticMain";
-
-    private Button connectButton;
-
-    private Intent runServiceIntent;
 
     private LinearLayout selectDeviceLayout;
     private LinearLayout connectingNowLayout;
@@ -54,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     static final int MSG_UPDATE_BLUETOOTH_UI = 1;
 
-    public MainActivity() {
+    public StartActivity() {
         uiHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -72,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RCSProtocol.Operations.init();
+        SystemInitializer.systemInit();
         Log.d(TAG, "Starting main activity");
 
         selectDeviceLayout = (LinearLayout) findViewById(R.id.selectDeviceLayout);
@@ -104,27 +100,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updateBluetoothStatusUI();
-/*
-        sConn = new ServiceConnection() {
-            public void onServiceConnected(ComponentName name, IBinder binder) {
-                Log.d(TAG, "MainActivity onServiceConnected");
-                bound = true;
-            }
-
-            public void onServiceDisconnected(ComponentName name) {
-                Log.d(TAG, "MainActivity onServiceDisconnected");
-                bound = false;
-            }
-        };*/
 
         //infoTextView.setText(BluetoothManager.getInstance().getDeviceName());
-
-        // This is not used yet
-        //runServiceIntent = new Intent("ru.caustic.lasertag.causticlasertagcontroller.CausticConnectorService");
-        /*
-        runServiceIntent = new Intent(MainActivity.this, CausticConnectorService.class);
-        startService(runServiceIntent);
-        bindService(runServiceIntent, sConn, BIND_AUTO_CREATE);*/
     }
 
     @Override
@@ -194,7 +171,8 @@ public class MainActivity extends AppCompatActivity {
                 connectionEstablishedLayout.setVisibility(View.VISIBLE);
                 operatingLayout.setVisibility(View.VISIBLE);
                 textViewConnectedTo.setText(BluetoothManager.getInstance().getDeviceName());
-                doScan();
+                runMainControlsActivity();
+                //doScan();
                 break;
         }
 
@@ -238,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void selectBtDeviceClick(View view) {
-        Intent intent = new Intent (MainActivity.this, BluetoothDevicesList.class);
+        Intent intent = new Intent (StartActivity.this, BluetoothDevicesList.class);
         startActivityForResult(intent, CHOOSE_BT_DEVICE);
     }
 
@@ -254,29 +232,14 @@ public class MainActivity extends AppCompatActivity {
         //stopServiceClick(null);
     }
 
-    public void stopServiceClick(View view) {
-        if (bound) {
-            unbindService(sConn);
-            bound = false;
-        }
-        stopService(runServiceIntent);
-    }
-
     public void causticDevsListClicked(View view) {
-        Intent intent = new Intent (MainActivity.this, DevicesListActivity.class);
-        //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);
+        Intent intent = new Intent (StartActivity.this, DevicesListActivity.class);
+        //Intent intent = new Intent (StartActivity.this, CausticDeviceSettingActivity.class);
         startActivityForResult(intent, 0);
     }
 
-
-    public void testPrefsClick(View view) {
-        Intent settingsActivity = new Intent(getBaseContext(), CausticDeviceSettings.class);
-        startActivity(settingsActivity);
-    }
-
-
     public void buttonSelectBridgeClick(View view) {
-        Intent intent = new Intent (MainActivity.this, BluetoothDevicesList.class);
+        Intent intent = new Intent (StartActivity.this, BluetoothDevicesList.class);
         startActivityForResult(intent, CHOOSE_BT_DEVICE);
     }
 
@@ -295,8 +258,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonDevicesSettingsClick(View view) {
-        Intent intent = new Intent (MainActivity.this, DevicesListActivity.class);
-        //Intent intent = new Intent (MainActivity.this, CausticDeviceSettingActivity.class);
+        Intent intent = new Intent (StartActivity.this, DevicesListActivity.class);
+        //Intent intent = new Intent (StartActivity.this, CausticDeviceSettingActivity.class);
         startActivity(intent);
     }
 
@@ -324,5 +287,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    private void runMainControlsActivity()
+    {
+        Intent intent = new Intent (StartActivity.this, MainControlsActivity.class);
+        //Intent intent = new Intent (StartActivity.this, CausticDeviceSettingActivity.class);
+        startActivity(intent);
     }
 }

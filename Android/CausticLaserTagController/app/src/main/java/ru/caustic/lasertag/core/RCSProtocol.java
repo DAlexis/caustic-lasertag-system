@@ -821,7 +821,10 @@ public class RCSProtocol {
     }
 
     public static class Operations {
+        private static boolean isInitialised = false;
         public static void init() {
+            if (isInitialised)
+                return;
             try {
                 Class.forName(Operations.class.getName());
                 Class.forName(Operations.AnyDevice.class.getName());
@@ -833,7 +836,7 @@ public class RCSProtocol {
                 Class.forName(Operations.HeadSensor.class.getName());
                 Class.forName(Operations.HeadSensor.Configuration.class.getName());
                 Class.forName(Operations.HeadSensor.Funcitons.class.getName());
-
+                isInitialised = true;
             } catch (ClassNotFoundException e) {
                 throw new AssertionError(e);  // Can't happen
             }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.caustic.lasertag.ui" >
+    package="ru.caustic.lasertag.ui">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -9,10 +9,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
-            android:name="ru.caustic.lasertag.ui.MainActivity"
-            android:label="@string/app_name" >
+            android:name=".StartActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,68 +20,57 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ru.caustic.lasertag.ui.BluetoothDevicesList"
+            android:name=".BluetoothDevicesList"
             android:label="@string/title_activity_bluetooth_devices_list"
-            android:parentActivityName="ru.caustic.lasertag.ui.MainActivity" >
+            android:parentActivityName=".StartActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.caustic.lasertag.ui.MainActivity" />
+                android:value=".StartActivity" />
         </activity>
         <activity
             android:name=".CausticDevicesList"
             android:label="@string/title_activity_caustic_devices_list"
-            android:parentActivityName="ru.caustic.lasertag.ui.MainActivity" >
+            android:parentActivityName=".StartActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.caustic.lasertag.ui.MainActivity" />
+                android:value=".StartActivity" />
         </activity>
 
-        <service
-            android:name="ru.caustic.lasertag.ui.CausticConnectorService"
-            android:enabled="true"
-            android:exported="true" >
-        </service>
-
         <activity
-            android:name="ru.caustic.lasertag.ui.CausticDeviceSettings"
-            android:label="@string/title_activity_caustic_device_settings"
-            android:parentActivityName=".CausticDevicesList" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.caustic.lasertag.ui.CausticDevicesList" />
-        </activity>
-        <activity
-            android:name="ru.caustic.lasertag.ui.CausticDeviceSettingActivity"
+            android:name=".CausticDeviceSettingActivity"
             android:label="@string/title_activity_caustic_device_setting"
-            android:parentActivityName=".CausticDevicesList" >
+            android:parentActivityName=".CausticDevicesList">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertag.ui.CausticDevicesList" />
         </activity>
         <activity
-            android:name="ru.caustic.lasertag.ui.DevicesListActivity"
+            android:name=".DevicesListActivity"
             android:label="@string/title_activity_caustic_devices_list"
-            android:parentActivityName="ru.caustic.lasertag.ui.MainActivity" >
+            android:parentActivityName=".StartActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.caustic.lasertag.ui.MainActivity" />
+                android:value=".StartActivity" />
         </activity>
         <activity
-            android:name="ru.caustic.lasertag.ui.DeviceSettingsActivity"
+            android:name=".DeviceSettingsActivity"
             android:label="@string/title_activity_device_settings"
-            android:parentActivityName="ru.caustic.lasertag.ui.DevicesListActivity" >
+            android:parentActivityName=".DevicesListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertag.ui.DevicesListActivity" />
         </activity>
         <activity
-            android:name="ru.caustic.lasertag.ui.SimpleControlsActivity"
+            android:name=".SimpleControlsActivity"
             android:label="@string/title_activity_simple_controls"
-            android:parentActivityName="ru.caustic.lasertag.ui.MainActivity" >
+            android:parentActivityName=".StartActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.caustic.lasertag.ui.MainActivity" />
+                android:value=".StartActivity" />
         </activity>
+        <activity
+            android:name=".MainControlsActivity"
+            android:label="@string/title_activity_main_controls"></activity>
     </application>
 
 </manifest>

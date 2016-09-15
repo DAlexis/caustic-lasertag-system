@@ -26,7 +26,7 @@
     <string name="header3_title">Header 3</string>
     <string name="header3_summary">Summary of Header 3</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_caustic_device_setting">CausticDeviceSettingActivity</string>
     <string name="title_activity_device_settings">DeviceSettingsActivity</string>
@@ -35,7 +35,7 @@
     <string name="title_activity_simple_controls">SimpleControlsActivity</string>
 
 
-
     <!-- My strings are here -->
     <string name="not_equal_values">"\u2260"</string>
+    <string name="title_activity_main_controls">MainControlsActivity</string>
 </resources>
