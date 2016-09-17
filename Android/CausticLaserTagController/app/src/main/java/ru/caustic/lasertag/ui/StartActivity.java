@@ -1,7 +1,6 @@
 package ru.caustic.lasertag.ui;
 
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,16 +11,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Map;
-
-import ru.caustic.lasertag.core.BridgeConnector;
-import ru.caustic.lasertag.core.CausticDevicesManager;
 import ru.caustic.lasertag.core.SystemInitializer;
 
 public class StartActivity extends AppCompatActivity {
@@ -31,20 +26,11 @@ public class StartActivity extends AppCompatActivity {
     private LinearLayout selectDeviceLayout;
     private LinearLayout connectingNowLayout;
     private LinearLayout connectionEstablishedLayout;
-    private LinearLayout operatingLayout;
+    private Switch switchRememberDevice;
 
     private TextView textViewConnectedTo;
 
-    private TextView textViewDevicesInAreaCount;
-
-    private int causticDevicesCountInArea = 0;
-
     private Handler uiHandler = null;
-
-    boolean bound = false;
-    ServiceConnection sConn;
-
-    SharedPreferences sp;
 
     static final private int CHOOSE_BT_DEVICE = 0;
 
@@ -67,24 +53,21 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_start);
         SystemInitializer.systemInit();
         Log.d(TAG, "Starting main activity");
 
         selectDeviceLayout = (LinearLayout) findViewById(R.id.selectDeviceLayout);
         connectingNowLayout = (LinearLayout) findViewById(R.id.connectingNowLayout);
         connectionEstablishedLayout = (LinearLayout) findViewById(R.id.connectionEstablishedLayout);
-
-        operatingLayout = (LinearLayout) findViewById(R.id.operatingLayout);
-
         textViewConnectedTo = (TextView) findViewById(R.id.textViewConnectedTo);
-        textViewDevicesInAreaCount = (TextView) findViewById(R.id.textViewDevicesInAreaCount);
 
-/*
-        infoTextView = (TextView) findViewById(R.id.selectedDeviceText);
-        textViewDevsCount = (TextView) findViewById(R.id.textViewDevsCount);
-*/
+        switchRememberDevice = (Switch) findViewById(R.id.switchRememberDevice);
+
         ProgressBar spinner = (ProgressBar) findViewById(R.id.progressBar1);
+
+
+
         /*spinner.setVisibility(View.GONE);
         spinner.setVisibility(View.VISIBLE);*/
 
@@ -101,7 +84,26 @@ public class StartActivity extends AppCompatActivity {
 
         updateBluetoothStatusUI();
 
+        // Reading configuration
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        String bridgeBluetoothAddress = sharedPref.getString("bridge_bluetooth_address", "");
+        String bridgeBluetoothName = sharedPref.getString("bridge_bluetooth_name", "");
+        boolean autoConnect = sharedPref.getBoolean("bridge_bluetooth_autoconnect", false);
+
+        switchRememberDevice.setChecked(autoConnect);
+
+        if (autoConnect)
+            connectToBluetoothDevice(bridgeBluetoothAddress, bridgeBluetoothName);
+
         //infoTextView.setText(BluetoothManager.getInstance().getDeviceName());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("bridge_bluetooth_autoconnect", switchRememberDevice.isChecked());
     }
 
     @Override
@@ -139,12 +141,6 @@ public class StartActivity extends AppCompatActivity {
                 String mac = device.split("\\n")[1];
 
                 connectToBluetoothDevice(mac, device);
-                 /*
-                if (!BluetoothManager.getInstance().connect(mac, device, null)) {
-                    Toast.makeText(getBaseContext(), "Cannot connect to device!", Toast.LENGTH_LONG).show();
-                }*/
-
-                //infoTextView.setText(BluetoothManager.getInstance().getDeviceName());
             } else {
                 //infoTextView.setText("");
             }
@@ -157,19 +153,16 @@ public class StartActivity extends AppCompatActivity {
                 connectingNowLayout.setVisibility(View.GONE);
                 connectionEstablishedLayout.setVisibility(View.GONE);
                 selectDeviceLayout.setVisibility(View.VISIBLE);
-                operatingLayout.setVisibility(View.GONE);
                 break;
             case BluetoothManager.BT_ESTABLISHING:
                 selectDeviceLayout.setVisibility(View.GONE);
                 connectionEstablishedLayout.setVisibility(View.GONE);
                 connectingNowLayout.setVisibility(View.VISIBLE);
-                operatingLayout.setVisibility(View.GONE);
                 break;
             case BluetoothManager.BT_CONNECTED:
                 selectDeviceLayout.setVisibility(View.GONE);
                 connectingNowLayout.setVisibility(View.GONE);
                 connectionEstablishedLayout.setVisibility(View.VISIBLE);
-                operatingLayout.setVisibility(View.VISIBLE);
                 textViewConnectedTo.setText(BluetoothManager.getInstance().getDeviceName());
                 runMainControlsActivity();
                 //doScan();
@@ -178,25 +171,12 @@ public class StartActivity extends AppCompatActivity {
 
     }
 
-    private void updateDevsCountInAreaUI() {
-        textViewDevicesInAreaCount.setText(Integer.toString(causticDevicesCountInArea));
-    }
-
-    private void connectToBluetoothDevice(String mac, String deviceName) {
+    private void connectToBluetoothDevice(final String mac, final String deviceName) {
         selectDeviceLayout.setVisibility(View.GONE);
         connectingNowLayout.setVisibility(View.VISIBLE);
         BluetoothManager.getInstance().connect(mac, deviceName, new BluetoothManager.ConnectionDoneListener() {
             @Override
             public void onConnectionDone(boolean result) {
-                //connectingNowLayout.setVisibility(View.GONE);
-                /*
-                Handler h = connectingNowLayout.getHandler();
-                h.post(new Runnable() {
-                    public void run() {
-                        updateBluetoothStatusUI();
-                    }
-                });*/
-
                 runOnUiThread(new Runnable() {
                     public void run() {
                         updateBluetoothStatusUI();
@@ -206,18 +186,27 @@ public class StartActivity extends AppCompatActivity {
                 if (result) {
                     runOnUiThread(new Runnable() {
                         public void run() {
-                            buttonScanClick(null);
+                            SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+
+                            // We have successful connection
+                            if (switchRememberDevice.isChecked())
+                            {
+                                // We can use it as default, so reconnecting
+                                editor.putString("bridge_bluetooth_address", mac);
+                                editor.putString("bridge_bluetooth_name", deviceName);
+                                editor.putBoolean("bridge_bluetooth_autoconnect", true);
+
+                            } else {
+                                editor.putBoolean("bridge_bluetooth_autoconnect", false);
+                            }
+                            editor.commit();
+//                            buttonScanClick(null);
                         }
                     });
                 }
-                //uiHandler.obtainMessage(MSG_UPDATE_BLUETOOTH_UI).sendToTarget();
             }
         });
-    }
-
-    public void selectBtDeviceClick(View view) {
-        Intent intent = new Intent (StartActivity.this, BluetoothDevicesList.class);
-        startActivityForResult(intent, CHOOSE_BT_DEVICE);
     }
 
     private void errorExit(String title, String message){
@@ -229,13 +218,6 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //stopServiceClick(null);
-    }
-
-    public void causticDevsListClicked(View view) {
-        Intent intent = new Intent (StartActivity.this, DevicesListActivity.class);
-        //Intent intent = new Intent (StartActivity.this, CausticDeviceSettingActivity.class);
-        startActivityForResult(intent, 0);
     }
 
     public void buttonSelectBridgeClick(View view) {
@@ -246,47 +228,6 @@ public class StartActivity extends AppCompatActivity {
     public void buttonDisconnectClick(View view) {
         BluetoothManager.getInstance().disconnect();
         updateBluetoothStatusUI();
-    }
-
-    public void buttonScanClick(View view) {
-        doScan();
-    }
-
-    public void buttonSimpleControlsClick(View view) {
-        Intent settingsActivity = new Intent(getBaseContext(), SimpleControlsActivity.class);
-        startActivity(settingsActivity);
-    }
-
-    public void buttonDevicesSettingsClick(View view) {
-        Intent intent = new Intent (StartActivity.this, DevicesListActivity.class);
-        //Intent intent = new Intent (StartActivity.this, CausticDeviceSettingActivity.class);
-        startActivity(intent);
-    }
-
-    private void doScan()
-    {
-        textViewDevicesInAreaCount.setText("0");
-        CausticDevicesManager.getInstance().updateDevicesList(
-                new Handler() {
-                    public void handleMessage(android.os.Message msg) {
-                        switch (msg.what) {
-                            case CausticDevicesManager.DEVICES_LIST_UPDATED:
-                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice> devs =
-                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice>) msg.obj;
-
-                                causticDevicesCountInArea = devs.size();
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        updateDevsCountInAreaUI();
-                                    }
-                                });
-                                break;
-                        }
-                    }
-                }
-        );
     }
 
     private void runMainControlsActivity()

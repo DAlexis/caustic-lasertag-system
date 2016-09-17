@@ -14,7 +14,9 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:divider="?android:dividerHorizontal"
+        android:showDividers="middle">
 
 
         <LinearLayout
@@ -23,10 +25,11 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="1. Connect to bluetooth bridge Wide Screen!"
+                android:text="Connect to bluetooth bridge"
                 android:id="@+id/textView" />
 
             <LinearLayout
@@ -115,68 +118,23 @@
                 </LinearLayout>
 
             </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/operatingLayout"
-            android:visibility="visible">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <Switch
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Remember this device"
+                android:paddingTop="10dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="2. Ready to work :)"
-                android:id="@+id/textView3" />
+                android:id="@+id/switchRememberDevice" />
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Devices in area: "
-                    android:id="@+id/textView4" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="0"
-                    android:id="@+id/textViewDevicesInAreaCount" />
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    />
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Scan"
-                    android:id="@+id/buttonScan"
-                    android:onClick="buttonScanClick" />
-            </LinearLayout>
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Basic controls"
-                android:id="@+id/buttonSimpleControls"
-                android:onClick="buttonSimpleControlsClick" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Change device settings..."
-                android:id="@+id/buttonDevicesSettings"
-                android:onClick="buttonDevicesSettingsClick" />
         </LinearLayout>
-
 
 
     </LinearLayout>

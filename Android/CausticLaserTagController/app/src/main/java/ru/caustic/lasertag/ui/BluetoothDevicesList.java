@@ -83,25 +83,21 @@ public class BluetoothDevicesList extends AppCompatActivity {
     public void onResume() {
         pairedDevicesSet = BluetoothManager.getInstance().getPairedDevicesSet();
 
-        List<String> your_array_list = new ArrayList<String>();
+        List<String> availableBluetoothDevices = new ArrayList<String>();
 
 
-        // This is the array adapter, it takes the context of the activity as a
-        // first parameter, the type of list view as a second parameter and your
-        // array as a third parameter.
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 this,
                 android.R.layout.simple_list_item_1,
-                your_array_list );
+                availableBluetoothDevices );
 
         devicesList.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
 
 
         for(BluetoothDevice device: pairedDevicesSet){
-        //  Добавляем имена и адреса в mArrayAdapter, чтобы показать
-        // через ListView
-            your_array_list.add(device.getName()+"\n"+ device.getAddress());
+
+            availableBluetoothDevices.add(device.getName()+"\n"+ device.getAddress());
         }
 
         super.onResume();
