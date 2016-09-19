@@ -48,7 +48,7 @@ Logger trace  ("trace");
 void Loggers::initLoggers(uint8_t portNumber)
 {
 	uart = UARTSFactory->create();
-	uart->init(1, 921600);
+	uart->init(portNumber, 921600);
 	error.enable(true);
 	warning.enable(true);
 	info.enable(true);
@@ -101,9 +101,23 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(unsigned int d)
 Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(uint32_t d)
 {
 	char buffer[numbersBufferSize];
-	// I'm not sure that %u is the best solution
-	sprintf(buffer, "%u", d);
-	return *this << buffer;
+	int i=numbersBufferSize-1;
+	buffer[i--] = '\0';
+	for (; d != 0; i--, d /= 10)
+		buffer[i] = d%10 + '0';
+
+	return *this << &(buffer[i+1]);
+}
+
+Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(uint64_t d)
+{
+	char buffer[numbersBufferSize];
+	int i=numbersBufferSize-1;
+	buffer[i--] = '\0';
+	for (; d != 0; i--, d /= 10)
+		buffer[i] = d%10 + '0';
+
+	return *this << &(buffer[i+1]);
 }
 
 Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(float f)

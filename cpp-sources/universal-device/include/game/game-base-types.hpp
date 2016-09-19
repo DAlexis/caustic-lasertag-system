@@ -25,7 +25,7 @@
 #ifndef INCLUDE_GAME_GAME_BASE_TYPES_HPP_
 #define INCLUDE_GAME_GAME_BASE_TYPES_HPP_
 
-#include "ir/MT2-base-types.hpp"
+#include "rcsp/base-types.hpp"
 
 /// Player identifier for IR protocol
 using PlayerGameId = uint8_t;

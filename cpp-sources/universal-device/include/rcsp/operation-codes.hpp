@@ -33,7 +33,6 @@
 #include "network/network-base-types.hpp"
 #include "rifle/rifle-base-types.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
-#include "ir/MT2-base-types.hpp"
 #include "game/game-base-types.hpp"
 
 /*

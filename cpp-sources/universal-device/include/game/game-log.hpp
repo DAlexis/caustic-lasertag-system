@@ -25,7 +25,6 @@
 #ifndef INCLUDE_GAME_GAME_LOG_HPP_
 #define INCLUDE_GAME_GAME_LOG_HPP_
 
-#include "ir/MT2-base-types.hpp"
 #include "game/game-base-types.hpp"
 #include "rcsp/state-saver-interface.hpp"
 #include "hal/system-clock.hpp"

@@ -26,11 +26,12 @@
 
 #include <stdint.h>
 
-using Time = uint32_t;
+using Time = uint64_t;
 
 class ISystemClock
 {
 public:
+	virtual ~ISystemClock() {}
 	virtual void wait_us(uint32_t time) = 0;
 	virtual void init() = 0;
 	virtual Time getTime() = 0;

@@ -87,12 +87,13 @@ public:
 private:
 	struct LoggerUnnamed
 	{
-		constexpr static unsigned int numbersBufferSize = 20;
+		constexpr static unsigned int numbersBufferSize = 30;
 		LoggerUnnamed& operator<<(const char* str);
 		LoggerUnnamed& operator<<(const std::string& str);
 		LoggerUnnamed& operator<<(int d);
 		LoggerUnnamed& operator<<(unsigned int d);
 		LoggerUnnamed& operator<<(uint32_t d);
+		LoggerUnnamed& operator<<(uint64_t d);
 		LoggerUnnamed& operator<<(float f);
 		LoggerUnnamed& operator<<(double f);
 		LoggerUnnamed& operator<<(bool b);
