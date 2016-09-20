@@ -318,7 +318,13 @@ void HeadSensor::catchShot(ShotMessage msg)
 void HeadSensor::playerRespawn()
 {
 	m_callbackStager.stage("respawn");
-	playerState.respawn();
+	if (!playerState.respawn())
+	{
+		info << "Respawn limit is over!";
+		// @todo Add any notification that respawn limit is over
+		m_leds.blink(blinkPatterns.respawnLimitIsOver);
+		return;
+	}
 	m_leds.blink(blinkPatterns.respawn);
 	respawnWeapons();
 	info << "Player spawned";
@@ -344,9 +350,9 @@ void HeadSensor::playerKill()
 	if (!playerState.isAlive())
 		return;
 	playerState.kill();
-	catchShot(ShotMessage());
+	m_leds.blink(blinkPatterns.death);
 	dieWeapons();
-	info << "Player killed";
+	info << "Player killed with kill command";
 }
 
 void HeadSensor::resetStats()

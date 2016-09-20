@@ -43,6 +43,7 @@ public:
 	const RGBLeds::BlinkPattern death{100000, 100000, 20};
 	const RGBLeds::BlinkPattern wound{50000, 50000, 3};
 	const RGBLeds::BlinkPattern respawn{100000, 100000, 2};
+	const RGBLeds::BlinkPattern respawnLimitIsOver{3000000, 100000, 1};
 };
 
 struct HeadSensorPinoutMapping

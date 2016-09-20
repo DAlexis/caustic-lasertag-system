@@ -102,7 +102,7 @@ public:
 	 */
 	bool damage(uint8_t damage);
 	bool isAlive();
-	void respawn();
+	bool respawn();
 	void reset();
 	void kill();
 

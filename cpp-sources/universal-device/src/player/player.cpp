@@ -105,14 +105,17 @@ void PlayerState::reset()
 	weaponsList.clear();
 }
 
-void PlayerState::respawn()
+bool PlayerState::respawn()
 {
+	if (lifesCountCurrent == 0)
+		return false;
 	healthCurrent = m_configuration->healthStart;
 	armorCurrent = m_configuration->armorStart;
 	armorCoeffCurrent = m_configuration->armorCoeffStart;
 	damageCoeffCurrent = m_configuration->damageCoeffStart;
 	shotsCoeffCurrent = m_configuration->shotsCoeffStart;
 	lifesCountCurrent--;
+	return true;
 }
 
 void PlayerState::kill()
