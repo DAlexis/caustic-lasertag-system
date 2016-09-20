@@ -22,7 +22,7 @@ public class BluetoothManager {
     public static final int BLUETOOTH_DISABLED = 1;
     public static final int BLUETOOTH_NOT_SUPPORTED = 2;
 
-    public static final int RECIEVE_MESSAGE = 1;
+    public static final int RECEIVE_MESSAGE = 1;
 
     public static final int REQUEST_ENABLE_BT = 1;
 
@@ -83,17 +83,23 @@ public class BluetoothManager {
         return address != "";
     }
 
-    public boolean connect(String _address, String _deviceName, ConnectionDoneListener listener) {
-        if (_address == "")
+    public boolean connect(String address, String deviceName, ConnectionDoneListener listener) {
+        if (address == "")
             return false;
         if (status == BT_ESTABLISHING)
             return false;
-        if (status == BT_CONNECTED)
+        if (status == BT_CONNECTED) {
+            // Check if connection is already done
+            if (this.address == address) {
+                listener.onConnectionDone(true);
+                return true;
+            }
             disconnect();
+        }
 
-        status = BT_ESTABLISHING;
-        deviceName = _deviceName;
-        address = _address;
+        this.status = BT_ESTABLISHING;
+        this.deviceName = deviceName;
+        this.address = address;
 
         Thread asyncConnect = new AsyncConnect(listener);
         asyncConnect.start();
@@ -177,6 +183,7 @@ public class BluetoothManager {
 
         @Override
         public void run() {
+
             BluetoothDevice device = btAdapter.getRemoteDevice(address);
 
             // Two things are needed to make a connection:
@@ -184,7 +191,7 @@ public class BluetoothManager {
             //   A Service ID or UUID.  In this case we are using the
             //     UUID for SPP.
             try {
-
+                Thread.sleep(100);
                 // THIS code ony works on ZTE!!
                 // This code block is for solving "[JSR82] write: write() failed" problem.
                 // See https://stackoverflow.com/questions/20078457/android-bluetoothsocket-write-fails-on-4-2-2
@@ -279,7 +286,7 @@ public class BluetoothManager {
                     bytes = mmInStream.read(buffer);
                     byte toReceiver[] = buffer.clone();
                     if (handler != null) {
-                        handler.obtainMessage(RECIEVE_MESSAGE, bytes, -1, toReceiver).sendToTarget();
+                        handler.obtainMessage(RECEIVE_MESSAGE, bytes, -1, toReceiver).sendToTarget();
                     } else {
                         Log.e(TAG, "Handler is not set!");
                     }

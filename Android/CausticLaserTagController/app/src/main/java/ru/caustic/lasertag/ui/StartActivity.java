@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
@@ -27,10 +28,13 @@ public class StartActivity extends AppCompatActivity {
     private LinearLayout connectingNowLayout;
     private LinearLayout connectionEstablishedLayout;
     private Switch switchRememberDevice;
+    private Button buttonStartMainControls;
 
     private TextView textViewConnectedTo;
 
     private Handler uiHandler = null;
+    private static boolean isFirstRun = true; // If we returned to this activity, we should not atomatically run MainControlsActivity
+    private boolean needAutoRunMainControlsActivity = false;
 
     static final private int CHOOSE_BT_DEVICE = 0;
 
@@ -64,6 +68,8 @@ public class StartActivity extends AppCompatActivity {
 
         switchRememberDevice = (Switch) findViewById(R.id.switchRememberDevice);
 
+        buttonStartMainControls = (Button) findViewById(R.id.buttonStartMainControls);
+
         ProgressBar spinner = (ProgressBar) findViewById(R.id.progressBar1);
 
 
@@ -91,9 +97,15 @@ public class StartActivity extends AppCompatActivity {
         boolean autoConnect = sharedPref.getBoolean("bridge_bluetooth_autoconnect", false);
 
         switchRememberDevice.setChecked(autoConnect);
+        buttonStartMainControls.setEnabled(false);
 
-        if (autoConnect)
+        if (autoConnect) {
+            if (isFirstRun) {
+                needAutoRunMainControlsActivity = true;
+                isFirstRun = false;
+            }
             connectToBluetoothDevice(bridgeBluetoothAddress, bridgeBluetoothName);
+        }
 
         //infoTextView.setText(BluetoothManager.getInstance().getDeviceName());
     }
@@ -153,18 +165,24 @@ public class StartActivity extends AppCompatActivity {
                 connectingNowLayout.setVisibility(View.GONE);
                 connectionEstablishedLayout.setVisibility(View.GONE);
                 selectDeviceLayout.setVisibility(View.VISIBLE);
+                buttonStartMainControls.setEnabled(false);
                 break;
             case BluetoothManager.BT_ESTABLISHING:
                 selectDeviceLayout.setVisibility(View.GONE);
                 connectionEstablishedLayout.setVisibility(View.GONE);
                 connectingNowLayout.setVisibility(View.VISIBLE);
+                buttonStartMainControls.setEnabled(false);
                 break;
             case BluetoothManager.BT_CONNECTED:
                 selectDeviceLayout.setVisibility(View.GONE);
                 connectingNowLayout.setVisibility(View.GONE);
                 connectionEstablishedLayout.setVisibility(View.VISIBLE);
                 textViewConnectedTo.setText(BluetoothManager.getInstance().getDeviceName());
-                runMainControlsActivity();
+                buttonStartMainControls.setEnabled(true);
+                if (needAutoRunMainControlsActivity) {
+                    needAutoRunMainControlsActivity = false;
+                    runMainControlsActivity();
+                }
                 //doScan();
                 break;
         }
@@ -174,7 +192,7 @@ public class StartActivity extends AppCompatActivity {
     private void connectToBluetoothDevice(final String mac, final String deviceName) {
         selectDeviceLayout.setVisibility(View.GONE);
         connectingNowLayout.setVisibility(View.VISIBLE);
-        BluetoothManager.getInstance().connect(mac, deviceName, new BluetoothManager.ConnectionDoneListener() {
+        BluetoothManager.ConnectionDoneListener connectionDoneListener = new BluetoothManager.ConnectionDoneListener() {
             @Override
             public void onConnectionDone(boolean result) {
                 runOnUiThread(new Runnable() {
@@ -206,7 +224,8 @@ public class StartActivity extends AppCompatActivity {
                     });
                 }
             }
-        });
+        };
+        BluetoothManager.getInstance().connect(mac, deviceName, connectionDoneListener);
     }
 
     private void errorExit(String title, String message){
@@ -228,6 +247,10 @@ public class StartActivity extends AppCompatActivity {
     public void buttonDisconnectClick(View view) {
         BluetoothManager.getInstance().disconnect();
         updateBluetoothStatusUI();
+    }
+
+    public void buttonStartMainControlsClick(View view) {
+        runMainControlsActivity();
     }
 
     private void runMainControlsActivity()

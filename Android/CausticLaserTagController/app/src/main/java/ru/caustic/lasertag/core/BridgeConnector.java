@@ -137,7 +137,7 @@ public class BridgeConnector {
         BluetoothManager.getInstance().setRXHandler(new Handler() {
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what) {
-                    case BluetoothManager.RECIEVE_MESSAGE:                    // если приняли сообщение в Handler
+                    case BluetoothManager.RECEIVE_MESSAGE:
                         byte[] readBuf = (byte[]) msg.obj;
                         int size = msg.arg1;
                         if (size >= MESSAGE_LEN_MAX) {

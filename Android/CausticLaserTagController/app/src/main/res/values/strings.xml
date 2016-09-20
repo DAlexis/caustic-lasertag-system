@@ -3,8 +3,8 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_bluetooth_devices_list">BluetoothDevicesList</string>
-    <string name="title_activity_caustic_devices_list">Select Caustic device</string>
+    <string name="title_activity_bluetooth_devices_list">Bluetooth Devices List</string>
+    <string name="title_activity_caustic_devices_list">Select device</string>
 
 
     <string name="checkbox2_title">CheckBox 2</string>
@@ -27,15 +27,13 @@
     <string name="header3_summary">Summary of Header 3</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_caustic_device_setting">CausticDeviceSettingActivity</string>
-    <string name="title_activity_device_settings">DeviceSettingsActivity</string>
+    <string name="title_activity_device_settings">Device Settings Activity</string>
     <string name="connecting_text">Connecting...</string>
     <string name="disconnect_button">Disconnect</string>
-    <string name="title_activity_simple_controls">SimpleControlsActivity</string>
+    <string name="title_activity_simple_controls">Simple Controls</string>
 
 
     <!-- My strings are here -->
     <string name="not_equal_values">"\u2260"</string>
-    <string name="title_activity_main_controls">MainControlsActivity</string>
+    <string name="title_activity_main_controls">Game Controls</string>
 </resources>
