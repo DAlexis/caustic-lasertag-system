@@ -30,6 +30,7 @@ public class MainControlsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_controls);
         textDevsInArea = (TextView) findViewById(R.id.textDevsInArea);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        doScan();
     }
 
     public void buttonRescanClick(View view) {

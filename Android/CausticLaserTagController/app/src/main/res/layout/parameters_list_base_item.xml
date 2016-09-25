@@ -55,12 +55,12 @@
         <EditText
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:inputType="number"
             android:layout_gravity="center_vertical"
             android:gravity="right"
             android:ems="5"
             android:id="@+id/editTextParameterValue"
-            android:text="0" />
+            android:text="0"
+            android:inputType="numberDecimal" />
 
         <ImageButton
             android:layout_width="wrap_content"

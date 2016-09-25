@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +60,7 @@ public class DeviceSettingsFragment extends Fragment {
         TextView notEqual = null;
         ImageButton revert = null;
 
+        boolean workaroundIgnoreInput = false;
         RCSProtocol.ParameterDescription descr = null;
 
         protected abstract String progressToValue(int progress);
@@ -88,13 +90,7 @@ public class DeviceSettingsFragment extends Fragment {
             parameterValue = (EditText) convertView.findViewById(R.id.editTextParameterValue);
             notEqual = (TextView) convertView.findViewById(R.id.notEqual);
             revert = (ImageButton) convertView.findViewById(R.id.revert);
-/*
-            notEqual.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                }
-            });*/
 
             seekBar.setMax(maxProgress());
 
@@ -116,6 +112,8 @@ public class DeviceSettingsFragment extends Fragment {
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (workaroundIgnoreInput)
+                        return;
                     if (fromUser) {
                         updateText(progressToValue(progress));
                         Log.d(TAG, "onProgressChanged from user");
@@ -146,12 +144,16 @@ public class DeviceSettingsFragment extends Fragment {
                 @Override
                 public void afterTextChanged(Editable s) {
                     Log.d(TAG, "afterTextChanged");
+                    if (workaroundIgnoreInput)
+                        return;
                     String str = s.toString();
                     if (s.toString().isEmpty())
                         return;
 
                     pickValue();
+                    workaroundIgnoreInput = true;
                     updateProgress(parameterEntry.getValue());
+                    workaroundIgnoreInput = false;
                 }
             });
 
@@ -203,6 +205,12 @@ public class DeviceSettingsFragment extends Fragment {
 
         private int max() {
             return ((RCSProtocol.UintParameter) descr).maxValue;
+        }
+
+        @Override
+        public void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry _parameterEntry) {
+            super.init(inflater, _parameterEntry);
+            parameterValue.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
         }
 
         @Override

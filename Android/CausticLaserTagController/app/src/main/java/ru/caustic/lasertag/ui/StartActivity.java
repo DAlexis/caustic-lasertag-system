@@ -97,13 +97,10 @@ public class StartActivity extends AppCompatActivity {
         boolean autoConnect = sharedPref.getBoolean("bridge_bluetooth_autoconnect", false);
 
         switchRememberDevice.setChecked(autoConnect);
-        buttonStartMainControls.setEnabled(false);
 
-        if (autoConnect) {
-            if (isFirstRun) {
-                needAutoRunMainControlsActivity = true;
-                isFirstRun = false;
-            }
+        if (autoConnect && isFirstRun && !BluetoothManager.getInstance().isConnected()) {
+            needAutoRunMainControlsActivity = true;
+            isFirstRun = false;
             connectToBluetoothDevice(bridgeBluetoothAddress, bridgeBluetoothName);
         }
 
@@ -116,6 +113,7 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean("bridge_bluetooth_autoconnect", switchRememberDevice.isChecked());
+        editor.commit();
     }
 
     @Override
@@ -149,7 +147,7 @@ public class StartActivity extends AppCompatActivity {
                 //infoTextView.setText("Connecting...");
                 //connectButton.setClickable(true);
 
-                String device = data.getStringExtra(BluetoothDevicesList.BT_DEVICE);
+                String device = data.getStringExtra(BluetoothDevicesListActivity.BT_DEVICE);
                 String mac = device.split("\\n")[1];
 
                 connectToBluetoothDevice(mac, device);
@@ -183,7 +181,6 @@ public class StartActivity extends AppCompatActivity {
                     needAutoRunMainControlsActivity = false;
                     runMainControlsActivity();
                 }
-                //doScan();
                 break;
         }
 
@@ -240,7 +237,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public void buttonSelectBridgeClick(View view) {
-        Intent intent = new Intent (StartActivity.this, BluetoothDevicesList.class);
+        Intent intent = new Intent (StartActivity.this, BluetoothDevicesListActivity.class);
         startActivityForResult(intent, CHOOSE_BT_DEVICE);
     }
 

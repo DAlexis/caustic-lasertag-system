@@ -19,16 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class BluetoothDevicesList extends AppCompatActivity {
+public class BluetoothDevicesListActivity extends AppCompatActivity {
 
     public final static String BT_DEVICE = "ru.caustic.lasertag.causticlasertagcontroller.BT_DEVICE";
 
-    // @todo Move this to another place
-    public static final String APP_PREFERENCES = "settings";
-
-    SharedPreferences sharedPreferences;
     ListView devicesList = null;
-    CheckBox checkBoxAutoConnect;
 
     Set<BluetoothDevice> pairedDevicesSet = null;
 
@@ -39,12 +34,6 @@ public class BluetoothDevicesList extends AppCompatActivity {
         setContentView(R.layout.activity_bluetooth_devices_list);
 
         devicesList = (ListView) findViewById(R.id.devicesList);
-        checkBoxAutoConnect = (CheckBox) findViewById(R.id.checkBoxAutoConnect);
-
-        sharedPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-
-        boolean autoConnect = sharedPreferences.getBoolean("autoConnect", false);
-        checkBoxAutoConnect.setChecked(autoConnect);
 
         devicesList .setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
