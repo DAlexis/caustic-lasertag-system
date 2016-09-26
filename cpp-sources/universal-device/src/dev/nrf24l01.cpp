@@ -172,12 +172,20 @@ NRF24L01Manager::NRF24L01Manager()
 {
 }
 
-void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, uint8_t SPIIndex, bool useInterrupts)
+void NRF24L01Manager::init(
+	IIOPin* chipEnablePin,
+	IIOPin* chipSelectPin,
+	IIOPin* IRQPin,
+	uint8_t SPIIndex,
+	bool useInterrupts,
+	uint8_t radioChannel
+)
 {
     debug << "Radio module initialization...\n";
     m_chipEnablePin = chipEnablePin;
     m_chipSelectPin = chipSelectPin;
     m_IRQPin = IRQPin;
+    m_RFChannel = radioChannel;
     m_spi = SPIs->getSPI(SPIIndex);
     m_spi->init(ISPIManager::BaudRatePrescaler32, chipSelectPin);
 
@@ -245,6 +253,11 @@ void NRF24L01Manager::init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin*
 void NRF24L01Manager::setDataReceiveCallback(DataReceiveCallback callback)
 {
     m_RXcallback = callback;
+}
+
+UintParameter NRF24L01Manager::getPayloadSize()
+{
+	return payloadSize;
 }
 
 void NRF24L01Manager::setTXMaxRetriesCallback(TXMaxRetriesCallback callback)
@@ -802,7 +815,7 @@ void NRF24L01Manager::onMaxRetriesReached()
 		m_TXMaxRTcallback();
 	}
 	// Clearing PLOS_CNT
-	setRFChannel(RADIO_CHANNEL);
+	setRFChannel(m_RFChannel);
 
 	resetMaxRetriesReached();
 }

@@ -99,23 +99,21 @@ void NetworkLayer::setPackageReceiver(ReceivePackageCallback callback)
 	m_receivePackageCallback = callback;
 }
 
-void NetworkLayer::init()
+void NetworkLayer::setRadioReinitCallback(RadioReinitCallback callback)
+{
+	m_radioReinitCallback = callback;
+}
+
+void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
 {
 	Kernel::instance().assert(
 			m_selfAddress != nullptr
 			&& m_receivePackageCallback != nullptr,
 			"Modem initialisation fail: self address or package receiver not set"
 		);
-	nrf.setTXDoneCallback(std::bind(&NetworkLayer::TXDoneCallback, this));
-	nrf.setDataReceiveCallback(std::bind(&NetworkLayer::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
-	nrf.init(
-		IOPins->getIOPin(1, 7),
-		IOPins->getIOPin(1, 12),
-		IOPins->getIOPin(1, 8),
-		2,
-		true
-	);
-	//nrf.enableDebug();
+	m_rfPhysicalDevice = rfPhysicalDevice;
+	m_rfPhysicalDevice->setTXDoneCallback(std::bind(&NetworkLayer::TXDoneCallback, this));
+	m_rfPhysicalDevice->setDataReceiveCallback(std::bind(&NetworkLayer::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
 	info << "Starting m_modemTask";
 	m_modemTask.run(0, 1, 1);
 }
@@ -310,13 +308,13 @@ bool NetworkLayer::checkIfIdStoredAndStore(uint16_t id)
 void NetworkLayer::interrogate()
 {
 	sendNext();
-	nrf.interrogate();
+	m_rfPhysicalDevice->interrogate();
 	receiveIncoming();
 
 	if ((systemClock->getTime() - m_lastNRFReinitializationTime) > NRFReinitPeriod)
 	{
 		if (m_debug)
-			nrf.printStatus();
+			m_rfPhysicalDevice->printStatus();
 
 		if (m_regularNRFReinit)
 		{
@@ -338,7 +336,7 @@ void NetworkLayer::interrogate()
 		if (isSendingNow)
 			radio << "SENDING";
 
-		nrf.printStatus();
+		m_rfPhysicalDevice->printStatus();
 
 		//reinitNRF();
 	}*/
@@ -472,7 +470,7 @@ void NetworkLayer::printAndSend(Package& package)
 		trace << "payload: ";
 		printHex((const uint8_t*) &package, Package::packageLength);
 	}
-	nrf.sendData(Package::packageLength, (uint8_t*) &package);
+	m_rfPhysicalDevice->sendData(Package::packageLength, (uint8_t*) &package);
 }
 
 bool NetworkLayer::stopSending(PackageId packageId)
@@ -517,11 +515,8 @@ bool NetworkLayer::updateTimeout(PackageId packageId)
 void NetworkLayer::reinitNRF()
 {
 	TXDoneCallback();
-	nrf.init(
-		IOPins->getIOPin(1, 7),
-		IOPins->getIOPin(1, 12),
-		IOPins->getIOPin(1, 8),
-		2,
-		true
-	);
+	if (m_radioReinitCallback)
+		m_radioReinitCallback(m_rfPhysicalDevice);
+	else
+		warning << "Radio reinitiallization callback was not set but it is time to reinit";
 }

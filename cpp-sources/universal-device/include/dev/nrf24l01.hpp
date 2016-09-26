@@ -31,7 +31,6 @@
 #include "network/radio-physical.hpp"
 
 #define RADIO_ADDRESS_SIZE  5
-#define RADIO_CHANNEL       1
 
 using DataReceiveCallback = std::function<void(uint8_t/* channel*/, uint8_t*/* data*/)>;
 using TXMaxRetriesCallback = std::function<void(void)>;
@@ -47,8 +46,11 @@ public:
     };
 
     constexpr static unsigned int payloadSize = 32;
+    constexpr static uint8_t defaultRadioChannel = 1;
 
     NRF24L01Manager();
+
+    UintParameter getPayloadSize() override;
 
     void setDataReceiveCallback(DataReceiveCallback callback) override;
     void setTXDoneCallback(TXDoneCallback callback) override;
@@ -57,7 +59,15 @@ public:
     void setTXAddress(uint8_t* address) override;
     void printStatus() override;
 
-    void init(IIOPin* chipEnablePin, IIOPin* chipSelectPin, IIOPin* IRQPin, uint8_t SPIIndex, bool useInterrupts);
+    void init(
+    		IIOPin* chipEnablePin,
+			IIOPin* chipSelectPin,
+			IIOPin* IRQPin,
+			uint8_t SPIIndex,
+			bool useInterrupts,
+			uint8_t radioChannel = defaultRadioChannel
+	);
+
     void setTXMaxRetriesCallback(TXMaxRetriesCallback callback);
     void resetAllIRQ();
 
@@ -227,7 +237,7 @@ private:
 
 	uint8_t m_status = 0;
 	uint8_t m_config = 0;
-	uint8_t m_RFChannel = RADIO_CHANNEL;
+	uint8_t m_RFChannel = defaultRadioChannel;
 	uint8_t m_TXAdress[RADIO_ADDRESS_SIZE];
 	uint8_t m_RXAdressP0[RADIO_ADDRESS_SIZE];
 	uint8_t m_RXAdressP1[RADIO_ADDRESS_SIZE];

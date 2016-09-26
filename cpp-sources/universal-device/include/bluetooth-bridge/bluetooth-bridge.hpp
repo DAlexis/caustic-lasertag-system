@@ -62,7 +62,7 @@ private:
 
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
 
-	IUARTManager* m_bluetoothPort;
+	IUARTManager* m_bluetoothPort = nullptr;
 
 	/// @todo Queues should be as large as possible, so need to increase its size
 	Worker m_workerToBluetooth{30};

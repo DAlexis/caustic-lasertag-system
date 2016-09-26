@@ -28,6 +28,8 @@
 #include "rcsp/RCSP-stream.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
 
+#include "dev/nrf24l01.hpp"
+
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
 
@@ -80,7 +82,21 @@ void SmartPoint::init(const Pinout& pinout)
 	NetworkLayer::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
 	NetworkLayer::instance().registerBroadcast(broadcast.any);
 	NetworkLayer::instance().registerBroadcast(broadcast.smartPoint);
-	NetworkLayer::instance().init();
+
+	NRF24L01Manager *nrf = new NRF24L01Manager();
+	auto radioReinit = [](IRadioPhysicalDevice* rf) {
+		static_cast<NRF24L01Manager*>(rf)->init(
+				IOPins->getIOPin(1, 7),
+				IOPins->getIOPin(1, 12),
+				IOPins->getIOPin(1, 8),
+				2,
+				true,
+				1
+			);
+	};
+	radioReinit(nrf);
+	NetworkLayer::instance().setRadioReinitCallback(radioReinit);
+	NetworkLayer::instance().init(nrf);
 
 	initSounds();
 	m_tasksPool.add(

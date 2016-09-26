@@ -27,7 +27,7 @@
 #include "rcsp/RCSP-base-types.hpp"
 #include "network/network-base-types.hpp"
 #include "network/broadcast.hpp"
-#include "dev/nrf24l01.hpp"
+#include "network/radio-physical.hpp"
 #include "hal/system-clock.hpp"
 #include "utils/macro.hpp"
 #include "core/os-wrappers.hpp"
@@ -67,7 +67,7 @@ struct Package
 	PackageDetails details;
 
 	/// payloadLength is 23 bytes
-	constexpr static uint16_t packageLength = NRF24L01Manager::payloadSize;
+	constexpr static uint16_t packageLength = IRadioPhysicalDevice::defaultRFPhysicalPayloadSize;
 	constexpr static uint16_t payloadLength = packageLength - sizeof(sender) - sizeof(target) - sizeof(details);
 
 	uint8_t payload[payloadLength];
@@ -77,15 +77,18 @@ struct Package
 class NetworkLayer
 {
 public:
+	using RadioReinitCallback = std::function<void(IRadioPhysicalDevice* rfPhysicalDevice)>;
 	constexpr static uint32_t defaultTimeout = 20000000;
 	constexpr static uint32_t defaultResendTime = 300000;
 	constexpr static uint32_t defaultResendTimeDelta = 300000;
 
 	NetworkLayer();
 	~NetworkLayer(); //< Only for future purpose
-	void init();
+	void init(IRadioPhysicalDevice* rfPhysicalDevice);
 	void setAddress(const DeviceAddress& address);
 	void setPackageReceiver(ReceivePackageCallback callback);
+
+	void setRadioReinitCallback(RadioReinitCallback callback);
 
 	/**
 	 * Send package and optionaly wait for acknowledgement
@@ -173,7 +176,8 @@ private:
 	Mutex m_packagesQueueMutex;
 	std::list<Package> m_packagesNoAck;
 
-	NRF24L01Manager nrf;
+	IRadioPhysicalDevice* m_rfPhysicalDevice = nullptr;
+
 	std::map<PackageId, WaitingPackage> m_packages;
 
 	std::list<Package> m_incoming;
@@ -191,6 +195,8 @@ private:
 	bool m_regularNRFReinit = false;
 	bool m_debug = false;
 	Time m_lastNRFReinitializationTime = 0;
+
+	RadioReinitCallback m_radioReinitCallback = nullptr;
 
 	Stager m_stager{"Network layer", 5000000};
 };

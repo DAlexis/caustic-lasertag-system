@@ -25,15 +25,22 @@
 #define INCLUDE_NETWORK_RADIO_PHYSICAL_HPP_
 
 #include "core/os-wrappers.hpp"
+#include "rcsp/base-types.hpp"
 
 class IRadioPhysicalDevice : public IInterrogatable
 {
 public:
-	virtual ~IRadioPhysicalDevice() {}
 	using DataReceiveCallback = std::function<void(uint8_t/* channel*/, uint8_t*/* data*/)>;
 	using TXDoneCallback = std::function<void(void)>;
 
+	constexpr static unsigned int defaultRFPhysicalPayloadSize = 32;
+
+	virtual ~IRadioPhysicalDevice() {}
+
 	virtual void printStatus() = 0;
+
+	virtual UintParameter getPayloadSize() = 0;
+
 	virtual void setDataReceiveCallback(DataReceiveCallback callback) = 0;
 	virtual void setTXDoneCallback(TXDoneCallback callback) = 0;
 
