@@ -59,7 +59,7 @@ public:
 	void rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color);
 	void fillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color);
 	void rectLineShadow(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t tx, uint8_t ty, uint8_t color);
-	void stringXY(uint8_t x, uint8_t y, char *c);
+	void stringXY(uint8_t x, uint8_t y, const char *c);
 	void barHorizontal(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t val);
 	void barVertical(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t val);
 

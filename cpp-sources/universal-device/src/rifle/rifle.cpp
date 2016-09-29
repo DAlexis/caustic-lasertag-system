@@ -475,6 +475,7 @@ void Rifle::initSounds()
 	m_friendDamaged.readVariants("sound/friend-injured-", ".wav", 1);
 	m_noHeartbeat.readVariants("sound/no-heartbeat-", ".wav", 1);
 	m_noShockedShooting.readVariants("sound/shocked-shooting", ".wav", 0);
+	m_hsSwitchRejected.readVariants("sound/hs-switch-rejected", ".wav", 0);
 }
 
 void Rifle::makeShot(bool isFirst)
@@ -819,6 +820,11 @@ bool Rifle::isShocked()
 	return systemClock->getTime() <= m_unshockTime;
 }
 
+bool Rifle::isHSConnected()
+{
+	return systemClock->getTime() - m_lastHSHeartBeat < maxNoHeartbeatDelay;
+}
+
 void Rifle::onCardReaded(uint8_t* buffer, uint16_t size)
 {
 	info << "RFID card detected";
@@ -857,6 +863,12 @@ void Rifle::rifleShock(uint32_t delay)
 
 void Rifle::rifleChangeHS(DeviceAddress newAddr)
 {
+	if (!isHSConnected())
+	{
+		// We cannot change head sensor without notifying current, so rejecting
+		m_hsSwitchRejected.play();
+		return;
+	}
 	if (newAddr == config.headSensorAddr)
 	{
 		debug << "Head sensor switch not needed";

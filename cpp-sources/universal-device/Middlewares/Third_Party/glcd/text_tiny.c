@@ -78,7 +78,7 @@ void glcd_tiny_draw_char(uint8_t x, uint8_t line, char c)
 	}
 }
 
-void glcd_tiny_draw_string(uint8_t x, uint8_t line, char *str)
+void glcd_tiny_draw_string(uint8_t x, uint8_t line, const char *str)
 {
 	if (font_current.height >= 8) {
 		return;

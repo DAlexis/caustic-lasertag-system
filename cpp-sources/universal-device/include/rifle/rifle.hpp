@@ -113,13 +113,14 @@ private:
 
 	bool isReloading();
 	bool isSafeSwitchSelected();
+	bool isShocked();
+	bool isHSConnected();
 
 	void updatePlayerState();
 
 	void playDamagerNotification(uint8_t state);
 	void scheduleDamageNotification(uint8_t state);
 	void checkHeartBeat();
-	bool isShocked();
 
 	void onCardReaded(uint8_t* buffer, uint16_t size);
 	/// This function could be called any time when head sensor is connected. Double calling does not hurt anything
@@ -153,6 +154,7 @@ private:
 	SoundPlayer m_friendDamaged;
 	SoundPlayer m_noHeartbeat;
 	SoundPlayer m_noShockedShooting;
+	SoundPlayer m_hsSwitchRejected;
 
 	PackageId m_registerWeaponPAckageId = 0;
 

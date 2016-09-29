@@ -268,7 +268,7 @@ uint8_t glcd_draw_char_xy(uint8_t x, uint8_t y, char c)
 
 }
 
-void glcd_draw_string_xy(uint8_t x, uint8_t y, char *c)
+void glcd_draw_string_xy(uint8_t x, uint8_t y, const char *c)
 {
 	uint8_t width;
 

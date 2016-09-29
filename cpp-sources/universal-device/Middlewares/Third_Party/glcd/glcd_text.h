@@ -93,7 +93,7 @@ uint8_t glcd_draw_char_xy(uint8_t x, uint8_t y, char c);
  *  \param y y location to place top-left of character frame
  *  \param c pointer to string to be drawn
  */
-void glcd_draw_string_xy(uint8_t x, uint8_t y, char *c);
+void glcd_draw_string_xy(uint8_t x, uint8_t y, const char *c);
 
 /** Draw a string from program memory at specified location.
  *  \param x x location to place top-left of character frame

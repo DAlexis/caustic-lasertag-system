@@ -159,7 +159,7 @@ void LCD5110Controller::rectLineShadow(uint8_t x, uint8_t y, uint8_t w, uint8_t 
 	glcd_draw_rect_thick(x, y, w, h, tx, ty, color);
 }
 
-void LCD5110Controller::stringXY(uint8_t x, uint8_t y, char *c)
+void LCD5110Controller::stringXY(uint8_t x, uint8_t y, const char *c)
 {
 	if (m_fontIsTiny)
 		glcd_tiny_draw_string(x, y, c);
