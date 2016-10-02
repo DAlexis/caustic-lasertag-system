@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name micro-sd-112I-J)(type Legacy)(uri /home/dalexies/Projects/caustic-lasertag-system/schematic/components/micro-sd-112I-J.mod)(options "")(descr ""))
+)
