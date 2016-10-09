@@ -1,4 +1,4 @@
-update=Вс 02 окт 2016 22:14:41
+update=Вс 09 окт 2016 16:34:31
 version=1
 last_client=kicad
 [pcbnew]
@@ -64,3 +64,4 @@ LibName32=/home/dalexies/Projects/caustic-lasertag-system/schematic/components/m
 LibName33=/home/dalexies/Projects/caustic-lasertag-system/schematic/components/ncp551
 LibName34=/home/dalexies/Projects/caustic-lasertag-system/schematic/components/usblc6-4
 LibName35=/home/dalexies/Projects/caustic-lasertag-system/schematic/components/custom-connectors
+LibName36=/home/dalexies/Projects/caustic-lasertag-system/schematic/components/3rdparty/w_rtx/w_rtx
