@@ -41,12 +41,12 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
-Date ""
-Rev ""
-Comp ""
+Title "Head sensor and bluetooth bridge board"
+Date "2016-10-09"
+Rev "1.0"
+Comp "Caustic Lasertag System Project"
 Comment1 ""
-Comment2 ""
+Comment2 "Aleksey Bulatov"
 Comment3 ""
 Comment4 ""
 $EndDescr
@@ -664,7 +664,7 @@ L Led_Small D1
 U 1 1 57F1F125
 P 8800 4200
 F 0 "D1" H 8750 4325 50  0000 L CNN
-F 1 "Led" H 8750 4100 50  0000 L CNN
+F 1 "Chrg" H 8750 4100 50  0000 L CNN
 F 2 "LEDs:LED_0805" V 8800 4200 50  0001 C CNN
 F 3 "" V 8800 4200 50  0000 C CNN
 	1    8800 4200
@@ -1404,7 +1404,7 @@ L LED D2
 U 1 1 57F7E967
 P 4950 5750
 F 0 "D2" H 4950 5850 50  0000 C CNN
-F 1 "LED" H 4950 5650 50  0000 C CNN
+F 1 "DBG" H 4950 5650 50  0000 C CNN
 F 2 "LEDs:LED_0805" H 4950 5750 50  0001 C CNN
 F 3 "" H 4950 5750 50  0000 C CNN
 	1    4950 5750
@@ -1461,7 +1461,7 @@ L ITEAD_HC-05 U5
 U 1 1 57FA4C44
 P 10400 1850
 F 0 "U5" H 10490 2820 60  0000 C CNN
-F 1 "ITEAD_HC-05" H 10740 2740 60  0000 C CNN
+F 1 "HC-05" H 10740 2740 60  0000 C CNN
 F 2 "w_rf_modules:ITEAD_HC-05" H 10400 1850 60  0001 C CNN
 F 3 "" H 10400 1850 60  0000 C CNN
 	1    10400 1850
