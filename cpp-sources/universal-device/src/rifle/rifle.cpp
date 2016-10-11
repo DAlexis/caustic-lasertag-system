@@ -223,8 +223,6 @@ bool Rifle::checkPinout(const Pinout& pinout)
 
 void Rifle::init(const Pinout& pinout)
 {
-
-
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
 

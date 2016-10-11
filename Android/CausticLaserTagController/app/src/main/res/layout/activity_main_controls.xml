@@ -23,20 +23,17 @@
             android:visibility="gone" />
 
         <fragment
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:name="ru.caustic.lasertag.ui.SimpleControlsFragment"
             android:id="@+id/fragment"
             tools:layout="@layout/fragment_simple_controls"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_weight="0.05" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            />
+
 
         <LinearLayout
             android:orientation="horizontal"

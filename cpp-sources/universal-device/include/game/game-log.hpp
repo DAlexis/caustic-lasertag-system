@@ -44,7 +44,7 @@ namespace GameLog
 		void registerKill(PlayerGameId player);
 		void clear();
 
-		void saveState();
+		void saveState()  override;
 		void restoreFromFile();
 
 		void setStatsReceiver(DeviceAddress addr);

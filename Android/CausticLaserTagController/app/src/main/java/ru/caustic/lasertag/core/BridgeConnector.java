@@ -133,7 +133,6 @@ public class BridgeConnector {
     }
 
     private BridgeConnector() {
-        int qq=0;
         BluetoothManager.getInstance().setRXHandler(new Handler() {
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what) {

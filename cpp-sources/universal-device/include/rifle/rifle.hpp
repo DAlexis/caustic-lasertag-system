@@ -47,9 +47,9 @@ public:
 	Rifle();
 
 	void registerWeapon();
-	void init(const Pinout& pinout);
-	void setDafaultPinout(Pinout& pinout);
-	bool checkPinout(const Pinout& pinout);
+	void init(const Pinout& pinout) override;
+	void setDafaultPinout(Pinout& pinout) override;
+	bool checkPinout(const Pinout& pinout) override;
 
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);

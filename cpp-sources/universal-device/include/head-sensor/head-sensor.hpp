@@ -67,9 +67,9 @@ class HeadSensor : public IAnyDevice
 {
 public:
 	HeadSensor();
-	void init(const Pinout &pinout);
-	void setDafaultPinout(Pinout& pinout);
-	bool checkPinout(const Pinout& pinout);
+	void init(const Pinout &pinout)  override;
+	void setDafaultPinout(Pinout& pinout) override;
+	bool checkPinout(const Pinout& pinout) override;
 
 	DeviceConfiguration deviceConfig;
 	PlayerConfiguration playerConfig;

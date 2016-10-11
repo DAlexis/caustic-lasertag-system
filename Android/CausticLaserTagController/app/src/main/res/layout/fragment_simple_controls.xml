@@ -3,70 +3,155 @@
     android:layout_height="match_parent"
     tools:context="ru.caustic.lasertag.ui.SimpleControlsFragment">
 
-    <TableLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Respawn players"
-            android:id="@+id/textView5" />
-
-        <TableRow
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <Button
-                android:layout_width="wrap_content"
+            <TextView
+                android:text="Team controls"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="all"
-                android:id="@+id/buttonRespawnAll" />
+                android:id="@+id/textView9"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <Button
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TableLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
+
+                        <CheckBox
+                            android:text="Red"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/checkBoxControlRed"
+                            android:checked="false" />
+
+                        <CheckBox
+                            android:text="Blue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/checkBoxControlBlue"
+                            android:checked="false" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+
+                        <CheckBox
+                            android:text="Yellow"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/checkBoxControlYellow"
+                            android:checked="false" />
+
+                        <CheckBox
+                            android:text="Green"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/checkBoxControlGreen"
+                            android:checked="false" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </TableLayout>
+
+                <CheckBox
+                    android:text="All teams"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/checkBoxControlAllTeams"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:text="Respawn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonRespawn"
+                    android:layout_weight="0" />
+
+                <TextView
+                    android:text="Respawn selected players with start health and ammo without lifes count decrement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/textView13"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:text="Kill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonKill"
+                    android:layout_weight="0" />
+
+                <TextView
+                    android:text="Kill selected players without lifes count decrement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/textView14"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <TextView
+                android:text="Global controls"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="RED"
-                android:id="@+id/buttonRespawnRed" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/textView12" />
 
-            <Button
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BLUE"
-                android:id="@+id/buttonRespawnBlue" />
-        </TableRow>
+                android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Kill players"
-            android:id="@+id/textView6" />
+                <Button
+                    android:text="New Game"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonNewGame"
+                    android:layout_weight="1" />
+            </LinearLayout>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        </LinearLayout>
+    </ScrollView>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="all"
-                android:id="@+id/buttonKillAll" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RED"
-                android:id="@+id/buttonKillRed" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BLUE"
-                android:id="@+id/buttonKillBlue" />
-        </TableRow>
-
-    </TableLayout>
 
 </FrameLayout>
