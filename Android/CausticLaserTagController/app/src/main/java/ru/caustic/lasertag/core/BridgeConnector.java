@@ -5,13 +5,20 @@ import android.util.Log;
 
 import java.util.Arrays;
 
-import ru.caustic.lasertag.ui.BluetoothManager;
+//import ru.caustic.lasertag.ui.BluetoothManager;
 
 /**
  * Created by alexey on 18.09.15.
  */
 public class BridgeConnector {
 
+    public interface IBluetoothManager {
+        int RECEIVE_MESSAGE = 1;
+
+        void setRXHandler(Handler handler);
+        boolean sendData(byte[] message);
+
+    }
     public static class Broadcast {
         public static DeviceAddress anyDevice = new DeviceAddress(255, 255, 255);
     }
@@ -97,6 +104,9 @@ public class BridgeConnector {
     }
 
     private static BridgeConnector ourInstance = new BridgeConnector();
+
+    private static IBluetoothManager bluetoothManager = null;
+
     public static BridgeConnector getInstance() {
         return ourInstance;
     }
@@ -128,15 +138,19 @@ public class BridgeConnector {
         for (int i= 0; i<size; i++) {
             message[1 + DeviceAddress.sizeof() + i] = data[i];
         }
-        BluetoothManager.getInstance().sendData(message);
+        //BluetoothManager.getInstance().sendData(message);
+        bluetoothManager.sendData(message);
         //BluetoothManager.getInstance().sendData("TEST\r\n".getBytes());
     }
 
-    private BridgeConnector() {
-        BluetoothManager.getInstance().setRXHandler(new Handler() {
+
+    public void init(IBluetoothManager bluetoothManager)
+    {
+        this.bluetoothManager = bluetoothManager;
+        bluetoothManager.setRXHandler(new Handler() {
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what) {
-                    case BluetoothManager.RECEIVE_MESSAGE:
+                    case IBluetoothManager.RECEIVE_MESSAGE:
                         byte[] readBuf = (byte[]) msg.obj;
                         int size = msg.arg1;
                         if (size >= MESSAGE_LEN_MAX) {

@@ -36,8 +36,6 @@ public class DeviceSettingsFragment extends Fragment {
     private LinearLayout selectDevicesPromptLinearLayout;
     private LinearLayout loadingLinearLayout;
 
-    private CausticDevicesManager.AsyncDataPopper dataPopper = null;
-
     private ParametersListUpdater parametersListUpdater = null;
 
     boolean isActive = false;
@@ -600,9 +598,7 @@ public class DeviceSettingsFragment extends Fragment {
         if (editorContext.isSomethingSelectedToEdit())
         {
             showLoading();
-            // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
-            dataPopper =  CausticDevicesManager.getInstance().new AsyncDataPopper(parametersListUpdater, editorContext.getDevicesSelectedToEdit());
-            dataPopper.start();
+            CausticDevicesManager.getInstance().asyncPopParametersFromDevices(parametersListUpdater, editorContext.getDevicesSelectedToEdit());
         } else {
             showPrompt();
         }

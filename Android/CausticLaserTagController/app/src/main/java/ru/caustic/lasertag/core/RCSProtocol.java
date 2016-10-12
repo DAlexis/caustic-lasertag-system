@@ -18,68 +18,9 @@ import java.util.TreeMap;
  */
 public class RCSProtocol {
 
-    private static final String TAG = "CC.RCSProtocol";
-
+    // Public
+    // Classes
     public enum OperationCodeType { SET_OBJECT, OBJECT_REQUEST, CALL_REQUEST, RESERVED }
-
-    private static final int OperationCodeMask = 0b0011_1111_1111_1111;
-
-    public static int removeOperationTypeBits(int id) {
-        return id & OperationCodeMask;
-    }
-
-    public static int makeOperationCodeType(int id, OperationCodeType type) {
-        id &= OperationCodeMask;
-        switch (type) {
-            case SET_OBJECT:
-                id |= (1<<14);
-                break;
-            case OBJECT_REQUEST:
-                id |= (1<<15);
-                break;
-            case CALL_REQUEST:
-                break;
-            case RESERVED:
-                id |= (1<<14) | (1<<15);
-                break;
-        }
-        return id;
-    }
-
-    public static OperationCodeType dispatchOperationCodeType(int id) {
-        boolean b14 = (id & (1<<14)) != 0;
-        boolean b15 = (id & (1<<15)) != 0;
-
-        if (!b14 && !b15)
-            return OperationCodeType.CALL_REQUEST;
-        if (!b14 && b15)
-            return OperationCodeType.OBJECT_REQUEST;
-        if (b14 && !b15)
-            return OperationCodeType.SET_OBJECT;
-
-        // if (b14 && b15)
-        return OperationCodeType.RESERVED;
-    }
-
-    // Interfaces
-    public interface IDescriptionsHolder {
-        void register(IDescription description);
-    }
-    public interface IParameterSerializersHolder {
-        void register(AnyParameterSerializer serializer);
-    }
-    public interface ISerializerCreator {
-        AnyParameterSerializer createSerializer();
-    }
-    public interface IDescription {
-        String getName();
-        int getId();
-    }
-    public interface ISerializer {
-        void deserialize(byte[] memory, int offset);
-        int size();
-        int serialize(byte[] memory, int offset);
-    }
 
     // Descriptions
     public static abstract class AnyDescription implements IDescription {
@@ -584,7 +525,6 @@ public class RCSProtocol {
             return description.id;
         }
     }
-
     public static abstract class FunctionDescription extends AnyDescription implements ISerializer {
         public AnySerializer argumentSerializer = null;
 
@@ -597,7 +537,6 @@ public class RCSProtocol {
 
         public abstract void setArgument(String argument);
     }
-
     public static class FunctionDescriptionNoArg extends FunctionDescription {
         public FunctionDescriptionNoArg(IDescriptionsHolder container, int id, String name) {
             super(container, id, name);
@@ -698,7 +637,6 @@ public class RCSProtocol {
             return descriptions.get(id) != null;
         }
     }
-
     public static class ParametersContainer implements IParameterSerializersHolder {
         public Map<Integer, AnyParameterSerializer> allParameters = new TreeMap<>();
         public ArrayList<Integer> orderedIds = new ArrayList<>();
@@ -709,7 +647,7 @@ public class RCSProtocol {
             orderedIds.add(par.description.getId());
         }
 
-        public AnyParameterSerializer get(int id){
+        public AnyParameterSerializer get(int id) {
             return allParameters.get(id);
         }
 
@@ -772,6 +710,7 @@ public class RCSProtocol {
                 par.deserialize(memory, position + readed);
             } else {
                 Log.e(TAG, "Unknown parameter id: " + id);
+                return 0;
             }
             return argSize + 3;
         }
@@ -789,7 +728,6 @@ public class RCSProtocol {
             }
         }
     }
-
     public static class FunctionsContainer implements IDescriptionsHolder {
         public Map<Integer, FunctionDescription> functions = new TreeMap<>();
 
@@ -819,7 +757,6 @@ public class RCSProtocol {
             return size + 3;
         }
     }
-
     public static class Operations {
         private static boolean isInitialised = false;
         public static void init() {
@@ -960,4 +897,69 @@ public class RCSProtocol {
 
 
     }
+
+    // Methods
+    public static int removeOperationTypeBits(int id) {
+        return id & OperationCodeMask;
+    }
+    public static int makeOperationCodeType(int id, OperationCodeType type) {
+        id &= OperationCodeMask;
+        switch (type) {
+            case SET_OBJECT:
+                id |= (1<<14);
+                break;
+            case OBJECT_REQUEST:
+                id |= (1<<15);
+                break;
+            case CALL_REQUEST:
+                break;
+            case RESERVED:
+                id |= (1<<14) | (1<<15);
+                break;
+        }
+        return id;
+    }
+    public static OperationCodeType dispatchOperationCodeType(int id) {
+        boolean b14 = (id & (1<<14)) != 0;
+        boolean b15 = (id & (1<<15)) != 0;
+
+        if (!b14 && !b15)
+            return OperationCodeType.CALL_REQUEST;
+        if (!b14 && b15)
+            return OperationCodeType.OBJECT_REQUEST;
+        if (b14 && !b15)
+            return OperationCodeType.SET_OBJECT;
+
+        // if (b14 && b15)
+        return OperationCodeType.RESERVED;
+    }
+    public static int nextCommandSize(byte[] memory, int position) {
+        int readed = 0;
+        int argSize = MemoryUtils.byteToUnsignedByte(memory[position]);
+        return argSize+1+2;
+    }
+
+    // Private
+    // Interfaces
+    private interface IDescriptionsHolder {
+        void register(IDescription description);
+    }
+    private interface IParameterSerializersHolder {
+        void register(AnyParameterSerializer serializer);
+    }
+    private interface ISerializerCreator {
+        AnyParameterSerializer createSerializer();
+    }
+    private interface IDescription {
+        String getName();
+        int getId();
+    }
+    private interface ISerializer {
+        void deserialize(byte[] memory, int offset);
+        int size();
+        int serialize(byte[] memory, int offset);
+    }
+
+    private static final String TAG = "CC.RCSProtocol";
+    private static final int OperationCodeMask = 0b0011_1111_1111_1111;
 }

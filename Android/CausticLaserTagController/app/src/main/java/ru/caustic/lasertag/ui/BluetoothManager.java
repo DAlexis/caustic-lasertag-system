@@ -13,10 +13,13 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
+import ru.caustic.lasertag.core.BridgeConnector;
+
+
 /**
  * Created by alexey on 15.09.15.
  */
-public class BluetoothManager {
+public class BluetoothManager implements BridgeConnector.IBluetoothManager {
 
     public static final int BLUETOOTH_ENABLED = 0;
     public static final int BLUETOOTH_DISABLED = 1;
@@ -66,6 +69,7 @@ public class BluetoothManager {
         return this.status;
     }
 
+    @Override
     public void setRXHandler(Handler handler) {
         this.handler = handler;
     }
@@ -121,7 +125,6 @@ public class BluetoothManager {
         return true;
     }
 
-
     public int checkBluetoothState() {
         // Check for Bluetooth support and then check to make sure it is turned on
         // Emulator doesn't support Bluetooth and will return null
@@ -139,6 +142,7 @@ public class BluetoothManager {
         }
     }
 
+    @Override
     public boolean sendData(byte[] message) {
         if (!isConnected()) {
             Log.e(TAG, "Attempt to send data without a connection!");

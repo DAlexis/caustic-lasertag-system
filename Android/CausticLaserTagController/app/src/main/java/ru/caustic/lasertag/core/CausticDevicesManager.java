@@ -13,26 +13,10 @@ import java.util.Set;
  * Created by alexey on 20.09.15.
  */
 public class CausticDevicesManager {
-
-    private static final String TAG = "CC.CausticDevManager";
-    public static final int DEVICES_LIST_UPDATED = 1;
-
-    private DeviceManagerTask currentTask = null;
-
-    private static CausticDevicesManager ourInstance = new CausticDevicesManager();
-
-    private CausticDevicesManager() {
-
+    // Public classes
+    public interface SynchronizationEndHandler {
+        void onSynchronizationEnd(boolean isSuccess);
     }
-
-    public static CausticDevicesManager getInstance() {
-        return ourInstance;
-    }
-
-    private interface DeviceManagerTask {
-        String taskText();
-    }
-
     public static class RCSPStream {
         int requestSize = 23;
         byte[] request = new byte[requestSize];
@@ -126,14 +110,6 @@ public class CausticDevicesManager {
             }
         }
     }
-
-    public Map<BridgeConnector.DeviceAddress, CausticDevice> devices = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
-    private Handler devicesListUpdated = null;
-
-    public interface SynchronizationEndHandler {
-        void onSynchronizationEnd(boolean isSuccess);
-    }
-
     public static class CausticDevice {
         private boolean parametersAreAdded = false;
         public BridgeConnector.DeviceAddress address = new BridgeConnector.DeviceAddress();
@@ -166,6 +142,7 @@ public class CausticDevicesManager {
         public boolean areDeviceRelatedParametersAdded() {
             return parametersAreAdded;
         }
+        /// Initially add all missing parameters to parameters list according to device type if set
         public void addDeviceRelatedParameters() {
             if (parametersAreAdded)
                 return;
@@ -215,11 +192,11 @@ public class CausticDevicesManager {
             return true;
         }
     }
-
     /**
      * This object gets all device parameters on
      */
     public class AsyncDataPopper extends Thread {
+        /// @todo Make this class reusable without re-creation
         private final SynchronizationEndHandler handler;
         public final Set<BridgeConnector.DeviceAddress> devicesToPop;
 
@@ -268,13 +245,82 @@ public class CausticDevicesManager {
         }
     }
 
+    // Public methods
+    public void remoteCall(BridgeConnector.DeviceAddress target, RCSProtocol.FunctionsContainer functionsContainer, int operationId, String argument) {
+        RCSPStream stream = new RCSPStream();
+        stream.addFunctionCall2(functionsContainer, operationId, argument);
+        stream.send(target);
+    }
     public boolean updateDevicesList(Handler devicesListUpdated) {
-        this.devicesListUpdated = devicesListUpdated;
+        this.devicesListUpdatedHandler = devicesListUpdated;
         currentTask = new TaskUpdateDevicesList();
         return true;
     }
+    public static CausticDevicesManager getInstance() {
+        return ourInstance;
+    }
 
-    class TaskUpdateDevicesList implements DeviceManagerTask {
+    public void asyncPopParametersFromDevices(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
+        // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
+        dataPopper = new AsyncDataPopper(endHandler, devices);
+        dataPopper.start();
+    }
+
+    // Public fields
+    public static final int DEVICES_LIST_UPDATED = 1;
+    public Map<BridgeConnector.DeviceAddress, CausticDevice> devices = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
+
+    // Private
+    // @todo Connect one instance of the Receiver permanently to BridgeConnector
+    private class Receiver implements BridgeConnector.IncomingPackagesListener {
+        @Override
+        public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
+        {
+            //boolean newDeviceAdded = false;
+            CausticDevice dev = devices.get(address);
+            if (dev == null) {
+                dev = new CausticDevice();
+                dev.address = new BridgeConnector.DeviceAddress(address);
+                devices.put(address, dev);
+                //newDeviceAdded = true;
+            }
+
+            // This line replaced by cycle below for parsing direct command for android device
+            // dev.parameters.deserializeStream(data, offset, size);
+            int notParsed = size;
+            for (int i = 0; i<size; )
+            {
+                int result = dev.parameters.deserializeOneParamter(data, offset + i, notParsed);
+                if (result == 0) {
+                    // It is not parameter of device so maybe it is command for android?
+                    // @todo Add here android command dispatch
+                    result = 0; // stub
+                }
+                if (result == 0) {
+                    // It is absolutely unknown command so we should skip it
+                    result = RCSProtocol.nextCommandSize(data, offset + i);
+                    if (result > notParsed)
+                        break;
+                }
+
+                i += result;
+                notParsed -= result;
+            }
+
+            if (dev.hasName()
+                    && dev.isTypeKnown()
+                    && !dev.areDeviceRelatedParametersAdded()) {
+                // Device is ready to operate with it: we know address, type and name
+                dev.addDeviceRelatedParameters();
+                //addPreferenceHeaderForDevice(dev);
+                //dev.popFromDevice();
+                devicesListUpdatedHandler.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
+            }
+        }
+    }
+
+    // @todo Remove or change this class. For now it is simply one method
+    private class TaskUpdateDevicesList implements DeviceManagerTask {
 
         @Override
         public String taskText() {
@@ -290,38 +336,17 @@ public class CausticDevicesManager {
             stream.send(BridgeConnector.Broadcasts.any);
         }
     }
-
-    public void remoteCall(BridgeConnector.DeviceAddress target, RCSProtocol.FunctionsContainer functionsContainer, int operationId, String argument)
-    {
-        RCSPStream stream = new RCSPStream();
-        stream.addFunctionCall2(functionsContainer, operationId, argument);
-        stream.send(target);
+    private interface DeviceManagerTask {
+        String taskText();
     }
 
-    class Receiver implements BridgeConnector.IncomingPackagesListener {
-        @Override
-        public void getData(BridgeConnector.DeviceAddress address, byte[] data, int offset, int size)
-        {
-            //boolean newDeviceAdded = false;
-            CausticDevice dev = devices.get(address);
-            if (dev == null) {
-                dev = new CausticDevice();
-                dev.address = new BridgeConnector.DeviceAddress(address);
-                devices.put(address, dev);
-                //newDeviceAdded = true;
-            }
+    private CausticDevicesManager() {
 
-            dev.parameters.deserializeStream(data, offset, size);
-
-            if (dev.hasName()
-                    && dev.isTypeKnown()
-                    && !dev.areDeviceRelatedParametersAdded()) {
-                // Device is ready to operate with it: we know address, type and name
-                dev.addDeviceRelatedParameters();
-                //addPreferenceHeaderForDevice(dev);
-                //dev.popFromDevice();
-                devicesListUpdated.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
-            }
-        }
     }
+
+    private static final String TAG = "CC.CausticDevManager";
+    private DeviceManagerTask currentTask = null;
+    private static CausticDevicesManager ourInstance = new CausticDevicesManager();
+    private Handler devicesListUpdatedHandler = null;
+    private AsyncDataPopper dataPopper = null;
 }
