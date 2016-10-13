@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import ru.caustic.lasertag.core.CausticController;
 import ru.caustic.lasertag.core.CausticDevicesManager;
 import ru.caustic.lasertag.core.RCSProtocol;
 import ru.caustic.lasertag.core.SettingsEditorContext;
@@ -40,7 +41,7 @@ public class DeviceSettingsFragment extends Fragment {
 
     boolean isActive = false;
 
-    public static SettingsEditorContext editorContext = new SettingsEditorContext();
+    private SettingsEditorContext editorContext;
 
     /**
      * UI superstructure over UIDataPicker -- adds field used by any UI list element and init() method
@@ -610,7 +611,7 @@ public class DeviceSettingsFragment extends Fragment {
         if (editorContext.isSomethingSelectedToEdit())
         {
             showLoading();
-            CausticDevicesManager.getInstance().asyncPopParametersFromDevices(parametersListUpdater, editorContext.getDevicesSelectedToEdit());
+            editorContext.asyncPopParametersFromSelectedDevices(parametersListUpdater);
         } else {
             showPrompt();
         }
@@ -638,6 +639,8 @@ public class DeviceSettingsFragment extends Fragment {
         super();
         //dataPopper = CausticDevicesManager.getInstance().new AsyncDataPopper(new ParametersListUpdater(), editorContext.devices);
         parametersListUpdater = new ParametersListUpdater();
+	// @todo Refactor without signleton usage
+        editorContext = CausticController.getInstance().getSettingsEditorContext();
     }
 
     @Override
@@ -666,7 +669,7 @@ public class DeviceSettingsFragment extends Fragment {
         buttonApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeviceSettingsFragment.editorContext.pushValues();
+                editorContext.pushValues();
             }
         });
 

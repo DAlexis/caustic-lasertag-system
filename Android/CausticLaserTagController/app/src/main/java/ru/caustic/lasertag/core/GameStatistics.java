@@ -25,10 +25,11 @@ public class GameStatistics {
      * This class represents corresponding class on game device. It is minimal stats synchronization
      * element
      */
-    private static class PvPDamageResults {
+    private class PvPDamageResults {
         public void lookupPlayerId(BridgeConnector.DeviceAddress devAddr)
         {
-            playerId = CausticDevicesManager.getInstance().getPlayerGameId(devAddr);
+            // @todo Refactor without signleton usage
+            playerId = CausticController.getInstance().getCausticDevicesManager().getPlayerGameId(devAddr);
         }
 
         public void deserialize(byte[] memory, int offset)

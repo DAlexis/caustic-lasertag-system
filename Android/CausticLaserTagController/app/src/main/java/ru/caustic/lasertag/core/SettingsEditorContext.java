@@ -10,6 +10,11 @@ import java.util.Set;
  */
 public class SettingsEditorContext {
 
+    public SettingsEditorContext(CausticDevicesManager causticDevicesManager)
+    {
+        this.causticDevicesManager = causticDevicesManager;
+    }
+
     /**
      * Interface to communicate with GUI element representing parameter
      */
@@ -39,7 +44,7 @@ public class SettingsEditorContext {
      * It store all information to create UI list entry, current state of editing,
      * reference to UIDataPicker implementer in Activiry(Fragment) class.
      */
-    public static class ParameterEntry {
+    public class ParameterEntry {
         public SettingsEditorContext context;
         public RCSProtocol.ParameterDescription description;
         // If all the devices has the same parameters value, it should be shown. Otherwise "Different" will be shown
@@ -74,7 +79,7 @@ public class SettingsEditorContext {
             hasInitialValue = true; // We suppose that all values are the same
             for (BridgeConnector.DeviceAddress addr : context.devices) {
                 String thisDeviceValue
-                        = CausticDevicesManager.getInstance().devices
+                        = causticDevicesManager.devices
                         .get(addr).parameters
                         .get(description.getId()).getValue();
                 if (!valueInitialized) {
@@ -114,7 +119,7 @@ public class SettingsEditorContext {
 
             for (BridgeConnector.DeviceAddress addr : context.devices) {
                 RCSProtocol.AnyParameterSerializer par
-                        = CausticDevicesManager.getInstance().devices
+                        = causticDevicesManager.devices
                         .get(addr).parameters
                         .get(description.getId());
                 par.setValue(currentValue);
@@ -154,6 +159,10 @@ public class SettingsEditorContext {
     public final Set<BridgeConnector.DeviceAddress> getDevicesSelectedToEdit() {
         return devices;
     }
+    public void asyncPopParametersFromSelectedDevices(CausticDevicesManager.SynchronizationEndHandler endHandler)
+    {
+        causticDevicesManager.asyncPopParametersFromDevices(endHandler, devices);
+    }
     // End of accessors for devices
 
     /**
@@ -177,7 +186,7 @@ public class SettingsEditorContext {
         }
 
         return Integer.parseInt(
-                CausticDevicesManager.getInstance().devices.get(getAnyAddress()).parameters.get(
+                causticDevicesManager.devices.get(getAnyAddress()).parameters.get(
                         RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
                 ).getValue()
         );
@@ -199,7 +208,7 @@ public class SettingsEditorContext {
 
         BridgeConnector.DeviceAddress someAddress = getAnyAddress();
 
-        CausticDevicesManager.CausticDevice dev = CausticDevicesManager.getInstance().devices.get(someAddress);
+        CausticDevicesManager.CausticDevice dev = causticDevicesManager.devices.get(someAddress);
 
         // We need to output parameters sorted by original order
         for (int id : dev.parameters.orderedIds) {
@@ -228,7 +237,9 @@ public class SettingsEditorContext {
         }
         // Sending values to devices
         for (BridgeConnector.DeviceAddress address : devices) {
-            CausticDevicesManager.getInstance().devices.get(address).pushToDevice();
+            causticDevicesManager.devices.get(address).pushToDevice();
         }
     }
+
+    private CausticDevicesManager causticDevicesManager;
 }

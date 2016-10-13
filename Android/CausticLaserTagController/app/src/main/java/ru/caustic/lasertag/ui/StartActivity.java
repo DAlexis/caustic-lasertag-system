@@ -18,7 +18,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ru.caustic.lasertag.core.SystemInitializer;
+import ru.caustic.lasertag.core.CausticController;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -58,7 +58,8 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        SystemInitializer.systemInit(BluetoothManager.getInstance());
+        // @todo Refactor without signleton usage
+        CausticController.getInstance().systemInit();
         Log.d(TAG, "Starting main activity");
 
         selectDeviceLayout = (LinearLayout) findViewById(R.id.selectDeviceLayout);

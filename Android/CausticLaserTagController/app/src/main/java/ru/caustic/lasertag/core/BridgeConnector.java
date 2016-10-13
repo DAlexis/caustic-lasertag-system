@@ -103,17 +103,10 @@ public class BridgeConnector {
         void getData(DeviceAddress address, byte[] data, int offset, int size);
     }
 
-    private static BridgeConnector ourInstance = new BridgeConnector();
-
     private static IBluetoothManager bluetoothManager = null;
-
-    public static BridgeConnector getInstance() {
-        return ourInstance;
-    }
 
     public static final int MESSAGE_LEN_MAX = 250;
     public static final int MESSAGE_OUT_LEN_MAX = 23;
-
 
     private static String TAG = "BridgeConnector";
     private byte[] incoming = new byte[MESSAGE_LEN_MAX];

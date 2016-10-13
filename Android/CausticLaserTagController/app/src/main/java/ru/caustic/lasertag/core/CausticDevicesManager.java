@@ -17,7 +17,7 @@ public class CausticDevicesManager {
     public interface SynchronizationEndHandler {
         void onSynchronizationEnd(boolean isSuccess);
     }
-    public static class RCSPStream {
+    public class RCSPStream {
         int requestSize = 23;
         byte[] request = new byte[requestSize];
         int cursor = 0;
@@ -79,10 +79,10 @@ public class CausticDevicesManager {
 
         public void send(BridgeConnector.DeviceAddress addr) {
             if (cursor != 0)
-                BridgeConnector.getInstance().sendMessage(addr, request, cursor);
+                bridgeConnector.sendMessage(addr, request, cursor);
         }
     }
-    public static class RCSPMultiStream {
+    public class RCSPMultiStream {
         List<RCSPStream> streams = new ArrayList<>();
 
         public RCSPMultiStream() {
@@ -110,7 +110,7 @@ public class CausticDevicesManager {
             }
         }
     }
-    public static class CausticDevice {
+    public class CausticDevice {
         private boolean parametersAreAdded = false;
         public BridgeConnector.DeviceAddress address = new BridgeConnector.DeviceAddress();
         public RCSProtocol.ParametersContainer parameters = new RCSProtocol.ParametersContainer();
@@ -246,9 +246,6 @@ public class CausticDevicesManager {
     }
 
     // Public methods
-    public static CausticDevicesManager getInstance() {
-        return ourInstance;
-    }
     public void remoteCall(BridgeConnector.DeviceAddress target, RCSProtocol.FunctionsContainer functionsContainer, int operationId, String argument) {
         RCSPStream stream = new RCSPStream();
         stream.addFunctionCall2(functionsContainer, operationId, argument);
@@ -346,8 +343,9 @@ public class CausticDevicesManager {
         String taskText();
     }
 
-    private CausticDevicesManager() {
-        BridgeConnector.getInstance().setReceiver(new Receiver());
+    public CausticDevicesManager(BridgeConnector bridgeConnector) {
+        this.bridgeConnector = bridgeConnector;
+        bridgeConnector.setReceiver(new Receiver());
     }
 
     private int deserializeAndroidMsg(BridgeConnector.DeviceAddress address, byte[] memory, int position, int size)
@@ -355,9 +353,9 @@ public class CausticDevicesManager {
         return 0;
     }
 
+    private BridgeConnector bridgeConnector;
     private static final String TAG = "CC.CausticDevManager";
     private DeviceManagerTask currentTask = null;
-    private static CausticDevicesManager ourInstance = new CausticDevicesManager();
     private Handler devicesListUpdatedHandler = null;
     private AsyncDataPopper dataPopper = null;
 }

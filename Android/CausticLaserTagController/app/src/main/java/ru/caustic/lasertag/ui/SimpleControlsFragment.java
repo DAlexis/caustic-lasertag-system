@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 
 import ru.caustic.lasertag.core.BridgeConnector;
+import ru.caustic.lasertag.core.CausticController;
 import ru.caustic.lasertag.core.CausticDevicesManager;
 import ru.caustic.lasertag.core.RCSProtocol;
 
@@ -23,6 +24,14 @@ public class SimpleControlsFragment extends Fragment {
     private CheckBox checkBoxControlGreen;
     private CheckBox checkBoxControlAllTeams;
 
+    private CausticDevicesManager causticDevicesManager;
+
+    public SimpleControlsFragment()
+    {
+        super();
+        // @todo Refactor without signleton usage
+        causticDevicesManager = CausticController.getInstance().getCausticDevicesManager();
+    }
     //private boolean workaroundDisableAutoChecking
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,7 +118,7 @@ public class SimpleControlsFragment extends Fragment {
     {
         // If we need to respawn all players, we can use single broadcast
         if (checkBoxControlAllTeams.isChecked()) {
-            CausticDevicesManager.getInstance().remoteCall(
+            causticDevicesManager.remoteCall(
                     BridgeConnector.Broadcasts.headSensors,
                     functionsContainer,
                     operationId,
@@ -120,7 +129,7 @@ public class SimpleControlsFragment extends Fragment {
 
         // else we should check each checkbox if checked
         if (checkBoxControlRed.isChecked()) {
-            CausticDevicesManager.getInstance().remoteCall(
+            causticDevicesManager.remoteCall(
                     BridgeConnector.Broadcasts.headSensorsRed,
                     functionsContainer,
                     operationId,
@@ -128,7 +137,7 @@ public class SimpleControlsFragment extends Fragment {
             );
         }
         if (checkBoxControlBlue.isChecked()) {
-            CausticDevicesManager.getInstance().remoteCall(
+            causticDevicesManager.remoteCall(
                     BridgeConnector.Broadcasts.headSensorsBlue,
                     functionsContainer,
                     operationId,
@@ -136,7 +145,7 @@ public class SimpleControlsFragment extends Fragment {
             );
         }
         if (checkBoxControlYellow.isChecked()) {
-            CausticDevicesManager.getInstance().remoteCall(
+            causticDevicesManager.remoteCall(
                     BridgeConnector.Broadcasts.headSensorsYellow,
                     functionsContainer,
                     operationId,
@@ -144,7 +153,7 @@ public class SimpleControlsFragment extends Fragment {
             );
         }
         if (checkBoxControlGreen.isChecked()) {
-            CausticDevicesManager.getInstance().remoteCall(
+            causticDevicesManager.remoteCall(
                     BridgeConnector.Broadcasts.headSensorsGreen,
                     functionsContainer,
                     operationId,

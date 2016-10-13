@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.util.Map;
 
 import ru.caustic.lasertag.core.BridgeConnector;
+import ru.caustic.lasertag.core.CausticController;
 import ru.caustic.lasertag.core.CausticDevicesManager;
 
 
@@ -22,6 +23,14 @@ public class MainControlsActivity extends AppCompatActivity {
     private static final String TAG = "CC.MainControls";
     private TextView textDevsInArea;
     private int devsInArea = 0;
+
+    private CausticDevicesManager causticDevicesManager;
+    public MainControlsActivity()
+    {
+        super();
+        // @todo Refactor without signleton usage
+        causticDevicesManager = CausticController.getInstance().getCausticDevicesManager();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +56,7 @@ public class MainControlsActivity extends AppCompatActivity {
     {
         devsInArea = 0;
         updateDevsCountInAreaUI();
-        CausticDevicesManager.getInstance().updateDevicesList(
+        causticDevicesManager.updateDevicesList(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
                         switch (msg.what) {

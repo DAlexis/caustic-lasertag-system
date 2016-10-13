@@ -18,8 +18,10 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import ru.caustic.lasertag.core.BridgeConnector;
+import ru.caustic.lasertag.core.CausticController;
 import ru.caustic.lasertag.core.CausticDevicesManager;
 import ru.caustic.lasertag.core.RCSProtocol;
+import ru.caustic.lasertag.core.SettingsEditorContext;
 
 public class DevicesListFragment extends Fragment {
 
@@ -28,6 +30,17 @@ public class DevicesListFragment extends Fragment {
     private Button buttonConfigureDevice;
 
     private DevicesListActivity activity = null;
+    private CausticDevicesManager causticDevicesManager = null;
+    private SettingsEditorContext editorContext;
+
+    public DevicesListFragment()
+    {
+        super();
+        // @todo Refactor without signleton usage
+        causticDevicesManager = CausticController.getInstance().getCausticDevicesManager();
+        editorContext = CausticController.getInstance().getSettingsEditorContext();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -53,9 +66,9 @@ public class DevicesListFragment extends Fragment {
         adapter = new DevicesListAdapter();
         devicesList.setAdapter(adapter);
 
-        DeviceSettingsFragment.editorContext.clearSelectedToEdit();
+        editorContext.clearSelectedToEdit();
 
-        CausticDevicesManager.getInstance().updateDevicesList(
+        causticDevicesManager.updateDevicesList(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
                         switch (msg.what) {
@@ -112,21 +125,21 @@ public class DevicesListFragment extends Fragment {
         public void checkAndAddToSettingsEditorContext() {
             if (deviceName.isChecked()) {
                 int selectedType = Integer.parseInt(
-                        CausticDevicesManager.getInstance().devices.get(device.address).parameters.get(
+                        causticDevicesManager.devices.get(device.address).parameters.get(
                                 RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
                         ).getValue()
                 );
-                if (DeviceSettingsFragment.editorContext.getDeviceType() == RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
-                        || DeviceSettingsFragment.editorContext.getDeviceType() == selectedType)
+                if (editorContext.getDeviceType() == RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
+                        || editorContext.getDeviceType() == selectedType)
                 {
-                    DeviceSettingsFragment.editorContext.selectForEditing(device.address);
+                    editorContext.selectForEditing(device.address);
                     if (activity.deviceSettingsFragment != null)
                         activity.deviceSettingsFragment.updateContent();
                 } else {
                     deviceName.setChecked(false);
                 }
             } else {
-                DeviceSettingsFragment.editorContext.deselectForEditing(device.address);
+                editorContext.deselectForEditing(device.address);
                 if (activity.deviceSettingsFragment != null)
                     activity.deviceSettingsFragment.updateContent();
             }
