@@ -157,7 +157,7 @@ public class SimpleControlsFragment extends Fragment {
     private void buttonRespawnClick(View v) {
         remoteCallForSelection(
                 RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                RCSProtocol.Operations.HeadSensor.Funcitons.playerRespawn.getId(),
+                RCSProtocol.Operations.HeadSensor.Functions.playerRespawn.getId(),
                 ""
         );
     }
@@ -165,7 +165,7 @@ public class SimpleControlsFragment extends Fragment {
     private void buttonKillClick(View v) {
         remoteCallForSelection(
                 RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                RCSProtocol.Operations.HeadSensor.Funcitons.playerKill.getId(),
+                RCSProtocol.Operations.HeadSensor.Functions.playerKill.getId(),
                 ""
         );
     }

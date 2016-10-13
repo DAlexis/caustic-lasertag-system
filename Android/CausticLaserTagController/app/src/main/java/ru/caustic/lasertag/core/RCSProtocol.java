@@ -769,10 +769,10 @@ public class RCSProtocol {
                 Class.forName(Operations.AnyDevice.Funcitons.class.getName());
                 Class.forName(Operations.Rifle.class.getName());
                 Class.forName(Operations.Rifle.Configuration.class.getName());
-                Class.forName(Operations.Rifle.Funcitons.class.getName());
+                Class.forName(Rifle.Functions.class.getName());
                 Class.forName(Operations.HeadSensor.class.getName());
                 Class.forName(Operations.HeadSensor.Configuration.class.getName());
-                Class.forName(Operations.HeadSensor.Funcitons.class.getName());
+                Class.forName(HeadSensor.Functions.class.getName());
                 isInitialised = true;
             } catch (ClassNotFoundException e) {
                 throw new AssertionError(e);  // Can't happen
@@ -838,7 +838,7 @@ public class RCSProtocol {
 
             }
 
-            public static class Funcitons {
+            public static class Functions {
                 public static final FunctionDescription playerTurnOff
                         = new FunctionDescriptionNoArg(functionsSerializers, 1201, "Turn off player");
                 public static final FunctionDescription playerTurnOn
@@ -890,14 +890,10 @@ public class RCSProtocol {
 
             }
 
-            public static class Funcitons {
+            public static class Functions {
 
             }
         }
-
-
-
-
     }
 
     // Methods
