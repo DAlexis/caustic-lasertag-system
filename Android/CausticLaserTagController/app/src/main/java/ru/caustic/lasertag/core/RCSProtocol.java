@@ -820,6 +820,8 @@ public class RCSProtocol {
 
                 public static final ParameterDescription teamMT2Id
                         = new teamEnum(parametersDescriptions, 1032, "Team");
+                public static final ParameterDescription playerGameId
+                        = new UByteParameter(parametersDescriptions, 1031, "Player Id in game", 1, 125);
                 public static final ParameterDescription healthMax
                         = new UintParameter(parametersDescriptions, 1000, "Maximal player health", 1, 200);
                 public static final ParameterDescription healthStart

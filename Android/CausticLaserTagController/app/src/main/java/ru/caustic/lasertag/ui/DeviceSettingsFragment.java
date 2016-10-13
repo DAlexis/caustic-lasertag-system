@@ -197,11 +197,11 @@ public class DeviceSettingsFragment extends Fragment {
     }
 
     private static class UIListElementInteger extends UIListElementSeekBar {
-        private int min() {
+        protected int min() {
             return ((RCSProtocol.UintParameter) descr).minValue;
         }
 
-        private int max() {
+        protected int max() {
             return ((RCSProtocol.UintParameter) descr).maxValue;
         }
 
@@ -252,6 +252,17 @@ public class DeviceSettingsFragment extends Fragment {
         @Override
         protected String getSummary() {
             return "From " + min() + " to " + max();
+        }
+    }
+    private static class UIListElementUByte extends UIListElementInteger {
+        @Override
+        protected int min() {
+            return ((RCSProtocol.UByteParameter) descr).minValue;
+        }
+
+        @Override
+        protected int max() {
+            return ((RCSProtocol.UByteParameter) descr).maxValue;
         }
     }
     private static class UIListElementTimeInterval extends UIListElementSeekBar {
@@ -484,8 +495,7 @@ public class DeviceSettingsFragment extends Fragment {
         }
     }
 
-    private static class UIDataPickerFactory implements SettingsEditorContext.IUIDataPickerFactory
-    {
+    private static class UIDataPickerFactory implements SettingsEditorContext.IUIDataPickerFactory {
         @Override
         public SettingsEditorContext.UIDataPicker create(RCSProtocol.ParameterDescription description)
         {
@@ -499,6 +509,8 @@ public class DeviceSettingsFragment extends Fragment {
                 return new UIListElementEnum();
             } else if (description instanceof RCSProtocol.FloatParameter) {
                 return new UIListElementFloat();
+            } else if (description instanceof RCSProtocol.UByteParameter) {
+                return new UIListElementUByte();
             }
             return new UIListElementUnsupported();
         }

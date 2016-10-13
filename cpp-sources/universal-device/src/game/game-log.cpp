@@ -37,7 +37,7 @@ void BaseStatsCounter::checkAndCreate(PlayerGameId player)
 	if (it == m_results.end())
 	{
 		m_results[player] = PvPDamageResults();
-		m_results[player].player = player;
+		m_results[player].enemyId = player;
 		m_iteratorCorrupted = true;
 	}
 }
@@ -120,7 +120,7 @@ void BaseStatsCounter::restoreFromFile()
 			error << "<Restore stats> Wrong size readed from file: " << readed << " instead of " << sizeof(PvPDamageResults) << " or 0";
 			break;
 		}
-		m_results[tmp.player] = tmp;
+		m_results[tmp.enemyId] = tmp;
 	}
 
 	f_close(&m_file);

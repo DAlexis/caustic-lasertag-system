@@ -246,6 +246,9 @@ public class CausticDevicesManager {
     }
 
     // Public methods
+    public static CausticDevicesManager getInstance() {
+        return ourInstance;
+    }
     public void remoteCall(BridgeConnector.DeviceAddress target, RCSProtocol.FunctionsContainer functionsContainer, int operationId, String argument) {
         RCSPStream stream = new RCSPStream();
         stream.addFunctionCall2(functionsContainer, operationId, argument);
@@ -256,14 +259,19 @@ public class CausticDevicesManager {
         currentTask = new TaskUpdateDevicesList();
         return true;
     }
-    public static CausticDevicesManager getInstance() {
-        return ourInstance;
-    }
-
     public void asyncPopParametersFromDevices(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
         // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
         dataPopper = new AsyncDataPopper(endHandler, devices);
         dataPopper.start();
+    }
+    public int getPlayerGameId(BridgeConnector.DeviceAddress deviceAddress)
+    {
+        CausticDevice dev = devices.get(deviceAddress);
+        if (dev == null)
+            return 0;
+        int parameterId = RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId();
+        int playerGameId = Integer.parseInt(dev.parameters.get(parameterId).getValue());
+        return playerGameId;
     }
 
     // Public fields
@@ -293,8 +301,7 @@ public class CausticDevicesManager {
                 int result = dev.parameters.deserializeOneParamter(data, offset + i, notParsed);
                 if (result == 0) {
                     // It is not parameter of device so maybe it is command for android?
-                    // @todo Add here android command dispatch
-                    result = 0; // stub
+                    result = deserializeAndroidMsg(address, data, offset + i, notParsed);
                 }
                 if (result == 0) {
                     // It is absolutely unknown command so we should skip it
@@ -328,7 +335,6 @@ public class CausticDevicesManager {
         }
 
         public TaskUpdateDevicesList() {
-            BridgeConnector.getInstance().setReceiver(new Receiver());
             RCSPStream stream = new RCSPStream();
             stream.addObjectRequest(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId());
             stream.addObjectRequest(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId());
@@ -341,7 +347,12 @@ public class CausticDevicesManager {
     }
 
     private CausticDevicesManager() {
+        BridgeConnector.getInstance().setReceiver(new Receiver());
+    }
 
+    private int deserializeAndroidMsg(BridgeConnector.DeviceAddress address, byte[] memory, int position, int size)
+    {
+        return 0;
     }
 
     private static final String TAG = "CC.CausticDevManager";
