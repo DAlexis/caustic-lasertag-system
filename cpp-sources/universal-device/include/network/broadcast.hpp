@@ -41,6 +41,8 @@ public:
 
 	const DeviceAddress smartPoint{255, 255, 30};
 
+	//const DeviceAddress statisticsReceivers{255, 255, 40};
+
 	const DeviceAddress any{255, 255, 255};
 
 	bool isBroadcast(const DeviceAddress& addr);

@@ -80,7 +80,7 @@ public:
 	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset);
 	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
 	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats);
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats);
 	FUNCTION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults);
 
 	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon);

@@ -31,7 +31,7 @@ public class DevicesManager {
          * @param operation Operation to dispatch
          * @return size of block used by dispatcher or 0 if did not dispatch anything
          */
-        int dispatchOperation(BridgeConnector.DeviceAddress address, RCSProtocol.RCSPOperation operation);
+        void dispatchOperation(BridgeConnector.DeviceAddress address, RCSProtocol.RCSPOperation operation);
     }
 
     public class RCSPStream {

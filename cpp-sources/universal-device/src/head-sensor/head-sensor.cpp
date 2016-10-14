@@ -378,10 +378,9 @@ void HeadSensor::resetStats()
 	m_statsCounter.clear();
 }
 
-void HeadSensor::readStats(DeviceAddress addr)
+void HeadSensor::readStats()
 {
-
-	/// @todo implement here
+	m_statsCounter.sendStats();
 }
 
 void HeadSensor::dieWeapons()

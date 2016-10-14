@@ -226,7 +226,7 @@ namespace ConfigCodes
 			FUNC_CODE_NP(playerKill,         1205)
 
 			FUNC_CODE_NP(resetStats,         1210)
-			FUNC_CODE_1P(readStats,  DeviceAddress,  1211)
+			FUNC_CODE_NP(readStats,          1211)
 
 			FUNC_CODE_1P(addMaxHealth, IntParameter, 1220)
 			FUNC_CODE_1P(setTeam,      TeamGameId,    1221)

@@ -126,11 +126,6 @@ void BaseStatsCounter::restoreFromFile()
 	f_close(&m_file);
 }
 
-void BaseStatsCounter::setStatsReceiver(DeviceAddress addr)
-{
-	m_statsReceiver = addr;
-}
-
 void BaseStatsCounter::interrogate()
 {
 	switch(m_sendingState)

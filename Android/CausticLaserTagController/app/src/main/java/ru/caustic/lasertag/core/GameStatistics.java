@@ -13,6 +13,8 @@ public class GameStatistics {
     public static final int DAMAGE      = 1;
     public static final int HITS_COUNT  = 2;
 
+    public static final int OP_CODE_GET_PVP_RESULTS = 3001;
+
     public static class PvPStats {
         public int damage = 0;
         public int kills = 0;
@@ -21,9 +23,33 @@ public class GameStatistics {
 
     public GameStatistics(DevicesManager devicesManager) {
         this.devicesManager = devicesManager;
+        this.devicesManager.registerRCSPOperationDispatcher(OP_CODE_GET_PVP_RESULTS, new PvPDamageResultsMessageDispatcher());
+    }
+
+    public void readStats()
+    {
+        sendRequest();
+        // Run thread for waiting stats
     }
 
     // Private
+    private void sendRequest() {
+        devicesManager.remoteCall(
+                BridgeConnector.Broadcasts.headSensors,
+                RCSProtocol.Operations.HeadSensor.functionsSerializers,
+                RCSProtocol.Operations.HeadSensor.Functions.readStats.getId(),
+                ""
+        );
+    }
+
+    private class PvPDamageResultsMessageDispatcher implements DevicesManager.RCSPOperationDispatcher {
+        @Override
+        public void dispatchOperation(BridgeConnector.DeviceAddress address, RCSProtocol.RCSPOperation operation)
+        {
+
+        }
+    }
+
     /**
      * This class represents corresponding class on game device. It is minimal stats synchronization
      * element

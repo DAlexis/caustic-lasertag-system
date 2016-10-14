@@ -29,6 +29,7 @@
 #include "rcsp/state-saver-interface.hpp"
 #include "hal/system-clock.hpp"
 #include "network/network-base-types.hpp"
+#include "network/broadcast.hpp"
 #include "core/os-wrappers.hpp"
 #include "fatfs.h"
 
@@ -44,10 +45,9 @@ namespace GameLog
 		void registerKill(PlayerGameId player);
 		void clear();
 
-		void saveState()  override;
+		void saveState() override;
 		void restoreFromFile();
 
-		void setStatsReceiver(DeviceAddress addr);
 		void interrogate();
 		void sendStats();
 
@@ -76,7 +76,7 @@ namespace GameLog
 
 		FIL m_file;
 
-		DeviceAddress m_statsReceiver;
+		DeviceAddress m_statsReceiver = broadcast.bluetoothBridges;
 		StatsSendingState m_sendingState;
 
 		CritialSection m_iteratorCheck;
