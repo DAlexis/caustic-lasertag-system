@@ -9,9 +9,11 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Created by alexey on 18.09.15.
@@ -20,7 +22,55 @@ public class RCSProtocol {
 
     // Public
     // Classes
-    public enum OperationCodeType { SET_OBJECT, OBJECT_REQUEST, CALL_REQUEST, RESERVED }
+    public enum OperationCodeType { SET_OBJECT, OBJECT_REQUEST, CALL_REQUEST, RESERVED, UNKNOWN }
+
+    public static class RCSPOperation {
+        public final static int MIN_SIZE = 3;
+        public int id = 0;
+        public OperationCodeType type = OperationCodeType.UNKNOWN;
+        public byte[] argument = null;
+        public int argumentSize = 0;
+
+        public int size() {
+            return argumentSize + 3;
+        }
+        public static RCSPOperation parse(byte[] memory, int position, int size)
+        {
+            int read = 0;
+            int argSize = MemoryUtils.byteToUnsignedByte(memory[position]);
+            if (size < argSize + 3) {
+                Log.e(TAG, "binary stream seems to be broken: unexpected end of stream");
+                return null;
+            }
+            RCSPOperation result = new RCSPOperation();
+            read++;
+            int operationId = MemoryUtils.bytesArrayToUint16(memory, position+read);
+            read += 2;
+            result.type = dispatchOperationCodeType(operationId);
+            result.id = removeOperationTypeBits(operationId);
+            result.argumentSize = argSize;
+            result.argument = new byte[argSize];
+            for (int i=0; i<argSize; i++, read++) {
+                result.argument[i] = memory[position + read];
+            }
+            return result;
+        }
+        public static List<RCSPOperation> parseStream(byte[] memory, int position, int size)
+        {
+            List<RCSPOperation> result = new ArrayList<>();
+            RCSPOperation next;
+            do {
+                next = parse(memory, position, size);
+                if (next == null) {
+                    // This means continuation of stream is broken
+                    break;
+                }
+                result.add(next);
+                position += next.size();
+            } while (size-position >= RCSPOperation.MIN_SIZE);
+            return result;
+        }
+    }
 
     // Descriptions
     public static abstract class AnyDescription implements IDescription {
@@ -678,51 +728,45 @@ public class RCSProtocol {
             return 3;
         }
 
-        /**
-         * Read one parameter from binary stream
-         * @param memory Binary stream
-         * @param position start position for reading
-         * @param size maximal index value allowed for memory
-         * @return Count of bytes parsed. If parsing is impossible, 0. If id is not registered, nothing will be added
-         */
-        public int deserializeOneParamter(byte[] memory, int position, int size)
+        public int deserializeOneParamter(RCSPOperation operation)
         {
-            int readed = 0;
-            int argSize = MemoryUtils.byteToUnsignedByte(memory[position]);
-            if (size < argSize + 3) {
-                Log.e(TAG, "binary stream seems to be broken: unexpected end of stream");
+            if (operation == null) {
+                // @todo use exception there: stream is broken
                 return 0;
             }
-            readed++;
-            int id = MemoryUtils.bytesArrayToUint16(memory, position+readed);
-            readed += 2;
-
-            if (dispatchOperationCodeType(id) != OperationCodeType.SET_OBJECT)
+            if (operation.type != OperationCodeType.SET_OBJECT)
             {
-                Log.e(TAG, "Trying to dispatch " + removeOperationTypeBits(id) + " with invalid operation code type bits");
+                Log.e(TAG, "Trying to dispatch " + removeOperationTypeBits(operation.id) + " with invalid operation code type bits");
                 return 0;
             }
 
-            id = removeOperationTypeBits(id);
-
-            AnyParameterSerializer par = allParameters.get(id);
+            AnyParameterSerializer par = allParameters.get(operation.id);
             if (par != null) {
-                par.deserialize(memory, position + readed);
+                if (operation.argumentSize != par.size()) {
+                    Log.e(TAG, "Invalid argument length " + operation.argumentSize + " instead of " + par.size() + " for operation id " + operation.id);
+                    return 0;
+                }
+                par.deserialize(operation.argument, 0);
             } else {
-                Log.e(TAG, "Unknown parameter id: " + id);
+                Log.e(TAG, "Unknown parameter id: " + operation.id);
                 return 0;
             }
-            return argSize + 3;
+            return operation.size();
         }
 
+        @Deprecated // Only for testing now, because stream may contain not only parameters records
         public void deserializeStream(byte[] memory, int offset, int size)
         {
+            // @todo Do we really need this function?
             int notParsed = size;
             for (int i = 0; i<size; )
             {
-                int result = deserializeOneParamter(memory, offset + i, notParsed);
-                if (result == 0)
+                RCSPOperation operation = RCSPOperation.parse(memory, offset + i, notParsed);
+                int result = deserializeOneParamter(operation);
+                if (result == 0) {
+                    // @todo may be skip?
                     break;
+                }
                 i += result;
                 notParsed -= result; /// @todo test it
             }

@@ -8,15 +8,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
- * Created by alexey on 20.09.15.
+ * This class knows all connected devices and can pop their full states (all their parameters).
+ * Also it dispatch RCSP messages. External RCSPOperationDispatcher s may be connected
  */
 public class DevicesManager {
     // Public classes
     public interface SynchronizationEndHandler {
         void onSynchronizationEnd(boolean isSuccess);
     }
+
+    /**
+     * Interface for any kinds of RCSP operations dispatcher outside from DevicesManager
+     */
+    public interface RCSPOperationDispatcher {
+        /**
+         * Dispatch RCSP operation from buffer
+         * @param address Address of message sender
+         * @param operation Operation to dispatch
+         * @return size of block used by dispatcher or 0 if did not dispatch anything
+         */
+        int dispatchOperation(BridgeConnector.DeviceAddress address, RCSProtocol.RCSPOperation operation);
+    }
+
     public class RCSPStream {
         int requestSize = 23;
         byte[] request = new byte[requestSize];
@@ -261,14 +278,16 @@ public class DevicesManager {
         dataPopper = new AsyncDataPopper(endHandler, devices);
         dataPopper.start();
     }
-    public int getPlayerGameId(BridgeConnector.DeviceAddress deviceAddress)
-    {
+    public int getPlayerGameId(BridgeConnector.DeviceAddress deviceAddress) {
         CausticDevice dev = devices.get(deviceAddress);
         if (dev == null)
             return 0;
         int parameterId = RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId();
         int playerGameId = Integer.parseInt(dev.parameters.get(parameterId).getValue());
         return playerGameId;
+    }
+    public void registerRCSPOperationDispatcher(int operationCode, RCSPOperationDispatcher dispatcher) {
+        externalDispatchers.put(operationCode, dispatcher);
     }
 
     // Public fields
@@ -290,25 +309,13 @@ public class DevicesManager {
                 //newDeviceAdded = true;
             }
 
-            // This line replaced by cycle below for parsing direct command for android device
-            // dev.parameters.deserializeStream(data, offset, size);
-            int notParsed = size;
-            for (int i = 0; i<size; )
+            List<RCSProtocol.RCSPOperation> operations = RCSProtocol.RCSPOperation.parseStream(data, offset, size);
+            for (RCSProtocol.RCSPOperation operation : operations)
             {
-                int result = dev.parameters.deserializeOneParamter(data, offset + i, notParsed);
-                if (result == 0) {
+                if (dev.parameters.deserializeOneParamter(operation) == 0) {
                     // It is not parameter of device so maybe it is command for android?
-                    result = deserializeAndroidMsg(address, data, offset + i, notParsed);
+                    dispatchByExternal(address, operation);
                 }
-                if (result == 0) {
-                    // It is absolutely unknown command so we should skip it
-                    result = RCSProtocol.nextCommandSize(data, offset + i);
-                    if (result > notParsed)
-                        break;
-                }
-
-                i += result;
-                notParsed -= result;
             }
 
             if (dev.hasName()
@@ -348,9 +355,16 @@ public class DevicesManager {
         bridgeConnector.setReceiver(new Receiver());
     }
 
-    private int deserializeAndroidMsg(BridgeConnector.DeviceAddress address, byte[] memory, int position, int size)
-    {
-        return 0;
+    private int dispatchByExternal(BridgeConnector.DeviceAddress address, RCSProtocol.RCSPOperation operation) {
+        if (operation.type != RCSProtocol.OperationCodeType.CALL_REQUEST)
+            return 0;
+
+        RCSPOperationDispatcher externalDispatcher = externalDispatchers.get(operation.id);
+        if (externalDispatcher == null)
+            return 0;
+
+        externalDispatcher.dispatchOperation(address, operation);
+        return operation.size();
     }
 
     private BridgeConnector bridgeConnector;
@@ -358,4 +372,5 @@ public class DevicesManager {
     private DeviceManagerTask currentTask = null;
     private Handler devicesListUpdatedHandler = null;
     private AsyncDataPopper dataPopper = null;
+    private Map<Integer, RCSPOperationDispatcher> externalDispatchers = new TreeMap<>();
 }

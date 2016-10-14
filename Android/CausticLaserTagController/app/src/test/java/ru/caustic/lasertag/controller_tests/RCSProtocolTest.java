@@ -158,7 +158,11 @@ public class RCSProtocolTest extends TestCase {
         int size = container.serializeSetObject(paramId, arr, 0, 20);
         Assert.assertTrue(size != 0);
         container.get(paramId).setValue("0");
-        container.deserializeOneParamter(arr, 0, 20);
+
+        RCSProtocol.RCSPOperation operation = RCSProtocol.RCSPOperation.parse(arr, 0, 20);
+        Assert.assertNotNull(operation);
+
+        container.deserializeOneParamter(operation);
         Assert.assertEquals(etalonValue, container.get(paramId).getValue());
     }
 
