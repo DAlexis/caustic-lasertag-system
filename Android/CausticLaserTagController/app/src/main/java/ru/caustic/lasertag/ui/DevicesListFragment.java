@@ -19,7 +19,7 @@ import java.util.Map;
 
 import ru.caustic.lasertag.core.BridgeConnector;
 import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.CausticDevicesManager;
+import ru.caustic.lasertag.core.DevicesManager;
 import ru.caustic.lasertag.core.RCSProtocol;
 import ru.caustic.lasertag.core.SettingsEditorContext;
 
@@ -30,14 +30,14 @@ public class DevicesListFragment extends Fragment {
     private Button buttonConfigureDevice;
 
     private DevicesListActivity activity = null;
-    private CausticDevicesManager causticDevicesManager = null;
+    private DevicesManager devicesManager = null;
     private SettingsEditorContext editorContext;
 
     public DevicesListFragment()
     {
         super();
         // @todo Refactor without signleton usage
-        causticDevicesManager = CausticController.getInstance().getCausticDevicesManager();
+        devicesManager = CausticController.getInstance().getDevicesManager();
         editorContext = CausticController.getInstance().getSettingsEditorContext();
     }
 
@@ -68,17 +68,17 @@ public class DevicesListFragment extends Fragment {
 
         editorContext.clearSelectedToEdit();
 
-        causticDevicesManager.updateDevicesList(
+        devicesManager.updateDevicesList(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
                         switch (msg.what) {
-                            case CausticDevicesManager.DEVICES_LIST_UPDATED:
-                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice> devs =
-                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice>) msg.obj;
+                            case DevicesManager.DEVICES_LIST_UPDATED:
+                                Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devs =
+                                        (Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice>) msg.obj;
 
                                 adapter.clear();
 
-                                for (Map.Entry<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice> entry : devs.entrySet()) {
+                                for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devs.entrySet()) {
                                     adapter.addItem(new DevicesListElementHolder(entry.getValue()));
                                 }
 
@@ -95,9 +95,9 @@ public class DevicesListFragment extends Fragment {
         public CheckBox deviceName = null;
         public TextView deviceSummary = null;
         View convertView = null;
-        public CausticDevicesManager.CausticDevice device;
+        public DevicesManager.CausticDevice device;
 
-        DevicesListElementHolder(CausticDevicesManager.CausticDevice device) {
+        DevicesListElementHolder(DevicesManager.CausticDevice device) {
             this.device = device;
         }
 
@@ -125,7 +125,7 @@ public class DevicesListFragment extends Fragment {
         public void checkAndAddToSettingsEditorContext() {
             if (deviceName.isChecked()) {
                 int selectedType = Integer.parseInt(
-                        causticDevicesManager.devices.get(device.address).parameters.get(
+                        devicesManager.devices.get(device.address).parameters.get(
                                 RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
                         ).getValue()
                 );

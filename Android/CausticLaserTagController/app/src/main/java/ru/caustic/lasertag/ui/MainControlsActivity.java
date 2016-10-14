@@ -2,7 +2,6 @@ package ru.caustic.lasertag.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,7 +14,7 @@ import java.util.Map;
 
 import ru.caustic.lasertag.core.BridgeConnector;
 import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.CausticDevicesManager;
+import ru.caustic.lasertag.core.DevicesManager;
 
 
 public class MainControlsActivity extends AppCompatActivity {
@@ -24,12 +23,12 @@ public class MainControlsActivity extends AppCompatActivity {
     private TextView textDevsInArea;
     private int devsInArea = 0;
 
-    private CausticDevicesManager causticDevicesManager;
+    private DevicesManager devicesManager;
     public MainControlsActivity()
     {
         super();
         // @todo Refactor without signleton usage
-        causticDevicesManager = CausticController.getInstance().getCausticDevicesManager();
+        devicesManager = CausticController.getInstance().getDevicesManager();
     }
 
     @Override
@@ -56,13 +55,13 @@ public class MainControlsActivity extends AppCompatActivity {
     {
         devsInArea = 0;
         updateDevsCountInAreaUI();
-        causticDevicesManager.updateDevicesList(
+        devicesManager.updateDevicesList(
                 new Handler() {
                     public void handleMessage(android.os.Message msg) {
                         switch (msg.what) {
-                            case CausticDevicesManager.DEVICES_LIST_UPDATED:
-                                Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice> devs =
-                                        (Map<BridgeConnector.DeviceAddress, CausticDevicesManager.CausticDevice>) msg.obj;
+                            case DevicesManager.DEVICES_LIST_UPDATED:
+                                Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devs =
+                                        (Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice>) msg.obj;
 
                                 devsInArea = devs.size();
 

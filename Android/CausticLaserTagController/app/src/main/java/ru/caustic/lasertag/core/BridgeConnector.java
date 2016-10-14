@@ -131,9 +131,8 @@ public class BridgeConnector {
         for (int i= 0; i<size; i++) {
             message[1 + DeviceAddress.sizeof() + i] = data[i];
         }
-        //BluetoothManager.getInstance().sendData(message);
+
         bluetoothManager.sendData(message);
-        //BluetoothManager.getInstance().sendData("TEST\r\n".getBytes());
     }
 
 

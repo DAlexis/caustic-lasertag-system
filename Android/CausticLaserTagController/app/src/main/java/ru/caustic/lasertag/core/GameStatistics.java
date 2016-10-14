@@ -1,6 +1,5 @@
 package ru.caustic.lasertag.core;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -20,6 +19,10 @@ public class GameStatistics {
         public int hits = 0;
     }
 
+    public GameStatistics(DevicesManager devicesManager) {
+        this.devicesManager = devicesManager;
+    }
+
     // Private
     /**
      * This class represents corresponding class on game device. It is minimal stats synchronization
@@ -28,8 +31,7 @@ public class GameStatistics {
     private class PvPDamageResults {
         public void lookupPlayerId(BridgeConnector.DeviceAddress devAddr)
         {
-            // @todo Refactor without signleton usage
-            playerId = CausticController.getInstance().getCausticDevicesManager().getPlayerGameId(devAddr);
+            playerId = devicesManager.getPlayerGameId(devAddr);
         }
 
         public void deserialize(byte[] memory, int offset)
@@ -97,8 +99,8 @@ public class GameStatistics {
         return result;
     }
 
-    private TreeMap<Integer, TreeMap<Integer, PvPStats>> pvpStatsMap2 = new TreeMap<>();
+    private DevicesManager devicesManager;
 
+    private TreeMap<Integer, TreeMap<Integer, PvPStats>> pvpStatsMap2 = new TreeMap<>();
     private Map<Integer, PvPDamageResults> pvpResultsMap = new TreeMap<>();
-    //private Map<Integer, PlayerStatistics> playerStatisticsMap = new TreeMap<>();
 }

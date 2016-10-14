@@ -10,7 +10,7 @@ import android.widget.CheckBox;
 
 import ru.caustic.lasertag.core.BridgeConnector;
 import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.CausticDevicesManager;
+import ru.caustic.lasertag.core.DevicesManager;
 import ru.caustic.lasertag.core.RCSProtocol;
 
 public class SimpleControlsFragment extends Fragment {
@@ -24,13 +24,9 @@ public class SimpleControlsFragment extends Fragment {
     private CheckBox checkBoxControlGreen;
     private CheckBox checkBoxControlAllTeams;
 
-    private CausticDevicesManager causticDevicesManager;
-
     public SimpleControlsFragment()
     {
         super();
-        // @todo Refactor without signleton usage
-        causticDevicesManager = CausticController.getInstance().getCausticDevicesManager();
     }
     //private boolean workaroundDisableAutoChecking
     @Override
@@ -114,68 +110,25 @@ public class SimpleControlsFragment extends Fragment {
             checkBoxControlAllTeams.setChecked(false);
     }
 
-    private void remoteCallForSelection(RCSProtocol.FunctionsContainer functionsContainer, int operationId, String argument)
+    private int getSelectedTeams()
     {
-        // If we need to respawn all players, we can use single broadcast
-        if (checkBoxControlAllTeams.isChecked()) {
-            causticDevicesManager.remoteCall(
-                    BridgeConnector.Broadcasts.headSensors,
-                    functionsContainer,
-                    operationId,
-                    argument
-            );
-            return;
-        }
-
-        // else we should check each checkbox if checked
-        if (checkBoxControlRed.isChecked()) {
-            causticDevicesManager.remoteCall(
-                    BridgeConnector.Broadcasts.headSensorsRed,
-                    functionsContainer,
-                    operationId,
-                    argument
-            );
-        }
-        if (checkBoxControlBlue.isChecked()) {
-            causticDevicesManager.remoteCall(
-                    BridgeConnector.Broadcasts.headSensorsBlue,
-                    functionsContainer,
-                    operationId,
-                    argument
-            );
-        }
-        if (checkBoxControlYellow.isChecked()) {
-            causticDevicesManager.remoteCall(
-                    BridgeConnector.Broadcasts.headSensorsYellow,
-                    functionsContainer,
-                    operationId,
-                    argument
-            );
-        }
-        if (checkBoxControlGreen.isChecked()) {
-            causticDevicesManager.remoteCall(
-                    BridgeConnector.Broadcasts.headSensorsGreen,
-                    functionsContainer,
-                    operationId,
-                    argument
-            );
-        }
-
+        int result = 0;
+        if (checkBoxControlRed.isChecked())
+            result |= CausticController.BroadcastCalls.RED;
+        if (checkBoxControlBlue.isChecked())
+            result |= CausticController.BroadcastCalls.BLUE;
+        if (checkBoxControlYellow.isChecked())
+            result |= CausticController.BroadcastCalls.YELLOW;
+        if (checkBoxControlGreen.isChecked())
+            result |= CausticController.BroadcastCalls.GREEN;
+        return result;
     }
 
     private void buttonRespawnClick(View v) {
-        remoteCallForSelection(
-                RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                RCSProtocol.Operations.HeadSensor.Functions.playerRespawn.getId(),
-                ""
-        );
+        CausticController.getInstance().getBroadcastCalls().respawn(getSelectedTeams());
     }
 
     private void buttonKillClick(View v) {
-        remoteCallForSelection(
-                RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                RCSProtocol.Operations.HeadSensor.Functions.playerKill.getId(),
-                ""
-        );
+        CausticController.getInstance().getBroadcastCalls().kill(getSelectedTeams());
     }
 }

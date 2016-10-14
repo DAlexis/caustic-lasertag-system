@@ -23,7 +23,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.CausticDevicesManager;
+import ru.caustic.lasertag.core.DevicesManager;
 import ru.caustic.lasertag.core.RCSProtocol;
 import ru.caustic.lasertag.core.SettingsEditorContext;
 
@@ -532,7 +532,7 @@ public class DeviceSettingsFragment extends Fragment {
     /**
      * Hold message when all settings are loaded from devices and entries ready to be created
      */
-    private class ParametersListUpdater implements CausticDevicesManager.SynchronizationEndHandler {
+    private class ParametersListUpdater implements DevicesManager.SynchronizationEndHandler {
         @Override
         public void onSynchronizationEnd(boolean isSuccess) {
             if (isSuccess) {
@@ -637,7 +637,7 @@ public class DeviceSettingsFragment extends Fragment {
 
     public DeviceSettingsFragment() {
         super();
-        //dataPopper = CausticDevicesManager.getInstance().new AsyncDataPopper(new ParametersListUpdater(), editorContext.devices);
+        //dataPopper = DevicesManager.getInstance().new AsyncDataPopper(new ParametersListUpdater(), editorContext.devices);
         parametersListUpdater = new ParametersListUpdater();
 	// @todo Refactor without signleton usage
         editorContext = CausticController.getInstance().getSettingsEditorContext();

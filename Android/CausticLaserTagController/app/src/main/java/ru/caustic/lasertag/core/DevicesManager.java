@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Created by alexey on 20.09.15.
  */
-public class CausticDevicesManager {
+public class DevicesManager {
     // Public classes
     public interface SynchronizationEndHandler {
         void onSynchronizationEnd(boolean isSuccess);
@@ -343,7 +343,7 @@ public class CausticDevicesManager {
         String taskText();
     }
 
-    public CausticDevicesManager(BridgeConnector bridgeConnector) {
+    public DevicesManager(BridgeConnector bridgeConnector) {
         this.bridgeConnector = bridgeConnector;
         bridgeConnector.setReceiver(new Receiver());
     }

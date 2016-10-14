@@ -10,9 +10,9 @@ import java.util.Set;
  */
 public class SettingsEditorContext {
 
-    public SettingsEditorContext(CausticDevicesManager causticDevicesManager)
+    public SettingsEditorContext(DevicesManager devicesManager)
     {
-        this.causticDevicesManager = causticDevicesManager;
+        this.devicesManager = devicesManager;
     }
 
     /**
@@ -79,7 +79,7 @@ public class SettingsEditorContext {
             hasInitialValue = true; // We suppose that all values are the same
             for (BridgeConnector.DeviceAddress addr : context.devices) {
                 String thisDeviceValue
-                        = causticDevicesManager.devices
+                        = devicesManager.devices
                         .get(addr).parameters
                         .get(description.getId()).getValue();
                 if (!valueInitialized) {
@@ -119,7 +119,7 @@ public class SettingsEditorContext {
 
             for (BridgeConnector.DeviceAddress addr : context.devices) {
                 RCSProtocol.AnyParameterSerializer par
-                        = causticDevicesManager.devices
+                        = devicesManager.devices
                         .get(addr).parameters
                         .get(description.getId());
                 par.setValue(currentValue);
@@ -159,9 +159,9 @@ public class SettingsEditorContext {
     public final Set<BridgeConnector.DeviceAddress> getDevicesSelectedToEdit() {
         return devices;
     }
-    public void asyncPopParametersFromSelectedDevices(CausticDevicesManager.SynchronizationEndHandler endHandler)
+    public void asyncPopParametersFromSelectedDevices(DevicesManager.SynchronizationEndHandler endHandler)
     {
-        causticDevicesManager.asyncPopParametersFromDevices(endHandler, devices);
+        devicesManager.asyncPopParametersFromDevices(endHandler, devices);
     }
     // End of accessors for devices
 
@@ -186,7 +186,7 @@ public class SettingsEditorContext {
         }
 
         return Integer.parseInt(
-                causticDevicesManager.devices.get(getAnyAddress()).parameters.get(
+                devicesManager.devices.get(getAnyAddress()).parameters.get(
                         RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
                 ).getValue()
         );
@@ -208,7 +208,7 @@ public class SettingsEditorContext {
 
         BridgeConnector.DeviceAddress someAddress = getAnyAddress();
 
-        CausticDevicesManager.CausticDevice dev = causticDevicesManager.devices.get(someAddress);
+        DevicesManager.CausticDevice dev = devicesManager.devices.get(someAddress);
 
         // We need to output parameters sorted by original order
         for (int id : dev.parameters.orderedIds) {
@@ -237,9 +237,9 @@ public class SettingsEditorContext {
         }
         // Sending values to devices
         for (BridgeConnector.DeviceAddress address : devices) {
-            causticDevicesManager.devices.get(address).pushToDevice();
+            devicesManager.devices.get(address).pushToDevice();
         }
     }
 
-    private CausticDevicesManager causticDevicesManager;
+    private DevicesManager devicesManager;
 }
