@@ -3,10 +3,13 @@ title: Lorem Ipsum
 email: AlexeyABulatov@yandex.ru
 description: >
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
-baseurl: "" # the subpath of your site, e.g. /blog/
+baseurl: "/caustic-lasertag-system" # the subpath of your site, e.g. /blog/
 url: "http://example.com" # the base hostname & protocol for your site
 # twitter_username: no_user
 github_username:  DAlexis
 
 # Build settings
 markdown: kramdown
+theme: minima
+gems:
+  - jekyll-feed
