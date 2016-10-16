@@ -1,12 +1,16 @@
 # Site settings
-title: Lorem Ipsum
+title: Caustic Laseretag System
 email: AlexeyABulatov@yandex.ru
-description: >
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+description: |
+  Система для игры в лазертаг с открытым исходным кодом и широкими возможностями.
+  Сайт собран c использованием Jekyll
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://example.com" # the base hostname & protocol for your site
+url: "http://ltcaustic.org" # the base hostname & protocol for your site
 # twitter_username: no_user
 github_username:  DAlexis
 
 # Build settings
 markdown: kramdown
+theme: minima
+gems:
+  - jekyll-feed

@@ -6,6 +6,7 @@ p, blockquote, pre, hr,
 dl, dd, ol, ul, figure {
     margin: 0;
     padding: 0;
+    color: $text-color;
 }
 
 
@@ -81,6 +82,7 @@ li {
  */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 300;
+    margin-top: 30px;
 }
 
 
@@ -108,8 +110,8 @@ a {
  * Blockquotes
  */
 blockquote {
-    color: $grey-color;
-    border-left: 4px solid $grey-color-light;
+    color: $base-color;
+    border-left: 4px solid $base-color-light;
     padding-left: $spacing-unit / 2;
     font-size: 18px;
     letter-spacing: -1px;
@@ -128,7 +130,7 @@ blockquote {
 pre,
 code {
     font-size: 15px;
-    border: 1px solid $grey-color-light;
+    border: 1px solid $base-color-light;
     border-radius: 3px;
     background-color: #eef;
 }
@@ -168,6 +170,9 @@ pre {
         padding-right: $spacing-unit / 2;
         padding-left: $spacing-unit / 2;
     }
+    li {
+        margin-bottom: 7px;
+    }
 }
 
 
@@ -198,7 +203,7 @@ pre {
         vertical-align: middle;
 
         path {
-            fill: $grey-color;
+            fill: $base-color;
         }
     }
 }

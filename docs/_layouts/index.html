@@ -1,0 +1,45 @@
+---
+layout: default
+---
+
+<div id="home">
+
+  {% include quick-presentation.html %}
+
+  {{ content }}
+
+  <h1 id="intro">Новости проекта</h1>
+
+  <div>
+  </div>
+  {% for post in site.posts limit:3 %}
+  <div class="post">
+    <h2><a href="{{ post.url | prepend: site.baseurl }}">{{post.title}}</a></h2>
+    <span class="date">{{ post.date | date:"%B %d, %Y" }}</span>
+    {{ post.content }}
+    <div class="view_comments_link">
+      <a href="{{ post.url | prepend: site.baseurl }}#disqus_thread">Комментарии</a><br />
+    </div>
+  </div>
+  {% endfor %}
+
+  <div id="related">
+    <div class="related_left">
+      <h2>Предыдущие новости</h2>
+      <ul class="posts small">
+        {% for post in site.posts offset:3 limit:3 %}
+        <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="related_right">
+<!--
+      <h2>Раньше... (see <a href="/archive.html">archive</a> for more)</h2>
+-->
+      <p class="rss-subscribe">Подписаться <a href="{{ "/feed.xml" | prepend: site.baseurl }}">на RSS</a></p>
+
+    </div>
+  </div>
+
+
+</div>

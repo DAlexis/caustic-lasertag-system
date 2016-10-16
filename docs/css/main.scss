@@ -17,12 +17,23 @@ $text-color:       #111;
 $background-color: #fdfdfd;
 $brand-color:      #2a7ae2;
 
-$grey-color:       #828282;
-$grey-color-light: lighten($grey-color, 40%);
-$grey-color-dark:  darken($grey-color, 25%);
+
+//$base-color:       #828282;
+//$base-color-light: lighten($base-color, 20%);
+//$base-color-dark:  darken($base-color, 25%);
+
+$base-color:       #415C7F;
+$base-color-light: #415C7F;
+$base-color-dark:  darken($base-color, 25%);
+$base-color-font-light: lighten($base-color, 80%);
+$base-color-font-middle: lighten($base-color, 40%);
+
+$text-color:       darken($base-color, 10%);
+$background-color: lighten($base-color, 60%);
+
 
 // Width of the content area
-$content-width:    800px;
+$content-width:    1000px;
 
 $on-palm:          600px;
 $on-laptop:        800px;
@@ -51,16 +62,16 @@ $on-laptop:        800px;
 
 /* date */
 .post .date{
-	color:#666666;
-	font-style:italic;
+    color:$base-color;
+    font-style:italic;
 }
 
 #related {
-	margin-top: 2em;
+    margin-top: 2em;
 }
 
 #related h2 {
-	margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 #related ul, ol {
@@ -68,18 +79,18 @@ $on-laptop:        800px;
 }
 
 .related_left {
-	float:left;
-	width:45%;
+    float:left;
+    width:45%;
 }
 
 .related_right {
-	float:right;
+    float:right;
 }
 
 .view_comments_link {
-	font-size:12px;
-	text-align:right;
-	margin-top:10px;
+    font-size:12px;
+    text-align:right;
+    margin-top:10px;
 }
 
 /* Display last.fm chart */
@@ -106,15 +117,49 @@ ul.posts {
 }
 
 ul.posts span {
-	color: #aaa;
-	font-family: Monaco, "Courier New", monospace;
-	font-size: 80%;
+    color: #aaa;
+    font-family: Monaco, "Courier New", monospace;
+    font-size: 80%;
 }
 
 .view_comments_link {
-	font-size:12px;
-	text-align:right;
-	margin-top:10px;
+    font-size:12px;
+    text-align:right;
+    margin-top:10px;
+}
+
+#documentation {
+    //float: right;
+}
+
+.doc-navigation {
+    float: right;
+    padding: 10px;
+    background-color:$base-color-light;
+    margin: 20px;
+    .page-link {
+        color: $base-color-font-light;
+    }
+    
+    li {
+        color: $base-color-font-light;
+    }
+}
+
+#quick-presentation {
+    font-size: 120%;
+    background-color:$base-color-light;
+    padding: 15px;
+    padding-left: 100px;
+    margin-bottom: 30px;
+    color: $base-color-font-light;
+    .page-link {
+        color: $base-color-font-middle;
+    }
+    ul {
+        color: $base-color-font-light;
+        //list-style: none;
+    }
 }
 
 hr {

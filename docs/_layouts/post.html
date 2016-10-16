@@ -11,11 +11,10 @@ layout: default
   <article class="post-content">
     {{ content }}
     <div class="view_comments_link">
-      <a href="{{ page.url }}#disqus_thread">View Comments</a> <br />
+      <a href="{{ page.url | prepend: site.baseurl }}#disqus_thread">Комментарии</a> <br />
       <div id="disqus_thread"></div>
-      <script type="text/javascript" src="http://disqus.com/forums/caustic-lts/embed.js"></script>
-      <noscript><a href="http://caustic-lts.disqus.com/?url=ref">View the discussion thread</a></noscript>
+      {% include disqus.html %}
+      <noscript><a href="http://caustic-lts.disqus.com/?url=ref">Обсуждение</a></noscript>
     </div>
   </article>
-
 </div>
