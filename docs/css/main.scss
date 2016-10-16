@@ -1,0 +1,127 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+@charset "utf-8";
+
+
+
+// Our variables
+$base-font-family: Helvetica, Arial, sans-serif;
+$base-font-size:   16px;
+$small-font-size:  $base-font-size * 0.875;
+$base-line-height: 1.5;
+
+$spacing-unit:     30px;
+
+$text-color:       #111;
+$background-color: #fdfdfd;
+$brand-color:      #2a7ae2;
+
+$grey-color:       #828282;
+$grey-color-light: lighten($grey-color, 40%);
+$grey-color-dark:  darken($grey-color, 25%);
+
+// Width of the content area
+$content-width:    800px;
+
+$on-palm:          600px;
+$on-laptop:        800px;
+
+
+
+// Using media queries with like this:
+// @include media-query($on-palm) {
+//     .wrapper {
+//         padding-right: $spacing-unit / 2;
+//         padding-left: $spacing-unit / 2;
+//     }
+// }
+@mixin media-query($device) {
+    @media screen and (max-width: $device) {
+        @content;
+    }
+}
+
+// Import partials from `sass_dir` (defaults to `_sass`)
+@import
+        "base",
+        "layout",
+        "syntax-highlighting"
+;
+
+/* date */
+.post .date{
+	color:#666666;
+	font-style:italic;
+}
+
+#related {
+	margin-top: 2em;
+}
+
+#related h2 {
+	margin-bottom: 1em;
+}
+
+#related ul, ol {
+  margin-left: 10px;
+}
+
+.related_left {
+	float:left;
+	width:45%;
+}
+
+.related_right {
+	float:right;
+}
+
+.view_comments_link {
+	font-size:12px;
+	text-align:right;
+	margin-top:10px;
+}
+
+/* Display last.fm chart */
+#lastfm_chart {
+    position:fixed;
+    bottom:10px;
+    right:10px;
+    z-index:1000;
+}
+
+#twitter_follow {
+    position:fixed;
+    top:1%;
+    left:2%;
+    z-index:1000;
+}
+
+.post {
+  margin-bottom: 50px;
+}
+
+ul.posts {
+  list-style-type: none;
+}
+
+ul.posts span {
+	color: #aaa;
+	font-family: Monaco, "Courier New", monospace;
+	font-size: 80%;
+}
+
+.view_comments_link {
+	font-size:12px;
+	text-align:right;
+	margin-top:10px;
+}
+
+hr {
+  margin-bottom: 20px;
+}
+
+@media screen and (min-width: 0px) and (max-width: 900px) {
+    #lastfm_chart { display: none; }  /* show it on small screens */
+    #twitter_follow {display: none; }
+}
