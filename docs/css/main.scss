@@ -17,12 +17,12 @@ $text-color:       #111;
 $background-color: #fdfdfd;
 $brand-color:      #2a7ae2;
 
-$grey-color:       #828282;
-$grey-color-light: lighten($grey-color, 40%);
-$grey-color-dark:  darken($grey-color, 25%);
+$base-color:       #828282;
+$base-color-light: lighten($base-color, 20%);
+$base-color-dark:  darken($base-color, 25%);
 
 // Width of the content area
-$content-width:    800px;
+$content-width:    1000px;
 
 $on-palm:          600px;
 $on-laptop:        800px;
@@ -115,6 +115,29 @@ ul.posts span {
 	font-size:12px;
 	text-align:right;
 	margin-top:10px;
+}
+
+#documentation {
+    //float: right;
+}
+
+.doc-navigation {
+	float: right;
+    padding: 10px;
+	width: 300px;
+	background-color:$base-color-light;
+}
+
+#quick-presentation {
+    font-size: 120%;
+    background-color:$base-color-light;
+    padding: 15px;
+    padding-left: 100px;
+    margin-bottom: 30px;
+}
+
+#presentation-features {
+    list-style: none;
 }
 
 hr {

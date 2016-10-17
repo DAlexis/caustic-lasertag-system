@@ -3,7 +3,13 @@ layout: default
 ---
 
 <div id="home">
-  <h1 id="intro">The three most recent posts.</h1>
+
+  {% include quick-presentation.html %}
+
+  {{ content }}
+
+  <h1 id="intro">Новости проекта</h1>
+
   <div>
   </div>
   {% for post in site.posts limit:3 %}
@@ -19,7 +25,7 @@ layout: default
 
   <div id="related">
     <div class="related_left">
-      <h2>Previous posts</h2>
+      <h2>Предыдущие новости</h2>
       <ul class="posts small">
         {% for post in site.posts offset:3 limit:3 %}
         <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ site.baseurl }}/{{ post.url }}">{{ post.title }}</a></li>
@@ -27,8 +33,10 @@ layout: default
       </ul>
     </div>
     <div class="related_right">
-      <h2>Older posts... (see <a href="/archive.html">archive</a> for more)</h2>
-      <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+<!--
+      <h2>Раньше... (see <a href="/archive.html">archive</a> for more)</h2>
+-->
+      <p class="rss-subscribe">Подписаться <a href="{{ "/feed.xml" | prepend: site.baseurl }}">на RSS</a></p>
 
     </div>
   </div>

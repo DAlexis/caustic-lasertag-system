@@ -1,6 +1,7 @@
 ---
 layout: default
-title: Возможности системы
+title: Устройство
+header-nav: true
 ---
 
 About
