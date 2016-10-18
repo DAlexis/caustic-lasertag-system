@@ -28,8 +28,8 @@ $base-color-dark:  darken($base-color, 25%);
 $base-color-font-light: lighten($base-color, 80%);
 $base-color-font-middle: lighten($base-color, 40%);
 
-$text-color:       darken($base-color, 30%);
-
+$text-color:       darken($base-color, 10%);
+$background-color: lighten($base-color, 60%);
 
 
 // Width of the content area
@@ -137,8 +137,12 @@ ul.posts span {
     padding: 10px;
 	width: 300px;
 	background-color:$base-color-light;
-    
+    margin: 20px;
     .page-link {
+        color: $base-color-font-light;
+    }
+    
+    li {
         color: $base-color-font-light;
     }
 }
