@@ -26,6 +26,7 @@
 #include "core/logging.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/string-utils.hpp"
+#include "core/debug-settings.hpp"
 #include "hal/system-clock.hpp"
 #include <stdio.h>
 #include <string.h>
@@ -677,6 +678,7 @@ void NRF24L01Manager::flushRX()
 
 void NRF24L01Manager::printStatus()
 {
+#ifndef DBG_NRF_DISABLE
     updateStatus();
     readRXAdresses();
 	readTXAdress();
@@ -701,6 +703,7 @@ void NRF24L01Manager::printStatus()
     printf("RX P3: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP3);
     printf("RX P4: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP4);
     printf("RX P5: %x %x %x %x %x\n", m_RXAdressP1[0], m_RXAdressP1[1], m_RXAdressP1[2], m_RXAdressP1[3], m_RXAdressP5);
+#endif
 }
 
 void NRF24L01Manager::resetAllIRQ()

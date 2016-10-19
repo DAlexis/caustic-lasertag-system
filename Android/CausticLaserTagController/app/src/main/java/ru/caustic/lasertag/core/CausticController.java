@@ -14,15 +14,10 @@ public class CausticController {
         RCSProtocol.Operations.init();
         bridgeConnector.init(BluetoothManager.getInstance());
     }
-    public SettingsEditorContext getSettingsEditorContext() {
-        return settingsEditorContext;
-    }
-    public DevicesManager getDevicesManager() {
-        return devicesManager;
-    }
-    public BroadcastCalls getBroadcastCalls() {
-        return broadcastCalls;
-    }
+    public SettingsEditorContext getSettingsEditorContext() { return settingsEditorContext; }
+    public DevicesManager getDevicesManager() { return devicesManager; }
+    public BroadcastCalls getBroadcastCalls() { return broadcastCalls; }
+    public GameStatistics getGameStatistics() { return gameStatistics; }
 
     public class BroadcastCalls {
         public static final int RED    = 1;
@@ -102,6 +97,8 @@ public class CausticController {
     private BridgeConnector bridgeConnector = new BridgeConnector();
     private DevicesManager devicesManager = new DevicesManager(bridgeConnector);
     private SettingsEditorContext settingsEditorContext = new SettingsEditorContext(devicesManager);
+
+
     private GameStatistics gameStatistics = new GameStatistics(devicesManager);
     private BroadcastCalls broadcastCalls = new BroadcastCalls();
 }

@@ -20,7 +20,10 @@ public class DevicesManager {
     public interface SynchronizationEndHandler {
         void onSynchronizationEnd(boolean isSuccess);
     }
-
+    // @todo use it instead of handler
+    public interface DeviceListUpdatedHandler {
+        void onDevicesListUpdated();
+    }
     /**
      * Interface for any kinds of RCSP operations dispatcher outside from DevicesManager
      */
@@ -200,6 +203,13 @@ public class DevicesManager {
             stream.send(address);
         }
 
+        public void popFromDevice(int parameterToPop) {
+            // @todo Optimize: do not request parameters than not exists
+            RCSPMultiStream stream = new RCSPMultiStream();
+            stream.addObjectRequest(parameterToPop);
+            stream.send(address);
+        }
+
         public boolean areParametersSync()
         {
             for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : parameters.entrySet()) {
@@ -216,10 +226,17 @@ public class DevicesManager {
         /// @todo Make this class reusable without re-creation
         private final SynchronizationEndHandler handler;
         public final Set<BridgeConnector.DeviceAddress> devicesToPop;
+        public final int parameterToPop;
 
         public AsyncDataPopper(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
             handler = endHandler;
             devicesToPop = devices;
+            this.parameterToPop = 0;
+        }
+        public AsyncDataPopper(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices, int parameterToPop) {
+            handler = endHandler;
+            devicesToPop = devices;
+            this.parameterToPop = parameterToPop;
         }
 
         @Override
@@ -231,12 +248,18 @@ public class DevicesManager {
             for (BridgeConnector.DeviceAddress addr : devicesToPop) {
                 CausticDevice dev = devices.get(addr);
                 if (dev != null) {
-                    dev.popFromDevice();
+                    if (parameterToPop == 0) {
+                        dev.popFromDevice();
+                        if (!waitForDeviceSync(dev)) {
+                            syncSuccess = false;
+                        }
+                    } else {
+                        dev.popFromDevice(parameterToPop);
+                        if (!waitForDeviceSync(dev, parameterToPop)) {
+                            syncSuccess = false;
+                        }
+                    }
                 }
-                if (!waitForDeviceSync(dev)) {
-                    syncSuccess = false;
-                }
-
             }
             if (handler != null)
                 handler.onSynchronizationEnd(syncSuccess);
@@ -260,6 +283,17 @@ public class DevicesManager {
             }
             return true;
         }
+
+        private boolean waitForDeviceSync(CausticDevice device, int parameterId) {
+            // @todo Add timeout and handler support here
+            needStop = false;
+            while (!device.parameters.get(parameterId).isSync()) {
+                SystemClock.sleep(30);
+                if (needStop)
+                    return false;
+            }
+            return true;
+        }
     }
 
     // Public methods
@@ -268,6 +302,12 @@ public class DevicesManager {
         stream.addFunctionCall2(functionsContainer, operationId, argument);
         stream.send(target);
     }
+
+    /**
+     * Update devices list. Handler will be called after every new discovered device
+     * @param devicesListUpdated will be called after new device appeared. May be null
+     * @return true always
+     */
     public boolean updateDevicesList(Handler devicesListUpdated) {
         this.devicesListUpdatedHandler = devicesListUpdated;
         currentTask = new TaskUpdateDevicesList();
@@ -275,14 +315,24 @@ public class DevicesManager {
     }
     public void asyncPopParametersFromDevices(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
         // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
+        // @todo What about timeout, if device not respond?
         dataPopper = new AsyncDataPopper(endHandler, devices);
         dataPopper.start();
     }
+    public void asyncPopOneParameter(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices, int parameterId) {
+        // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
+        dataPopper = new AsyncDataPopper(endHandler, devices, parameterId);
+        dataPopper.start();
+    }
+    public void asyncPopPlayerIdsForAllSupportingDevices(SynchronizationEndHandler endHandler) {
+        asyncPopOneParameter(endHandler, devices.keySet(), RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId());
+    }
+
     public int getPlayerGameId(BridgeConnector.DeviceAddress deviceAddress) {
         CausticDevice dev = devices.get(deviceAddress);
         if (dev == null)
             return 0;
-        int parameterId = RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId();
+        int parameterId = RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId();
         int playerGameId = Integer.parseInt(dev.parameters.get(parameterId).getValue());
         return playerGameId;
     }
@@ -325,7 +375,8 @@ public class DevicesManager {
                 dev.addDeviceRelatedParameters();
                 //addPreferenceHeaderForDevice(dev);
                 //dev.popFromDevice();
-                devicesListUpdatedHandler.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
+                if (devicesListUpdatedHandler != null)
+                    devicesListUpdatedHandler.obtainMessage(DEVICES_LIST_UPDATED, 0, 0, devices).sendToTarget();
             }
         }
     }

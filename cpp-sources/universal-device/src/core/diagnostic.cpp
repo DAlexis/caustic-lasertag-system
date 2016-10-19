@@ -25,6 +25,7 @@
 #include "core/diagnostic.hpp"
 #include "core/logging.hpp"
 #include "core/power-monitor.hpp"
+#include "core/debug-settings.hpp"
 #include "hal/rtc.hpp"
 #include "string.h"
 
@@ -94,7 +95,9 @@ void SystemMonitor::registerStager(const Stager* stager)
 
 void SystemMonitor::run()
 {
+#ifndef DBG_SYSTEM_MONITOR_DISABLE
 	m_task.run(0, 5000, 5000, 0);
+#endif
 }
 
 void SystemMonitor::printSummary()

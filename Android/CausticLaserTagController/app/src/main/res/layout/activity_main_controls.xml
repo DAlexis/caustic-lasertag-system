@@ -75,5 +75,13 @@
             android:id="@+id/buttonDevsSettings"
             android:onClick="buttonSettingsClick" />
 
+        <Button
+            android:text="Game statistics..."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:id="@+id/buttonOpenGameStats"
+            android:onClick="buttonOpenGameStatsClick" />
+
     </LinearLayout>
 </RelativeLayout>

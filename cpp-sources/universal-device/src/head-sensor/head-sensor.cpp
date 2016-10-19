@@ -254,6 +254,17 @@ void HeadSensor::init(const Pinout &_pinout)
 
 	m_mfrcWrapper.init();
 	setFRIDToWriteAddr();
+
+	// Statistics dubug
+	m_statsCounter.clear();
+	m_statsCounter.registerHit(25);
+	m_statsCounter.registerHit(26);
+	m_statsCounter.registerHit(27);
+	m_statsCounter.registerDamage(25, 8);
+	m_statsCounter.registerDamage(26, 9);
+	m_statsCounter.registerDamage(27, 10);
+	m_statsCounter.registerKill(25);
+	m_statsCounter.registerKill(27);
 }
 
 void HeadSensor::resetToDefaults()
@@ -380,6 +391,7 @@ void HeadSensor::resetStats()
 
 void HeadSensor::readStats()
 {
+	debug << "Stats reading requested";
 	m_statsCounter.sendStats();
 }
 

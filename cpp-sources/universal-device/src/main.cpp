@@ -26,6 +26,7 @@
 #include "core/os-wrappers.hpp"
 #include "core/device-initializer.hpp"
 #include "core/diagnostic.hpp"
+#include "core/debug-settings.hpp"
 #include "dev/wav-player.hpp"
 #include "hal/adc.hpp"
 #include "hal/rtc.hpp"
@@ -55,7 +56,9 @@ int main(void)
 	printf("delay done\n");
 #ifdef DEBUG
 	debug.enable();
+#ifndef DBG_RADIO_DISABLE
 	radio.enable();
+#endif
 	//trace.enable();
 #endif
 	info << "=============== Device initialization ===============";

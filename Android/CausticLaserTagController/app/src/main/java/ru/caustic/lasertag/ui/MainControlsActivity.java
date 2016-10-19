@@ -51,6 +51,11 @@ public class MainControlsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void buttonOpenGameStatsClick(View v) {
+        Intent intent = new Intent (MainControlsActivity.this, GameStatsActivity.class);
+        startActivity(intent);
+    }
+
     private void doScan()
     {
         devsInArea = 0;

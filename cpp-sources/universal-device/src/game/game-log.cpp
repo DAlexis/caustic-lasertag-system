@@ -150,6 +150,7 @@ void BaseStatsCounter::sendStats()
 
 void BaseStatsCounter::sendNextPackage()
 {
+	debug << "BaseStatsCounter::sendNextPackage() /////////////////////////////////////***********************";
 	ScopedLock<CritialSection> lock(m_iteratorCheck);
 		if (m_iteratorCorrupted)
 		{
@@ -194,6 +195,7 @@ void BaseStatsCounter::prepareTransmission()
 
 void BaseStatsCounter::waitDelay()
 {
+	debug << "BaseStatsCounter::waitDelay()";
 	if (systemClock->getTime() - m_waitingBeginned >= delayAfterChunk)
 	{
 		m_sendingState = S_READY_TO_TRANSMIT;
@@ -202,11 +204,13 @@ void BaseStatsCounter::waitDelay()
 
 void BaseStatsCounter::onTransmissionBroken()
 {
+	debug << "BaseStatsCounter::onTransmissionBroken()";
 	m_sendingState = S_NOTHING;
 }
 
 void BaseStatsCounter::onTransmissionSucceeded()
 {
+	debug << "BaseStatsCounter::onTransmissionSucceeded()";
 	m_waitingBeginned = systemClock->getTime();
 	m_sendingState = S_WAIT_DELAY_AFTER_CHUNK;
 }

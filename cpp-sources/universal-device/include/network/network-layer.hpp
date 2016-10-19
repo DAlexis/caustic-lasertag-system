@@ -72,6 +72,7 @@ struct Package
 
 	uint8_t payload[payloadLength];
 };
+static_assert(sizeof(Package) == Package::packageLength, "Network layer package size is bad");
 #pragma pack(pop)
 
 class NetworkLayer
