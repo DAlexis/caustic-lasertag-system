@@ -2,8 +2,12 @@ package ru.caustic.lasertag.core;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Created by dalexies on 13.10.16.
@@ -17,7 +21,7 @@ public class GameStatistics {
     public static final int OP_CODE_GET_PVP_RESULTS = 3001;
 
     public static class PvPStats {
-        public int damage = 0;
+        public long damage = 0;
         public int kills = 0;
         public int hits = 0;
     }
@@ -48,13 +52,13 @@ public class GameStatistics {
         String result = "";
         for (TreeMap.Entry<Integer, TreeMap<Integer, PvPStats>> playerStats : pvpStatsMap.entrySet())
         {
-            result = playerStats.getKey().toString() + ": ";
+            result += playerStats.getKey().toString() + ": ";
             for (TreeMap.Entry<Integer, PvPStats> victim : playerStats.getValue().entrySet())
             {
                 result += "to " + Integer.toString(victim.getKey()) + " <- ";
                 switch (statParType) {
                     case KILLS_COUNT: result += Integer.toString(victim.getValue().kills); break;
-                    case DAMAGE: result += Integer.toString(victim.getValue().damage); break;
+                    case DAMAGE: result += Long.toString(victim.getValue().damage); break;
                     case HITS_COUNT: result += Integer.toString(victim.getValue().hits); break;
                 }
                 result += " | ";
@@ -184,11 +188,11 @@ public class GameStatistics {
     }
     private void buildStatisticsTable() {
         pvpStatsMap.clear();
-        for (Map.Entry<Integer, PvPDamageResults> entry : pvpResultsMap.entrySet())
+        for (PvPDamageResults entry : pvpResultsMap)
         {
-            int victimId = entry.getKey();
-            int enemyId = entry.getValue().enemyId;
-            PvPDamageResults pvpRes = entry.getValue();
+            int victimId = entry.playerId;
+            int enemyId = entry.enemyId;
+            PvPDamageResults pvpRes = entry;
 
             TreeMap<Integer, PvPStats> enemyStats = pvpStatsMap.get(enemyId);
             if (enemyStats == null) {
@@ -202,14 +206,14 @@ public class GameStatistics {
                 enemyStats.put(victimId, pvpStats);
             }
 
-            pvpStats.damage += pvpRes.totalDamage;
-            pvpStats.hits   += pvpRes.hitsCount;
-            pvpStats.kills  += pvpRes.killsCount;
+            pvpStats.damage = pvpRes.totalDamage;
+            pvpStats.hits   = pvpRes.hitsCount;
+            pvpStats.kills  = pvpRes.killsCount;
         }
     }
 
     private void addPvPRawResult(PvPDamageResults pvpDamageResults) {
-        pvpResultsMap.put(pvpDamageResults.playerId, pvpDamageResults);
+        pvpResultsMap.add(pvpDamageResults);
         updateLastDataReceivedTime();
     }
     private void clearStatistics() {
@@ -238,6 +242,5 @@ public class GameStatistics {
     /**
      * Map: victim id => PvPDamageResult (raw data from devices)
      */
-    private Map<Integer, PvPDamageResults> pvpResultsMap = new TreeMap<>();
-
+    private List<PvPDamageResults> pvpResultsMap = new ArrayList<>();
 }

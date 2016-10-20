@@ -26,6 +26,8 @@
 #include "fatfs.h"
 #include <stdio.h>
 
+SINGLETON_IN_CPP(RCSPNetworkListener)
+
 RCSPStream::RCSPStream(uint16_t size) :
 	m_size(size)
 {
@@ -220,16 +222,38 @@ DetailedResult<FRESULT> RCSPMultiStream::writeToFile(FIL* file)
 	}
 }
 
-
-ReceivePackageCallback RCSPMultiStream::getPackageReceiver()
+RCSPNetworkListener::RCSPNetworkListener()
 {
-	return [](DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+
+}
+
+ReceivePackageCallback RCSPNetworkListener::getPackageReceiver()
+{
+	return [this](DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
 	{
-		RCSPMultiStream answerStream;
-		RCSPAggregator::instance().dispatchStream(payload, payloadLength, &answerStream);
-		if (!answerStream.empty())
-		{
-			answerStream.send(sender, true);
-		}
+		packagesReceiver(sender, payload, payloadLength);
 	};
+}
+
+void RCSPNetworkListener::packagesReceiver(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+{
+	RCSPMultiStream answerStream;
+	m_currentDeviceAddress = sender;
+	m_hasDeviceAddress = true;
+	RCSPAggregator::instance().dispatchStream(payload, payloadLength, &answerStream);
+	m_hasDeviceAddress = false;
+	if (!answerStream.empty())
+	{
+		answerStream.send(sender, true);
+	}
+}
+
+bool RCSPNetworkListener::hasSender()
+{
+	return m_hasDeviceAddress;
+}
+
+DeviceAddress RCSPNetworkListener::sender()
+{
+	return m_currentDeviceAddress;
 }

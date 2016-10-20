@@ -191,7 +191,7 @@ void HeadSensor::init(const Pinout &_pinout)
 
 	info << "Network initialization";
 	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
-	NetworkLayer::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
+	NetworkLayer::instance().setPackageReceiver(RCSPNetworkListener::instance().getPackageReceiver());
 	NetworkLayer::instance().registerBroadcast(broadcast.any);
 	NetworkLayer::instance().registerBroadcast(broadcast.headSensors);
 	NetworkLayer::instance().registerBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
@@ -392,7 +392,11 @@ void HeadSensor::resetStats()
 void HeadSensor::readStats()
 {
 	debug << "Stats reading requested";
-	m_statsCounter.sendStats();
+	if (!RCSPNetworkListener::instance().hasSender())
+	{
+		warning << "Stats reading request not over network!";
+	}
+	m_statsCounter.sendStats(RCSPNetworkListener::instance().sender());
 }
 
 void HeadSensor::dieWeapons()

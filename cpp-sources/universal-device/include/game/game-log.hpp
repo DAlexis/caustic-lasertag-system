@@ -49,7 +49,7 @@ namespace GameLog
 		void restoreFromFile();
 
 		void interrogate();
-		void sendStats();
+		void sendStats(DeviceAddress target);
 
 	private:
 		static const char* filename;
@@ -76,7 +76,7 @@ namespace GameLog
 
 		FIL m_file;
 
-		DeviceAddress m_statsReceiver = broadcast.bluetoothBridges;
+		DeviceAddress m_statsReceiver;
 		StatsSendingState m_sendingState;
 
 		CritialSection m_iteratorCheck;

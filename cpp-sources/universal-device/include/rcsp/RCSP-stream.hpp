@@ -158,8 +158,6 @@ public:
 
 	void dispatch();
 
-	static ReceivePackageCallback getPackageReceiver();
-
 	DetailedResult<FRESULT> writeToFile(FIL* file);
 
 private:
@@ -167,6 +165,20 @@ private:
 	std::list<std::shared_ptr<RCSPStream>> m_streams;
 };
 
+class RCSPNetworkListener
+{
+public:
+	SIGLETON_IN_CLASS(RCSPNetworkListener);
+	ReceivePackageCallback getPackageReceiver();
 
+	bool hasSender();
+	DeviceAddress sender();
+
+private:
+	RCSPNetworkListener();
+	void packagesReceiver(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
+	bool m_hasDeviceAddress = false;
+	DeviceAddress m_currentDeviceAddress;
+};
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_ */

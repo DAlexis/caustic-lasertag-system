@@ -362,9 +362,11 @@ public class DevicesManager {
             List<RCSProtocol.RCSPOperation> operations = RCSProtocol.RCSPOperation.parseStream(data, offset, size);
             for (RCSProtocol.RCSPOperation operation : operations)
             {
-                if (dev.parameters.deserializeOneParamter(operation) == 0) {
+                if (operation.isNOP())
+                    continue;
+                if (dispatchByExternal(address, operation) == 0) {
                     // It is not parameter of device so maybe it is command for android?
-                    dispatchByExternal(address, operation);
+                    dev.parameters.deserializeOneParamter(operation);
                 }
             }
 

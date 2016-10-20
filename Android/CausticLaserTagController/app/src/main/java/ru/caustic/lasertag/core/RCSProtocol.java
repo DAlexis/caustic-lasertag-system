@@ -31,6 +31,10 @@ public class RCSProtocol {
         public byte[] argument = null;
         public int argumentSize = 0;
 
+        public boolean isNOP() {
+            return id == 0;
+        }
+
         public int size() {
             return argumentSize + 3;
         }

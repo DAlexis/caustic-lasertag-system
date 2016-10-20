@@ -142,15 +142,16 @@ void BaseStatsCounter::interrogate()
 	}
 }
 
-void BaseStatsCounter::sendStats()
+void BaseStatsCounter::sendStats(DeviceAddress target)
 {
+	m_statsReceiver = target;
 	prepareTransmission();
 }
 
 
 void BaseStatsCounter::sendNextPackage()
 {
-	debug << "BaseStatsCounter::sendNextPackage() /////////////////////////////////////***********************";
+	debug << "BaseStatsCounter::sendNextPackage()";
 	ScopedLock<CritialSection> lock(m_iteratorCheck);
 		if (m_iteratorCorrupted)
 		{
@@ -169,7 +170,7 @@ void BaseStatsCounter::sendNextPackage()
 		m_sendingIterator++;
 		// Now we have valid object and we can send it
 	lock.unlock();
-
+	debug << "Sending from " << target.enemyId;
 	m_sendingState = S_WAITING_FOR_TRANSMISSIO_RESULT;
 	RCSPStream::remoteCall(
 		m_statsReceiver,

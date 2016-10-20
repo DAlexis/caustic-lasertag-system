@@ -363,7 +363,7 @@ void Rifle::init(const Pinout& pinout)
 
 	info << "RCSP modem initialization";
 	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
-	NetworkLayer::instance().setPackageReceiver(RCSPMultiStream::getPackageReceiver());
+	NetworkLayer::instance().setPackageReceiver(RCSPNetworkListener::instance().getPackageReceiver());
 	NetworkLayer::instance().registerBroadcast(broadcast.any);
 	NetworkLayer::instance().registerBroadcast(broadcast.rifles);
 
