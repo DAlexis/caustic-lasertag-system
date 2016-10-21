@@ -3,8 +3,6 @@
 ---
 @charset "utf-8";
 
-
-
 // Our variables
 $base-font-family: Helvetica, Arial, sans-serif;
 $base-font-size:   16px;
@@ -134,7 +132,9 @@ ul.posts span {
 
 .doc-navigation {
     float: right;
-    padding: 10px;
+    padding: 20px;
+    padding-left: 5px;
+    padding-bottom: 5px;
     background-color:$base-color-light;
     margin: 20px;
     .page-link {
