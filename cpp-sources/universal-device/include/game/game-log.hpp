@@ -40,6 +40,7 @@ namespace GameLog
 	class BaseStatsCounter : public IAnyStateSaver
 	{
 	public:
+		BaseStatsCounter(const PlayerGameId& hostPlayerId);
 		void registerDamage(PlayerGameId player, uint16_t damage);
 		void registerHit(PlayerGameId player);
 		void registerKill(PlayerGameId player);
@@ -68,7 +69,7 @@ namespace GameLog
 		void onTransmissionBroken();
 		void onTransmissionSucceeded();
 
-		void checkAndCreate(PlayerGameId player);
+		void checkAndCreate(PlayerGameId enemy);
 
 		std::map<PlayerGameId, PvPDamageResults> m_results;
 		std::map<PlayerGameId, PvPDamageResults>::iterator m_sendingIterator;
@@ -77,10 +78,12 @@ namespace GameLog
 		FIL m_file;
 
 		DeviceAddress m_statsReceiver;
-		StatsSendingState m_sendingState;
+		StatsSendingState m_sendingState = S_NOTHING;
 
 		CritialSection m_iteratorCheck;
 		Time m_waitingBeginned = 0;
+
+		const PlayerGameId& m_hostPlayerId;
 	};
 
 	struct Event

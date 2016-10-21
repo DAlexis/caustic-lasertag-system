@@ -159,7 +159,7 @@ public class SettingsEditorContext {
     public final Set<BridgeConnector.DeviceAddress> getDevicesSelectedToEdit() {
         return devices;
     }
-    public void asyncPopParametersFromSelectedDevices(DevicesManager.SynchronizationEndHandler endHandler)
+    public void asyncPopParametersFromSelectedDevices(DevicesManager.SynchronizationEndListener endHandler)
     {
         devicesManager.asyncPopParametersFromDevices(endHandler, devices);
     }

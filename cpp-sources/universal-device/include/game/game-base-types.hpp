@@ -50,7 +50,7 @@ namespace GameLog
 	 */
 	struct PvPDamageResults
 	{
-		//PlayerGameId playerId = 0;
+		PlayerGameId victimId = 0;
 		PlayerGameId enemyId = 0;
 		uint16_t killsCount = 0; //< Players bullet killed player
 		uint16_t hitsCount = 0; //< hits except kills

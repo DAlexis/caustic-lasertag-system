@@ -532,7 +532,7 @@ public class DeviceSettingsFragment extends Fragment {
     /**
      * Hold message when all settings are loaded from devices and entries ready to be created
      */
-    private class ParametersListUpdater implements DevicesManager.SynchronizationEndHandler {
+    private class ParametersListUpdater implements DevicesManager.SynchronizationEndListener {
         @Override
         public void onSynchronizationEnd(boolean isSuccess) {
             if (isSuccess) {

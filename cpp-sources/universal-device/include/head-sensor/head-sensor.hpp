@@ -140,7 +140,7 @@ private:
 
 	Interrogator m_killZonesInterogator;
 
-	GameLog::BaseStatsCounter m_statsCounter;
+	GameLog::BaseStatsCounter m_statsCounter{playerConfig.plyerMT2Id};
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
 	RC552Wrapper m_mfrcWrapper;

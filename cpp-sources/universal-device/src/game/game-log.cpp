@@ -31,13 +31,20 @@ using namespace GameLog;
 
 const char* BaseStatsCounter::filename = "base-stat.bin";
 
-void BaseStatsCounter::checkAndCreate(PlayerGameId player)
+BaseStatsCounter::BaseStatsCounter(const PlayerGameId& hostPlayerId) :
+		m_hostPlayerId(hostPlayerId)
 {
-	auto it = m_results.find(player);
+
+}
+
+void BaseStatsCounter::checkAndCreate(PlayerGameId enemy)
+{
+	auto it = m_results.find(enemy);
 	if (it == m_results.end())
 	{
-		m_results[player] = PvPDamageResults();
-		m_results[player].enemyId = player;
+		m_results[enemy] = PvPDamageResults();
+		m_results[enemy].enemyId = enemy;
+		m_results[enemy].victimId = m_hostPlayerId;
 		m_iteratorCorrupted = true;
 	}
 }

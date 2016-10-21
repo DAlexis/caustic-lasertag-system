@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * This class knows all connected devices and can pop their full states (all their parameters).
@@ -17,11 +16,11 @@ import java.util.TreeSet;
  */
 public class DevicesManager {
     // Public classes
-    public interface SynchronizationEndHandler {
+    public interface SynchronizationEndListener {
         void onSynchronizationEnd(boolean isSuccess);
     }
     // @todo use it instead of handler
-    public interface DeviceListUpdatedHandler {
+    public interface DeviceListUpdatedListener {
         void onDevicesListUpdated();
     }
     /**
@@ -224,16 +223,16 @@ public class DevicesManager {
      */
     public class AsyncDataPopper extends Thread {
         /// @todo Make this class reusable without re-creation
-        private final SynchronizationEndHandler handler;
+        private final SynchronizationEndListener handler;
         public final Set<BridgeConnector.DeviceAddress> devicesToPop;
         public final int parameterToPop;
 
-        public AsyncDataPopper(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
+        public AsyncDataPopper(SynchronizationEndListener endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
             handler = endHandler;
             devicesToPop = devices;
             this.parameterToPop = 0;
         }
-        public AsyncDataPopper(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices, int parameterToPop) {
+        public AsyncDataPopper(SynchronizationEndListener endHandler, final Set<BridgeConnector.DeviceAddress> devices, int parameterToPop) {
             handler = endHandler;
             devicesToPop = devices;
             this.parameterToPop = parameterToPop;
@@ -313,18 +312,18 @@ public class DevicesManager {
         currentTask = new TaskUpdateDevicesList();
         return true;
     }
-    public void asyncPopParametersFromDevices(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
+    public void asyncPopParametersFromDevices(SynchronizationEndListener endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
         // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
         // @todo What about timeout, if device not respond?
         dataPopper = new AsyncDataPopper(endHandler, devices);
         dataPopper.start();
     }
-    public void asyncPopOneParameter(SynchronizationEndHandler endHandler, final Set<BridgeConnector.DeviceAddress> devices, int parameterId) {
+    public void asyncPopOneParameter(SynchronizationEndListener endHandler, final Set<BridgeConnector.DeviceAddress> devices, int parameterId) {
         // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
         dataPopper = new AsyncDataPopper(endHandler, devices, parameterId);
         dataPopper.start();
     }
-    public void asyncPopPlayerIdsForAllSupportingDevices(SynchronizationEndHandler endHandler) {
+    public void asyncPopPlayerIdsForAllSupportingDevices(SynchronizationEndListener endHandler) {
         asyncPopOneParameter(endHandler, devices.keySet(), RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId());
     }
 

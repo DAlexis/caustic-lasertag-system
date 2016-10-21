@@ -21,9 +21,10 @@ public class GameStatsActivity extends AppCompatActivity {
 
 
     // Private
-    private class OnStatsUpdatedListener implements GameStatistics.StatsSyncDoneListener {
+    private class OnStatsUpdatedListener implements GameStatistics.StatsChangeListener {
+
         @Override
-        public void onStatsSyncDone()
+        public void onStatsChange(int victimId, int damagerId)
         {
             runOnUiThread(new Runnable() {
                 @Override
@@ -38,7 +39,8 @@ public class GameStatsActivity extends AppCompatActivity {
 
     private void doUpdate() {
         textViewStatistics.setText("Updating in progress...");
-        CausticController.getInstance().getGameStatistics().readStatsAsync(onStatsUpdatedListener);
+        CausticController.getInstance().getGameStatistics().setStatsChangeListener(onStatsUpdatedListener);
+        CausticController.getInstance().getGameStatistics().updateStats();
     }
 
     private OnStatsUpdatedListener onStatsUpdatedListener = new OnStatsUpdatedListener();
