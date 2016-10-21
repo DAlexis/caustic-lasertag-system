@@ -61,6 +61,10 @@ public class GameStatistics {
         sendRequest();
     }
 
+    public void clearStatistics() {
+        pvpStatsMap.clear();
+    }
+
     public String getStatisticsTableStrStub(int statParType) {
         String result = "";
         for (TreeMap.Entry<Integer, TreeMap<Integer, PvPStats>> playerStats : pvpStatsMap.entrySet())
@@ -168,10 +172,6 @@ public class GameStatistics {
         pvpStats.damage = pvpRawResults.totalDamage;
         pvpStats.hits   = pvpRawResults.hitsCount;
         pvpStats.kills  = pvpRawResults.killsCount;
-    }
-
-    private void clearStatistics() {
-        pvpStatsMap.clear();
     }
 
     private boolean isWaitingTimeOver() {

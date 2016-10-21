@@ -22,6 +22,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.util.Set;
+
+import ru.caustic.lasertag.core.BridgeConnector;
 import ru.caustic.lasertag.core.CausticController;
 import ru.caustic.lasertag.core.DevicesManager;
 import ru.caustic.lasertag.core.RCSProtocol;
@@ -534,9 +537,17 @@ public class DeviceSettingsFragment extends Fragment {
      */
     private class ParametersListUpdater implements DevicesManager.SynchronizationEndListener {
         @Override
-        public void onSynchronizationEnd(boolean isSuccess) {
+        public void onSynchronizationEnd(boolean isSuccess, final Set<BridgeConnector.DeviceAddress> notSynchronized) {
             if (isSuccess) {
                 getActivity().runOnUiThread(new ListEntriesCreator());
+            } else {
+                //CausticController.getInstance().getSettingsEditorContext().
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().finish();
+                    }
+                });
             }
         }
     }

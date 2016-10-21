@@ -60,27 +60,20 @@ public class MainControlsActivity extends AppCompatActivity {
     {
         devsInArea = 0;
         updateDevsCountInAreaUI();
-        devicesManager.updateDevicesList(
-                new Handler() {
-                    public void handleMessage(android.os.Message msg) {
-                        switch (msg.what) {
-                            case DevicesManager.DEVICES_LIST_UPDATED:
-                                Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devs =
-                                        (Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice>) msg.obj;
+        devicesManager.setDeviceListUpdatedListener(new DevicesManager.DeviceListUpdatedListener() {
+            @Override
+            public void onDevicesListUpdated() {
+                devsInArea = devicesManager.devices.size();
 
-                                devsInArea = devs.size();
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        updateDevsCountInAreaUI();
-                                    }
-                                });
-                                break;
-                        }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateDevsCountInAreaUI();
                     }
-                }
-        );
+                });
+            }
+        });
+        devicesManager.updateDevicesList();
     }
 
     private void updateDevsCountInAreaUI() {

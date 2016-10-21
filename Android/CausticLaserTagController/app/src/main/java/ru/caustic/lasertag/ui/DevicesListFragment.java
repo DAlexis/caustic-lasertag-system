@@ -66,29 +66,27 @@ public class DevicesListFragment extends Fragment {
         adapter = new DevicesListAdapter();
         devicesList.setAdapter(adapter);
 
-        editorContext.clearSelectedToEdit();
-
-        devicesManager.updateDevicesList(
-                new Handler() {
-                    public void handleMessage(android.os.Message msg) {
-                        switch (msg.what) {
-                            case DevicesManager.DEVICES_LIST_UPDATED:
-                                Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devs =
-                                        (Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice>) msg.obj;
-
-                                adapter.clear();
-
-                                for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devs.entrySet()) {
-                                    adapter.addItem(new DevicesListElementHolder(entry.getValue()));
-                                }
-
-                                adapter.notifyDataSetChanged();
-                                break;
-                        }
-                    }
-                });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        editorContext.clearSelectedToEdit();
+
+        devicesManager.setDeviceListUpdatedListener(new DevicesManager.DeviceListUpdatedListener() {
+            @Override
+            public void onDevicesListUpdated() {
+                adapter.clear();
+                for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devicesManager.devices.entrySet()) {
+                    adapter.addItem(new DevicesListElementHolder(entry.getValue()));
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+        });
+        devicesManager.updateDevicesList();
     }
 
     private class DevicesListElementHolder {
