@@ -3,8 +3,6 @@
 ---
 @charset "utf-8";
 
-
-
 // Our variables
 $base-font-family: Helvetica, Arial, sans-serif;
 $base-font-size:   16px;
@@ -130,11 +128,28 @@ ul.posts span {
 
 #documentation {
     //float: right;
+    table {
+		border-collapse: collapse;
+    }
+    table, th, td {
+		border: 1px solid $base-color-light;
+		padding: 5px;
+		padding-left: 8px;
+		padding-right: 8px;
+		margin-bottom: 15px;
+    }
+    th {
+		padding-top: 10px;
+		background-color: $base-color-light;
+		color: $base-color-font-light;
+    }
 }
 
 .doc-navigation {
     float: right;
-    padding: 10px;
+    padding: 20px;
+    padding-left: 5px;
+    padding-bottom: 5px;
     background-color:$base-color-light;
     margin: 20px;
     .page-link {

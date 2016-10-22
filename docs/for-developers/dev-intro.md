@@ -2,7 +2,7 @@
 layout: documentation
 title: Документация
 show-on-header: true
-is-documentation: true
+is-documentation: false
 ---
 
 ## Документация
