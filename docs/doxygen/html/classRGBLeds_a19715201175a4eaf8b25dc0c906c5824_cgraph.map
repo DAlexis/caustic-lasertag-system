@@ -1,0 +1,6 @@
+<map id="RGBLeds::blink" name="RGBLeds::blink">
+<area shape="rect" id="node2" href="$classRGBLeds.html#a304de52a947390f951d36ede657cee27" title="RGBLeds::changeState" alt="" coords="179,31,348,57"/>
+<area shape="rect" id="node5" href="$classRGBLeds.html#a87ca030b945f24961aa456b0479bc2cb" title="RGBLeds::getTeamColor" alt="" coords="173,81,353,108"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="408,5,496,32"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="401,56,503,83"/>
+</map>

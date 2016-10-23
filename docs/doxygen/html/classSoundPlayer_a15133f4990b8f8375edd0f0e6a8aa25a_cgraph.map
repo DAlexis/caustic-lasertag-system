@@ -1,0 +1,5 @@
+<map id="SoundPlayer::play" name="SoundPlayer::play">
+<area shape="rect" id="node2" href="$classRandom.html#ae8c77282eb00d4e016ec0b09db9d4a30" title="Random::random" alt="" coords="192,5,327,32"/>
+<area shape="rect" id="node3" href="$classRandom.html#acda9ac43bcda0568c2cccfe48dd787a7" title="Random::random32" alt="" coords="375,5,525,32"/>
+<area shape="rect" id="node4" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="573,5,747,32"/>
+</map>

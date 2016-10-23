@@ -1,0 +1,6 @@
+<map id="RGBLeds::blinkingTask" name="RGBLeds::blinkingTask">
+<area shape="rect" id="node2" href="$classRGBLeds.html#a304de52a947390f951d36ede657cee27" title="RGBLeds::changeState" alt="" coords="224,31,393,57"/>
+<area shape="rect" id="node5" href="$classKernel.html#a1bc0580e1de6012f24a8f90284d95914" title="Kernel::yeld" alt="" coords="259,81,359,108"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="448,5,536,32"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="441,56,543,83"/>
+</map>

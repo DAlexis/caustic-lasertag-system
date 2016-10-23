@@ -1,0 +1,4 @@
+<map id="glcd_test_tiny_text" name="glcd_test_tiny_text">
+<area shape="rect" id="node2" href="$lcd5110_8cpp.html#ab7cce8122024d7ba47bf10f434956de4" title="delay_ms" alt="" coords="200,5,285,32"/>
+<area shape="rect" id="node3" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="333,5,503,32"/>
+</map>

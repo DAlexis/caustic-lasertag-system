@@ -1,0 +1,12 @@
+<map id="NRF24L01Manager::switchToTX" name="NRF24L01Manager::switchToTX">
+<area shape="rect" id="node2" href="$classNRF24L01Manager.html#ae96cafa72a9f198ae9a285b5c91679da" title="NRF24L01Manager::chipEnableOff" alt="" coords="541,5,784,32"/>
+<area shape="rect" id="node4" href="$classNRF24L01Manager.html#a497dc807b11e2d45f867fea6d2ef06d9" title="NRF24L01Manager::setConfig" alt="" coords="280,75,493,101"/>
+<area shape="rect" id="node11" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="302,125,471,152"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="1115,24,1216,51"/>
+<area shape="rect" id="node5" href="$classNRF24L01Manager.html#a8c5613ce71132da8e2fe2b33826ad4ba" title="NRF24L01Manager::writeReg" alt="" coords="558,100,767,127"/>
+<area shape="rect" id="node6" href="$classNRF24L01Manager.html#a12b07071e40e40857c42fcc14d8c2a0f" title="NRF24L01Manager::chipSelect" alt="" coords="840,49,1059,76"/>
+<area shape="rect" id="node7" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="839,100,1059,127"/>
+<area shape="rect" id="node8" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="865,151,1033,177"/>
+<area shape="rect" id="node9" href="$classNRF24L01Manager.html#a2007d3cdba4fa69df39421ec0496b498" title="NRF24L01Manager::chipDeselect" alt="" coords="832,201,1067,228"/>
+<area shape="rect" id="node10" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="1121,201,1209,228"/>
+</map>

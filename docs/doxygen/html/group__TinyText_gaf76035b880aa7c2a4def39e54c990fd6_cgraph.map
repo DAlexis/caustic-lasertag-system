@@ -1,0 +1,5 @@
+<map id="glcd_tiny_invert_line" name="glcd_tiny_invert_line">
+<area shape="rect" id="node2" href="$group__Graphics.html#ga4da9ce4ca69f8aba67221f444639b6ec" title="glcd_invert_area" alt="" coords="211,5,341,32"/>
+<area shape="rect" id="node3" href="$group__Graphics.html#gad4a67c658c79370813d69648680d7008" title="glcd_invert_pixel" alt="" coords="389,5,523,32"/>
+<area shape="rect" id="node4" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="571,5,711,32"/>
+</map>

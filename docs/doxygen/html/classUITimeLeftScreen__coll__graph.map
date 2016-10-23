@@ -1,0 +1,16 @@
+<map id="UITimeLeftScreen" name="UITimeLeftScreen">
+<area shape="rect" id="node3" href="$classSmartPointUI.html" title="SmartPointUI" alt="" coords="812,153,920,180"/>
+<area shape="rect" id="node2" href="$classUIStateBase.html" title="UIStateBase" alt="" coords="1039,144,1141,171"/>
+<area shape="rect" id="node11" href="$classUIInitScreen.html" title="UIInitScreen" alt="" coords="1191,107,1292,133"/>
+<area shape="rect" id="node4" href="$classRGBLeds.html" title="RGBLeds" alt="" coords="524,321,604,348"/>
+<area shape="rect" id="node5" href="$classTaskCycled.html" title="TaskCycled" alt="" coords="175,344,273,371"/>
+<area shape="rect" id="node6" href="$classTaskBase.html" title="TaskBase" alt="" coords="5,344,91,371"/>
+<area shape="rect" id="node7" href="$classIIOPin.html" title="IIOPin" alt="" coords="194,224,254,251"/>
+<area shape="rect" id="node13" href="$classMatrixKeyboard.html" title="MatrixKeyboard" alt="" coords="501,236,627,263"/>
+<area shape="rect" id="node8" href="$structRGBLeds_1_1BlinkPattern.html" title="RGBLeds::BlinkPattern" alt="" coords="140,429,308,456"/>
+<area shape="rect" id="node12" href="$classSmartPointBlinkPatterns.html" title="SmartPointBlinkPatterns" alt="" coords="473,407,655,433"/>
+<area shape="rect" id="node9" href="$classSmartPointState.html" title="SmartPointState" alt="" coords="500,57,628,84"/>
+<area shape="rect" id="node10" href="$classSmartPointConfig.html" title="SmartPointConfig" alt="" coords="156,57,292,84"/>
+<area shape="rect" id="node14" href="$classLCD5110Controller.html" title="LCD5110Controller" alt="" coords="492,108,636,135"/>
+<area shape="rect" id="node15" href="$classISPIUser.html" title="ISPIUser" alt="" coords="186,108,262,135"/>
+</map>

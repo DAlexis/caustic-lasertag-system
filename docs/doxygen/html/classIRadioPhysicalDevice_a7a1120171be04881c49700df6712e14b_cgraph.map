@@ -1,0 +1,9 @@
+<map id="IRadioPhysicalDevice::~IRadioPhysicalDevice" name="IRadioPhysicalDevice::~IRadioPhysicalDevice">
+<area shape="rect" id="node2" href="$classIRadioPhysicalDevice.html#aa6efa3766a01ec6ded009e7098f24a2a" title="IRadioPhysicalDevice\l::getPayloadSize" alt="" coords="248,5,411,47"/>
+<area shape="rect" id="node3" href="$classIRadioPhysicalDevice.html#aace95fa2141aa5f9783e06d1f4e4ebbf" title="IRadioPhysicalDevice\l::printStatus" alt="" coords="248,71,411,112"/>
+<area shape="rect" id="node4" href="$classIRadioPhysicalDevice.html#ade34f74e3d7b729af1e401b1699e39ac" title="IRadioPhysicalDevice\l::sendData" alt="" coords="248,136,411,177"/>
+<area shape="rect" id="node5" href="$classIRadioPhysicalDevice.html#ab746c9e2c36957cc713ae43d8124dfc7" title="IRadioPhysicalDevice\l::setDataReceiveCallback" alt="" coords="235,201,424,243"/>
+<area shape="rect" id="node6" href="$classIRadioPhysicalDevice.html#aa5f3a6180e6628d80fdaba703e2cb6bb" title="IRadioPhysicalDevice\l::setRXAddress" alt="" coords="248,267,411,308"/>
+<area shape="rect" id="node7" href="$classIRadioPhysicalDevice.html#a6e3166ba8cf74fbe4df5f961e13b3a79" title="IRadioPhysicalDevice\l::setTXAddress" alt="" coords="248,332,411,373"/>
+<area shape="rect" id="node8" href="$classIRadioPhysicalDevice.html#a735a147636b961fa04149f72fc0e8c34" title="IRadioPhysicalDevice\l::setTXDoneCallback" alt="" coords="248,397,411,439"/>
+</map>

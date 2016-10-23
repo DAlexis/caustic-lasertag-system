@@ -1,0 +1,5 @@
+<map id="glcd_tiny_draw_string" name="glcd_tiny_draw_string">
+<area shape="rect" id="node2" href="$group__TinyText.html#ga5ba33d2c7a7bd5c397963f0d0dffd628" title="glcd_tiny_draw_char" alt="" coords="444,5,599,32"/>
+<area shape="rect" id="node4" href="$group__TinyText.html#gade30aed750a83809464e75feff501da9" title="glcd_tiny_draw_string_P" alt="" coords="217,31,396,57"/>
+<area shape="rect" id="node3" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="647,5,787,32"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="MFRC522::PCD_ClearRegisterBitMask" name="MFRC522::PCD_ClearRegisterBitMask">
+<area shape="rect" id="node2" href="$classMFRC522.html#a4d81572f8b9ed0ffb1f59270cdffc310" title="MFRC522::PCD_ReadRegister" alt="" coords="267,107,477,133"/>
+<area shape="rect" id="node7" href="$classMFRC522.html#aa97f1faf2a4c82b911d7c3ed2535bb59" title="MFRC522::PCD_WriteRegister" alt="" coords="265,56,479,83"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="586,5,687,32"/>
+<area shape="rect" id="node4" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="553,56,721,83"/>
+<area shape="rect" id="node5" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="527,157,747,184"/>
+<area shape="rect" id="node6" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="593,107,681,133"/>
+</map>

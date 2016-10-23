@@ -1,0 +1,11 @@
+<map id="BluetoothBridge::init" name="BluetoothBridge::init">
+<area shape="rect" id="node2" href="$classIUARTsFactory.html#aa040bbe850d7ec458e30eaaf463c16c2" title="IUARTsFactory::create" alt="" coords="231,5,397,32"/>
+<area shape="rect" id="node3" href="$classIIOPinsPool.html#a78873d802cf5ecc1480a04345ec9a5fa" title="IIOPinsPool::getIOPin" alt="" coords="235,56,393,83"/>
+<area shape="rect" id="node4" href="$classHardwareInitializer.html#a88a2979cc8747c72cd00a88c2298844e" title="HardwareInitializer\l::init" alt="" coords="241,107,387,149"/>
+<area shape="rect" id="node10" href="$classIUARTManager.html#a78b822f928980504e965da02b904c498" title="IUARTManager::setBlockSize" alt="" coords="209,173,419,200"/>
+<area shape="rect" id="node5" href="$classHardwareInitializer.html#a88b3d566962ccd4377ca49f7bbb2c96b" title="HardwareInitializer\l::SystemClock_Config" alt="" coords="467,9,631,50"/>
+<area shape="rect" id="node6" href="$classHardwareInitializer.html#a2e429065467dd07d496e2794f4953a01" title="HardwareInitializer\l::MX_GPIO_Init" alt="" coords="475,74,622,115"/>
+<area shape="rect" id="node8" href="$classHardwareInitializer.html#a91ce882cb96e3432386f1a99665424fe" title="HardwareInitializer\l::MX_DMA_Init" alt="" coords="475,139,622,181"/>
+<area shape="rect" id="node9" href="$classHardwareInitializer.html#a24466c82388cea2a4c7cf49ff0ef12aa" title="HardwareInitializer\l::MX_SDIO_SD_Init" alt="" coords="475,205,622,246"/>
+<area shape="rect" id="node7" href="$classIIOPinsPool.html#a3fa33ab382cc5132626e50a5cd101d91" title="IIOPinsPool::resetAllPins" alt="" coords="679,81,859,108"/>
+</map>

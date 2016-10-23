@@ -1,0 +1,10 @@
+<map id="Rifle::makeShot" name="Rifle::makeShot">
+<area shape="rect" id="node2" href="$classRifleState.html#a0858f5a9bb1224962189ba4679e95db4" title="RifleState::config" alt="" coords="183,5,317,32"/>
+<area shape="rect" id="node3" href="$io-pins-utils_8cpp.html#a115391f9735c87a97de53bf19ae8b7a4" title="delayedSwitchPin" alt="" coords="181,56,319,83"/>
+<area shape="rect" id="node9" href="$classRifleConfiguration.html#a550e1bf9dc46e7a58c5727f41fd082df" title="RifleConfiguration\l::isAutoReloading" alt="" coords="180,107,320,149"/>
+<area shape="rect" id="node4" href="$classTasksPool.html#add53cf24c3a1746b59aad0ad93b29308" title="TasksPool::addOnce" alt="" coords="368,5,521,32"/>
+<area shape="rect" id="node7" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="394,56,495,83"/>
+<area shape="rect" id="node8" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="401,107,489,133"/>
+<area shape="rect" id="node5" href="$classTasksPool.html#ae9201ada681bd838ca8632e85f3734c4" title="TasksPool::add" alt="" coords="569,5,689,32"/>
+<area shape="rect" id="node6" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="737,5,911,32"/>
+</map>

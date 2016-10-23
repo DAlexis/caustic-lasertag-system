@@ -1,0 +1,7 @@
+<map id="IIRPresentationReceiver::~IIRPresentationReceiver" name="IIRPresentationReceiver::~IIRPresentationReceiver">
+<area shape="rect" id="node2" href="$classIIRPresentationReceiver.html#a7a4b4455f0e44e28f15095bc2807e584" title="IIRPresentationReceiver\l::assignReceiversGroup" alt="" coords="251,5,429,47"/>
+<area shape="rect" id="node3" href="$classIIRPresentationReceiver.html#a5174389174cd506a3d10a85afe94005f" title="IIRPresentationReceiver\l::init" alt="" coords="251,71,429,112"/>
+<area shape="rect" id="node4" href="$classIIRPresentationReceiver.html#ae1c654af62358ade356e4bc8981342c7" title="IIRPresentationReceiver\l::setDamageCoefficient" alt="" coords="251,136,429,177"/>
+<area shape="rect" id="node5" href="$classIIRPresentationReceiver.html#a15c5b081c5d5d345fa7a3a6548c26b9a" title="IIRPresentationReceiver\l::setPhysicalReceiver" alt="" coords="251,201,429,243"/>
+<area shape="rect" id="node6" href="$classIIRPresentationReceiver.html#acadf7b6cf57577af01353412a9b5f156" title="IIRPresentationReceiver\l::setVibroEngine" alt="" coords="251,267,429,308"/>
+</map>

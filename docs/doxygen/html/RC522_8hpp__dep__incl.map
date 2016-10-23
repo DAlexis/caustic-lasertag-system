@@ -1,0 +1,11 @@
+<map id="include/dev/RC522.hpp" name="include/dev/RC522.hpp">
+<area shape="rect" id="node2" href="$RC522_8cpp.html" title="src/dev/RC522.cpp" alt="" coords="94,87,237,114"/>
+<area shape="rect" id="node3" href="$MFRC522-wrapper_8hpp.html" title="include/dev/MFRC522\l&#45;wrapper.hpp" alt="" coords="261,80,422,121"/>
+<area shape="rect" id="node5" href="$head-sensor_8hpp.html" title="include/head&#45;sensor\l/head&#45;sensor.hpp" alt="" coords="430,169,583,211"/>
+<area shape="rect" id="node4" href="$MFRC522-wrapper_8cpp.html" title="src/dev/MFRC522&#45;wrapper.cpp" alt="" coords="5,177,224,203"/>
+<area shape="rect" id="node9" href="$rifle_8hpp.html" title="include/rifle/rifle.hpp" alt="" coords="248,177,405,203"/>
+<area shape="rect" id="node6" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="220,266,433,293"/>
+<area shape="rect" id="node7" href="$head-sensor_8cpp.html" title="src/head&#45;sensor/head\l&#45;sensor.cpp" alt="" coords="458,259,619,300"/>
+<area shape="rect" id="node8" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="643,266,749,293"/>
+<area shape="rect" id="node10" href="$rifle_8cpp.html" title="src/rifle/rifle.cpp" alt="" coords="68,266,196,293"/>
+</map>

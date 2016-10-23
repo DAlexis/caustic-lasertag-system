@@ -1,0 +1,8 @@
+<map id="RTCMgr::init" name="RTCMgr::init">
+<area shape="rect" id="node2" href="$classRTCMgr.html#a9615067dd418bee504355a9b94544a58" title="RTCMgr::isTurnedOn" alt="" coords="155,5,309,32"/>
+<area shape="rect" id="node3" href="$classRTCMgr.html#ac14b090e32a1264e8949ead681bd8547" title="RTCMgr::setDate" alt="" coords="167,56,297,83"/>
+<area shape="rect" id="node5" href="$classRTCMgr.html#a1e980d92f970693a648704b8acdd4cc7" title="RTCMgr::setTime" alt="" coords="165,107,299,133"/>
+<area shape="rect" id="node7" href="$memory_8hpp.html#a55ddf9351e4530e2596b56a9fedd3fe4" title="zerify" alt="" coords="203,157,261,184"/>
+<area shape="rect" id="node4" href="$classRTCMgr.html#a19b39d46fa31c98002f45fb5d9a62e3d" title="RTCMgr::dateToHalDate" alt="" coords="359,56,537,83"/>
+<area shape="rect" id="node6" href="$classRTCMgr.html#a51caa66c57a33ec21f7973c9238d0927" title="RTCMgr::timeToHalTime" alt="" coords="357,107,539,133"/>
+</map>

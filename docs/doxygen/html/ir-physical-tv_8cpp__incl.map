@@ -1,0 +1,16 @@
+<map id="src/ir/ir&#45;physical&#45;tv.cpp" name="src/ir/ir&#45;physical&#45;tv.cpp">
+<area shape="rect" id="node2" href="$ir-physical-tv_8hpp.html" title="ir/ir&#45;physical&#45;tv.hpp" alt="" coords="733,95,883,121"/>
+<area shape="rect" id="node16" href="$logging_8hpp.html" title="core/logging.hpp" alt="" coords="940,95,1071,121"/>
+<area shape="rect" id="node3" href="$ir-physical_8hpp.html" title="ir/ir&#45;physical.hpp" alt="" coords="437,169,568,196"/>
+<area shape="rect" id="node15" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="777,319,938,345"/>
+<area shape="rect" id="node4" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="67,319,221,345"/>
+<area shape="rect" id="node6" href="$fire-emitter_8hpp.html" title="hal/fire&#45;emitter.hpp" alt="" coords="219,244,368,271"/>
+<area shape="rect" id="node13" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="443,244,562,271"/>
+<area shape="rect" id="node14" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="605,319,752,345"/>
+<area shape="rect" id="node7" href="$pinout_8hpp.html" title="core/pinout.hpp" alt="" coords="245,319,368,345"/>
+<area shape="rect" id="node8" href="$core_2result-code_8hpp.html" title="core/result&#45;code.hpp" alt="" coords="5,393,160,420"/>
+<area shape="rect" id="node17" href="$os-wrappers_8hpp.html" title="os&#45;wrappers.hpp" alt="" coords="959,244,1089,271"/>
+<area shape="rect" id="node23" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="846,169,946,196"/>
+<area shape="rect" id="node18" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="963,319,1085,345"/>
+<area shape="rect" id="node19" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="965,393,1083,420"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="src/dev/nrf24l01.cpp" name="src/dev/nrf24l01.cpp">
+<area shape="rect" id="node2" href="$nrf24l01_8hpp.html" title="dev/nrf24l01.hpp" alt="" coords="475,80,607,107"/>
+<area shape="rect" id="node7" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="5,304,167,331"/>
+<area shape="rect" id="node11" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="591,229,754,256"/>
+<area shape="rect" id="node18" href="$logging_8hpp.html" title="core/logging.hpp" alt="" coords="891,80,1022,107"/>
+<area shape="rect" id="node21" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="1102,80,1254,107"/>
+<area shape="rect" id="node25" href="$debug-settings_8hpp.html" title="core/debug&#45;settings.hpp" alt="" coords="1514,80,1693,107"/>
+<area shape="rect" id="node3" href="$spi_8hpp.html" title="hal/spi.hpp" alt="" coords="578,155,671,181"/>
+<area shape="rect" id="node4" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="829,229,948,256"/>
+<area shape="rect" id="node8" href="$diagnostic_8hpp.html" title="core/diagnostic.hpp" alt="" coords="182,155,331,181"/>
+<area shape="rect" id="node16" href="$radio-physical_8hpp.html" title="network/radio&#45;physical.hpp" alt="" coords="356,155,555,181"/>
+<area shape="rect" id="node9" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="191,304,314,331"/>
+<area shape="rect" id="node10" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="193,379,312,405"/>
+<area shape="rect" id="node12" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="591,304,738,331"/>
+<area shape="rect" id="node17" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="363,229,516,256"/>
+<area shape="rect" id="node19" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="848,155,948,181"/>
+<area shape="rect" id="node22" href="$core_2result-code_8hpp.html" title="result&#45;code.hpp" alt="" coords="1317,155,1439,181"/>
+</map>

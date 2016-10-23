@@ -1,0 +1,11 @@
+<map id="MFRC522::PCD_SetAntennaGain" name="MFRC522::PCD_SetAntennaGain">
+<area shape="rect" id="node2" href="$classMFRC522.html#a45d4f1b7cdc9eccd9d394d4f5058c503" title="MFRC522::PCD_ClearRegister\lBitMask" alt="" coords="292,99,504,141"/>
+<area shape="rect" id="node9" href="$classMFRC522.html#aa02ae994a9ebf146475f46fc538cef28" title="MFRC522::PCD_GetAntennaGain" alt="" coords="283,165,513,192"/>
+<area shape="rect" id="node10" href="$classMFRC522.html#adef7552eb0089496522153e7bad19d63" title="MFRC522::PCD_SetRegister\lBitMask" alt="" coords="299,34,497,75"/>
+<area shape="rect" id="node3" href="$classMFRC522.html#a4d81572f8b9ed0ffb1f59270cdffc310" title="MFRC522::PCD_ReadRegister" alt="" coords="563,107,773,133"/>
+<area shape="rect" id="node8" href="$classMFRC522.html#aa97f1faf2a4c82b911d7c3ed2535bb59" title="MFRC522::PCD_WriteRegister" alt="" coords="561,56,775,83"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="882,5,983,32"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="889,56,977,83"/>
+<area shape="rect" id="node6" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="849,107,1017,133"/>
+<area shape="rect" id="node7" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="823,157,1043,184"/>
+</map>

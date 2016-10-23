@@ -1,0 +1,16 @@
+<map id="include/ir/ir&#45;physical.hpp" name="include/ir/ir&#45;physical.hpp">
+<area shape="rect" id="node2" href="$head-sensor_8hpp.html" title="include/head&#45;sensor\l/head&#45;sensor.hpp" alt="" coords="5,155,159,196"/>
+<area shape="rect" id="node6" href="$ir-physical-tv_8hpp.html" title="include/ir/ir&#45;physical\l&#45;tv.hpp" alt="" coords="951,155,1106,196"/>
+<area shape="rect" id="node10" href="$ir-presentation_8hpp.html" title="include/ir/ir&#45;presentation.hpp" alt="" coords="350,80,561,107"/>
+<area shape="rect" id="node14" href="$rifle_8hpp.html" title="include/rifle/rifle.hpp" alt="" coords="183,162,341,189"/>
+<area shape="rect" id="node15" href="$smart-point_8hpp.html" title="include/smart&#45;point\l/smart&#45;point.hpp" alt="" coords="778,155,927,196"/>
+<area shape="rect" id="node3" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="155,251,369,278"/>
+<area shape="rect" id="node4" href="$head-sensor_8cpp.html" title="src/head&#45;sensor/head\l&#45;sensor.cpp" alt="" coords="572,244,733,285"/>
+<area shape="rect" id="node5" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="25,251,131,278"/>
+<area shape="rect" id="node7" href="$ir-physical-tv_8cpp.html" title="src/ir/ir&#45;physical\l&#45;tv.cpp" alt="" coords="1097,244,1224,285"/>
+<area shape="rect" id="node8" href="$rifle_8cpp.html" title="src/rifle/rifle.cpp" alt="" coords="758,251,886,278"/>
+<area shape="rect" id="node9" href="$smart-point_8cpp.html" title="src/smart&#45;point/smart\l&#45;point.cpp" alt="" coords="910,244,1073,285"/>
+<area shape="rect" id="node11" href="$ir-presentation_8cpp.html" title="src/ir/ir&#45;presentation.cpp" alt="" coords="365,162,546,189"/>
+<area shape="rect" id="node12" href="$ir-presentation-mt2_8hpp.html" title="include/ir/ir&#45;presentation\l&#45;mt2.hpp" alt="" coords="571,155,753,196"/>
+<area shape="rect" id="node13" href="$ir-presentation-mt2_8cpp.html" title="src/ir/ir&#45;presentation\l&#45;mt2.cpp" alt="" coords="393,244,547,285"/>
+</map>

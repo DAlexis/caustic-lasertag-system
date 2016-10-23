@@ -1,0 +1,42 @@
+<map id="src/core/device&#45;initializer.cpp" name="src/core/device&#45;initializer.cpp">
+<area shape="rect" id="node2" href="$device-initializer_8hpp.html" title="core/device&#45;initializer.hpp" alt="" coords="253,177,443,203"/>
+<area shape="rect" id="node3" href="$fatfs_8h.html" title="Header for fatfs applications. " alt="" coords="1136,266,1200,293"/>
+<area shape="rect" id="node9" href="$logging_8hpp.html" title="core/logging.hpp" alt="" coords="468,177,599,203"/>
+<area shape="rect" id="node16" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="76,177,228,203"/>
+<area shape="rect" id="node18" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="2622,348,2741,375"/>
+<area shape="rect" id="node19" href="$rtc_8hpp.html" title="hal/rtc.hpp" alt="" coords="4023,348,4113,375"/>
+<area shape="rect" id="node21" href="$hardware-initializer_8hpp.html" title="hal/hardware&#45;initializer.hpp" alt="" coords="1933,87,2134,114"/>
+<area shape="rect" id="node22" href="$head-sensor_8hpp.html" title="head&#45;sensor/head&#45;sensor.hpp" alt="" coords="1694,87,1909,114"/>
+<area shape="rect" id="node38" href="$smart-point_8hpp.html" title="smart&#45;point/smart&#45;point.hpp" alt="" coords="2610,87,2817,114"/>
+<area shape="rect" id="node44" href="$rifle_8hpp.html" title="rifle/rifle.hpp" alt="" coords="3335,87,3441,114"/>
+<area shape="rect" id="node49" href="$bluetooth-bridge_8hpp.html" title="bluetooth&#45;bridge/bluetooth\l&#45;bridge.hpp" alt="" coords="877,80,1073,121"/>
+<area shape="rect" id="node5" href="$core_2result-code_8hpp.html" title="core/result&#45;code.hpp" alt="" coords="327,348,481,375"/>
+<area shape="rect" id="node8" href="$pinout_8hpp.html" title="core/pinout.hpp" alt="" coords="293,266,416,293"/>
+<area shape="rect" id="node10" href="$os-wrappers_8hpp.html" title="os&#45;wrappers.hpp" alt="" coords="1685,348,1816,375"/>
+<area shape="rect" id="node14" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="1701,266,1801,293"/>
+<area shape="rect" id="node20" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="2991,430,3145,457"/>
+<area shape="rect" id="node23" href="$head-sensor_2resources_8hpp.html" title="head&#45;sensor/resources.hpp" alt="" coords="1991,177,2188,203"/>
+<area shape="rect" id="node24" href="$rgb-leds_8hpp.html" title="dev/rgb&#45;leds.hpp" alt="" coords="2171,266,2301,293"/>
+<area shape="rect" id="node25" href="$player-config-and-state_8hpp.html" title="head&#45;sensor/player\l&#45;config&#45;and&#45;state.hpp" alt="" coords="1984,259,2147,300"/>
+<area shape="rect" id="node26" href="$operation-codes_8hpp.html" title="rcsp/operation&#45;codes.hpp" alt="" coords="2975,348,3161,375"/>
+<area shape="rect" id="node28" href="$head-sensor-base-types_8hpp.html" title="head&#45;sensor/head&#45;sensor\l&#45;base&#45;types.hpp" alt="" coords="1963,423,2149,464"/>
+<area shape="rect" id="node29" href="$device_8hpp.html" title="device/device.hpp" alt="" coords="2485,177,2625,203"/>
+<area shape="rect" id="node30" href="$RCSP-state-saver_8hpp.html" title="rcsp/RCSP&#45;state&#45;saver.hpp" alt="" coords="945,177,1140,203"/>
+<area shape="rect" id="node31" href="$broadcast_8hpp.html" title="network/broadcast.hpp" alt="" coords="1275,266,1445,293"/>
+<area shape="rect" id="node32" href="$game-log_8hpp.html" title="game/game&#45;log.hpp" alt="" coords="1215,177,1369,203"/>
+<area shape="rect" id="node33" href="$RC522_8hpp.html" title="dev/RC522.hpp" alt="" coords="2376,266,2496,293"/>
+<area shape="rect" id="node34" href="$MFRC522-wrapper_8hpp.html" title="dev/MFRC522&#45;wrapper.hpp" alt="" coords="2213,177,2409,203"/>
+<area shape="rect" id="node35" href="$ir-physical_8hpp.html" title="ir/ir&#45;physical.hpp" alt="" coords="3313,266,3444,293"/>
+<area shape="rect" id="node36" href="$ir-presentation_8hpp.html" title="ir/ir&#45;presentation.hpp" alt="" coords="3309,177,3467,203"/>
+<area shape="rect" id="node27" href="$rifle-base-types_8hpp.html" title="rifle/rifle&#45;base&#45;types.hpp" alt="" coords="3411,430,3594,457"/>
+<area shape="rect" id="node39" href="$smart-point-config-and-state_8hpp.html" title="smart&#45;point/smart&#45;point\l&#45;config&#45;and&#45;state.hpp" alt="" coords="3085,259,3264,300"/>
+<area shape="rect" id="node40" href="$smart-point-display_8hpp.html" title="smart&#45;point/smart&#45;point\l&#45;display.hpp" alt="" coords="3004,169,3183,211"/>
+<area shape="rect" id="node41" href="$smart-point-ui_8hpp.html" title="smart&#45;point/smart&#45;point\l&#45;ui.hpp" alt="" coords="2751,169,2929,211"/>
+<area shape="rect" id="node42" href="$matrix-keyboard_8hpp.html" title="dev/matrix&#45;keyboard.hpp" alt="" coords="2723,266,2909,293"/>
+<area shape="rect" id="node43" href="$wav-player_8hpp.html" title="dev/wav&#45;player.hpp" alt="" coords="1562,177,1713,203"/>
+<area shape="rect" id="node45" href="$rifle-config-and-state_8hpp.html" title="rifle/rifle&#45;config\l&#45;and&#45;state.hpp" alt="" coords="3863,259,3985,300"/>
+<area shape="rect" id="node46" href="$rifle_2resources_8hpp.html" title="rifle/resources.hpp" alt="" coords="3594,177,3737,203"/>
+<area shape="rect" id="node47" href="$rifle-display_8hpp.html" title="rifle/rifle&#45;display.hpp" alt="" coords="3863,177,4022,203"/>
+<area shape="rect" id="node48" href="$buttons_8hpp.html" title="dev/buttons.hpp" alt="" coords="2571,266,2698,293"/>
+<area shape="rect" id="node50" href="$bluetooth-protocol_8hpp.html" title="bluetooth&#45;bridge/bluetooth\l&#45;protocol.hpp" alt="" coords="674,169,870,211"/>
+</map>

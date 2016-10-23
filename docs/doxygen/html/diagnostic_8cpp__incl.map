@@ -1,0 +1,27 @@
+<map id="src/core/diagnostic.cpp" name="src/core/diagnostic.cpp">
+<area shape="rect" id="node2" href="$diagnostic_8hpp.html" title="core/diagnostic.hpp" alt="" coords="154,237,303,263"/>
+<area shape="rect" id="node13" href="$logging_8hpp.html" title="core/logging.hpp" alt="" coords="348,155,479,181"/>
+<area shape="rect" id="node16" href="$power-monitor_8hpp.html" title="core/power&#45;monitor.hpp" alt="" coords="807,80,986,107"/>
+<area shape="rect" id="node35" href="$debug-settings_8hpp.html" title="core/debug&#45;settings.hpp" alt="" coords="1010,80,1188,107"/>
+<area shape="rect" id="node36" href="$rtc_8hpp.html" title="hal/rtc.hpp" alt="" coords="2414,155,2504,181"/>
+<area shape="rect" id="node3" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="660,408,783,435"/>
+<area shape="rect" id="node5" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="98,408,260,435"/>
+<area shape="rect" id="node7" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="266,326,428,353"/>
+<area shape="rect" id="node4" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="662,490,781,517"/>
+<area shape="rect" id="node8" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="490,408,636,435"/>
+<area shape="rect" id="node14" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="378,237,478,263"/>
+<area shape="rect" id="node17" href="$RCSP-aggregator_8hpp.html" title="rcsp/RCSP&#45;aggregator.hpp" alt="" coords="965,237,1156,263"/>
+<area shape="rect" id="node26" href="$operation-codes_8hpp.html" title="rcsp/operation&#45;codes.hpp" alt="" coords="2054,155,2240,181"/>
+<area shape="rect" id="node34" href="$adc_8hpp.html" title="hal/adc.hpp" alt="" coords="1769,326,1866,353"/>
+<area shape="rect" id="node18" href="$RCSP-base-types_8hpp.html" title="rcsp/RCSP&#45;base&#45;types.hpp" alt="" coords="1448,408,1640,435"/>
+<area shape="rect" id="node19" href="$RCSP-codes-manipulation_8hpp.html" title="rcsp/RCSP&#45;codes&#45;manipulation.hpp" alt="" coords="1420,326,1669,353"/>
+<area shape="rect" id="node20" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="1042,326,1194,353"/>
+<area shape="rect" id="node21" href="$core_2result-code_8hpp.html" title="result&#45;code.hpp" alt="" coords="1211,408,1334,435"/>
+<area shape="rect" id="node27" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="2285,490,2438,517"/>
+<area shape="rect" id="node28" href="$device-base-types_8hpp.html" title="device/device&#45;base\l&#45;types.hpp" alt="" coords="2037,483,2185,524"/>
+<area shape="rect" id="node29" href="$network-base-types_8hpp.html" title="network/network&#45;base\l&#45;types.hpp" alt="" coords="1891,319,2059,360"/>
+<area shape="rect" id="node30" href="$rifle-base-types_8hpp.html" title="rifle/rifle&#45;base&#45;types.hpp" alt="" coords="2249,237,2432,263"/>
+<area shape="rect" id="node32" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="2259,408,2464,435"/>
+<area shape="rect" id="node33" href="$head-sensor-base-types_8hpp.html" title="head&#45;sensor/head&#45;sensor\l&#45;base&#45;types.hpp" alt="" coords="1923,229,2110,271"/>
+<area shape="rect" id="node31" href="$head-sensor-rifle-communication_8hpp.html" title="communication/head\l&#45;sensor&#45;rifle&#45;communication.hpp" alt="" coords="2235,319,2470,360"/>
+</map>

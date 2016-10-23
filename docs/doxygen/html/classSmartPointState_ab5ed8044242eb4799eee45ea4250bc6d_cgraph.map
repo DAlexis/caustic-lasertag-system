@@ -1,0 +1,5 @@
+<map id="SmartPointState::ticTime" name="SmartPointState::ticTime">
+<area shape="rect" id="node2" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="247,5,421,32"/>
+<area shape="rect" id="node3" href="$classSmartPointState.html#adb9432acfb8bdad2b46a09c8072cd2d3" title="SmartPointState::timeLeft\lUsToSec" alt="" coords="239,57,429,98"/>
+<area shape="rect" id="node4" href="$classSmartPointState.html#a231349eb42ca9057c79579aaa1f558f9" title="SmartPointState::win" alt="" coords="255,123,413,149"/>
+</map>

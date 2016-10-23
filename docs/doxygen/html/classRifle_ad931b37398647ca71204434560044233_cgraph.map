@@ -1,0 +1,4 @@
+<map id="Rifle::distortBolt" name="Rifle::distortBolt">
+<area shape="rect" id="node2" href="$classRifleState.html#a0858f5a9bb1224962189ba4679e95db4" title="RifleState::config" alt="" coords="233,5,367,32"/>
+<area shape="rect" id="node3" href="$classRifleConfiguration.html#ac6ac028fa0a98ee8d52d4f7f4bd30e9d" title="RifleConfiguration\l::isReloadingByDistortingTheBolt" alt="" coords="181,57,419,98"/>
+</map>

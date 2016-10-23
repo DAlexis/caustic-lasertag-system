@@ -1,0 +1,5 @@
+<map id="IRTransmitterTV" name="IRTransmitterTV">
+<area shape="rect" id="node2" href="$classIRTransmitterBase.html" title="IRTransmitterBase" alt="" coords="57,95,199,121"/>
+<area shape="rect" id="node3" href="$classIIRTransmitter.html" title="IIRTransmitter" alt="" coords="5,5,120,32"/>
+<area shape="rect" id="node4" href="$classIFireEmitter.html" title="IFireEmitter" alt="" coords="144,5,243,32"/>
+</map>

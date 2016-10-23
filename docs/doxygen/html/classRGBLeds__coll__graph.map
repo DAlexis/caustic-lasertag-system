@@ -1,0 +1,6 @@
+<map id="RGBLeds" name="RGBLeds">
+<area shape="rect" id="node2" href="$classTaskCycled.html" title="TaskCycled" alt="" coords="5,81,103,108"/>
+<area shape="rect" id="node3" href="$classTaskBase.html" title="TaskBase" alt="" coords="11,5,97,32"/>
+<area shape="rect" id="node4" href="$classIIOPin.html" title="IIOPin" alt="" coords="163,81,223,108"/>
+<area shape="rect" id="node5" href="$structRGBLeds_1_1BlinkPattern.html" title="RGBLeds::BlinkPattern" alt="" coords="247,81,415,108"/>
+</map>

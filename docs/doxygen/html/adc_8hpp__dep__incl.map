@@ -1,0 +1,10 @@
+<map id="include/hal/adc.hpp" name="include/hal/adc.hpp">
+<area shape="rect" id="node2" href="$power-monitor_8cpp.html" title="src/core/power&#45;monitor.cpp" alt="" coords="5,177,205,203"/>
+<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="229,177,334,203"/>
+<area shape="rect" id="node4" href="$power-monitor_8hpp.html" title="include/core/power\l&#45;monitor.hpp" alt="" coords="358,80,503,121"/>
+<area shape="rect" id="node8" href="$adc-hw_8hpp.html" title="include/hw/adc&#45;hw.hpp" alt="" coords="723,87,893,114"/>
+<area shape="rect" id="node5" href="$diagnostic_8cpp.html" title="src/core/diagnostic.cpp" alt="" coords="359,177,529,203"/>
+<area shape="rect" id="node6" href="$head-sensor_8cpp.html" title="src/head&#45;sensor/head\l&#45;sensor.cpp" alt="" coords="554,169,715,211"/>
+<area shape="rect" id="node7" href="$rifle_8cpp.html" title="src/rifle/rifle.cpp" alt="" coords="740,177,868,203"/>
+<area shape="rect" id="node9" href="$adc-hw_8cpp.html" title="src/hw/adc&#45;hw.cpp" alt="" coords="893,177,1035,203"/>
+</map>

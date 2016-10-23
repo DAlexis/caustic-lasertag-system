@@ -1,0 +1,24 @@
+<map id="RC552Wrapper::interrogate" name="RC552Wrapper::interrogate">
+<area shape="rect" id="node2" href="$classMFRC522.html#a266f3068e44d9f90903aee98be9f0bbe" title="MFRC522::configureSPI" alt="" coords="755,5,926,32"/>
+<area shape="rect" id="node4" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="1024,183,1197,209"/>
+<area shape="rect" id="node5" href="$classRC552Wrapper.html#a57c17055876069d4b8a661c0112b2771" title="RC552Wrapper::init" alt="" coords="252,469,400,496"/>
+<area shape="rect" id="node3" href="$classISPIManager.html#a384930d610121888a23d636eeeb052db" title="ISPIManager::init" alt="" coords="1045,5,1176,32"/>
+<area shape="rect" id="node6" href="$classIIOPinsPool.html#a78873d802cf5ecc1480a04345ec9a5fa" title="IIOPinsPool::getIOPin" alt="" coords="483,520,642,547"/>
+<area shape="rect" id="node7" href="$classISPIsPool.html#a74ecf5a2957f361e071c6babfd327dd2" title="Get SPI manager. SPI enumerated from 0, so MCU port called &quot;SPI_1&quot; has portNumber == 0..." alt="" coords="497,571,628,597"/>
+<area shape="rect" id="node8" href="$classMFRC522.html#a63495d3c44c8c6cc5d156cfbbdba2a44" title="MFRC522::PCD_Init" alt="" coords="490,259,635,285"/>
+<area shape="rect" id="node20" href="$classMFRC522.html#a5ce84dd855f2ae297dd00fafaf62ef78" title="MFRC522::PCD_SetAntennaGain" alt="" coords="448,469,677,496"/>
+<area shape="rect" id="node9" href="$classMFRC522.html#a044be037a5f172e9cea7d8ce1dcf32e0" title="MFRC522::PCD_AntennaOn" alt="" coords="743,360,939,387"/>
+<area shape="rect" id="node12" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="1331,309,1419,336"/>
+<area shape="rect" id="node15" href="$classMFRC522.html#aa97f1faf2a4c82b911d7c3ed2535bb59" title="MFRC522::PCD_WriteRegister" alt="" coords="1004,360,1217,387"/>
+<area shape="rect" id="node16" href="$classMFRC522.html#ab0e425d794f13c17d52cd5d033b30a16" title="MFRC522::PCD_Reset" alt="" coords="760,259,921,285"/>
+<area shape="rect" id="node17" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="1026,247,1195,273"/>
+<area shape="rect" id="node18" href="$classIIOPin.html#add783caf9950d7c576bf3940c0846bd6" title="IIOPin::state" alt="" coords="790,411,891,437"/>
+<area shape="rect" id="node19" href="$classIIOPin.html#a088f6a8d5663b9cd0e62b9e3dfa0b9c1" title="IIOPin::switchToOutput" alt="" coords="755,157,926,184"/>
+<area shape="rect" id="node10" href="$classMFRC522.html#a4d81572f8b9ed0ffb1f59270cdffc310" title="MFRC522::PCD_ReadRegister" alt="" coords="1005,411,1216,437"/>
+<area shape="rect" id="node11" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="1325,360,1426,387"/>
+<area shape="rect" id="node13" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="1291,411,1459,437"/>
+<area shape="rect" id="node14" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="1265,461,1485,488"/>
+<area shape="rect" id="node21" href="$classMFRC522.html#a45d4f1b7cdc9eccd9d394d4f5058c503" title="MFRC522::PCD_ClearRegister\lBitMask" alt="" coords="735,462,947,503"/>
+<area shape="rect" id="node22" href="$classMFRC522.html#aa02ae994a9ebf146475f46fc538cef28" title="MFRC522::PCD_GetAntennaGain" alt="" coords="725,593,956,620"/>
+<area shape="rect" id="node23" href="$classMFRC522.html#adef7552eb0089496522153e7bad19d63" title="MFRC522::PCD_SetRegister\lBitMask" alt="" coords="741,527,940,569"/>
+</map>

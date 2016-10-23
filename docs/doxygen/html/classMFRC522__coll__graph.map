@@ -1,0 +1,7 @@
+<map id="MFRC522" name="MFRC522">
+<area shape="rect" id="node2" href="$classISPIUser.html" title="ISPIUser" alt="" coords="5,109,81,136"/>
+<area shape="rect" id="node3" href="$structMFRC522_1_1Uid.html" title="MFRC522::Uid" alt="" coords="106,109,218,136"/>
+<area shape="rect" id="node4" href="$structMFRC522_1_1RC522IO.html" title="MFRC522::RC522IO" alt="" coords="242,109,389,136"/>
+<area shape="rect" id="node5" href="$classISPIManager.html" title="ISPIManager" alt="" coords="211,5,313,32"/>
+<area shape="rect" id="node6" href="$classIIOPin.html" title="IIOPin" alt="" coords="337,5,397,32"/>
+</map>

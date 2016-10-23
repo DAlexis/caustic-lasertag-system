@@ -1,0 +1,5 @@
+<map id="Worker" name="Worker">
+<area shape="rect" id="node2" href="$classQueue.html" title="Queue\&lt; WTask \&gt;" alt="" coords="5,81,144,108"/>
+<area shape="rect" id="node3" href="$classTaskOnce.html" title="TaskOnce" alt="" coords="169,81,255,108"/>
+<area shape="rect" id="node4" href="$classTaskBase.html" title="TaskBase" alt="" coords="169,5,255,32"/>
+</map>

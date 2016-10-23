@@ -1,0 +1,7 @@
+<map id="TasksPool::TasksPool" name="TasksPool::TasksPool">
+<area shape="rect" id="node2" href="$classTasksPool.html#abd3ad2012862050c97b6dc26b8f16930" title="TasksPool::main" alt="" coords="223,56,353,83"/>
+<area shape="rect" id="node6" href="$classTaskBase.html#aa9b1604f21bd79040332d1f747f14884" title="TaskBase::setTask" alt="" coords="216,107,360,133"/>
+<area shape="rect" id="node3" href="$classMutex.html#a7d7b51475afaf3c59e9d3fb61734391f" title="Mutex::lock" alt="" coords="446,5,543,32"/>
+<area shape="rect" id="node4" href="$classMutex.html#a546a5b797ba29959357586aa2b3740a8" title="Mutex::unlock" alt="" coords="438,56,551,83"/>
+<area shape="rect" id="node5" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="408,107,581,133"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classIOperationAccessor.html" title="Any kind of object that can read data from stream and write data to stream. " alt="" coords="5,101,153,127"/>
+<area shape="rect" id="node2" href="$classDefaultFunctionAccessor_3_01ArgType_01_4.html" title="Realization of IOperationAccessor for function with argument. " alt="" coords="213,5,395,47"/>
+<area shape="rect" id="node3" href="$classDefaultFunctionAccessor_3_4.html" title="Realization of IOperationAccessor for function without arguments. " alt="" coords="201,71,407,98"/>
+<area shape="rect" id="node4" href="$classParameterAccessorBase.html" title="Realization of IOperationAccessor for any parameters. " alt="" coords="214,123,394,164"/>
+<area shape="rect" id="node7" href="$classSelfSerializingParameterAccessor.html" title="SelfSerializingParameter\lAccessor\&lt; Type \&gt;" alt="" coords="213,188,395,229"/>
+<area shape="rect" id="node5" href="$classCustomStrParseParameterAccessor.html" title="Realization of IOperationAccessor for parameters that have convertFromString(...) method..." alt="" coords="455,89,707,131"/>
+<area shape="rect" id="node6" href="$classStandartStrParseParameterAccessor.html" title="Realization of IOperationAccessor for simple typed parameters. " alt="" coords="481,155,680,196"/>
+</map>

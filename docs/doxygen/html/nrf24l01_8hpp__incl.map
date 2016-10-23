@@ -1,0 +1,12 @@
+<map id="include/dev/nrf24l01.hpp" name="include/dev/nrf24l01.hpp">
+<area shape="rect" id="node2" href="$spi_8hpp.html" title="hal/spi.hpp" alt="" coords="38,80,131,107"/>
+<area shape="rect" id="node3" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="25,155,144,181"/>
+<area shape="rect" id="node6" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="204,229,365,256"/>
+<area shape="rect" id="node7" href="$diagnostic_8hpp.html" title="core/diagnostic.hpp" alt="" coords="643,80,793,107"/>
+<area shape="rect" id="node15" href="$radio-physical_8hpp.html" title="network/radio&#45;physical.hpp" alt="" coords="272,80,471,107"/>
+<area shape="rect" id="node8" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="834,229,957,256"/>
+<area shape="rect" id="node10" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="518,155,681,181"/>
+<area shape="rect" id="node9" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="836,304,955,331"/>
+<area shape="rect" id="node11" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="390,229,537,256"/>
+<area shape="rect" id="node16" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="284,155,437,181"/>
+</map>

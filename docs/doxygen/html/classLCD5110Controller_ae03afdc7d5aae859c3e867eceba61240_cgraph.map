@@ -1,0 +1,5 @@
+<map id="LCD5110Controller::line" name="LCD5110Controller::line">
+<area shape="rect" id="node2" href="$group__Graphics.html#ga8dbb8d7606a67e9f7b8ae6cfc633bbe2" title="glcd_draw_line" alt="" coords="229,31,348,57"/>
+<area shape="rect" id="node3" href="$group__Graphics.html#gaad4f2c4243099dc3cf88b9ba98b71a9d" title="glcd_set_pixel" alt="" coords="396,5,511,32"/>
+<area shape="rect" id="node4" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="559,31,699,57"/>
+</map>

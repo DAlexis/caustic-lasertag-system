@@ -1,0 +1,12 @@
+<map id="glcd_test_text_up_down" name="glcd_test_text_up_down">
+<area shape="rect" id="node2" href="$lcd5110_8cpp.html#ab7cce8122024d7ba47bf10f434956de4" title="delay_ms" alt="" coords="267,5,352,32"/>
+<area shape="rect" id="node4" href="$glcd_8c.html#af2b3e594ac0e4a182d08b47848bd927b" title="glcd_clear_buffer" alt="" coords="652,56,787,83"/>
+<area shape="rect" id="node6" href="$group__StandardText.html#ga443c88a99a6d43938dc29556269e4980" title="glcd_draw_string_xy" alt="" coords="232,107,387,133"/>
+<area shape="rect" id="node9" href="$group__StandardText.html#gababc52ef5bcc974352ba1eed55ac69c5" title="glcd_set_font" alt="" coords="255,157,364,184"/>
+<area shape="rect" id="node11" href="$group__Controllers.html#ga0df6c0642fff31b764298958eda56efb" title="glcd_write" alt="" coords="265,208,354,235"/>
+<area shape="rect" id="node3" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="435,5,604,32"/>
+<area shape="rect" id="node5" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="835,81,975,108"/>
+<area shape="rect" id="node7" href="$group__StandardText.html#gaa3055d2a67e6873d7648a7e9b22e1595" title="glcd_draw_char_xy" alt="" coords="446,107,593,133"/>
+<area shape="rect" id="node8" href="$group__Graphics.html#gaad4f2c4243099dc3cf88b9ba98b71a9d" title="glcd_set_pixel" alt="" coords="662,107,777,133"/>
+<area shape="rect" id="node10" href="$group__StandardText.html#gab12a33e4f7636e7983787d8b206236a0" title="glcd_font" alt="" coords="478,157,561,184"/>
+</map>

@@ -1,0 +1,26 @@
+<map id="include/bluetooth&#45;bridge/bluetooth&#45;bridge.hpp" name="include/bluetooth&#45;bridge/bluetooth&#45;bridge.hpp">
+<area shape="rect" id="node2" href="$bluetooth-protocol_8hpp.html" title="bluetooth&#45;bridge/bluetooth\l&#45;protocol.hpp" alt="" coords="1498,95,1694,136"/>
+<area shape="rect" id="node6" href="$device-initializer_8hpp.html" title="core/device&#45;initializer.hpp" alt="" coords="2001,184,2191,211"/>
+<area shape="rect" id="node16" href="$device_8hpp.html" title="device/device.hpp" alt="" coords="490,102,630,129"/>
+<area shape="rect" id="node33" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="2411,266,2511,293"/>
+<area shape="rect" id="node34" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="2499,355,2661,382"/>
+<area shape="rect" id="node3" href="$network-base-types_8hpp.html" title="network/network&#45;base\l&#45;types.hpp" alt="" coords="728,348,896,389"/>
+<area shape="rect" id="node7" href="$fatfs_8h.html" title="Header for fatfs applications. " alt="" coords="2196,266,2260,293"/>
+<area shape="rect" id="node11" href="$core_2result-code_8hpp.html" title="core/result&#45;code.hpp" alt="" coords="1772,437,1927,464"/>
+<area shape="rect" id="node13" href="$pinout_8hpp.html" title="core/pinout.hpp" alt="" coords="1927,266,2049,293"/>
+<area shape="rect" id="node17" href="$device-base-types_8hpp.html" title="device/device&#45;base\l&#45;types.hpp" alt="" coords="43,259,191,300"/>
+<area shape="rect" id="node18" href="$operation-codes_8hpp.html" title="rcsp/operation&#45;codes.hpp" alt="" coords="467,184,653,211"/>
+<area shape="rect" id="node23" href="$RCSP-base-types_8hpp.html" title="rcsp/RCSP&#45;base&#45;types.hpp" alt="" coords="677,437,869,464"/>
+<area shape="rect" id="node28" href="$RCSP-aggregator_8hpp.html" title="rcsp/RCSP&#45;aggregator.hpp" alt="" coords="1438,266,1629,293"/>
+<area shape="rect" id="node19" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="563,512,717,539"/>
+<area shape="rect" id="node20" href="$RCSP-codes-manipulation_8hpp.html" title="rcsp/RCSP&#45;codes&#45;manipulation.hpp" alt="" coords="970,355,1219,382"/>
+<area shape="rect" id="node24" href="$rifle-base-types_8hpp.html" title="rifle/rifle&#45;base&#45;types.hpp" alt="" coords="401,266,583,293"/>
+<area shape="rect" id="node26" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="383,437,588,464"/>
+<area shape="rect" id="node27" href="$head-sensor-base-types_8hpp.html" title="head&#45;sensor/head&#45;sensor\l&#45;base&#45;types.hpp" alt="" coords="665,259,852,300"/>
+<area shape="rect" id="node21" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="1316,437,1439,464"/>
+<area shape="rect" id="node22" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="1318,512,1437,539"/>
+<area shape="rect" id="node25" href="$head-sensor-rifle-communication_8hpp.html" title="communication/head\l&#45;sensor&#45;rifle&#45;communication.hpp" alt="" coords="368,348,603,389"/>
+<area shape="rect" id="node29" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="1520,355,1672,382"/>
+<area shape="rect" id="node35" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="2507,437,2653,464"/>
+<area shape="rect" id="node37" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="2125,512,2286,539"/>
+</map>

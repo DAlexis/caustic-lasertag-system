@@ -1,0 +1,49 @@
+<map id="NRF24L01Manager::init" name="NRF24L01Manager::init">
+<area shape="rect" id="node2" href="$classNRF24L01Manager.html#a2007d3cdba4fa69df39421ec0496b498" title="NRF24L01Manager::chipDeselect" alt="" coords="1429,716,1664,743"/>
+<area shape="rect" id="node4" href="$classNRF24L01Manager.html#ae96cafa72a9f198ae9a285b5c91679da" title="NRF24L01Manager::chipEnableOff" alt="" coords="828,1443,1071,1469"/>
+<area shape="rect" id="node6" href="$classIIOPin.html#a1ee40cc6c25d2a3cde16fe2966b94a79" title="IIOPin::enableExti" alt="" coords="270,1412,407,1439"/>
+<area shape="rect" id="node7" href="$classNRF24L01Manager.html#ad936145a0938a576c48df61d90d72e79" title="NRF24L01Manager::enablePipe" alt="" coords="517,1007,740,1033"/>
+<area shape="rect" id="node14" href="$classNRF24L01Manager.html#a51a0446ec7cdbd57e5d39f9132bc8a22" title="NRF24L01Manager::extiHandler" alt="" coords="225,956,452,983"/>
+<area shape="rect" id="node20" href="$classNRF24L01Manager.html#aa5466451327d7840bdd29628e60e3ef0" title="NRF24L01Manager::switchToRX" alt="" coords="515,1108,742,1135"/>
+<area shape="rect" id="node24" href="$classISPIsPool.html#a74ecf5a2957f361e071c6babfd327dd2" title="Get SPI manager. SPI enumerated from 0, so MCU port called &quot;SPI_1&quot; has portNumber == 0..." alt="" coords="273,1463,404,1489"/>
+<area shape="rect" id="node25" href="$classISPIManager.html#a384930d610121888a23d636eeeb052db" title="ISPIManager::init" alt="" coords="273,1513,404,1540"/>
+<area shape="rect" id="node26" href="$classNRF24L01Manager.html#a24db0345f84a827313343a3e0d8380ff" title="NRF24L01Manager::printStatus" alt="" coords="227,412,450,439"/>
+<area shape="rect" id="node27" href="$classNRF24L01Manager.html#aea37d9a7fa83675313b2c49650662b38" title="NRF24L01Manager::readRXAdresses" alt="" coords="500,652,757,679"/>
+<area shape="rect" id="node28" href="$classNRF24L01Manager.html#a90d0b89b1a30eeacbc2f801e8c30e34a" title="NRF24L01Manager::readTXAdress" alt="" coords="508,5,749,32"/>
+<area shape="rect" id="node39" href="$classNRF24L01Manager.html#ac213456d968d021d3c92e570078a17c1" title="NRF24L01Manager::setAdress\lWidth" alt="" coords="842,1261,1057,1302"/>
+<area shape="rect" id="node40" href="$classNRF24L01Manager.html#a4ceab48e47aee273b7bcaeb1c4c013a5" title="NRF24L01Manager::setAutoACK" alt="" coords="515,855,743,881"/>
+<area shape="rect" id="node41" href="$classIIOPin.html#afb13597f38e7e578235cadb3d04aa00c" title="IIOPin::setExtiCallback" alt="" coords="254,1564,423,1591"/>
+<area shape="rect" id="node42" href="$classNRF24L01Manager.html#ab04c554c14e79b7ab1502418eba5b79d" title="NRF24L01Manager::setRFChannel" alt="" coords="829,1392,1069,1419"/>
+<area shape="rect" id="node43" href="$classNRF24L01Manager.html#adecfb09dcda155f4e73a5984bc51b9f9" title="NRF24L01Manager::setRFSettings" alt="" coords="829,1007,1069,1033"/>
+<area shape="rect" id="node44" href="$classNRF24L01Manager.html#ac2bac832a9ca50d16eea2f2a683c0ab6" title="NRF24L01Manager::setRXPayload\lLength" alt="" coords="829,1326,1070,1367"/>
+<area shape="rect" id="node45" href="$classNRF24L01Manager.html#a7cd35fdfa384125767657a86a3d9d659" title="NRF24L01Manager::setupRetransmission" alt="" coords="805,1209,1093,1236"/>
+<area shape="rect" id="node46" href="$classIIOPin.html#add783caf9950d7c576bf3940c0846bd6" title="IIOPin::state" alt="" coords="288,1615,389,1641"/>
+<area shape="rect" id="node47" href="$classIIOPin.html#a18cf82b664362a3c3c35d8f03e48d117" title="IIOPin::switchToInput" alt="" coords="259,1665,418,1692"/>
+<area shape="rect" id="node48" href="$classIIOPin.html#a088f6a8d5663b9cd0e62b9e3dfa0b9c1" title="IIOPin::switchToOutput" alt="" coords="253,1716,424,1743"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="1755,949,1843,976"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="1748,1096,1849,1123"/>
+<area shape="rect" id="node8" href="$classNRF24L01Manager.html#ac964e738e6ea365043fc1a1e03a0519f" title="NRF24L01Manager::readReg" alt="" coords="847,399,1052,425"/>
+<area shape="rect" id="node12" href="$classNRF24L01Manager.html#a8c5613ce71132da8e2fe2b33826ad4ba" title="NRF24L01Manager::writeReg" alt="" coords="1157,1007,1366,1033"/>
+<area shape="rect" id="node9" href="$classNRF24L01Manager.html#a12b07071e40e40857c42fcc14d8c2a0f" title="NRF24L01Manager::chipSelect" alt="" coords="1437,905,1656,932"/>
+<area shape="rect" id="node10" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="1437,843,1657,869"/>
+<area shape="rect" id="node11" href="$classISPIManager.html#a1b90fb973e158da7ca7c34bbc47691c7" title="ISPIManager::Receive" alt="" coords="1180,399,1343,425"/>
+<area shape="rect" id="node13" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="1463,968,1631,995"/>
+<area shape="rect" id="node15" href="$classNRF24L01Manager.html#a7473e7db59e1f49055755909f77eccaf" title="NRF24L01Manager::isTXDataSent" alt="" coords="509,753,748,780"/>
+<area shape="rect" id="node16" href="$classNRF24L01Manager.html#af2576836172f2ee75f04bac045cdfcaf" title="NRF24L01Manager::resetTXDataSent" alt="" coords="819,855,1080,881"/>
+<area shape="rect" id="node17" href="$classNRF24L01Manager.html#ad390e166b3669106d5f11763bdcff01b" title="NRF24L01Manager::updateStatus" alt="" coords="1143,804,1380,831"/>
+<area shape="rect" id="node18" href="$classStager.html#a4f28e1102423eb9b2062124aaba4abb0" title="Stager::stage" alt="" coords="1493,792,1601,819"/>
+<area shape="rect" id="node19" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="1712,792,1885,819"/>
+<area shape="rect" id="node21" href="$classNRF24L01Manager.html#a497dc807b11e2d45f867fea6d2ef06d9" title="NRF24L01Manager::setConfig" alt="" coords="843,1159,1056,1185"/>
+<area shape="rect" id="node22" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="865,1108,1034,1135"/>
+<area shape="rect" id="node23" href="$classNRF24L01Manager.html#aea0f042cea59f7275513a619ea017226" title="NRF24L01Manager::chipEnableOn" alt="" coords="1141,1057,1381,1084"/>
+<area shape="rect" id="node29" href="$classNRF24L01Manager.html#a91491773c387b7efefb11b0cf6798d5f" title="NRF24L01Manager::isRXData\lReady" alt="" coords="523,405,734,446"/>
+<area shape="rect" id="node30" href="$classNRF24L01Manager.html#a189b0020d8e0112cd4b052a964238830" title="NRF24L01Manager::isMaxRetries\lReached" alt="" coords="511,470,746,511"/>
+<area shape="rect" id="node31" href="$classNRF24L01Manager.html#a47b77ba59a22584a897aca4b997ca85a" title="NRF24L01Manager::getPipe\lNumberAvaliableForRXFIFO" alt="" coords="528,535,729,577"/>
+<area shape="rect" id="node32" href="$classNRF24L01Manager.html#a3b6f64842e422642aa4bbeae28f15c24" title="NRF24L01Manager::isReuse\lEnabled" alt="" coords="527,339,730,381"/>
+<area shape="rect" id="node33" href="$classNRF24L01Manager.html#a0032365093f98618480574e4849e0384" title="NRF24L01Manager::isTXFull" alt="" coords="527,601,730,628"/>
+<area shape="rect" id="node34" href="$classNRF24L01Manager.html#a6b383c99577d72421cd94facbc8596b1" title="NRF24L01Manager::isTXEmpty" alt="" coords="518,56,739,83"/>
+<area shape="rect" id="node35" href="$classNRF24L01Manager.html#a99c5f13d2c0ca4c4370f02f92653aa54" title="NRF24L01Manager::isRXFull" alt="" coords="527,107,730,133"/>
+<area shape="rect" id="node36" href="$classNRF24L01Manager.html#a98dfca4e2bf7ef45d32aad591aa22ba5" title="NRF24L01Manager::isRXEmpty" alt="" coords="517,157,740,184"/>
+<area shape="rect" id="node37" href="$classNRF24L01Manager.html#a5d61f0b04801adb54683e34428f971a1" title="NRF24L01Manager::getLost\lPackagesCount" alt="" coords="529,209,728,250"/>
+<area shape="rect" id="node38" href="$classNRF24L01Manager.html#a4c11d86d0c0d1d3a3541fc43df630e93" title="NRF24L01Manager::getResent\lPackagesCount" alt="" coords="520,274,737,315"/>
+</map>

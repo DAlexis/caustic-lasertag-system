@@ -1,0 +1,39 @@
+<map id="RC552Wrapper::readBlockLoop" name="RC552Wrapper::readBlockLoop">
+<area shape="rect" id="node2" href="$classRC552Wrapper.html#a28b0258d51edf910eb6a17176c0caf79" title="RC552Wrapper::cardReadyTo\lOperate" alt="" coords="276,169,488,211"/>
+<area shape="rect" id="node5" href="$classMFRC522.html#a32f88620ab97f7fef3693280c58cb4bb" title="MFRC522::GetStatusCodeName" alt="" coords="823,1233,1050,1259"/>
+<area shape="rect" id="node7" href="$classMFRC522.html#a6ed93e88913ea104420f3bb4a88cce52" title="MFRC522::MIFARE_Read" alt="" coords="1121,329,1300,355"/>
+<area shape="rect" id="node23" href="$classMFRC522.html#a6c2313c4aa98806cc2bf0e9cca993ec0" title="MFRC522::PCD_Authenticate" alt="" coords="833,1182,1040,1209"/>
+<area shape="rect" id="node25" href="$classMFRC522.html#a24d3ab7b2170fdfa3f0121a7256f12d9" title="MFRC522::PCD_StopCrypto1" alt="" coords="835,25,1039,51"/>
+<area shape="rect" id="node32" href="$classMFRC522.html#a8874921b4ed26c5b73d89c90f76d4933" title="MFRC522::PICC_HaltA" alt="" coords="1129,755,1292,782"/>
+<area shape="rect" id="node3" href="$classMFRC522.html#ac80a18228260bdde07dff5d4ac23bb53" title="MFRC522::PICC_GetType" alt="" coords="845,75,1028,102"/>
+<area shape="rect" id="node4" href="$classMFRC522.html#aae4a482352d4d4b7d7a9714b0b0b7c38" title="MFRC522::PICC_GetTypeName" alt="" coords="536,562,757,589"/>
+<area shape="rect" id="node33" href="$classMFRC522.html#a3adca9d3b455c680ebcde3b74c4e567b" title="MFRC522::PICC_IsNewCardPresent" alt="" coords="813,177,1060,203"/>
+<area shape="rect" id="node36" href="$classMFRC522.html#aab1218c71cec9cc17ee3ac8a683df106" title="MFRC522::PICC_ReadCardSerial" alt="" coords="823,126,1050,153"/>
+<area shape="rect" id="node6" href="$classMFRC522.html#a925607adc9382720c222578bd236a9c8" title="MFRC522::MIFARE_OpenUidBackdoor" alt="" coords="805,511,1068,538"/>
+<area shape="rect" id="node9" href="$classMFRC522.html#a4d81572f8b9ed0ffb1f59270cdffc310" title="MFRC522::PCD_ReadRegister" alt="" coords="2627,597,2837,623"/>
+<area shape="rect" id="node16" href="$classMFRC522.html#aaa96aa7ec4f95e0835cb758ad0450d74" title="MFRC522::PCD_TransceiveData" alt="" coords="1581,575,1808,602"/>
+<area shape="rect" id="node18" href="$classMFRC522.html#ab8c712963189654e9bc368be8783e2ab" title="MFRC522::MIFARE_SetAccessBits" alt="" coords="819,613,1055,639"/>
+<area shape="rect" id="node19" href="$classMFRC522.html#a2bdc18af4952ce99099607c84139b51c" title="MFRC522::MIFARE_SetUid" alt="" coords="843,663,1031,690"/>
+<area shape="rect" id="node20" href="$classMFRC522.html#afcbb15d925cb3bea9f58595111fbca48" title="MFRC522::MIFARE_UnbrickUid\lSector" alt="" coords="828,715,1045,756"/>
+<area shape="rect" id="node21" href="$classMFRC522.html#a0dc5fb05769779ec3ed708bd153706b3" title="MFRC522::MIFARE_Write" alt="" coords="1353,678,1533,705"/>
+<area shape="rect" id="node24" href="$classMFRC522.html#a41c31c6932a59646eeff470c60a4d20d" title="MFRC522::PCD_DumpVersion\lToSerial" alt="" coords="831,832,1043,873"/>
+<area shape="rect" id="node27" href="$classMFRC522.html#a3b9a2c6da6505e0ff7b58c37d7aeff37" title="MFRC522::PICC_DumpDetails\lToSerial" alt="" coords="831,949,1043,991"/>
+<area shape="rect" id="node28" href="$classMFRC522.html#a20c559f09927a7c5f91295f6158e4342" title="MFRC522::PICC_DumpMifare\lClassicSectorToSerial" alt="" coords="833,1015,1040,1056"/>
+<area shape="rect" id="node29" href="$classMFRC522.html#aafba2e74124efa2d736c1672ea104190" title="MFRC522::PICC_DumpMifare\lClassicToSerial" alt="" coords="833,329,1040,371"/>
+<area shape="rect" id="node30" href="$classMFRC522.html#ac148d28877dd577606a28e9e7e4b6809" title="MFRC522::PICC_DumpMifare\lUltralightToSerial" alt="" coords="833,395,1040,436"/>
+<area shape="rect" id="node31" href="$classMFRC522.html#a6f324d43c6fbbd0e260b171747186037" title="MFRC522::PICC_DumpToSerial" alt="" coords="827,461,1046,487"/>
+<area shape="rect" id="node38" href="$classMFRC522.html#ad00a1efcfa6dc203ca885d43f4d02125" title="MFRC522::PICC_WakeupA" alt="" coords="1116,522,1305,549"/>
+<area shape="rect" id="node8" href="$classMFRC522.html#a7c65647b1d72b6ee7557797322030643" title="MFRC522::PCD_CalculateCRC" alt="" coords="2119,521,2331,547"/>
+<area shape="rect" id="node14" href="$classMFRC522.html#adef7552eb0089496522153e7bad19d63" title="MFRC522::PCD_SetRegister\lBitMask" alt="" coords="2379,648,2577,689"/>
+<area shape="rect" id="node15" href="$classMFRC522.html#aa97f1faf2a4c82b911d7c3ed2535bb59" title="MFRC522::PCD_WriteRegister" alt="" coords="2625,521,2839,547"/>
+<area shape="rect" id="node10" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="2946,546,3047,573"/>
+<area shape="rect" id="node11" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="2953,597,3041,623"/>
+<area shape="rect" id="node12" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="2913,495,3081,522"/>
+<area shape="rect" id="node13" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="2887,647,3107,674"/>
+<area shape="rect" id="node17" href="$classMFRC522.html#acb2b1e74bc49fda2704450a684faa845" title="MFRC522::PCD_Communicate\lWithPICC" alt="" coords="1856,697,2071,739"/>
+<area shape="rect" id="node22" href="$classMFRC522.html#aa88d28676b3ffb5985af8db35d39077b" title="MFRC522::PCD_MIFARE\l_Transceive" alt="" coords="1609,663,1781,704"/>
+<area shape="rect" id="node26" href="$classMFRC522.html#a45d4f1b7cdc9eccd9d394d4f5058c503" title="MFRC522::PCD_ClearRegister\lBitMask" alt="" coords="1589,351,1801,392"/>
+<area shape="rect" id="node34" href="$classMFRC522.html#a4e0ac6edf5e8f6ade351b009278fbbc7" title="MFRC522::PICC_RequestA" alt="" coords="1116,385,1305,411"/>
+<area shape="rect" id="node35" href="$classMFRC522.html#a639d27ac072bc0dfa478d0957591afcc" title="MFRC522::PICC_REQA\l_or_WUPA" alt="" coords="1362,511,1525,552"/>
+<area shape="rect" id="node37" href="$classMFRC522.html#a7a78c629cb4e1d90cc2d7526b17d6c22" title="MFRC522::PICC_Select" alt="" coords="1360,358,1527,385"/>
+</map>

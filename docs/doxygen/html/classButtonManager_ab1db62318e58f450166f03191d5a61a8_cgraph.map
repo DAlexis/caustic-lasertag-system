@@ -1,0 +1,14 @@
+<map id="ButtonManager::setDepressCallback" name="ButtonManager::setDepressCallback">
+<area shape="rect" id="node2" href="$classButtonManager.html#a3f3333137156525a4ac38d4a5e2e5f77" title="ButtonManager::interrogate" alt="" coords="268,5,469,32"/>
+<area shape="rect" id="node6" href="$classButtonManager.html#a0fb61bd2173a876d4c2c9c8b0dd95d33" title="ButtonManager::setAutoRepeat" alt="" coords="256,56,481,83"/>
+<area shape="rect" id="node7" href="$classButtonManager.html#a149a13156d462ef63bb307ad433083ba" title="ButtonManager::setPressed\lState" alt="" coords="269,107,469,149"/>
+<area shape="rect" id="node8" href="$classButtonManager.html#aad0d4c32d490787c2366715e58f7de15" title="ButtonManager::setRepeat\lPeriod" alt="" coords="271,173,466,214"/>
+<area shape="rect" id="node9" href="$classButtonManager.html#a68b074cc78840cfee81fe57b688f9948" title="ButtonManager::state" alt="" coords="287,239,450,265"/>
+<area shape="rect" id="node10" href="$classButtonManager.html#a99dfa1d21e3000d78dba0cabe314e2cb" title="ButtonManager::turnOff" alt="" coords="281,289,456,316"/>
+<area shape="rect" id="node11" href="$classButtonManager.html#a91beb797861bd66f11540c24758230cc" title="ButtonManager::turnOn" alt="" coords="282,340,455,367"/>
+<area shape="rect" id="node12" href="$classButtonManager.html#af1a20f248370b780fad6dcd76ca7fd20" title="ButtonManager::useEXTI" alt="" coords="278,391,459,417"/>
+<area shape="rect" id="node3" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="780,5,953,32"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#add783caf9950d7c576bf3940c0846bd6" title="IIOPin::state" alt="" coords="580,160,681,187"/>
+<area shape="rect" id="node5" href="$classButtonManager.html#a08f4c5714290bc3205fc89f1af1672fa" title="ButtonManager::wasBounce" alt="" coords="529,31,732,57"/>
+<area shape="rect" id="node13" href="$classIIOPin.html#a1ee40cc6c25d2a3cde16fe2966b94a79" title="IIOPin::enableExti" alt="" coords="562,391,699,417"/>
+</map>

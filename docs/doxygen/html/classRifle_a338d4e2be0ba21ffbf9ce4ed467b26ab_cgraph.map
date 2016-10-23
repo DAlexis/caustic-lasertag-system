@@ -1,0 +1,24 @@
+<map id="Rifle::init" name="Rifle::init">
+<area shape="rect" id="node2" href="$classRifleState.html#a0858f5a9bb1224962189ba4679e95db4" title="RifleState::config" alt="" coords="405,63,539,89"/>
+<area shape="rect" id="node3" href="$classRifle.html#ad931b37398647ca71204434560044233" title="Rifle::distortBolt" alt="" coords="156,107,284,133"/>
+<area shape="rect" id="node4" href="$classRifleConfiguration.html#ac6ac028fa0a98ee8d52d4f7f4bd30e9d" title="RifleConfiguration\l::isReloadingByDistortingTheBolt" alt="" coords="353,121,591,162"/>
+<area shape="rect" id="node5" href="$classIFireEmittersPool.html#a7894c6d92b2f1577e9cbeff9bdd53391" title="IFireEmittersPool::\lgetFireEmitter" alt="" coords="149,310,291,351"/>
+<area shape="rect" id="node6" href="$classIIOPinsPool.html#a78873d802cf5ecc1480a04345ec9a5fa" title="IIOPinsPool::getIOPin" alt="" coords="141,376,299,403"/>
+<area shape="rect" id="node7" href="$classHardwareInitializer.html#a88a2979cc8747c72cd00a88c2298844e" title="HardwareInitializer\l::init" alt="" coords="147,427,293,469"/>
+<area shape="rect" id="node13" href="$classRifleConfiguration.html#a550e1bf9dc46e7a58c5727f41fd082df" title="RifleConfiguration\l::isAutoReloading" alt="" coords="402,251,542,293"/>
+<area shape="rect" id="node14" href="$classRifle.html#a73037faea58557332537696384285fcc" title="Rifle::magazineSensor" alt="" coords="136,5,304,32"/>
+<area shape="rect" id="node15" href="$classRifle.html#aee6ee5fb52c6478c86fe87a3b47d4a4e" title="Rifle::makeShot" alt="" coords="157,208,283,235"/>
+<area shape="rect" id="node22" href="$classPinout.html#abdc45cac1a60aea9ef9c43a1e53fc9f3" title="Pinout::printPinout" alt="" coords="149,493,291,520"/>
+<area shape="rect" id="node23" href="$classIIOPin.html#a088f6a8d5663b9cd0e62b9e3dfa0b9c1" title="IIOPin::switchToOutput" alt="" coords="135,544,305,571"/>
+<area shape="rect" id="node8" href="$classHardwareInitializer.html#a91ce882cb96e3432386f1a99665424fe" title="HardwareInitializer\l::MX_DMA_Init" alt="" coords="399,339,545,381"/>
+<area shape="rect" id="node9" href="$classHardwareInitializer.html#a2e429065467dd07d496e2794f4953a01" title="HardwareInitializer\l::MX_GPIO_Init" alt="" coords="399,405,545,446"/>
+<area shape="rect" id="node11" href="$classHardwareInitializer.html#a24466c82388cea2a4c7cf49ff0ef12aa" title="HardwareInitializer\l::MX_SDIO_SD_Init" alt="" coords="399,470,545,511"/>
+<area shape="rect" id="node12" href="$classHardwareInitializer.html#a88b3d566962ccd4377ca49f7bbb2c96b" title="HardwareInitializer\l::SystemClock_Config" alt="" coords="390,535,554,577"/>
+<area shape="rect" id="node10" href="$classIIOPinsPool.html#a3fa33ab382cc5132626e50a5cd101d91" title="IIOPinsPool::resetAllPins" alt="" coords="639,412,819,439"/>
+<area shape="rect" id="node16" href="$io-pins-utils_8cpp.html#a115391f9735c87a97de53bf19ae8b7a4" title="delayedSwitchPin" alt="" coords="403,200,541,227"/>
+<area shape="rect" id="node17" href="$classTasksPool.html#add53cf24c3a1746b59aad0ad93b29308" title="TasksPool::addOnce" alt="" coords="652,149,805,176"/>
+<area shape="rect" id="node20" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="678,200,779,227"/>
+<area shape="rect" id="node21" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="685,251,773,277"/>
+<area shape="rect" id="node18" href="$classTasksPool.html#ae9201ada681bd838ca8632e85f3734c4" title="TasksPool::add" alt="" coords="867,149,987,176"/>
+<area shape="rect" id="node19" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="1035,149,1208,176"/>
+</map>

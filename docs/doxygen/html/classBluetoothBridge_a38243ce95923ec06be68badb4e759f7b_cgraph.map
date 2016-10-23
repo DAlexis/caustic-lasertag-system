@@ -1,0 +1,4 @@
+<map id="BluetoothBridge::sendNetworkPackage" name="BluetoothBridge::sendNetworkPackage">
+<area shape="rect" id="node2" href="$classBroadcast.html#ab2fc5e9a32fdf7415414f2d3ab4d6e1e" title="Broadcast::isBroadcast" alt="" coords="275,5,445,32"/>
+<area shape="rect" id="node3" href="$structBluetooth_1_1Message.html#a38c73a10b64576d0e58a6daffae760a6" title="Bluetooth::Message\l::payloadLength" alt="" coords="285,57,435,98"/>
+</map>

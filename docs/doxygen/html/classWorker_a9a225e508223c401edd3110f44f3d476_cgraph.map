@@ -1,0 +1,5 @@
+<map id="Worker::Worker" name="Worker::Worker">
+<area shape="rect" id="node2" href="$classWorker.html#a70cd77410ba801980b4b67ed2d085176" title="Worker::mainLoop" alt="" coords="179,5,320,32"/>
+<area shape="rect" id="node4" href="$classTaskBase.html#aa9b1604f21bd79040332d1f747f14884" title="TaskBase::setTask" alt="" coords="177,56,321,83"/>
+<area shape="rect" id="node3" href="$classQueue.html#ad6df832a7fdf209c3d1f3a4ed6ceed14" title="Queue::popFront" alt="" coords="369,5,499,32"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="src/core/logging.cpp" name="src/core/logging.cpp">
+<area shape="rect" id="node2" href="$logging_8hpp.html" title="core/logging.hpp" alt="" coords="441,80,572,107"/>
+<area shape="rect" id="node15" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="687,80,839,107"/>
+<area shape="rect" id="node3" href="$os-wrappers_8hpp.html" title="os&#45;wrappers.hpp" alt="" coords="353,229,484,256"/>
+<area shape="rect" id="node13" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="457,155,557,181"/>
+<area shape="rect" id="node4" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="192,304,315,331"/>
+<area shape="rect" id="node6" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="612,304,759,331"/>
+<area shape="rect" id="node8" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="426,304,587,331"/>
+<area shape="rect" id="node5" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="194,379,313,405"/>
+<area shape="rect" id="node16" href="$core_2result-code_8hpp.html" title="result&#45;code.hpp" alt="" coords="823,155,945,181"/>
+</map>

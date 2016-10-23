@@ -1,0 +1,10 @@
+<map id="MFRC522::PCD_CommunicateWithPICC" name="MFRC522::PCD_CommunicateWithPICC">
+<area shape="rect" id="node2" href="$classMFRC522.html#a7c65647b1d72b6ee7557797322030643" title="MFRC522::PCD_CalculateCRC" alt="" coords="268,96,480,123"/>
+<area shape="rect" id="node3" href="$classMFRC522.html#a4d81572f8b9ed0ffb1f59270cdffc310" title="MFRC522::PCD_ReadRegister" alt="" coords="776,56,987,83"/>
+<area shape="rect" id="node8" href="$classMFRC522.html#adef7552eb0089496522153e7bad19d63" title="MFRC522::PCD_SetRegister\lBitMask" alt="" coords="528,31,727,73"/>
+<area shape="rect" id="node9" href="$classMFRC522.html#aa97f1faf2a4c82b911d7c3ed2535bb59" title="MFRC522::PCD_WriteRegister" alt="" coords="775,132,988,159"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="1095,56,1197,83"/>
+<area shape="rect" id="node5" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="1062,107,1230,133"/>
+<area shape="rect" id="node6" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="1036,5,1256,32"/>
+<area shape="rect" id="node7" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="1102,157,1190,184"/>
+</map>

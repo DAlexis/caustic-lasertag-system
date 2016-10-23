@@ -1,0 +1,5 @@
+<map id="HeadSensor::weaponWoundAndShock" name="HeadSensor::weaponWoundAndShock">
+<area shape="rect" id="node2" href="$classRCSPMultiStream.html#a77b6994b40b7e8ba6d7f6bdc8fd2d439" title="RCSPMultiStream::addCall" alt="" coords="289,5,481,32"/>
+<area shape="rect" id="node3" href="$classRCSPMultiStream.html#abdd9afe30d7a75501be0a93efb10c01e" title="RCSPMultiStream::addValue" alt="" coords="283,56,487,83"/>
+<area shape="rect" id="node4" href="$classRCSPMultiStream.html#a7c8deed0d1a282df6c25d63d4a65d356" title="RCSPMultiStream::send" alt="" coords="297,107,472,133"/>
+</map>

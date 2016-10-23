@@ -1,0 +1,4 @@
+<map id="IRReceiverTV::init" name="IRReceiverTV::init">
+<area shape="rect" id="node2" href="$classIRReceiverTV.html#ad785c01acc14e41637439b7f18d2488b" title="IRReceiverTV::interruptHandler" alt="" coords="192,5,416,32"/>
+<area shape="rect" id="node3" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="464,5,637,32"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="IAnyDevice" name="IAnyDevice">
+<area shape="rect" id="node2" href="$classBluetoothBridge.html" title="BluetoothBridge" alt="" coords="5,80,132,107"/>
+<area shape="rect" id="node3" href="$classHeadSensor.html" title="HeadSensor" alt="" coords="156,80,256,107"/>
+<area shape="rect" id="node4" href="$classRifle.html" title="Rifle" alt="" coords="280,80,332,107"/>
+<area shape="rect" id="node5" href="$classSmartPoint.html" title="SmartPoint" alt="" coords="356,80,451,107"/>
+</map>

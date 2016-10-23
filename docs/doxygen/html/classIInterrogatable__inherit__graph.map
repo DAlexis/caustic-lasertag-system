@@ -1,0 +1,16 @@
+<map id="IInterrogatable" name="IInterrogatable">
+<area shape="rect" id="node2" href="$classButtonManager.html" title="ButtonManager" alt="" coords="217,5,338,32"/>
+<area shape="rect" id="node3" href="$classIIRPhysicalReceiver.html" title="IIRPhysicalReceiver" alt="" coords="202,56,353,83"/>
+<area shape="rect" id="node6" href="$classIIRPresentationReceiver.html" title="IIRPresentationReceiver" alt="" coords="188,107,367,133"/>
+<area shape="rect" id="node9" href="$classIPresentationReceiversGroup.html" title="IPresentationReceiversGroup" alt="" coords="172,157,383,184"/>
+<area shape="rect" id="node12" href="$classIRadioPhysicalDevice.html" title="IRadioPhysicalDevice" alt="" coords="196,208,359,235"/>
+<area shape="rect" id="node14" href="$classPowerMonitor.html" title="PowerMonitor" alt="" coords="222,259,333,285"/>
+<area shape="rect" id="node15" href="$classRC552Wrapper.html" title="RC552Wrapper" alt="" coords="218,309,337,336"/>
+<area shape="rect" id="node4" href="$classIRReceiverBase.html" title="IRReceiverBase" alt="" coords="488,56,612,83"/>
+<area shape="rect" id="node5" href="$classIRReceiverTV.html" title="IRReceiverTV" alt="" coords="780,56,889,83"/>
+<area shape="rect" id="node7" href="$classIRPresentationReceiverBase.html" title="IRPresentationReceiverBase" alt="" coords="447,107,653,133"/>
+<area shape="rect" id="node8" href="$classIRPresentationReceiverMT2.html" title="IRPresentationReceiverMT2" alt="" coords="734,107,935,133"/>
+<area shape="rect" id="node10" href="$classPresentationReceiversGroupBase.html" title="PresentationReceiversGroupBase" alt="" coords="431,157,669,184"/>
+<area shape="rect" id="node11" href="$classPresentationReceiversGroupMT2.html" title="PresentationReceiversGroupMT2" alt="" coords="717,157,952,184"/>
+<area shape="rect" id="node13" href="$classNRF24L01Manager.html" title="NRF24L01Manager" alt="" coords="479,208,621,235"/>
+</map>

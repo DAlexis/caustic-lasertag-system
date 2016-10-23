@@ -1,0 +1,7 @@
+<map id="SmartPointUI::initLEDs" name="SmartPointUI::initLEDs">
+<area shape="rect" id="node2" href="$classIIOPinsPool.html#a78873d802cf5ecc1480a04345ec9a5fa" title="IIOPinsPool::getIOPin" alt="" coords="223,5,381,32"/>
+<area shape="rect" id="node3" href="$classRGBLeds.html#a213592e2a635200fe62f9604a333244f" title="RGBLeds::init" alt="" coords="247,56,357,83"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="464,5,565,32"/>
+<area shape="rect" id="node5" href="$classTaskCycled.html#a0b4e809ed7f3c4c6a5767f6eb3fe3022" title="TaskCycled::run" alt="" coords="451,56,578,83"/>
+<area shape="rect" id="node6" href="$classIIOPin.html#a088f6a8d5663b9cd0e62b9e3dfa0b9c1" title="IIOPin::switchToOutput" alt="" coords="429,107,600,133"/>
+</map>

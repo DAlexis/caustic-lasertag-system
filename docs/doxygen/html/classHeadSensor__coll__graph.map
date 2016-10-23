@@ -1,0 +1,33 @@
+<map id="HeadSensor" name="HeadSensor">
+<area shape="rect" id="node2" href="$classIAnyDevice.html" title="IAnyDevice" alt="" coords="956,18,1052,45"/>
+<area shape="rect" id="node3" href="$classRGBLeds.html" title="RGBLeds" alt="" coords="964,206,1044,233"/>
+<area shape="rect" id="node4" href="$classTaskCycled.html" title="TaskCycled" alt="" coords="571,107,669,134"/>
+<area shape="rect" id="node25" href="$classInterrogator.html" title="Interrogator" alt="" coords="955,131,1053,158"/>
+<area shape="rect" id="node29" href="$classTasksPool.html" title="Tasks pool with cooperative multitasking. One class instance = one OS thread. " alt="" coords="960,69,1048,95"/>
+<area shape="rect" id="node5" href="$classTaskBase.html" title="TaskBase" alt="" coords="301,107,387,134"/>
+<area shape="rect" id="node6" href="$classIIOPin.html" title="IIOPin" alt="" coords="27,269,87,295"/>
+<area shape="rect" id="node14" href="$structMFRC522_1_1RC522IO.html" title="MFRC522::RC522IO" alt="" coords="271,367,417,394"/>
+<area shape="rect" id="node7" href="$structRGBLeds_1_1BlinkPattern.html" title="RGBLeds::BlinkPattern" alt="" coords="536,191,704,218"/>
+<area shape="rect" id="node8" href="$classPlayerConfiguration.html" title="PlayerConfiguration" alt="" coords="545,515,695,542"/>
+<area shape="rect" id="node31" href="$classPlayerState.html" title="PlayerState" alt="" coords="955,477,1053,503"/>
+<area shape="rect" id="node9" href="$classRC552Wrapper.html" title="RC552Wrapper" alt="" coords="945,422,1063,449"/>
+<area shape="rect" id="node10" href="$classIInterrogatable.html" title="IInterrogatable" alt="" coords="561,319,679,346"/>
+<area shape="rect" id="node26" href="$classIPresentationReceiversGroup.html" title="IPresentationReceiversGroup" alt="" coords="899,270,1109,297"/>
+<area shape="rect" id="node27" href="$classIIRPresentationReceiver.html" title="IIRPresentationReceiver" alt="" coords="915,321,1093,347"/>
+<area shape="rect" id="node28" href="$classIIRPhysicalReceiver.html" title="IIRPhysicalReceiver" alt="" coords="929,371,1079,398"/>
+<area shape="rect" id="node11" href="$classMFRC522.html" title="MFRC522" alt="" coords="579,393,661,419"/>
+<area shape="rect" id="node12" href="$classISPIUser.html" title="ISPIUser" alt="" coords="306,317,382,343"/>
+<area shape="rect" id="node13" href="$structMFRC522_1_1Uid.html" title="MFRC522::Uid" alt="" coords="288,418,400,445"/>
+<area shape="rect" id="node15" href="$classISPIManager.html" title="ISPIManager" alt="" coords="5,367,108,394"/>
+<area shape="rect" id="node16" href="$structMFRC522_1_1MIFARE__Key.html" title="MFRC522::MIFARE_Key" alt="" coords="535,455,705,482"/>
+<area shape="rect" id="node17" href="$classStager.html" title="Stager" alt="" coords="972,597,1036,623"/>
+<area shape="rect" id="node18" href="$structStager_1_1StagerRec.html" title="Stager::StagerRec" alt="" coords="551,577,689,603"/>
+<area shape="rect" id="node19" href="$classGameLog_1_1BaseStatsCounter.html" title="GameLog::BaseStatsCounter" alt="" coords="900,647,1108,674"/>
+<area shape="rect" id="node20" href="$classIAnyStateSaver.html" title="IAnyStateSaver" alt="" coords="559,678,681,705"/>
+<area shape="rect" id="node21" href="$structDeviceAddress.html" title="DeviceAddress" alt="" coords="561,729,679,755"/>
+<area shape="rect" id="node22" href="$classCritialSection.html" title="CritialSection" alt="" coords="565,627,675,654"/>
+<area shape="rect" id="node23" href="$classWeaponManagerFactory.html" title="WeaponManagerFactory" alt="" coords="915,698,1093,725"/>
+<area shape="rect" id="node24" href="$classIWeaponObserverFactory.html" title="IWeaponObserverFactory" alt="" coords="527,779,713,806"/>
+<area shape="rect" id="node30" href="$classMutex.html" title="Mutex" alt="" coords="589,17,651,43"/>
+<area shape="rect" id="node32" href="$classDeviceConfiguration.html" title="DeviceConfiguration" alt="" coords="927,749,1081,775"/>
+</map>

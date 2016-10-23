@@ -1,0 +1,6 @@
+<map id="NetworkLayer::WaitingPackage" name="NetworkLayer::WaitingPackage">
+<area shape="rect" id="node2" href="$structPackage.html" title="Package" alt="" coords="100,109,177,136"/>
+<area shape="rect" id="node3" href="$structPackageDetails.html" title="PackageDetails" alt="" coords="5,5,128,32"/>
+<area shape="rect" id="node4" href="$structDeviceAddress.html" title="DeviceAddress" alt="" coords="153,5,271,32"/>
+<area shape="rect" id="node5" href="$structPackageTimings.html" title="PackageTimings" alt="" coords="202,109,331,136"/>
+</map>

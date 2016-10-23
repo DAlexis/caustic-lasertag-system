@@ -1,0 +1,27 @@
+<map id="SmartPoint" name="SmartPoint">
+<area shape="rect" id="node2" href="$classIAnyDevice.html" title="IAnyDevice" alt="" coords="897,537,993,564"/>
+<area shape="rect" id="node3" href="$classSmartPointState.html" title="SmartPointState" alt="" coords="520,375,648,401"/>
+<area shape="rect" id="node15" href="$classSmartPointUI.html" title="SmartPointUI" alt="" coords="891,613,999,640"/>
+<area shape="rect" id="node4" href="$classSmartPointConfig.html" title="SmartPointConfig" alt="" coords="156,344,292,371"/>
+<area shape="rect" id="node5" href="$classInterrogator.html" title="Interrogator" alt="" coords="708,123,807,149"/>
+<area shape="rect" id="node6" href="$classTaskCycled.html" title="TaskCycled" alt="" coords="175,131,273,157"/>
+<area shape="rect" id="node12" href="$classTasksPool.html" title="Tasks pool with cooperative multitasking. One class instance = one OS thread. " alt="" coords="540,47,628,73"/>
+<area shape="rect" id="node16" href="$classRGBLeds.html" title="RGBLeds" alt="" coords="544,525,624,552"/>
+<area shape="rect" id="node7" href="$classTaskBase.html" title="TaskBase" alt="" coords="5,131,91,157"/>
+<area shape="rect" id="node8" href="$classIPresentationReceiversGroup.html" title="IPresentationReceiversGroup" alt="" coords="840,272,1051,299"/>
+<area shape="rect" id="node9" href="$classIInterrogatable.html" title="IInterrogatable" alt="" coords="525,221,643,248"/>
+<area shape="rect" id="node10" href="$classIIRPresentationReceiver.html" title="IIRPresentationReceiver" alt="" coords="856,171,1035,197"/>
+<area shape="rect" id="node11" href="$classIIRPhysicalReceiver.html" title="IIRPhysicalReceiver" alt="" coords="870,221,1021,248"/>
+<area shape="rect" id="node13" href="$classMutex.html" title="Mutex" alt="" coords="193,40,255,67"/>
+<area shape="rect" id="node14" href="$classSoundPlayer.html" title="SoundPlayer" alt="" coords="894,436,997,463"/>
+<area shape="rect" id="node20" href="$classUIStateBase.html" title="UIStateBase" alt="" coords="1279,680,1382,707"/>
+<area shape="rect" id="node17" href="$classIIOPin.html" title="IIOPin" alt="" coords="194,664,254,691"/>
+<area shape="rect" id="node23" href="$classMatrixKeyboard.html" title="MatrixKeyboard" alt="" coords="521,628,647,655"/>
+<area shape="rect" id="node18" href="$structRGBLeds_1_1BlinkPattern.html" title="RGBLeds::BlinkPattern" alt="" coords="140,469,308,496"/>
+<area shape="rect" id="node22" href="$classSmartPointBlinkPatterns.html" title="SmartPointBlinkPatterns" alt="" coords="493,472,675,499"/>
+<area shape="rect" id="node19" href="$classUITimeLeftScreen.html" title="UITimeLeftScreen" alt="" coords="1432,640,1571,667"/>
+<area shape="rect" id="node21" href="$classUIInitScreen.html" title="UIInitScreen" alt="" coords="1451,707,1552,733"/>
+<area shape="rect" id="node24" href="$classLCD5110Controller.html" title="LCD5110Controller" alt="" coords="512,577,656,604"/>
+<area shape="rect" id="node25" href="$classISPIUser.html" title="ISPIUser" alt="" coords="186,540,262,567"/>
+<area shape="rect" id="node26" href="$classDeviceConfiguration.html" title="DeviceConfiguration" alt="" coords="868,487,1023,513"/>
+</map>

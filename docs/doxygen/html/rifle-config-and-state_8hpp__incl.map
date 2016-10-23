@@ -1,0 +1,17 @@
+<map id="include/rifle/rifle&#45;config&#45;and&#45;state.hpp" name="include/rifle/rifle&#45;config&#45;and&#45;state.hpp">
+<area shape="rect" id="node3" href="$RCSP-aggregator_8hpp.html" title="rcsp/RCSP&#45;aggregator.hpp" alt="" coords="1228,177,1419,203"/>
+<area shape="rect" id="node17" href="$operation-codes_8hpp.html" title="rcsp/operation&#45;codes.hpp" alt="" coords="371,95,558,121"/>
+<area shape="rect" id="node4" href="$RCSP-base-types_8hpp.html" title="rcsp/RCSP&#45;base&#45;types.hpp" alt="" coords="737,348,929,375"/>
+<area shape="rect" id="node5" href="$RCSP-codes-manipulation_8hpp.html" title="rcsp/RCSP&#45;codes&#45;manipulation.hpp" alt="" coords="869,266,1119,293"/>
+<area shape="rect" id="node6" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="1013,348,1135,375"/>
+<area shape="rect" id="node8" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="1478,266,1630,293"/>
+<area shape="rect" id="node9" href="$core_2result-code_8hpp.html" title="result&#45;code.hpp" alt="" coords="1325,348,1447,375"/>
+<area shape="rect" id="node7" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="1015,430,1133,457"/>
+<area shape="rect" id="node18" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="201,430,355,457"/>
+<area shape="rect" id="node19" href="$device-base-types_8hpp.html" title="device/device&#45;base\l&#45;types.hpp" alt="" coords="5,423,153,464"/>
+<area shape="rect" id="node20" href="$network-base-types_8hpp.html" title="network/network&#45;base\l&#45;types.hpp" alt="" coords="553,259,721,300"/>
+<area shape="rect" id="node21" href="$rifle-base-types_8hpp.html" title="rifle/rifle&#45;base&#45;types.hpp" alt="" coords="232,177,415,203"/>
+<area shape="rect" id="node23" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="175,348,381,375"/>
+<area shape="rect" id="node24" href="$head-sensor-base-types_8hpp.html" title="head&#45;sensor/head&#45;sensor\l&#45;base&#45;types.hpp" alt="" coords="502,169,689,211"/>
+<area shape="rect" id="node22" href="$head-sensor-rifle-communication_8hpp.html" title="communication/head\l&#45;sensor&#45;rifle&#45;communication.hpp" alt="" coords="193,259,427,300"/>
+</map>

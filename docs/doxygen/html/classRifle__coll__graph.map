@@ -1,0 +1,29 @@
+<map id="Rifle" name="Rifle">
+<area shape="rect" id="node2" href="$classIAnyDevice.html" title="IAnyDevice" alt="" coords="1037,15,1133,41"/>
+<area shape="rect" id="node3" href="$classRC552Wrapper.html" title="RC552Wrapper" alt="" coords="1026,239,1145,265"/>
+<area shape="rect" id="node4" href="$classIInterrogatable.html" title="IInterrogatable" alt="" coords="651,177,769,204"/>
+<area shape="rect" id="node13" href="$classButtonManager.html" title="ButtonManager" alt="" coords="1025,160,1146,187"/>
+<area shape="rect" id="node5" href="$classMFRC522.html" title="MFRC522" alt="" coords="669,279,751,305"/>
+<area shape="rect" id="node6" href="$classISPIUser.html" title="ISPIUser" alt="" coords="306,340,382,367"/>
+<area shape="rect" id="node21" href="$classLCD5110Controller.html" title="LCD5110Controller" alt="" coords="638,473,782,500"/>
+<area shape="rect" id="node7" href="$structMFRC522_1_1Uid.html" title="MFRC522::Uid" alt="" coords="288,228,400,255"/>
+<area shape="rect" id="node8" href="$structMFRC522_1_1RC522IO.html" title="MFRC522::RC522IO" alt="" coords="271,279,417,305"/>
+<area shape="rect" id="node9" href="$classISPIManager.html" title="ISPIManager" alt="" coords="5,279,108,305"/>
+<area shape="rect" id="node10" href="$classIIOPin.html" title="IIOPin" alt="" coords="27,127,87,153"/>
+<area shape="rect" id="node11" href="$structMFRC522_1_1MIFARE__Key.html" title="MFRC522::MIFARE_Key" alt="" coords="625,228,795,255"/>
+<area shape="rect" id="node12" href="$classRifleConfiguration.html" title="RifleConfiguration" alt="" coords="274,576,414,603"/>
+<area shape="rect" id="node20" href="$classRifleState.html" title="RifleState" alt="" coords="667,549,753,576"/>
+<area shape="rect" id="node14" href="$classPlayerPartialState.html" title="PlayerPartialState" alt="" coords="641,405,779,432"/>
+<area shape="rect" id="node18" href="$classRifleLCD5110Display.html" title="RifleLCD5110Display" alt="" coords="1006,476,1165,503"/>
+<area shape="rect" id="node15" href="$structDeviceAddress.html" title="DeviceAddress" alt="" coords="285,405,403,432"/>
+<area shape="rect" id="node16" href="$classIIRPresentationTransmitter.html" title="IIRPresentationTransmitter" alt="" coords="987,651,1184,677"/>
+<area shape="rect" id="node17" href="$classIIRTransmitter.html" title="IIRTransmitter" alt="" coords="1028,701,1143,728"/>
+<area shape="rect" id="node19" href="$classRifleOwnerConfiguration.html" title="RifleOwnerConfiguration" alt="" coords="619,335,801,361"/>
+<area shape="rect" id="node22" href="$classInterrogator.html" title="Interrogator" alt="" coords="1036,752,1135,779"/>
+<area shape="rect" id="node23" href="$classTaskCycled.html" title="TaskCycled" alt="" coords="661,772,759,799"/>
+<area shape="rect" id="node25" href="$classTasksPool.html" title="Tasks pool with cooperative multitasking. One class instance = one OS thread. " alt="" coords="1041,803,1129,829"/>
+<area shape="rect" id="node24" href="$classTaskBase.html" title="TaskBase" alt="" coords="301,772,387,799"/>
+<area shape="rect" id="node26" href="$classMutex.html" title="Mutex" alt="" coords="679,843,741,869"/>
+<area shape="rect" id="node27" href="$classSoundPlayer.html" title="SoundPlayer" alt="" coords="1034,985,1137,1012"/>
+<area shape="rect" id="node28" href="$classDeviceConfiguration.html" title="DeviceConfiguration" alt="" coords="1008,1036,1163,1063"/>
+</map>

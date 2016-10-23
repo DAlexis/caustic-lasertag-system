@@ -1,0 +1,7 @@
+<map id="Rifle::registerWeapon" name="Rifle::registerWeapon">
+<area shape="rect" id="node2" href="$classRifleState.html#a0858f5a9bb1224962189ba4679e95db4" title="RifleState::config" alt="" coords="240,5,375,32"/>
+<area shape="rect" id="node3" href="$classRCSPStream.html#a232ee45768e90bbfc00a19d4782584ce" title="RCSPStream::remoteCall" alt="" coords="216,56,399,83"/>
+<area shape="rect" id="node4" href="$classRCSPStream.html#a3ac019ea760252c3151fc3c2829cfb50" title="RCSPStream::addCall" alt="" coords="447,31,607,57"/>
+<area shape="rect" id="node6" href="$classRCSPStream.html#affcce5b7f79d0d25cd62d0245796d913" title="RCSPStream::send" alt="" coords="455,81,598,108"/>
+<area shape="rect" id="node5" href="$classRCSPStream.html#a646724ab6c61a19b04673d6d6b3e7187" title="RCSPStream::serializeAnything" alt="" coords="655,31,879,57"/>
+</map>

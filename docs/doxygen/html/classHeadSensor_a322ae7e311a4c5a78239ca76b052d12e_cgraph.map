@@ -1,0 +1,13 @@
+<map id="HeadSensor::init" name="HeadSensor::init">
+<area shape="rect" id="node2" href="$classIIOPinsPool.html#a78873d802cf5ecc1480a04345ec9a5fa" title="IIOPinsPool::getIOPin" alt="" coords="207,34,365,61"/>
+<area shape="rect" id="node3" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="199,85,373,111"/>
+<area shape="rect" id="node4" href="$classHardwareInitializer.html#a88a2979cc8747c72cd00a88c2298844e" title="HardwareInitializer\l::init" alt="" coords="213,136,359,177"/>
+<area shape="rect" id="node10" href="$classIRReceiverBase.html#a5f155a6f90efe0681925a3eb7ec9aac8" title="IRReceiverBase::setIOPin" alt="" coords="193,202,379,229"/>
+<area shape="rect" id="node11" href="$classIRPresentationReceiverBase.html#adfe251e07add9060417e564b9aff6ed8" title="IRPresentationReceiverBase\l::setPhysicalReceiver" alt="" coords="183,260,389,301"/>
+<area shape="rect" id="node5" href="$classHardwareInitializer.html#a91ce882cb96e3432386f1a99665424fe" title="HardwareInitializer\l::MX_DMA_Init" alt="" coords="446,5,593,47"/>
+<area shape="rect" id="node6" href="$classHardwareInitializer.html#a2e429065467dd07d496e2794f4953a01" title="HardwareInitializer\l::MX_GPIO_Init" alt="" coords="446,71,593,112"/>
+<area shape="rect" id="node8" href="$classHardwareInitializer.html#a24466c82388cea2a4c7cf49ff0ef12aa" title="HardwareInitializer\l::MX_SDIO_SD_Init" alt="" coords="446,136,593,177"/>
+<area shape="rect" id="node9" href="$classHardwareInitializer.html#a88b3d566962ccd4377ca49f7bbb2c96b" title="HardwareInitializer\l::SystemClock_Config" alt="" coords="437,201,601,243"/>
+<area shape="rect" id="node7" href="$classIIOPinsPool.html#a3fa33ab382cc5132626e50a5cd101d91" title="IIOPinsPool::resetAllPins" alt="" coords="649,78,829,105"/>
+<area shape="rect" id="node12" href="$classIIRPhysicalReceiver.html#a1fd21ea9f1fa825385225383d15cb94b" title="IIRPhysicalReceiver\l::setCallback" alt="" coords="444,267,595,308"/>
+</map>

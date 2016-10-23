@@ -1,0 +1,8 @@
+<map id="glcd_tiny_draw_string_ammend" name="glcd_tiny_draw_string_ammend">
+<area shape="rect" id="node2" href="$glcd_8c.html#ac3da3dd20107a7cf291eee5d2d11a516" title="glcd_scroll_line" alt="" coords="457,5,580,32"/>
+<area shape="rect" id="node4" href="$group__TinyText.html#ga82fc75ee052a832d0f6ed0ffaf897ced" title="glcd_tiny_draw_string" alt="" coords="217,56,381,83"/>
+<area shape="rect" id="node7" href="$group__Controllers.html#ga0df6c0642fff31b764298958eda56efb" title="glcd_write" alt="" coords="255,107,344,133"/>
+<area shape="rect" id="node3" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="859,31,999,57"/>
+<area shape="rect" id="node5" href="$group__TinyText.html#ga5ba33d2c7a7bd5c397963f0d0dffd628" title="glcd_tiny_draw_char" alt="" coords="656,56,811,83"/>
+<area shape="rect" id="node6" href="$group__TinyText.html#gade30aed750a83809464e75feff501da9" title="glcd_tiny_draw_string_P" alt="" coords="429,107,608,133"/>
+</map>

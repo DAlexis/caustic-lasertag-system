@@ -1,0 +1,8 @@
+<map id="IOperationAccessor::~IOperationAccessor" name="IOperationAccessor::~IOperationAccessor">
+<area shape="rect" id="node2" href="$classIOperationAccessor.html#a79bb910539e2fe0cfb7c5b6791b63d67" title="Get data from stream and set parameter, call function etc. " alt="" coords="220,5,368,47"/>
+<area shape="rect" id="node3" href="$classIOperationAccessor.html#a0509e94e5d988b542039d08f6596ecb0" title="Get data size in stream. " alt="" coords="220,71,368,112"/>
+<area shape="rect" id="node4" href="$classIOperationAccessor.html#a13ba8fa6ddc5c10e4c69d35f912c281a" title="Check if serialize is callable method. " alt="" coords="220,136,368,177"/>
+<area shape="rect" id="node5" href="$classIOperationAccessor.html#a473b527f398bb6b6004da9892287681c" title="Check if deserialize is callable method. " alt="" coords="220,201,368,243"/>
+<area shape="rect" id="node6" href="$classIOperationAccessor.html#a5f2873a90a1bcec89406e997f2146e35" title="Get data from string. " alt="" coords="220,267,368,308"/>
+<area shape="rect" id="node7" href="$classIOperationAccessor.html#aa3a05b2d8e4dd0bc41d11389124dc166" title="Put parameter, function return value etc. to stream. " alt="" coords="220,332,368,373"/>
+</map>

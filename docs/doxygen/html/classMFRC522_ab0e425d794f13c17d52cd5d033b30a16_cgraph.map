@@ -1,0 +1,10 @@
+<map id="MFRC522::PCD_Reset" name="MFRC522::PCD_Reset">
+<area shape="rect" id="node2" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="235,5,408,32"/>
+<area shape="rect" id="node3" href="$classMFRC522.html#a4d81572f8b9ed0ffb1f59270cdffc310" title="MFRC522::PCD_ReadRegister" alt="" coords="216,107,427,133"/>
+<area shape="rect" id="node8" href="$classMFRC522.html#aa97f1faf2a4c82b911d7c3ed2535bb59" title="MFRC522::PCD_WriteRegister" alt="" coords="215,56,428,83"/>
+<area shape="rect" id="node9" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="237,157,406,184"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="535,5,637,32"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="542,56,630,83"/>
+<area shape="rect" id="node6" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="502,107,670,133"/>
+<area shape="rect" id="node7" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="476,157,696,184"/>
+</map>

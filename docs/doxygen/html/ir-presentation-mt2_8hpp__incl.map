@@ -1,0 +1,26 @@
+<map id="include/ir/ir&#45;presentation&#45;mt2.hpp" name="include/ir/ir&#45;presentation&#45;mt2.hpp">
+<area shape="rect" id="node2" href="$ir-presentation_8hpp.html" title="ir/ir&#45;presentation.hpp" alt="" coords="1690,95,1849,121"/>
+<area shape="rect" id="node40" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="532,169,737,196"/>
+<area shape="rect" id="node3" href="$ir-physical_8hpp.html" title="ir&#45;physical.hpp" alt="" coords="181,244,299,271"/>
+<area shape="rect" id="node15" href="$RCSP-base-types_8hpp.html" title="rcsp/RCSP&#45;base&#45;types.hpp" alt="" coords="2541,483,2733,509"/>
+<area shape="rect" id="node16" href="$RCSP-stream_8hpp.html" title="rcsp/RCSP&#45;stream.hpp" alt="" coords="1757,169,1923,196"/>
+<area shape="rect" id="node4" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="361,401,514,427"/>
+<area shape="rect" id="node6" href="$fire-emitter_8hpp.html" title="hal/fire&#45;emitter.hpp" alt="" coords="379,319,528,345"/>
+<area shape="rect" id="node13" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="33,401,151,427"/>
+<area shape="rect" id="node14" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="475,483,621,509"/>
+<area shape="rect" id="node7" href="$pinout_8hpp.html" title="core/pinout.hpp" alt="" coords="1537,401,1660,427"/>
+<area shape="rect" id="node8" href="$core_2result-code_8hpp.html" title="core/result&#45;code.hpp" alt="" coords="2363,483,2517,509"/>
+<area shape="rect" id="node17" href="$RCSP-aggregator_8hpp.html" title="rcsp/RCSP&#45;aggregator.hpp" alt="" coords="1913,319,2103,345"/>
+<area shape="rect" id="node25" href="$network-layer_8hpp.html" title="network/network&#45;layer.hpp" alt="" coords="1147,244,1346,271"/>
+<area shape="rect" id="node35" href="$fatfs_8h.html" title="Header for fatfs applications. " alt="" coords="2263,244,2327,271"/>
+<area shape="rect" id="node18" href="$RCSP-codes-manipulation_8hpp.html" title="rcsp/RCSP&#45;codes&#45;manipulation.hpp" alt="" coords="2063,401,2313,427"/>
+<area shape="rect" id="node19" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="1737,483,1860,509"/>
+<area shape="rect" id="node21" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="1887,401,2039,427"/>
+<area shape="rect" id="node20" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="1739,557,1858,584"/>
+<area shape="rect" id="node26" href="$network-base-types_8hpp.html" title="network/network&#45;base\l&#45;types.hpp" alt="" coords="601,393,769,435"/>
+<area shape="rect" id="node27" href="$broadcast_8hpp.html" title="network/broadcast.hpp" alt="" coords="603,319,773,345"/>
+<area shape="rect" id="node28" href="$radio-physical_8hpp.html" title="network/radio&#45;physical.hpp" alt="" coords="798,319,997,345"/>
+<area shape="rect" id="node29" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="844,401,1007,427"/>
+<area shape="rect" id="node31" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="938,483,1099,509"/>
+<area shape="rect" id="node33" href="$diagnostic_8hpp.html" title="core/diagnostic.hpp" alt="" coords="1172,319,1321,345"/>
+</map>

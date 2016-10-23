@@ -1,0 +1,7 @@
+<map id="include/hal/rtc.hpp" name="include/hal/rtc.hpp">
+<area shape="rect" id="node2" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="5,80,219,107"/>
+<area shape="rect" id="node3" href="$diagnostic_8cpp.html" title="src/core/diagnostic.cpp" alt="" coords="243,80,413,107"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="438,80,543,107"/>
+<area shape="rect" id="node5" href="$rtc-hw_8hpp.html" title="include/hw/rtc&#45;hw.hpp" alt="" coords="567,80,732,107"/>
+<area shape="rect" id="node6" href="$rtc-hw_8cpp.html" title="src/hw/rtc&#45;hw.cpp" alt="" coords="581,155,717,181"/>
+</map>

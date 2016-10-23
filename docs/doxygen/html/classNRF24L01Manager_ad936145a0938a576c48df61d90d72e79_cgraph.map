@@ -1,0 +1,11 @@
+<map id="NRF24L01Manager::enablePipe" name="NRF24L01Manager::enablePipe">
+<area shape="rect" id="node2" href="$classNRF24L01Manager.html#ac964e738e6ea365043fc1a1e03a0519f" title="NRF24L01Manager::readReg" alt="" coords="278,132,483,159"/>
+<area shape="rect" id="node9" href="$classNRF24L01Manager.html#a8c5613ce71132da8e2fe2b33826ad4ba" title="NRF24L01Manager::writeReg" alt="" coords="276,81,485,108"/>
+<area shape="rect" id="node3" href="$classNRF24L01Manager.html#a12b07071e40e40857c42fcc14d8c2a0f" title="NRF24L01Manager::chipSelect" alt="" coords="541,56,760,83"/>
+<area shape="rect" id="node5" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="541,107,761,133"/>
+<area shape="rect" id="node6" href="$classISPIManager.html#a1b90fb973e158da7ca7c34bbc47691c7" title="ISPIManager::Receive" alt="" coords="569,208,732,235"/>
+<area shape="rect" id="node7" href="$classNRF24L01Manager.html#a2007d3cdba4fa69df39421ec0496b498" title="NRF24L01Manager::chipDeselect" alt="" coords="533,157,768,184"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="816,56,917,83"/>
+<area shape="rect" id="node8" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="823,157,911,184"/>
+<area shape="rect" id="node10" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="567,5,735,32"/>
+</map>

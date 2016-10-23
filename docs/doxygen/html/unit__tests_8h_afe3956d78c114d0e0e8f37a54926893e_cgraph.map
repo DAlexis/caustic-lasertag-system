@@ -1,0 +1,17 @@
+<map id="glcd_test_rectangles" name="glcd_test_rectangles">
+<area shape="rect" id="node2" href="$lcd5110_8cpp.html#ab7cce8122024d7ba47bf10f434956de4" title="delay_ms" alt="" coords="255,5,341,32"/>
+<area shape="rect" id="node4" href="$glcd_8c.html#a5ea60d26d86e2677589904eb81d42f64" title="glcd_clear" alt="" coords="254,107,342,133"/>
+<area shape="rect" id="node6" href="$group__Controllers.html#ga0df6c0642fff31b764298958eda56efb" title="glcd_write" alt="" coords="479,157,569,184"/>
+<area shape="rect" id="node7" href="$glcd_8c.html#af2b3e594ac0e4a182d08b47848bd927b" title="glcd_clear_buffer" alt="" coords="671,56,806,83"/>
+<area shape="rect" id="node8" href="$group__Graphics.html#ga1cac5dc93f1be733184cffb348e34bcc" title="glcd_draw_rect" alt="" coords="464,208,584,235"/>
+<area shape="rect" id="node10" href="$group__Graphics.html#ga92295395cf0e6b123c9a1a845b679b63" title="glcd_draw_rect_shadow" alt="" coords="209,259,387,285"/>
+<area shape="rect" id="node12" href="$group__Graphics.html#ga98f91d8094d21d2dcc6d9aaebb4c7802" title="glcd_draw_rect_thick" alt="" coords="445,309,603,336"/>
+<area shape="rect" id="node13" href="$group__TinyText.html#ga82fc75ee052a832d0f6ed0ffaf897ced" title="glcd_tiny_draw_string" alt="" coords="216,360,380,387"/>
+<area shape="rect" id="node16" href="$group__TinyText.html#ga8df82f7f6d616587f2c5ca55ac9f72fa" title="glcd_tiny_set_font" alt="" coords="227,411,369,437"/>
+<area shape="rect" id="node3" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="439,5,609,32"/>
+<area shape="rect" id="node5" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="864,208,1004,235"/>
+<area shape="rect" id="node9" href="$group__Graphics.html#gaad4f2c4243099dc3cf88b9ba98b71a9d" title="glcd_set_pixel" alt="" coords="681,259,796,285"/>
+<area shape="rect" id="node11" href="$group__Graphics.html#ga8dbb8d7606a67e9f7b8ae6cfc633bbe2" title="glcd_draw_line" alt="" coords="465,259,583,285"/>
+<area shape="rect" id="node14" href="$group__TinyText.html#ga5ba33d2c7a7bd5c397963f0d0dffd628" title="glcd_tiny_draw_char" alt="" coords="661,360,816,387"/>
+<area shape="rect" id="node15" href="$group__TinyText.html#gade30aed750a83809464e75feff501da9" title="glcd_tiny_draw_string_P" alt="" coords="435,360,613,387"/>
+</map>

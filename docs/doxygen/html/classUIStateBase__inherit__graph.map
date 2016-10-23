@@ -1,0 +1,4 @@
+<map id="UIStateBase" name="UIStateBase">
+<area shape="rect" id="node2" href="$classUIInitScreen.html" title="UIInitScreen" alt="" coords="5,80,107,107"/>
+<area shape="rect" id="node3" href="$classUITimeLeftScreen.html" title="UITimeLeftScreen" alt="" coords="131,80,269,107"/>
+</map>

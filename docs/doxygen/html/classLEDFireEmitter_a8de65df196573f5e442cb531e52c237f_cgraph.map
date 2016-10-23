@@ -1,0 +1,8 @@
+<map id="LEDFireEmitter::init" name="LEDFireEmitter::init">
+<area shape="rect" id="node2" href="$classPinout.html#a198e97be53e34687539de875761646ad" title="Pinout::getParameter" alt="" coords="232,5,392,32"/>
+<area shape="rect" id="node3" href="$classLEDFireEmitter.html#a480c964212010d06078421049d77f226" title="LEDFireEmitter::modulationOff" alt="" coords="201,56,423,83"/>
+<area shape="rect" id="node4" href="$classStringParser.html#a19e06d44863cfe2c6217cedd9eb27996" title="StringParser::parse" alt="" coords="239,107,385,133"/>
+<area shape="rect" id="node5" href="$classLEDFireEmitter.html#a16a064f1d62cf114dd91cce9f8b9351a" title="LEDFireEmitter::setCarrier\lFrequency" alt="" coords="217,158,407,199"/>
+<area shape="rect" id="node6" href="$classLEDFireEmitter.html#a247a423c34f1a967f6deed1b46e45b1e" title="LEDFireEmitter::setPower" alt="" coords="219,224,405,251"/>
+<area shape="rect" id="node7" href="$classLEDFireEmitter.html#a3bfd4c56f6e0a60cee62eab5c4420c14" title="LEDFireEmitter::setChannel" alt="" coords="471,224,671,251"/>
+</map>

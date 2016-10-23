@@ -1,0 +1,12 @@
+<map id="include/hal/fragment&#45;player.hpp" name="include/hal/fragment&#45;player.hpp">
+<area shape="rect" id="node2" href="$wav-player_8hpp.html" title="include/dev/wav&#45;player.hpp" alt="" coords="303,102,505,129"/>
+<area shape="rect" id="node10" href="$hw_2fragment-player_8hpp.html" title="include/hw/fragment\l&#45;player.hpp" alt="" coords="674,95,830,136"/>
+<area shape="rect" id="node3" href="$wav-player_8cpp.html" title="src/dev/wav&#45;player.cpp" alt="" coords="5,191,179,218"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="203,191,309,218"/>
+<area shape="rect" id="node5" href="$rifle_8cpp.html" title="src/rifle/rifle.cpp" alt="" coords="283,281,411,307"/>
+<area shape="rect" id="node6" href="$rifle_8hpp.html" title="include/rifle/rifle.hpp" alt="" coords="384,191,541,218"/>
+<area shape="rect" id="node8" href="$smart-point_8hpp.html" title="include/smart&#45;point\l/smart&#45;point.hpp" alt="" coords="565,184,715,225"/>
+<area shape="rect" id="node7" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="435,281,648,307"/>
+<area shape="rect" id="node9" href="$smart-point_8cpp.html" title="src/smart&#45;point/smart\l&#45;point.cpp" alt="" coords="672,273,835,315"/>
+<area shape="rect" id="node11" href="$fragment-player_8cpp.html" title="src/hw/fragment&#45;player.cpp" alt="" coords="739,191,941,218"/>
+</map>

@@ -1,0 +1,41 @@
+<map id="src/smart&#45;point/smart&#45;point.cpp" name="src/smart&#45;point/smart&#45;point.cpp">
+<area shape="rect" id="node2" href="$smart-point_8hpp.html" title="smart&#45;point/smart&#45;point.hpp" alt="" coords="1539,102,1746,129"/>
+<area shape="rect" id="node17" href="$device-base-types_8hpp.html" title="device/device&#45;base\l&#45;types.hpp" alt="" coords="3703,512,3851,553"/>
+<area shape="rect" id="node37" href="$RCSP-stream_8hpp.html" title="rcsp/RCSP&#45;stream.hpp" alt="" coords="2462,266,2629,293"/>
+<area shape="rect" id="node38" href="$network-layer_8hpp.html" title="network/network&#45;layer.hpp" alt="" coords="1807,355,2006,382"/>
+<area shape="rect" id="node44" href="$logging_8hpp.html" title="core/logging.hpp" alt="" coords="2696,355,2827,382"/>
+<area shape="rect" id="node46" href="$RCSP-state-saver_8hpp.html" title="rcsp/RCSP&#45;state&#45;saver.hpp" alt="" coords="3108,355,3303,382"/>
+<area shape="rect" id="node48" href="$nrf24l01_8hpp.html" title="dev/nrf24l01.hpp" alt="" coords="281,355,413,382"/>
+<area shape="rect" id="node49" href="$ir-physical-tv_8hpp.html" title="ir/ir&#45;physical&#45;tv.hpp" alt="" coords="5,355,155,382"/>
+<area shape="rect" id="node50" href="$ir-presentation-mt2_8hpp.html" title="ir/ir&#45;presentation\l&#45;mt2.hpp" alt="" coords="884,95,1015,136"/>
+<area shape="rect" id="node3" href="$smart-point-config-and-state_8hpp.html" title="smart&#45;point/smart&#45;point\l&#45;config&#45;and&#45;state.hpp" alt="" coords="1464,348,1643,389"/>
+<area shape="rect" id="node20" href="$smart-point-display_8hpp.html" title="smart&#45;point/smart&#45;point\l&#45;display.hpp" alt="" coords="1376,259,1555,300"/>
+<area shape="rect" id="node24" href="$smart-point-ui_8hpp.html" title="smart&#45;point/smart&#45;point\l&#45;ui.hpp" alt="" coords="1124,259,1303,300"/>
+<area shape="rect" id="node25" href="$matrix-keyboard_8hpp.html" title="dev/matrix&#45;keyboard.hpp" alt="" coords="1253,355,1440,382"/>
+<area shape="rect" id="node26" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="1908,519,2071,546"/>
+<area shape="rect" id="node31" href="$device_8hpp.html" title="device/device.hpp" alt="" coords="2851,355,2991,382"/>
+<area shape="rect" id="node32" href="$device-initializer_8hpp.html" title="core/device&#45;initializer.hpp" alt="" coords="3437,437,3627,464"/>
+<area shape="rect" id="node34" href="$wav-player_8hpp.html" title="dev/wav&#45;player.hpp" alt="" coords="2957,437,3107,464"/>
+<area shape="rect" id="node35" href="$ir-physical_8hpp.html" title="ir/ir&#45;physical.hpp" alt="" coords="53,437,184,464"/>
+<area shape="rect" id="node36" href="$ir-presentation_8hpp.html" title="ir/ir&#45;presentation.hpp" alt="" coords="753,184,911,211"/>
+<area shape="rect" id="node4" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="554,601,715,628"/>
+<area shape="rect" id="node6" href="$RCSP-aggregator_8hpp.html" title="rcsp/RCSP&#45;aggregator.hpp" alt="" coords="2437,437,2627,464"/>
+<area shape="rect" id="node16" href="$operation-codes_8hpp.html" title="rcsp/operation&#45;codes.hpp" alt="" coords="1181,437,1368,464"/>
+<area shape="rect" id="node7" href="$RCSP-base-types_8hpp.html" title="rcsp/RCSP&#45;base&#45;types.hpp" alt="" coords="1356,519,1548,546"/>
+<area shape="rect" id="node8" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="2081,601,2204,628"/>
+<area shape="rect" id="node9" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="2423,519,2575,546"/>
+<area shape="rect" id="node10" href="$core_2result-code_8hpp.html" title="result&#45;code.hpp" alt="" coords="2957,601,3080,628"/>
+<area shape="rect" id="node18" href="$network-base-types_8hpp.html" title="network/network&#45;base\l&#45;types.hpp" alt="" coords="1164,512,1332,553"/>
+<area shape="rect" id="node19" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="791,519,996,546"/>
+<area shape="rect" id="node21" href="$lcd5110_8hpp.html" title="dev/lcd5110.hpp" alt="" coords="1099,355,1229,382"/>
+<area shape="rect" id="node22" href="$spi_8hpp.html" title="hal/spi.hpp" alt="" coords="309,437,403,464"/>
+<area shape="rect" id="node23" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="435,519,554,546"/>
+<area shape="rect" id="node30" href="$rgb-leds_8hpp.html" title="dev/rgb&#45;leds.hpp" alt="" coords="680,437,811,464"/>
+<area shape="rect" id="node27" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="928,601,1075,628"/>
+<area shape="rect" id="node33" href="$fatfs_8h.html" title="Header for fatfs applications. " alt="" coords="3295,519,3359,546"/>
+<area shape="rect" id="node39" href="$broadcast_8hpp.html" title="network/broadcast.hpp" alt="" coords="987,437,1157,464"/>
+<area shape="rect" id="node40" href="$radio-physical_8hpp.html" title="network/radio&#45;physical.hpp" alt="" coords="1734,437,1933,464"/>
+<area shape="rect" id="node41" href="$diagnostic_8hpp.html" title="core/diagnostic.hpp" alt="" coords="1560,437,1709,464"/>
+<area shape="rect" id="node45" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="2109,437,2209,464"/>
+<area shape="rect" id="node47" href="$state-saver-interface_8hpp.html" title="rcsp/state&#45;saver&#45;interface.hpp" alt="" coords="3753,437,3972,464"/>
+</map>

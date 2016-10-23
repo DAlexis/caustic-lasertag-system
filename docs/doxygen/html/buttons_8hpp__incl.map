@@ -1,0 +1,8 @@
+<map id="include/dev/buttons.hpp" name="include/dev/buttons.hpp">
+<area shape="rect" id="node2" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="5,80,124,107"/>
+<area shape="rect" id="node5" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="879,155,1002,181"/>
+<area shape="rect" id="node7" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="319,80,482,107"/>
+<area shape="rect" id="node6" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="881,229,1000,256"/>
+<area shape="rect" id="node8" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="709,155,855,181"/>
+<area shape="rect" id="node10" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="456,155,617,181"/>
+</map>

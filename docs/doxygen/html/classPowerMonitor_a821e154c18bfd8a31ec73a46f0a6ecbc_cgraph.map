@@ -1,0 +1,4 @@
+<map id="PowerMonitor::interrogate" name="PowerMonitor::interrogate">
+<area shape="rect" id="node2" href="$classIADC.html#abc3a18a1a690bf97d2420c019ecc2566" title="IADC::get" alt="" coords="248,5,331,32"/>
+<area shape="rect" id="node3" href="$classIADC.html#a5197661c4225a547b5804780a67dfbcd" title="IADC::max" alt="" coords="244,56,335,83"/>
+</map>

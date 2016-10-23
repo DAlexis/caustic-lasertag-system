@@ -1,0 +1,6 @@
+<map id="IRReceiverTV" name="IRReceiverTV">
+<area shape="rect" id="node2" href="$classIRReceiverBase.html" title="IRReceiverBase" alt="" coords="115,171,239,197"/>
+<area shape="rect" id="node3" href="$classIIRPhysicalReceiver.html" title="IIRPhysicalReceiver" alt="" coords="5,81,156,108"/>
+<area shape="rect" id="node4" href="$classIInterrogatable.html" title="IInterrogatable" alt="" coords="21,5,140,32"/>
+<area shape="rect" id="node5" href="$classIIOPin.html" title="IIOPin" alt="" coords="180,81,240,108"/>
+</map>

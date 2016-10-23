@@ -1,0 +1,5 @@
+<map id="SPIManager" name="SPIManager">
+<area shape="rect" id="node2" href="$classISPIManager.html" title="ISPIManager" alt="" coords="5,5,108,32"/>
+<area shape="rect" id="node3" href="$classIIOPin.html" title="IIOPin" alt="" coords="132,5,192,32"/>
+<area shape="rect" id="node4" href="$classStagerStub.html" title="StagerStub" alt="" coords="217,5,310,32"/>
+</map>

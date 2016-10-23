@@ -1,0 +1,11 @@
+<map id="IRPresentationReceiverMT2" name="IRPresentationReceiverMT2">
+<area shape="rect" id="node2" href="$classIRPresentationReceiverBase.html" title="IRPresentationReceiverBase" alt="" coords="584,56,791,83"/>
+<area shape="rect" id="node3" href="$classIIRPresentationReceiver.html" title="IIRPresentationReceiver" alt="" coords="189,56,368,83"/>
+<area shape="rect" id="node4" href="$classIInterrogatable.html" title="IInterrogatable" alt="" coords="5,107,124,133"/>
+<area shape="rect" id="node6" href="$classIIRPhysicalReceiver.html" title="IIRPhysicalReceiver" alt="" coords="203,107,354,133"/>
+<area shape="rect" id="node9" href="$classIPresentationReceiversGroup.html" title="IPresentationReceiversGroup" alt="" coords="173,157,384,184"/>
+<area shape="rect" id="node5" href="$classIIOPin.html" title="IIOPin" alt="" coords="249,5,309,32"/>
+<area shape="rect" id="node7" href="$classPresentationReceiversGroupMT2.html" title="PresentationReceiversGroupMT2" alt="" coords="964,107,1199,133"/>
+<area shape="rect" id="node8" href="$classPresentationReceiversGroupBase.html" title="PresentationReceiversGroupBase" alt="" coords="568,157,807,184"/>
+<area shape="rect" id="node10" href="$structShotMessage.html" title="ShotMessage" alt="" coords="633,107,741,133"/>
+</map>

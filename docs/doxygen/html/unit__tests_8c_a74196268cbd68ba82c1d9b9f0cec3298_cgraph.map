@@ -1,0 +1,14 @@
+<map id="glcd_test_counter_and_graph" name="glcd_test_counter_and_graph">
+<area shape="rect" id="node2" href="$group__Graphing.html#ga7a09cd72618dd5d5619b6aaf6597a17f" title="glcd_bar_graph_horizontal" alt="" coords="221,5,415,32"/>
+<area shape="rect" id="node7" href="$group__Graphing.html#gaadb6b8fa919155663d6261e9bf7c6c3a" title="glcd_bar_graph_vertical" alt="" coords="229,56,407,83"/>
+<area shape="rect" id="node8" href="$glcd_8c.html#af2b3e594ac0e4a182d08b47848bd927b" title="glcd_clear_buffer" alt="" coords="657,157,792,184"/>
+<area shape="rect" id="node9" href="$group__StandardText.html#ga443c88a99a6d43938dc29556269e4980" title="glcd_draw_string_xy" alt="" coords="241,107,395,133"/>
+<area shape="rect" id="node11" href="$group__StandardText.html#gababc52ef5bcc974352ba1eed55ac69c5" title="glcd_set_font" alt="" coords="263,208,373,235"/>
+<area shape="rect" id="node13" href="$group__Controllers.html#ga0df6c0642fff31b764298958eda56efb" title="glcd_write" alt="" coords="273,259,363,285"/>
+<area shape="rect" id="node3" href="$group__Graphics.html#ga1cac5dc93f1be733184cffb348e34bcc" title="glcd_draw_rect" alt="" coords="476,56,596,83"/>
+<area shape="rect" id="node6" href="$group__Graphics.html#gaa56253e0033a874217d3b0fb86bb7ee3" title="glcd_fill_rect" alt="" coords="483,5,589,32"/>
+<area shape="rect" id="node4" href="$group__Graphics.html#gaad4f2c4243099dc3cf88b9ba98b71a9d" title="glcd_set_pixel" alt="" coords="667,56,782,83"/>
+<area shape="rect" id="node5" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="840,81,980,108"/>
+<area shape="rect" id="node10" href="$group__StandardText.html#gaa3055d2a67e6873d7648a7e9b22e1595" title="glcd_draw_char_xy" alt="" coords="463,107,609,133"/>
+<area shape="rect" id="node12" href="$group__StandardText.html#gab12a33e4f7636e7983787d8b206236a0" title="glcd_font" alt="" coords="495,208,577,235"/>
+</map>

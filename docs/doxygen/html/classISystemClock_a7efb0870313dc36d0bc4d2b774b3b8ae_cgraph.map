@@ -1,0 +1,5 @@
+<map id="ISystemClock::~ISystemClock" name="ISystemClock::~ISystemClock">
+<area shape="rect" id="node2" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="272,5,445,32"/>
+<area shape="rect" id="node3" href="$classISystemClock.html#a757c3add8504fc1e893cdc893264e9a5" title="ISystemClock::init" alt="" coords="289,56,429,83"/>
+<area shape="rect" id="node4" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="274,107,443,133"/>
+</map>

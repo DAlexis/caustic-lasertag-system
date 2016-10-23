@@ -1,0 +1,4 @@
+<map id="TaskBase" name="TaskBase">
+<area shape="rect" id="node2" href="$classTaskCycled.html" title="TaskCycled" alt="" coords="5,80,103,107"/>
+<area shape="rect" id="node3" href="$classTaskOnce.html" title="TaskOnce" alt="" coords="127,80,213,107"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="IOPinsPool" name="IOPinsPool">
+<area shape="rect" id="node2" href="$classIIOPinsPool.html" title="IIOPinsPool" alt="" coords="5,171,100,197"/>
+<area shape="rect" id="node3" href="$classWorker.html" title="Worker" alt="" coords="125,171,194,197"/>
+<area shape="rect" id="node4" href="$classQueue.html" title="Queue\&lt; WTask \&gt;" alt="" coords="31,81,170,108"/>
+<area shape="rect" id="node5" href="$classTaskOnce.html" title="TaskOnce" alt="" coords="195,81,281,108"/>
+<area shape="rect" id="node6" href="$classTaskBase.html" title="TaskBase" alt="" coords="195,5,281,32"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="WavPlayer::play" name="WavPlayer::play">
+<area shape="rect" id="node2" href="$classWorker.html#a9dab6654832bc1ab1227c220bf053330" title="Worker::add" alt="" coords="244,5,345,32"/>
+<area shape="rect" id="node3" href="$classWavPlayer.html#af7fc87392af617b4860d32869dcbe319" title="WavPlayer::openFile" alt="" coords="217,56,372,83"/>
+<area shape="rect" id="node7" href="$classIFragmentPlayer.html#a95e5d48086edc1eb2bd704b6acec4a1d" title="IFragmentPlayer::playFragment" alt="" coords="181,107,408,133"/>
+<area shape="rect" id="node4" href="$classWavPlayer.html#aa7c6f9c42903fa6ba895eb1e8caaa0f3" title="WavPlayer::loadFragment" alt="" coords="456,31,647,57"/>
+<area shape="rect" id="node6" href="$string-utils_8cpp.html#a66c8a26e45c99fb56893d7dd90f340dd" title="parseFRESULT" alt="" coords="695,81,809,108"/>
+<area shape="rect" id="node5" href="$fatfs-utils_8cpp.html#aa496aba1f63af0839d530749ffd572b1" title="f_read_huge" alt="" coords="701,31,803,57"/>
+</map>

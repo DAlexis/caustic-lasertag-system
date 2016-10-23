@@ -1,0 +1,4 @@
+<map id="FireEmitterBase" name="FireEmitterBase">
+<area shape="rect" id="node3" href="$classLEDFireEmitter.html" title="LEDFireEmitter" alt="" coords="9,155,128,181"/>
+<area shape="rect" id="node2" href="$classIFireEmitter.html" title="IFireEmitter" alt="" coords="19,5,118,32"/>
+</map>

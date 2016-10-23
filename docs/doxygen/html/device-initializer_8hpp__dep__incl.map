@@ -1,0 +1,12 @@
+<map id="include/core/device&#45;initializer.hpp" name="include/core/device&#45;initializer.hpp">
+<area shape="rect" id="node2" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="343,191,557,218"/>
+<area shape="rect" id="node3" href="$head-sensor_8cpp.html" title="src/head&#45;sensor/head\l&#45;sensor.cpp" alt="" coords="768,184,929,225"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="953,191,1059,218"/>
+<area shape="rect" id="node5" href="$bluetooth-bridge_8hpp.html" title="include/bluetooth&#45;bridge\l/bluetooth&#45;bridge.hpp" alt="" coords="121,95,302,136"/>
+<area shape="rect" id="node7" href="$head-sensor_8hpp.html" title="include/head&#45;sensor\l/head&#45;sensor.hpp" alt="" coords="783,95,936,136"/>
+<area shape="rect" id="node8" href="$rifle_8hpp.html" title="include/rifle/rifle.hpp" alt="" coords="326,102,483,129"/>
+<area shape="rect" id="node10" href="$smart-point_8hpp.html" title="include/smart&#45;point\l/smart&#45;point.hpp" alt="" coords="558,95,707,136"/>
+<area shape="rect" id="node6" href="$bluetooth-bridge_8cpp.html" title="src/bluetooth&#45;bridge\l/bluetooth&#45;bridge.cpp" alt="" coords="5,184,167,225"/>
+<area shape="rect" id="node9" href="$rifle_8cpp.html" title="src/rifle/rifle.cpp" alt="" coords="191,191,319,218"/>
+<area shape="rect" id="node11" href="$smart-point_8cpp.html" title="src/smart&#45;point/smart\l&#45;point.cpp" alt="" coords="581,184,743,225"/>
+</map>

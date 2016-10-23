@@ -1,0 +1,4 @@
+<map id="SmartPointState::stopGame" name="SmartPointState::stopGame">
+<area shape="rect" id="node2" href="$classSmartPointState.html#a2cd191135e876f4f469a442a05476212" title="SmartPointState::resetAllTime" alt="" coords="256,13,475,39"/>
+<area shape="rect" id="node3" href="$classSmartPointState.html#adb9432acfb8bdad2b46a09c8072cd2d3" title="SmartPointState::timeLeft\lUsToSec" alt="" coords="523,5,713,47"/>
+</map>

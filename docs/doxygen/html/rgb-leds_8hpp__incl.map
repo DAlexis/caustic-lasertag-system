@@ -1,0 +1,10 @@
+<map id="include/dev/rgb&#45;leds.hpp" name="include/dev/rgb&#45;leds.hpp">
+<area shape="rect" id="node2" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="766,80,885,107"/>
+<area shape="rect" id="node5" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="425,80,588,107"/>
+<area shape="rect" id="node13" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="909,80,1115,107"/>
+<area shape="rect" id="node6" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="5,155,128,181"/>
+<area shape="rect" id="node8" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="492,155,639,181"/>
+<area shape="rect" id="node10" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="153,155,314,181"/>
+<area shape="rect" id="node7" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="7,229,126,256"/>
+<area shape="rect" id="node14" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="945,155,1098,181"/>
+</map>

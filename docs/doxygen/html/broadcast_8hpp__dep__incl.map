@@ -1,0 +1,25 @@
+<map id="include/network/broadcast.hpp" name="include/network/broadcast.hpp">
+<area shape="rect" id="node2" href="$bluetooth-bridge_8cpp.html" title="src/bluetooth&#45;bridge\l/bluetooth&#45;bridge.cpp" alt="" coords="43,169,205,211"/>
+<area shape="rect" id="node3" href="$broadcast_8cpp.html" title="src/network/broadcast.cpp" alt="" coords="1579,87,1773,114"/>
+<area shape="rect" id="node4" href="$network-layer_8cpp.html" title="src/network/network\l&#45;layer.cpp" alt="" coords="229,169,384,211"/>
+<area shape="rect" id="node5" href="$rifle_8cpp.html" title="src/rifle/rifle.cpp" alt="" coords="205,445,333,471"/>
+<area shape="rect" id="node6" href="$game-log_8hpp.html" title="include/game/game&#45;log.hpp" alt="" coords="1263,177,1467,203"/>
+<area shape="rect" id="node8" href="$head-sensor_8hpp.html" title="include/head&#45;sensor\l/head&#45;sensor.hpp" alt="" coords="1373,348,1526,389"/>
+<area shape="rect" id="node12" href="$network-layer_8hpp.html" title="include/network/network\l&#45;layer.hpp" alt="" coords="337,80,519,121"/>
+<area shape="rect" id="node7" href="$game-log_8cpp.html" title="src/game/game&#45;log.cpp" alt="" coords="1278,266,1453,293"/>
+<area shape="rect" id="node9" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="816,445,1029,471"/>
+<area shape="rect" id="node10" href="$head-sensor_8cpp.html" title="src/head&#45;sensor/head\l&#45;sensor.cpp" alt="" coords="1233,437,1394,479"/>
+<area shape="rect" id="node11" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="1418,445,1523,471"/>
+<area shape="rect" id="node13" href="$smart-point_8cpp.html" title="src/smart&#45;point/smart\l&#45;point.cpp" alt="" coords="521,437,684,479"/>
+<area shape="rect" id="node14" href="$RCSP-stream_8hpp.html" title="include/rcsp/RCSP&#45;stream.hpp" alt="" coords="635,177,853,203"/>
+<area shape="rect" id="node15" href="$RCSP-aggregator_8cpp.html" title="src/rscp/RCSP&#45;aggregator.cpp" alt="" coords="144,266,357,293"/>
+<area shape="rect" id="node16" href="$RCSP-state-saver_8cpp.html" title="src/rscp/RCSP&#45;state\l&#45;saver.cpp" alt="" coords="382,259,530,300"/>
+<area shape="rect" id="node17" href="$RCSP-stream_8cpp.html" title="src/rscp/RCSP&#45;stream.cpp" alt="" coords="554,266,742,293"/>
+<area shape="rect" id="node18" href="$ir-presentation_8hpp.html" title="include/ir/ir&#45;presentation.hpp" alt="" coords="992,266,1203,293"/>
+<area shape="rect" id="node24" href="$stream-utils_8hpp.html" title="include/rcsp/stream\l&#45;utils.hpp" alt="" coords="766,259,917,300"/>
+<area shape="rect" id="node19" href="$ir-presentation_8cpp.html" title="src/ir/ir&#45;presentation.cpp" alt="" coords="687,355,868,382"/>
+<area shape="rect" id="node20" href="$ir-presentation-mt2_8hpp.html" title="include/ir/ir&#45;presentation\l&#45;mt2.hpp" alt="" coords="1066,348,1249,389"/>
+<area shape="rect" id="node22" href="$rifle_8hpp.html" title="include/rifle/rifle.hpp" alt="" coords="505,355,663,382"/>
+<area shape="rect" id="node23" href="$smart-point_8hpp.html" title="include/smart&#45;point\l/smart&#45;point.hpp" alt="" coords="892,348,1041,389"/>
+<area shape="rect" id="node21" href="$ir-presentation-mt2_8cpp.html" title="src/ir/ir&#45;presentation\l&#45;mt2.cpp" alt="" coords="1053,437,1208,479"/>
+</map>

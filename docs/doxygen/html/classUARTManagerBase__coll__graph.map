@@ -1,0 +1,7 @@
+<map id="UARTManagerBase" name="UARTManagerBase">
+<area shape="rect" id="node2" href="$classIUARTManager.html" title="IUARTManager" alt="" coords="5,171,124,197"/>
+<area shape="rect" id="node3" href="$classWorker.html" title="Worker" alt="" coords="149,171,218,197"/>
+<area shape="rect" id="node4" href="$classQueue.html" title="Queue\&lt; WTask \&gt;" alt="" coords="55,81,194,108"/>
+<area shape="rect" id="node5" href="$classTaskOnce.html" title="TaskOnce" alt="" coords="219,81,305,108"/>
+<area shape="rect" id="node6" href="$classTaskBase.html" title="TaskBase" alt="" coords="219,5,305,32"/>
+</map>

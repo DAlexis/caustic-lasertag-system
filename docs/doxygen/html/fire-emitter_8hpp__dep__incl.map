@@ -1,0 +1,19 @@
+<map id="include/hal/fire&#45;emitter.hpp" name="include/hal/fire&#45;emitter.hpp">
+<area shape="rect" id="node2" href="$fire-emitter-hw_8hpp.html" title="include/hw/fire&#45;emitter\l&#45;hw.hpp" alt="" coords="103,80,274,121"/>
+<area shape="rect" id="node4" href="$ir-physical_8hpp.html" title="include/ir/ir&#45;physical.hpp" alt="" coords="327,87,509,114"/>
+<area shape="rect" id="node3" href="$fire-emitter_8cpp.html" title="src/hw/fire&#45;emitter.cpp" alt="" coords="46,169,217,196"/>
+<area shape="rect" id="node5" href="$head-sensor_8hpp.html" title="include/head&#45;sensor\l/head&#45;sensor.hpp" alt="" coords="5,244,159,285"/>
+<area shape="rect" id="node9" href="$ir-physical-tv_8hpp.html" title="include/ir/ir&#45;physical\l&#45;tv.hpp" alt="" coords="951,244,1106,285"/>
+<area shape="rect" id="node13" href="$ir-presentation_8hpp.html" title="include/ir/ir&#45;presentation.hpp" alt="" coords="342,169,553,196"/>
+<area shape="rect" id="node17" href="$rifle_8hpp.html" title="include/rifle/rifle.hpp" alt="" coords="562,251,719,278"/>
+<area shape="rect" id="node18" href="$smart-point_8hpp.html" title="include/smart&#45;point\l/smart&#45;point.hpp" alt="" coords="183,244,333,285"/>
+<area shape="rect" id="node6" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="151,341,365,367"/>
+<area shape="rect" id="node7" href="$head-sensor_8cpp.html" title="src/head&#45;sensor/head\l&#45;sensor.cpp" alt="" coords="389,333,551,375"/>
+<area shape="rect" id="node8" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="21,341,127,367"/>
+<area shape="rect" id="node10" href="$ir-physical-tv_8cpp.html" title="src/ir/ir&#45;physical\l&#45;tv.cpp" alt="" coords="1093,333,1220,375"/>
+<area shape="rect" id="node11" href="$rifle_8cpp.html" title="src/rifle/rifle.cpp" alt="" coords="941,341,1069,367"/>
+<area shape="rect" id="node12" href="$smart-point_8cpp.html" title="src/smart&#45;point/smart\l&#45;point.cpp" alt="" coords="754,333,917,375"/>
+<area shape="rect" id="node14" href="$ir-presentation_8cpp.html" title="src/ir/ir&#45;presentation.cpp" alt="" coords="357,251,538,278"/>
+<area shape="rect" id="node15" href="$ir-presentation-mt2_8hpp.html" title="include/ir/ir&#45;presentation\l&#45;mt2.hpp" alt="" coords="744,244,927,285"/>
+<area shape="rect" id="node16" href="$ir-presentation-mt2_8cpp.html" title="src/ir/ir&#45;presentation\l&#45;mt2.cpp" alt="" coords="575,333,730,375"/>
+</map>

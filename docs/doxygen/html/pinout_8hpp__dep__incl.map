@@ -1,0 +1,27 @@
+<map id="include/core/pinout.hpp" name="include/core/pinout.hpp">
+<area shape="rect" id="node2" href="$pinout_8cpp.html" title="src/core/pinout.cpp" alt="" coords="5,87,151,114"/>
+<area shape="rect" id="node3" href="$rifle-display_8cpp.html" title="src/rifle/rifle&#45;display.cpp" alt="" coords="175,87,355,114"/>
+<area shape="rect" id="node4" href="$smart-point-display_8cpp.html" title="src/smart&#45;point/smart\l&#45;point&#45;display.cpp" alt="" coords="379,80,542,121"/>
+<area shape="rect" id="node5" href="$smart-point-ui_8cpp.html" title="src/smart&#45;point/smart\l&#45;point&#45;ui.cpp" alt="" coords="566,80,729,121"/>
+<area shape="rect" id="node6" href="$device-initializer_8hpp.html" title="include/core/device\l&#45;initializer.hpp" alt="" coords="668,259,816,300"/>
+<area shape="rect" id="node17" href="$fire-emitter_8hpp.html" title="include/hal/fire&#45;emitter.hpp" alt="" coords="826,87,1026,114"/>
+<area shape="rect" id="node7" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="718,445,931,471"/>
+<area shape="rect" id="node8" href="$head-sensor_8cpp.html" title="src/head&#45;sensor/head\l&#45;sensor.cpp" alt="" coords="980,437,1141,479"/>
+<area shape="rect" id="node9" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="588,445,693,471"/>
+<area shape="rect" id="node10" href="$bluetooth-bridge_8hpp.html" title="include/bluetooth&#45;bridge\l/bluetooth&#45;bridge.hpp" alt="" coords="466,348,647,389"/>
+<area shape="rect" id="node12" href="$head-sensor_8hpp.html" title="include/head&#45;sensor\l/head&#45;sensor.hpp" alt="" coords="723,348,876,389"/>
+<area shape="rect" id="node13" href="$rifle_8hpp.html" title="include/rifle/rifle.hpp" alt="" coords="951,355,1109,382"/>
+<area shape="rect" id="node15" href="$smart-point_8hpp.html" title="include/smart&#45;point\l/smart&#45;point.hpp" alt="" coords="1133,348,1282,389"/>
+<area shape="rect" id="node11" href="$bluetooth-bridge_8cpp.html" title="src/bluetooth&#45;bridge\l/bluetooth&#45;bridge.cpp" alt="" coords="403,437,564,479"/>
+<area shape="rect" id="node14" href="$rifle_8cpp.html" title="src/rifle/rifle.cpp" alt="" coords="1394,445,1522,471"/>
+<area shape="rect" id="node16" href="$smart-point_8cpp.html" title="src/smart&#45;point/smart\l&#45;point.cpp" alt="" coords="1546,437,1709,479"/>
+<area shape="rect" id="node18" href="$fire-emitter-hw_8hpp.html" title="include/hw/fire&#45;emitter\l&#45;hw.hpp" alt="" coords="841,169,1011,211"/>
+<area shape="rect" id="node20" href="$ir-physical_8hpp.html" title="include/ir/ir&#45;physical.hpp" alt="" coords="1047,177,1229,203"/>
+<area shape="rect" id="node19" href="$fire-emitter_8cpp.html" title="src/hw/fire&#45;emitter.cpp" alt="" coords="841,266,1011,293"/>
+<area shape="rect" id="node21" href="$ir-physical-tv_8hpp.html" title="include/ir/ir&#45;physical\l&#45;tv.hpp" alt="" coords="1719,348,1874,389"/>
+<area shape="rect" id="node23" href="$ir-presentation_8hpp.html" title="include/ir/ir&#45;presentation.hpp" alt="" coords="1187,266,1398,293"/>
+<area shape="rect" id="node22" href="$ir-physical-tv_8cpp.html" title="src/ir/ir&#45;physical\l&#45;tv.cpp" alt="" coords="1733,437,1860,479"/>
+<area shape="rect" id="node24" href="$ir-presentation_8cpp.html" title="src/ir/ir&#45;presentation.cpp" alt="" coords="1306,355,1487,382"/>
+<area shape="rect" id="node25" href="$ir-presentation-mt2_8hpp.html" title="include/ir/ir&#45;presentation\l&#45;mt2.hpp" alt="" coords="1512,348,1695,389"/>
+<area shape="rect" id="node26" href="$ir-presentation-mt2_8cpp.html" title="src/ir/ir&#45;presentation\l&#45;mt2.cpp" alt="" coords="1215,437,1370,479"/>
+</map>

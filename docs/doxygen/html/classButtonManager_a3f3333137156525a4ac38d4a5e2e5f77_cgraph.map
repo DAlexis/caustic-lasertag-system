@@ -1,0 +1,5 @@
+<map id="ButtonManager::interrogate" name="ButtonManager::interrogate">
+<area shape="rect" id="node2" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="505,23,679,50"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#add783caf9950d7c576bf3940c0846bd6" title="IIOPin::state" alt="" coords="305,23,407,50"/>
+<area shape="rect" id="node4" href="$classButtonManager.html#a08f4c5714290bc3205fc89f1af1672fa" title="ButtonManager::wasBounce" alt="" coords="255,74,457,101"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="include/device/device.hpp" name="include/device/device.hpp">
+<area shape="rect" id="node2" href="$device-base-types_8hpp.html" title="device/device&#45;base\l&#45;types.hpp" alt="" coords="1355,155,1503,196"/>
+<area shape="rect" id="node4" href="$operation-codes_8hpp.html" title="rcsp/operation&#45;codes.hpp" alt="" coords="380,80,567,107"/>
+<area shape="rect" id="node9" href="$RCSP-base-types_8hpp.html" title="rcsp/RCSP&#45;base&#45;types.hpp" alt="" coords="651,333,843,360"/>
+<area shape="rect" id="node17" href="$RCSP-aggregator_8hpp.html" title="rcsp/RCSP&#45;aggregator.hpp" alt="" coords="1141,162,1331,189"/>
+<area shape="rect" id="node5" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="79,408,233,435"/>
+<area shape="rect" id="node6" href="$RCSP-codes-manipulation_8hpp.html" title="rcsp/RCSP&#45;codes&#45;manipulation.hpp" alt="" coords="747,251,997,278"/>
+<area shape="rect" id="node10" href="$network-base-types_8hpp.html" title="network/network&#45;base\l&#45;types.hpp" alt="" coords="431,244,599,285"/>
+<area shape="rect" id="node12" href="$rifle-base-types_8hpp.html" title="rifle/rifle&#45;base&#45;types.hpp" alt="" coords="110,162,293,189"/>
+<area shape="rect" id="node14" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="53,333,259,360"/>
+<area shape="rect" id="node15" href="$head-sensor-base-types_8hpp.html" title="head&#45;sensor/head&#45;sensor\l&#45;base&#45;types.hpp" alt="" coords="380,155,567,196"/>
+<area shape="rect" id="node7" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="903,333,1025,360"/>
+<area shape="rect" id="node8" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="905,408,1023,435"/>
+<area shape="rect" id="node13" href="$head-sensor-rifle-communication_8hpp.html" title="communication/head\l&#45;sensor&#45;rifle&#45;communication.hpp" alt="" coords="71,244,305,285"/>
+<area shape="rect" id="node18" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="1273,251,1425,278"/>
+<area shape="rect" id="node19" href="$core_2result-code_8hpp.html" title="result&#45;code.hpp" alt="" coords="1284,333,1407,360"/>
+</map>

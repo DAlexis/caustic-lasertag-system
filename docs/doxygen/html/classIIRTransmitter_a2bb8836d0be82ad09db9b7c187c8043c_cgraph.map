@@ -1,0 +1,7 @@
+<map id="IIRTransmitter::~IIRTransmitter" name="IIRTransmitter::~IIRTransmitter">
+<area shape="rect" id="node2" href="$classIIRTransmitter.html#aece6cccd7969ce0132838d29ebc0ac10" title="IIRTransmitter::busy" alt="" coords="310,5,465,32"/>
+<area shape="rect" id="node3" href="$classIIRTransmitter.html#a3c32418b65ef99ed557dca2b0f6b57d2" title="IIRTransmitter::init" alt="" coords="315,56,459,83"/>
+<area shape="rect" id="node4" href="$classIIRTransmitter.html#abfc8922699b6bcd3aaa95b931c60a058" title="IIRTransmitter::send" alt="" coords="310,107,465,133"/>
+<area shape="rect" id="node5" href="$classIIRTransmitter.html#aafa3889680af0daeb2fa039f071250c1" title="IIRTransmitter::setFireEmitter" alt="" coords="280,157,495,184"/>
+<area shape="rect" id="node6" href="$classIIRTransmitter.html#a1e5c56fbf8744c5849edbbc75fd5b107" title="IIRTransmitter::setPower" alt="" coords="296,208,479,235"/>
+</map>

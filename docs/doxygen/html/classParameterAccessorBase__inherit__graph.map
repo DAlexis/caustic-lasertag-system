@@ -1,0 +1,5 @@
+<map id="ParameterAccessorBase&lt; Type &gt;" name="ParameterAccessorBase&lt; Type &gt;">
+<area shape="rect" id="node3" href="$classCustomStrParseParameterAccessor.html" title="Realization of IOperationAccessor for parameters that have convertFromString(...) method..." alt="" coords="5,169,257,211"/>
+<area shape="rect" id="node4" href="$classStandartStrParseParameterAccessor.html" title="Realization of IOperationAccessor for simple typed parameters. " alt="" coords="281,169,480,211"/>
+<area shape="rect" id="node2" href="$classIOperationAccessor.html" title="Any kind of object that can read data from stream and write data to stream. " alt="" coords="181,5,329,32"/>
+</map>

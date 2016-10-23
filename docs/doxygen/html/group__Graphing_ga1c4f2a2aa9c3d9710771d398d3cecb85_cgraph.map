@@ -1,0 +1,5 @@
+<map id="glcd_bar_graph_horizontal_no_border" name="glcd_bar_graph_horizontal_no_border">
+<area shape="rect" id="node2" href="$group__Graphics.html#gaa56253e0033a874217d3b0fb86bb7ee3" title="glcd_fill_rect" alt="" coords="247,31,352,57"/>
+<area shape="rect" id="node3" href="$group__Graphics.html#gaad4f2c4243099dc3cf88b9ba98b71a9d" title="glcd_set_pixel" alt="" coords="400,5,515,32"/>
+<area shape="rect" id="node4" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="563,31,703,57"/>
+</map>

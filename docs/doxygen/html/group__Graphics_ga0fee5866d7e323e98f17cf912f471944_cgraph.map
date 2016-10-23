@@ -1,0 +1,4 @@
+<map id="glcd_draw_circle" name="glcd_draw_circle">
+<area shape="rect" id="node2" href="$group__Graphics.html#gaad4f2c4243099dc3cf88b9ba98b71a9d" title="glcd_set_pixel" alt="" coords="184,5,299,32"/>
+<area shape="rect" id="node3" href="$glcd_8c.html#a88d99b78977e27adbfccdca89e3780d7" title="glcd_update_bbox" alt="" coords="347,31,487,57"/>
+</map>

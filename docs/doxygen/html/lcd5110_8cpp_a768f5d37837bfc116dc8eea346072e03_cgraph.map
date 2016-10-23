@@ -1,0 +1,7 @@
+<map id="glcd_spi_write" name="glcd_spi_write">
+<area shape="rect" id="node2" href="$lcd5110_8cpp.html#abed6f62d611fcad75b4dc4c7a4cd6068" title="GLCD_DESELECT_impl" alt="" coords="169,5,335,32"/>
+<area shape="rect" id="node4" href="$lcd5110_8cpp.html#ac56fc3a9d5d4ed1f49c03c98fda8163a" title="GLCD_SELECT_impl" alt="" coords="177,56,327,83"/>
+<area shape="rect" id="node6" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="168,107,336,133"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="391,5,479,32"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="384,56,485,83"/>
+</map>

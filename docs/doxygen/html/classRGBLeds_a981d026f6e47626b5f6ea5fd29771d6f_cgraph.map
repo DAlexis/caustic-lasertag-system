@@ -1,0 +1,10 @@
+<map id="RGBLeds::RGBLeds" name="RGBLeds::RGBLeds">
+<area shape="rect" id="node2" href="$classRGBLeds.html#a3dec6abba6047b45ff49fc954caceb4f" title="RGBLeds::blinkingTask" alt="" coords="203,56,373,83"/>
+<area shape="rect" id="node7" href="$classTaskBase.html#a7aea6fec990c95fe304ccb2d13e5d9f5" title="TaskBase::setName" alt="" coords="212,107,364,133"/>
+<area shape="rect" id="node8" href="$classTaskBase.html#a7440a410d44f29a330355c2f4bac4a4b" title="TaskBase::setStackSize" alt="" coords="200,157,376,184"/>
+<area shape="rect" id="node9" href="$classTaskBase.html#aa9b1604f21bd79040332d1f747f14884" title="TaskBase::setTask" alt="" coords="216,208,360,235"/>
+<area shape="rect" id="node3" href="$classRGBLeds.html#a304de52a947390f951d36ede657cee27" title="RGBLeds::changeState" alt="" coords="424,31,593,57"/>
+<area shape="rect" id="node6" href="$classKernel.html#a1bc0580e1de6012f24a8f90284d95914" title="Kernel::yeld" alt="" coords="459,81,559,108"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="648,5,736,32"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="641,56,743,83"/>
+</map>

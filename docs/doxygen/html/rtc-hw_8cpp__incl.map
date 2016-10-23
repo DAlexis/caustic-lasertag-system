@@ -1,0 +1,13 @@
+<map id="src/hw/rtc&#45;hw.cpp" name="src/hw/rtc&#45;hw.cpp">
+<area shape="rect" id="node2" href="$rtc-hw_8hpp.html" title="hw/rtc&#45;hw.hpp" alt="" coords="128,80,243,107"/>
+<area shape="rect" id="node7" href="$logging_8hpp.html" title="core/logging.hpp" alt="" coords="472,80,603,107"/>
+<area shape="rect" id="node19" href="$memory_8hpp.html" title="utils/memory.hpp" alt="" coords="295,80,433,107"/>
+<area shape="rect" id="node3" href="$rtc_8hpp.html" title="hal/rtc.hpp" alt="" coords="5,155,96,181"/>
+<area shape="rect" id="node4" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="21,229,174,256"/>
+<area shape="rect" id="node8" href="$os-wrappers_8hpp.html" title="os&#45;wrappers.hpp" alt="" coords="631,229,761,256"/>
+<area shape="rect" id="node17" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="487,155,587,181"/>
+<area shape="rect" id="node9" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="793,304,916,331"/>
+<area shape="rect" id="node11" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="623,304,769,331"/>
+<area shape="rect" id="node13" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="437,304,598,331"/>
+<area shape="rect" id="node10" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="795,379,914,405"/>
+</map>

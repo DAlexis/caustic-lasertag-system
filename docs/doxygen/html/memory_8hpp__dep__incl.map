@@ -1,0 +1,13 @@
+<map id="include/utils/memory.hpp" name="include/utils/memory.hpp">
+<area shape="rect" id="node2" href="$lcd5110_8cpp.html" title="src/dev/lcd5110.cpp" alt="" coords="5,87,156,114"/>
+<area shape="rect" id="node3" href="$adc-hw_8cpp.html" title="src/hw/adc&#45;hw.cpp" alt="" coords="180,87,323,114"/>
+<area shape="rect" id="node4" href="$hardware-initializer-hw_8cpp.html" title="src/hw/hardware&#45;initializer\l&#45;hw.cpp" alt="" coords="347,80,542,121"/>
+<area shape="rect" id="node5" href="$io-pins-hw_8cpp.html" title="src/hw/io&#45;pins&#45;hw.cpp" alt="" coords="566,87,729,114"/>
+<area shape="rect" id="node6" href="$rtc-hw_8cpp.html" title="src/hw/rtc&#45;hw.cpp" alt="" coords="753,87,889,114"/>
+<area shape="rect" id="node7" href="$spi_8cpp.html" title="src/hw/spi.cpp" alt="" coords="913,87,1027,114"/>
+<area shape="rect" id="node8" href="$system-clock_8cpp.html" title="src/hw/system&#45;clock.cpp" alt="" coords="1052,87,1235,114"/>
+<area shape="rect" id="node9" href="$ir-presentation-mt2_8cpp.html" title="src/ir/ir&#45;presentation\l&#45;mt2.cpp" alt="" coords="1259,80,1414,121"/>
+<area shape="rect" id="node10" href="$memory-utils_8cpp.html" title="src/utils/memory&#45;utils.cpp" alt="" coords="1438,87,1630,114"/>
+<area shape="rect" id="node11" href="$fire-emitter-hw_8hpp.html" title="include/hw/fire&#45;emitter\l&#45;hw.hpp" alt="" coords="1654,80,1825,121"/>
+<area shape="rect" id="node12" href="$fire-emitter_8cpp.html" title="src/hw/fire&#45;emitter.cpp" alt="" coords="1654,169,1825,196"/>
+</map>

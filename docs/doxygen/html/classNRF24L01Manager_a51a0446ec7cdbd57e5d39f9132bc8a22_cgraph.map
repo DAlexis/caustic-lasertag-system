@@ -1,0 +1,18 @@
+<map id="NRF24L01Manager::extiHandler" name="NRF24L01Manager::extiHandler">
+<area shape="rect" id="node2" href="$classNRF24L01Manager.html#a7473e7db59e1f49055755909f77eccaf" title="NRF24L01Manager::isTXDataSent" alt="" coords="280,24,519,51"/>
+<area shape="rect" id="node3" href="$classNRF24L01Manager.html#af2576836172f2ee75f04bac045cdfcaf" title="NRF24L01Manager::resetTXDataSent" alt="" coords="567,125,828,152"/>
+<area shape="rect" id="node9" href="$classNRF24L01Manager.html#ad390e166b3669106d5f11763bdcff01b" title="NRF24L01Manager::updateStatus" alt="" coords="877,49,1115,76"/>
+<area shape="rect" id="node13" href="$classNRF24L01Manager.html#aa5466451327d7840bdd29628e60e3ef0" title="NRF24L01Manager::switchToRX" alt="" coords="286,227,513,253"/>
+<area shape="rect" id="node4" href="$classNRF24L01Manager.html#a12b07071e40e40857c42fcc14d8c2a0f" title="NRF24L01Manager::chipSelect" alt="" coords="1172,107,1391,133"/>
+<area shape="rect" id="node6" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="1197,233,1365,260"/>
+<area shape="rect" id="node7" href="$classNRF24L01Manager.html#a2007d3cdba4fa69df39421ec0496b498" title="NRF24L01Manager::chipDeselect" alt="" coords="1164,157,1399,184"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="1483,107,1584,133"/>
+<area shape="rect" id="node8" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="1489,227,1577,253"/>
+<area shape="rect" id="node10" href="$classStager.html#a4f28e1102423eb9b2062124aaba4abb0" title="Stager::stage" alt="" coords="1227,5,1335,32"/>
+<area shape="rect" id="node12" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="1171,56,1391,83"/>
+<area shape="rect" id="node11" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="1447,5,1620,32"/>
+<area shape="rect" id="node14" href="$classNRF24L01Manager.html#a497dc807b11e2d45f867fea6d2ef06d9" title="NRF24L01Manager::setConfig" alt="" coords="591,201,804,228"/>
+<area shape="rect" id="node16" href="$classISystemClock.html#a56e36eac423f9bc16d2a108056cfedbf" title="ISystemClock::wait_us" alt="" coords="613,303,782,329"/>
+<area shape="rect" id="node17" href="$classNRF24L01Manager.html#aea0f042cea59f7275513a619ea017226" title="NRF24L01Manager::chipEnableOn" alt="" coords="876,303,1116,329"/>
+<area shape="rect" id="node15" href="$classNRF24L01Manager.html#a8c5613ce71132da8e2fe2b33826ad4ba" title="NRF24L01Manager::writeReg" alt="" coords="891,201,1101,228"/>
+</map>

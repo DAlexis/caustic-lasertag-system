@@ -1,0 +1,8 @@
+<map id="blinkPin" name="blinkPin">
+<area shape="rect" id="node2" href="$io-pins-utils_8cpp.html#a115391f9735c87a97de53bf19ae8b7a4" title="delayedSwitchPin" alt="" coords="128,56,265,83"/>
+<area shape="rect" id="node6" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="346,107,434,133"/>
+<area shape="rect" id="node3" href="$classTasksPool.html#add53cf24c3a1746b59aad0ad93b29308" title="TasksPool::addOnce" alt="" coords="313,5,467,32"/>
+<area shape="rect" id="node7" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="339,56,441,83"/>
+<area shape="rect" id="node4" href="$classTasksPool.html#ae9201ada681bd838ca8632e85f3734c4" title="TasksPool::add" alt="" coords="515,5,635,32"/>
+<area shape="rect" id="node5" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="683,5,856,32"/>
+</map>

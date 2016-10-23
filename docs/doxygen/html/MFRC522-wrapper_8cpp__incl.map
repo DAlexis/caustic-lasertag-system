@@ -1,0 +1,15 @@
+<map id="src/dev/MFRC522&#45;wrapper.cpp" name="src/dev/MFRC522&#45;wrapper.cpp">
+<area shape="rect" id="node2" href="$MFRC522-wrapper_8hpp.html" title="dev/MFRC522&#45;wrapper.hpp" alt="" coords="328,80,524,107"/>
+<area shape="rect" id="node16" href="$logging_8hpp.html" title="core/logging.hpp" alt="" coords="723,80,854,107"/>
+<area shape="rect" id="node19" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="1166,229,1318,256"/>
+<area shape="rect" id="node3" href="$RC522_8hpp.html" title="dev/RC522.hpp" alt="" coords="190,155,310,181"/>
+<area shape="rect" id="node8" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="555,229,718,256"/>
+<area shape="rect" id="node4" href="$spi_8hpp.html" title="hal/spi.hpp" alt="" coords="162,229,255,256"/>
+<area shape="rect" id="node5" href="$io-pins_8hpp.html" title="hal/io&#45;pins.hpp" alt="" coords="34,304,153,331"/>
+<area shape="rect" id="node9" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="894,304,1016,331"/>
+<area shape="rect" id="node11" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="418,304,564,331"/>
+<area shape="rect" id="node13" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="708,304,869,331"/>
+<area shape="rect" id="node10" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="896,379,1014,405"/>
+<area shape="rect" id="node17" href="$uart_8hpp.html" title="hal/uart.hpp" alt="" coords="498,155,598,181"/>
+<area shape="rect" id="node20" href="$core_2result-code_8hpp.html" title="result&#45;code.hpp" alt="" coords="1304,304,1427,331"/>
+</map>

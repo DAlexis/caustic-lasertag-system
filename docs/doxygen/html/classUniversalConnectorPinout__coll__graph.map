@@ -1,0 +1,5 @@
+<map id="UniversalConnectorPinout" name="UniversalConnectorPinout">
+<area shape="rect" id="node2" href="$structUniversalConnectorPinout_1_1LCD5110.html" title="UniversalConnectorPinout\l::LCD5110" alt="" coords="5,124,196,165"/>
+<area shape="rect" id="node3" href="$structPinout_1_1PinDescr.html" title="Note: GPIOA has port number 0, GPIOB has 1, ... " alt="" coords="163,5,291,32"/>
+<area shape="rect" id="node4" href="$structUniversalConnectorPinout_1_1RFID.html" title="UniversalConnectorPinout\l::RFID" alt="" coords="220,124,411,165"/>
+</map>

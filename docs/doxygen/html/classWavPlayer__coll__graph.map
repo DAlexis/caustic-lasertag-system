@@ -1,0 +1,9 @@
+<map id="WavPlayer" name="WavPlayer">
+<area shape="rect" id="node2" href="$structWavPlayer_1_1ChannelContext.html" title="WavPlayer::ChannelContext" alt="" coords="79,171,283,197"/>
+<area shape="rect" id="node3" href="$classMutex.html" title="Mutex" alt="" coords="5,81,68,108"/>
+<area shape="rect" id="node4" href="$structWavPlayer_1_1WavHeader.html" title="WavPlayer::WavHeader" alt="" coords="93,81,269,108"/>
+<area shape="rect" id="node5" href="$classWorker.html" title="Worker" alt="" coords="327,171,397,197"/>
+<area shape="rect" id="node6" href="$classQueue.html" title="Queue\&lt; WTask \&gt;" alt="" coords="293,81,431,108"/>
+<area shape="rect" id="node7" href="$classTaskOnce.html" title="TaskOnce" alt="" coords="456,81,543,108"/>
+<area shape="rect" id="node8" href="$classTaskBase.html" title="TaskBase" alt="" coords="457,5,542,32"/>
+</map>

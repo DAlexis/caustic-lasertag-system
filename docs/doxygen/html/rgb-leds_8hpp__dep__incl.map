@@ -1,0 +1,14 @@
+<map id="include/dev/rgb&#45;leds.hpp" name="include/dev/rgb&#45;leds.hpp">
+<area shape="rect" id="node2" href="$rgb-leds_8cpp.html" title="src/dev/rgb&#45;leds.cpp" alt="" coords="86,87,239,114"/>
+<area shape="rect" id="node3" href="$head-sensor_8hpp.html" title="include/head&#45;sensor\l/head&#45;sensor.hpp" alt="" coords="427,169,581,211"/>
+<area shape="rect" id="node7" href="$head-sensor_2resources_8hpp.html" title="include/head&#45;sensor\l/resources.hpp" alt="" coords="542,80,695,121"/>
+<area shape="rect" id="node10" href="$smart-point-ui_8hpp.html" title="include/smart&#45;point\l/smart&#45;point&#45;ui.hpp" alt="" coords="264,80,413,121"/>
+<area shape="rect" id="node4" href="$device-initializer_8cpp.html" title="src/core/device&#45;initializer.cpp" alt="" coords="192,266,405,293"/>
+<area shape="rect" id="node5" href="$head-sensor_8cpp.html" title="src/head&#45;sensor/head\l&#45;sensor.cpp" alt="" coords="559,259,721,300"/>
+<area shape="rect" id="node6" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="430,266,535,293"/>
+<area shape="rect" id="node8" href="$parameters_8cpp.html" title="src/head&#45;sensor/parameters.cpp" alt="" coords="657,177,887,203"/>
+<area shape="rect" id="node9" href="$player_8cpp.html" title="src/player/player.cpp" alt="" coords="911,177,1070,203"/>
+<area shape="rect" id="node11" href="$smart-point-ui_8cpp.html" title="src/smart&#45;point/smart\l&#45;point&#45;ui.cpp" alt="" coords="240,169,403,211"/>
+<area shape="rect" id="node12" href="$smart-point_8hpp.html" title="include/smart&#45;point\l/smart&#45;point.hpp" alt="" coords="67,169,216,211"/>
+<area shape="rect" id="node13" href="$smart-point_8cpp.html" title="src/smart&#45;point/smart\l&#45;point.cpp" alt="" coords="5,259,168,300"/>
+</map>

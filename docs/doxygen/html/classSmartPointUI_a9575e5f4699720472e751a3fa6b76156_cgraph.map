@@ -1,0 +1,16 @@
+<map id="SmartPointUI::init" name="SmartPointUI::init">
+<area shape="rect" id="node2" href="$classRGBLeds.html#a19715201175a4eaf8b25dc0c906c5824" title="RGBLeds::blink" alt="" coords="215,56,335,83"/>
+<area shape="rect" id="node7" href="$classSmartPointUI.html#aa1ce8c03f2b289f6ed21fad20f6d4ae8" title="SmartPointUI::initKbd" alt="" coords="194,157,357,184"/>
+<area shape="rect" id="node12" href="$classSmartPointUI.html#a15b533002e02b8ac3a82c547fe57524b" title="SmartPointUI::initLCD" alt="" coords="194,208,357,235"/>
+<area shape="rect" id="node13" href="$classSmartPointUI.html#a1bfa1b2dad4ad0415fcfb67565c6ffbc" title="SmartPointUI::initLEDs" alt="" coords="191,107,360,133"/>
+<area shape="rect" id="node3" href="$classRGBLeds.html#a304de52a947390f951d36ede657cee27" title="RGBLeds::changeState" alt="" coords="413,56,583,83"/>
+<area shape="rect" id="node6" href="$classRGBLeds.html#a87ca030b945f24961aa456b0479bc2cb" title="RGBLeds::getTeamColor" alt="" coords="408,5,588,32"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="671,56,772,83"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="677,157,765,184"/>
+<area shape="rect" id="node8" href="$classIIOPinsPool.html#a78873d802cf5ecc1480a04345ec9a5fa" title="IIOPinsPool::getIOPin" alt="" coords="419,157,577,184"/>
+<area shape="rect" id="node9" href="$classMatrixKeyboard.html#a85c578b2de2f4db47070d57fa0671379" title="MatrixKeyboard::init" alt="" coords="421,208,575,235"/>
+<area shape="rect" id="node10" href="$classIIOPin.html#a18cf82b664362a3c3c35d8f03e48d117" title="IIOPin::switchToInput" alt="" coords="642,259,801,285"/>
+<area shape="rect" id="node11" href="$classIIOPin.html#a088f6a8d5663b9cd0e62b9e3dfa0b9c1" title="IIOPin::switchToOutput" alt="" coords="636,208,807,235"/>
+<area shape="rect" id="node14" href="$classRGBLeds.html#a213592e2a635200fe62f9604a333244f" title="RGBLeds::init" alt="" coords="443,107,553,133"/>
+<area shape="rect" id="node15" href="$classTaskCycled.html#a0b4e809ed7f3c4c6a5767f6eb3fe3022" title="TaskCycled::run" alt="" coords="658,107,785,133"/>
+</map>

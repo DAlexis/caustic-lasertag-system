@@ -1,0 +1,5 @@
+<map id="glcd_draw_bitmap" name="glcd_draw_bitmap">
+<area shape="rect" id="node2" href="$glcd_8c.html#a6590d9f8c806245e7f813374e90c5de7" title="glcd_bbox_refresh" alt="" coords="197,5,338,32"/>
+<area shape="rect" id="node3" href="$glcd_8c.html#a70216254fa510853189338fd7d056837" title="glcd_select_screen" alt="" coords="195,56,340,83"/>
+<area shape="rect" id="node4" href="$group__Controllers.html#ga0df6c0642fff31b764298958eda56efb" title="glcd_write" alt="" coords="223,107,312,133"/>
+</map>

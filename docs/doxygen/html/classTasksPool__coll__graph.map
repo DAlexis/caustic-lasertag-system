@@ -1,0 +1,5 @@
+<map id="TasksPool" name="TasksPool">
+<area shape="rect" id="node2" href="$classTaskCycled.html" title="TaskCycled" alt="" coords="5,81,103,108"/>
+<area shape="rect" id="node3" href="$classTaskBase.html" title="TaskBase" alt="" coords="11,5,97,32"/>
+<area shape="rect" id="node4" href="$classMutex.html" title="Mutex" alt="" coords="151,81,213,108"/>
+</map>

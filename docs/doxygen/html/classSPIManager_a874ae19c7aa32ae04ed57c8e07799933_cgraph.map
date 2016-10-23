@@ -1,0 +1,14 @@
+<map id="SPIManager::~SPIManager" name="SPIManager::~SPIManager">
+<area shape="rect" id="node2" href="$classSPIManager.html#a226492a75e66491d01ebdb32d7c236a1" title="SPIManager::init" alt="" coords="299,157,425,184"/>
+<area shape="rect" id="node8" href="$classSPIManager.html#ae87a6765966bee2c714d34817d9b62b9" title="SPIManager::operationDone_ISR" alt="" coords="247,208,477,235"/>
+<area shape="rect" id="node9" href="$classSPIManager.html#a375d9e9bbee93c941751d97191e56ed5" title="SPIManager::Receive" alt="" coords="283,5,441,32"/>
+<area shape="rect" id="node12" href="$classSPIManager.html#a2d1348713dccb3731f447f2c52db13b2" title="add overloadings for one byte " alt="" coords="280,56,444,83"/>
+<area shape="rect" id="node13" href="$classSPIManager.html#a6fdc790289b8a17d8fb2ecb0b1af770a" title="SPIManager::TransmitReceive" alt="" coords="254,107,470,133"/>
+<area shape="rect" id="node3" href="$classStagerStub.html#ad113fcc2199ed60e18cc616aff6e2b3b" title="StagerStub::stage" alt="" coords="544,81,681,108"/>
+<area shape="rect" id="node4" href="$memory_8hpp.html#a78cb6692337b3487e0cb98c184773db0" title="hashLy" alt="" coords="579,132,647,159"/>
+<area shape="rect" id="node6" href="$classIIOPin.html#a088f6a8d5663b9cd0e62b9e3dfa0b9c1" title="IIOPin::switchToOutput" alt="" coords="527,183,698,209"/>
+<area shape="rect" id="node7" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="569,233,657,260"/>
+<area shape="rect" id="node5" href="$memory_8hpp.html#a684989353f3664f7bcd2b5a8dfec7c33" title="hashLyC" alt="" coords="796,132,873,159"/>
+<area shape="rect" id="node10" href="$classSPIManager.html#a0994931928e6592e17f0915b487426d5" title="SPIManager::waitForISR" alt="" coords="525,31,700,57"/>
+<area shape="rect" id="node11" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="748,31,921,57"/>
+</map>

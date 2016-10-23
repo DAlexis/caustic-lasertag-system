@@ -1,0 +1,17 @@
+<map id="include/head&#45;sensor/player&#45;config&#45;and&#45;state.hpp" name="include/head&#45;sensor/player&#45;config&#45;and&#45;state.hpp">
+<area shape="rect" id="node2" href="$RCSP-aggregator_8hpp.html" title="rcsp/RCSP&#45;aggregator.hpp" alt="" coords="485,177,675,203"/>
+<area shape="rect" id="node17" href="$operation-codes_8hpp.html" title="rcsp/operation&#45;codes.hpp" alt="" coords="1304,95,1491,121"/>
+<area shape="rect" id="node24" href="$head-sensor-base-types_8hpp.html" title="head&#45;sensor/head&#45;sensor\l&#45;base&#45;types.hpp" alt="" coords="1173,169,1360,211"/>
+<area shape="rect" id="node3" href="$RCSP-base-types_8hpp.html" title="rcsp/RCSP&#45;base&#45;types.hpp" alt="" coords="999,348,1191,375"/>
+<area shape="rect" id="node5" href="$RCSP-codes-manipulation_8hpp.html" title="rcsp/RCSP&#45;codes&#45;manipulation.hpp" alt="" coords="743,266,993,293"/>
+<area shape="rect" id="node6" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="751,348,873,375"/>
+<area shape="rect" id="node8" href="$string-utils_8hpp.html" title="core/string&#45;utils.hpp" alt="" coords="315,266,467,293"/>
+<area shape="rect" id="node9" href="$core_2result-code_8hpp.html" title="result&#45;code.hpp" alt="" coords="492,348,615,375"/>
+<area shape="rect" id="node7" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="753,430,871,457"/>
+<area shape="rect" id="node18" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="1422,430,1575,457"/>
+<area shape="rect" id="node19" href="$device-base-types_8hpp.html" title="device/device&#45;base\l&#45;types.hpp" alt="" coords="1171,423,1319,464"/>
+<area shape="rect" id="node20" href="$network-base-types_8hpp.html" title="network/network&#45;base\l&#45;types.hpp" alt="" coords="1141,259,1309,300"/>
+<area shape="rect" id="node21" href="$rifle-base-types_8hpp.html" title="rifle/rifle&#45;base&#45;types.hpp" alt="" coords="1550,177,1733,203"/>
+<area shape="rect" id="node23" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="1551,348,1756,375"/>
+<area shape="rect" id="node22" href="$head-sensor-rifle-communication_8hpp.html" title="communication/head\l&#45;sensor&#45;rifle&#45;communication.hpp" alt="" coords="1536,259,1771,300"/>
+</map>

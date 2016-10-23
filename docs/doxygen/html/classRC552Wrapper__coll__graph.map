@@ -1,0 +1,10 @@
+<map id="RC552Wrapper" name="RC552Wrapper">
+<area shape="rect" id="node2" href="$classIInterrogatable.html" title="IInterrogatable" alt="" coords="5,199,124,225"/>
+<area shape="rect" id="node3" href="$classMFRC522.html" title="MFRC522" alt="" coords="147,199,230,225"/>
+<area shape="rect" id="node4" href="$classISPIUser.html" title="ISPIUser" alt="" coords="32,109,108,136"/>
+<area shape="rect" id="node5" href="$structMFRC522_1_1Uid.html" title="MFRC522::Uid" alt="" coords="133,109,245,136"/>
+<area shape="rect" id="node6" href="$structMFRC522_1_1RC522IO.html" title="MFRC522::RC522IO" alt="" coords="269,109,415,136"/>
+<area shape="rect" id="node7" href="$classISPIManager.html" title="ISPIManager" alt="" coords="239,5,341,32"/>
+<area shape="rect" id="node8" href="$classIIOPin.html" title="IIOPin" alt="" coords="365,5,425,32"/>
+<area shape="rect" id="node9" href="$structMFRC522_1_1MIFARE__Key.html" title="MFRC522::MIFARE_Key" alt="" coords="254,199,425,225"/>
+</map>

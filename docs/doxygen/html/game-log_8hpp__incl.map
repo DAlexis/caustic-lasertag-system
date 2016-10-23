@@ -1,0 +1,13 @@
+<map id="include/game/game&#45;log.hpp" name="include/game/game&#45;log.hpp">
+<area shape="rect" id="node2" href="$game-base-types_8hpp.html" title="game/game&#45;base&#45;types.hpp" alt="" coords="35,80,241,107"/>
+<area shape="rect" id="node5" href="$state-saver-interface_8hpp.html" title="rcsp/state&#45;saver&#45;interface.hpp" alt="" coords="871,80,1090,107"/>
+<area shape="rect" id="node6" href="$system-clock_8hpp.html" title="hal/system&#45;clock.hpp" alt="" coords="183,162,344,189"/>
+<area shape="rect" id="node7" href="$network-base-types_8hpp.html" title="network/network&#45;base\l&#45;types.hpp" alt="" coords="369,155,537,196"/>
+<area shape="rect" id="node9" href="$broadcast_8hpp.html" title="network/broadcast.hpp" alt="" coords="490,80,661,107"/>
+<area shape="rect" id="node10" href="$os-wrappers_8hpp.html" title="core/os&#45;wrappers.hpp" alt="" coords="685,80,847,107"/>
+<area shape="rect" id="node17" href="$fatfs_8h.html" title="Header for fatfs applications. " alt="" coords="1193,80,1257,107"/>
+<area shape="rect" id="node3" href="$base-types_8hpp.html" title="rcsp/base&#45;types.hpp" alt="" coords="5,162,159,189"/>
+<area shape="rect" id="node11" href="$macro_8hpp.html" title="utils/macro.hpp" alt="" coords="611,162,734,189"/>
+<area shape="rect" id="node13" href="$interfaces_8hpp.html" title="utils/interfaces.hpp" alt="" coords="758,162,905,189"/>
+<area shape="rect" id="node12" href="$macro-c_8h.html" title="utils/macro&#45;c.h" alt="" coords="613,244,732,271"/>
+</map>

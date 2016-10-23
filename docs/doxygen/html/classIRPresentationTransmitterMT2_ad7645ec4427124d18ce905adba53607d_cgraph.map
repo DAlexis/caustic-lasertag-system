@@ -1,0 +1,8 @@
+<map id="IRPresentationTransmitterMT2::sendMessage" name="IRPresentationTransmitterMT2::sendMessage">
+<area shape="rect" id="node2" href="$classIRPresentationTransmitterMT2.html#a6529dbc00cfbcf3b714b9bd4b295f249" title="IRPresentationTransmitter\lMT2::encodeDamage" alt="" coords="289,5,482,47"/>
+<area shape="rect" id="node3" href="$classRCSPStream.html#af01d659edec3321ddb14f523ab58274e" title="RCSPStream::getSize" alt="" coords="582,103,741,130"/>
+<area shape="rect" id="node4" href="$classRCSPStream.html#a8cde3c0894ec2e5dd055792f40756f1c" title="RCSPStream::getStream" alt="" coords="572,158,751,185"/>
+<area shape="rect" id="node5" href="$classIIRTransmitter.html#abfc8922699b6bcd3aaa95b931c60a058" title="IIRTransmitter::send" alt="" coords="584,239,739,266"/>
+<area shape="rect" id="node6" href="$classIRPresentationTransmitterMT2.html#aeb14405383c24a5423d30a166d18c381" title="IRPresentationTransmitter\lMT2::sendCommand" alt="" coords="289,291,482,332"/>
+<area shape="rect" id="node7" href="$classIRPresentationTransmitterMT2.html#aa398adc5fcdf0a5234c7e7e0d6b59dea" title="IRPresentationTransmitter\lMT2::sendGenericRCSPMessageDefault" alt="" coords="247,123,524,164"/>
+</map>

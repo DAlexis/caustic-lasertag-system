@@ -1,0 +1,7 @@
+<map id="IFragmentPlayer::~IFragmentPlayer" name="IFragmentPlayer::~IFragmentPlayer">
+<area shape="rect" id="node2" href="$classIFragmentPlayer.html#a96ce520cc3247be6d08285e727da2339" title="IFragmentPlayer::init" alt="" coords="312,5,471,32"/>
+<area shape="rect" id="node3" href="$classIFragmentPlayer.html#a95e5d48086edc1eb2bd704b6acec4a1d" title="IFragmentPlayer::playFragment" alt="" coords="278,56,505,83"/>
+<area shape="rect" id="node4" href="$classIFragmentPlayer.html#a95c0083b9424beb84cdcd736d0b1152a" title="IFragmentPlayer::setFragment\lDoneCallback" alt="" coords="282,107,501,149"/>
+<area shape="rect" id="node5" href="$classIFragmentPlayer.html#aa8948022e616234dbe86c08d5e9d01f8" title="IFragmentPlayer::setFragmentSize" alt="" coords="268,173,515,200"/>
+<area shape="rect" id="node6" href="$classIFragmentPlayer.html#a6363c1da67e754a9e8eed1e5f6810985" title="IFragmentPlayer::stop" alt="" coords="309,224,474,251"/>
+</map>

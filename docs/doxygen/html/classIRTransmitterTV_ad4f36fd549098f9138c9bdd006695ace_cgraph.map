@@ -1,0 +1,5 @@
+<map id="IRTransmitterTV::send" name="IRTransmitterTV::send">
+<area shape="rect" id="node2" href="$classIRTransmitterTV.html#ab19bf82d56c76e98c800e960f9834e19" title="IRTransmitterTV::cursorTo\lStart" alt="" coords="233,5,425,47"/>
+<area shape="rect" id="node3" href="$classIFireEmitter.html#a525e44c32339544640caf68f8b9b843e" title="IFireEmitter::setPower" alt="" coords="246,71,413,98"/>
+<area shape="rect" id="node4" href="$classIFireEmitter.html#a0bce4a85e093baf6caa1fc0b2e086636" title="IFireEmitter::startImpulsePack" alt="" coords="220,122,439,149"/>
+</map>

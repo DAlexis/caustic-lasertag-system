@@ -1,0 +1,11 @@
+<map id="NRF24L01Manager::resetTXDataSent" name="NRF24L01Manager::resetTXDataSent">
+<area shape="rect" id="node2" href="$classNRF24L01Manager.html#a2007d3cdba4fa69df39421ec0496b498" title="NRF24L01Manager::chipDeselect" alt="" coords="600,5,835,32"/>
+<area shape="rect" id="node4" href="$classNRF24L01Manager.html#a12b07071e40e40857c42fcc14d8c2a0f" title="NRF24L01Manager::chipSelect" alt="" coords="608,56,827,83"/>
+<area shape="rect" id="node6" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="349,157,517,184"/>
+<area shape="rect" id="node7" href="$classNRF24L01Manager.html#ad390e166b3669106d5f11763bdcff01b" title="NRF24L01Manager::updateStatus" alt="" coords="315,107,552,133"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="925,5,1013,32"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="919,56,1020,83"/>
+<area shape="rect" id="node8" href="$classStager.html#a4f28e1102423eb9b2062124aaba4abb0" title="Stager::stage" alt="" coords="663,107,771,133"/>
+<area shape="rect" id="node10" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="607,157,827,184"/>
+<area shape="rect" id="node9" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="883,107,1056,133"/>
+</map>

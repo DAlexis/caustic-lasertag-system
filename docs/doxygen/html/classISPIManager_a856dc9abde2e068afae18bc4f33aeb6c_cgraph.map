@@ -1,0 +1,6 @@
+<map id="ISPIManager::~ISPIManager" name="ISPIManager::~ISPIManager">
+<area shape="rect" id="node2" href="$classISPIManager.html#a384930d610121888a23d636eeeb052db" title="ISPIManager::init" alt="" coords="299,5,430,32"/>
+<area shape="rect" id="node3" href="$classISPIManager.html#a1b90fb973e158da7ca7c34bbc47691c7" title="ISPIManager::Receive" alt="" coords="283,56,446,83"/>
+<area shape="rect" id="node4" href="$classISPIManager.html#a2bf42374de706cb3194356ee47d82021" title="add overloadings for one byte " alt="" coords="281,107,449,133"/>
+<area shape="rect" id="node5" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="255,157,475,184"/>
+</map>

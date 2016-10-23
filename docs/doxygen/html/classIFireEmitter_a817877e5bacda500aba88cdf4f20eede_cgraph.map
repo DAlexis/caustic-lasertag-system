@@ -1,0 +1,8 @@
+<map id="IFireEmitter::~IFireEmitter" name="IFireEmitter::~IFireEmitter">
+<area shape="rect" id="node2" href="$classIFireEmitter.html#a7a3f491116a7913762e74801279561e6" title="IFireEmitter::init" alt="" coords="293,5,419,32"/>
+<area shape="rect" id="node3" href="$classIFireEmitter.html#a618b8398e470028a11504395379295d3" title="IFireEmitter::setCallback" alt="" coords="265,56,447,83"/>
+<area shape="rect" id="node4" href="$classIFireEmitter.html#a45f92e0626f0c5db2b1c3cc621715188" title="IFireEmitter::setCarrier\lFrequency" alt="" coords="271,107,441,149"/>
+<area shape="rect" id="node5" href="$classIFireEmitter.html#a2590b80835e54e79cec9a46c8ccaab34" title="IFireEmitter::setChannel" alt="" coords="267,173,445,200"/>
+<area shape="rect" id="node6" href="$classIFireEmitter.html#a525e44c32339544640caf68f8b9b843e" title="IFireEmitter::setPower" alt="" coords="273,224,439,251"/>
+<area shape="rect" id="node7" href="$classIFireEmitter.html#a0bce4a85e093baf6caa1fc0b2e086636" title="IFireEmitter::startImpulsePack" alt="" coords="247,275,465,301"/>
+</map>

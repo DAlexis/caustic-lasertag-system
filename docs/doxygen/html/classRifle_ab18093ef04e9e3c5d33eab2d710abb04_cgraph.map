@@ -1,0 +1,4 @@
+<map id="Rifle::updatePlayerState" name="Rifle::updatePlayerState">
+<area shape="rect" id="node2" href="$classISystemClock.html#a85edf45dad3310dea175e38007d32953" title="ISystemClock::getTime" alt="" coords="233,5,407,32"/>
+<area shape="rect" id="node3" href="$classLogger.html#a8f64adcd6ad7e5cba216453f94bfdf00" title="Logger::isEnabled" alt="" coords="251,56,389,83"/>
+</map>

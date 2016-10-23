@@ -1,0 +1,9 @@
+<map id="NRF24L01Manager::readTXAdress" name="NRF24L01Manager::readTXAdress">
+<area shape="rect" id="node2" href="$classNRF24L01Manager.html#ac964e738e6ea365043fc1a1e03a0519f" title="NRF24L01Manager::readReg" alt="" coords="295,81,500,108"/>
+<area shape="rect" id="node3" href="$classNRF24L01Manager.html#a2007d3cdba4fa69df39421ec0496b498" title="NRF24L01Manager::chipDeselect" alt="" coords="548,5,783,32"/>
+<area shape="rect" id="node5" href="$classNRF24L01Manager.html#a12b07071e40e40857c42fcc14d8c2a0f" title="NRF24L01Manager::chipSelect" alt="" coords="556,56,775,83"/>
+<area shape="rect" id="node7" href="$classISPIManager.html#a1b90fb973e158da7ca7c34bbc47691c7" title="ISPIManager::Receive" alt="" coords="584,107,747,133"/>
+<area shape="rect" id="node8" href="$classISPIManager.html#a1e3f988149b175ee49f574ea71b61a86" title="ISPIManager::TransmitReceive" alt="" coords="555,157,775,184"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#a31fea36799a6a6238ebf0ba319bbc97f" title="Switch to state &quot;1&quot;. " alt="" coords="837,5,925,32"/>
+<area shape="rect" id="node6" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="831,56,932,83"/>
+</map>

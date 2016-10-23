@@ -1,0 +1,8 @@
+<map id="IIOPin::~IIOPin" name="IIOPin::~IIOPin">
+<area shape="rect" id="node2" href="$classIIOPin.html#a1ee40cc6c25d2a3cde16fe2966b94a79" title="IIOPin::enableExti" alt="" coords="187,5,325,32"/>
+<area shape="rect" id="node3" href="$classIIOPin.html#a6b58e586af98b9201dffec733ab726ea" title="Switch to state &quot;0&quot;. " alt="" coords="205,56,307,83"/>
+<area shape="rect" id="node4" href="$classIIOPin.html#afb13597f38e7e578235cadb3d04aa00c" title="IIOPin::setExtiCallback" alt="" coords="171,107,341,133"/>
+<area shape="rect" id="node5" href="$classIIOPin.html#add783caf9950d7c576bf3940c0846bd6" title="IIOPin::state" alt="" coords="205,157,307,184"/>
+<area shape="rect" id="node6" href="$classIIOPin.html#a18cf82b664362a3c3c35d8f03e48d117" title="IIOPin::switchToInput" alt="" coords="177,208,335,235"/>
+<area shape="rect" id="node7" href="$classIIOPin.html#a088f6a8d5663b9cd0e62b9e3dfa0b9c1" title="IIOPin::switchToOutput" alt="" coords="171,259,341,285"/>
+</map>

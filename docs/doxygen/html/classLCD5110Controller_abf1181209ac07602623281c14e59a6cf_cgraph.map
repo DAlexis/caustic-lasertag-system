@@ -1,0 +1,5 @@
+<map id="LCD5110Controller::setFont" name="LCD5110Controller::setFont">
+<area shape="rect" id="node2" href="$group__StandardText.html#gababc52ef5bcc974352ba1eed55ac69c5" title="glcd_set_font" alt="" coords="221,5,331,32"/>
+<area shape="rect" id="node4" href="$group__TinyText.html#ga8df82f7f6d616587f2c5ca55ac9f72fa" title="glcd_tiny_set_font" alt="" coords="205,56,347,83"/>
+<area shape="rect" id="node3" href="$group__StandardText.html#gab12a33e4f7636e7983787d8b206236a0" title="glcd_font" alt="" coords="395,5,477,32"/>
+</map>
