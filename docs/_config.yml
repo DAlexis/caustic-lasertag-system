@@ -1,9 +1,8 @@
 # Site settings
-title: Caustic Laseretag System
+title: Caustic Lasertag System
 email: AlexeyABulatov@yandex.ru
 description: |
-  Система для игры в лазертаг с открытым исходным кодом и широкими возможностями.
-  Сайт собран c использованием Jekyll
+  Система для игры в лазертаг с открытым исходным кодом и широкими возможностями
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://ltcaustic.org" # the base hostname & protocol for your site
 # twitter_username: no_user
