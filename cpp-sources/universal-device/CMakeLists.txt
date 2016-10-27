@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(universal-device C CXX ASM)
 
 set(EXE_SOURCES
-    Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/gcc/startup_stm32f103xe.asm
+    Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/gcc/startup_stm32f103xe.s
 
     Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
     Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
