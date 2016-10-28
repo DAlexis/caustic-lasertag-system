@@ -46,9 +46,9 @@ is-documentation: true
 
 Программу для работы с программатором ST-link придется установить из её репозитория:
 
-`$ sudo apt install libusb-1.0-0-dev`
+`$ sudo apt install libusb-1.0-0-dev g++`
 
-`$ git clone git://github.com/texane/stlink.git`
+`$ git clone https://github.com/texane/stlink.git`
 
 `$ cd stlink`
 
@@ -58,7 +58,11 @@ is-documentation: true
 
 `$ sudo make install`
 
-Теперь вам доступна утилита st-flash, и всё должно собираться.
+`$ LD_LIBRARY_PATH=/usr/local/lib`
+
+`$ sudo ldconfig`
+
+Теперь вам доступна утилита `st-flash`, и всё должно собираться.
 
 ### Archlinux
 
@@ -113,6 +117,7 @@ is-documentation: true
     загрузчик записал прошивку.
 
 Чтобы запрограммировать устройство без загрузчика:
+
   - Подключите программатор к плате устройства и к компьютеру. Включите питание устройства.
   
   - Перейдите в папку `cpp-source` и запустите скрипт `./flash-universal-device.sh` или `./flash-universal-device.sh release` для прошивки релизной
