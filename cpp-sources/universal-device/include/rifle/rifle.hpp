@@ -44,7 +44,7 @@
 class Rifle : public IAnyDevice
 {
 public:
-	Rifle();
+	Rifle(RCSPAggregator& rcspAggregator);
 
 	void registerWeapon();
 	void init(const Pinout& pinout) override;
@@ -170,6 +170,7 @@ private:
 	RifleLCD5110Display m_display{&rifleOwner, &state, &playerState};
 
 	RC552Wrapper m_mfrcWrapper;
+	RCSPAggregator& m_rcspAggregator;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

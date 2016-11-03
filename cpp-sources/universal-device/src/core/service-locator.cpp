@@ -21,12 +21,11 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#ifndef UNIVERSAL_DEVICE_INCLUDE_CORE_DEBUG_SETTINGS_HPP_
-#define UNIVERSAL_DEVICE_INCLUDE_CORE_DEBUG_SETTINGS_HPP_
+#include "core/service-locator.hpp"
 
-//#define DBG_SYSTEM_MONITOR_DISABLE
-//#define DBG_RADIO_DISABLE
-//#define DBG_NRF_DISABLE
-
-
-#endif /* UNIVERSAL_DEVICE_INCLUDE_CORE_DEBUG_SETTINGS_HPP_ */
+RCSPAggregator& ServiceLocator::rcspAggregator()
+{
+	if (!m_rcspAggregator)
+		m_rcspAggregator = new RCSPAggregator();
+	return *m_rcspAggregator;
+}

@@ -85,7 +85,7 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 					else if (0 == strcmp(value, "rifle"))
 					{
 						info << "Creating RIFLE device";
-						resultDevice = new Rifle;
+						resultDevice = new Rifle(RCSPAggregator::instance());
 					}
 					else if (0 == strcmp(value, "smart_point"))
 					{

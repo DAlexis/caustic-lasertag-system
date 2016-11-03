@@ -35,6 +35,7 @@ using OperationCallback = std::function<void(void)>;
 class IRPresentationTransmitterMT2 : public IRPresentationTransmitterBase
 {
 public:
+	IRPresentationTransmitterMT2(RCSPAggregator& rcspAggregator);
 	void init();
 	void sendMessage(const RCSPStream& stream);
 
@@ -46,12 +47,13 @@ private:
 	uint8_t encodeDamage(uint8_t damage);
 
 	uint8_t m_data[maxMessageSize];
-
+	RCSPAggregator& m_rcspAggregator;
 };
 
 class IRPresentationReceiverMT2 : public IRPresentationReceiverBase
 {
 public:
+	IRPresentationReceiverMT2(RCSPAggregator& rcspAggregator);
 	void init();
 	void assignReceiversGroup(IPresentationReceiversGroup& group);
 	void interrogate();
@@ -75,6 +77,7 @@ private:
 	static FloatParameter defaultDamageCoefficient;
 	const FloatParameter* m_damageCoefficient = &defaultDamageCoefficient;
 	Time m_vibroEnabledTime = 0;
+	RCSPAggregator& m_rcspAggregator;
 };
 
 class PresentationReceiversGroupMT2 : public PresentationReceiversGroupBase

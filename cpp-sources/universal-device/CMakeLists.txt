@@ -113,6 +113,7 @@ set(EXE_SOURCES
     src/core/logging.cpp
     src/core/diagnostic.cpp
     src/core/device-initializer.cpp
+    src/core/service-locator.cpp
     src/core/string-utils.cpp
     src/core/power-monitor.cpp
     src/core/pinout.cpp

@@ -65,7 +65,7 @@ void SmartPoint::init(const Pinout& pinout)
 	m_irPhysicalReceiver->init();
 	m_irPhysicalReceiver->setEnabled(true);
 
-	m_irPresentationReceiver = new IRPresentationReceiverMT2;
+	m_irPresentationReceiver = new IRPresentationReceiverMT2(RCSPAggregator::instance());
 	m_irPresentationReceiver->setPhysicalReceiver(m_irPhysicalReceiver);
 	m_irPresentationReceiver->init();
 

@@ -132,7 +132,7 @@ void HeadSensor::init(const Pinout &_pinout)
 		m_irPhysicalReceivers[index]->init();
 		m_irPhysicalReceivers[index]->setEnabled(true);
 
-		m_irPresentationReceivers[index] = new IRPresentationReceiverMT2;
+		m_irPresentationReceivers[index] = new IRPresentationReceiverMT2(RCSPAggregator::instance());
 		m_irPresentationReceivers[index]->setPhysicalReceiver(m_irPhysicalReceivers[index]);
 		m_irPresentationReceivers[index]->setDamageCoefficient(damageCoefficient);
 		m_irPresentationReceivers[index]->setVibroEngine(vibroPin);

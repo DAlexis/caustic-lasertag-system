@@ -27,6 +27,7 @@
 #include "fatfs.h"
 #include "core/result-code.hpp"
 #include "core/pinout.hpp"
+#include "core/service-locator.hpp"
 
 class IAnyDevice
 {
@@ -52,7 +53,9 @@ private:
 	void initSDIO();
 	void initFatFS();
 	void initClock();
+
 	FATFS m_fatfs;
+	ServiceLocator m_serviceLocator;
 	bool m_fatfsSuccess = false;
 };
 

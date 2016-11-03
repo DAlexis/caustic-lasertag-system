@@ -52,7 +52,7 @@ int main(void)
 	// Wait for voltages stabilization
 	printf("Hal delay\n");
 
-	//HAL_Delay(100);
+	HAL_Delay(100);
 	printf("delay done\n");
 #ifdef DEBUG
 	debug.enable();

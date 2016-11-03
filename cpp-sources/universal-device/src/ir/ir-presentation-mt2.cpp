@@ -31,6 +31,12 @@
 
 FloatParameter IRPresentationReceiverMT2::defaultDamageCoefficient = 1.0;
 
+IRPresentationTransmitterMT2::IRPresentationTransmitterMT2(RCSPAggregator& rcspAggregator) :
+	m_rcspAggregator(rcspAggregator)
+{
+
+}
+
 void IRPresentationTransmitterMT2::init()
 {
 }
@@ -39,7 +45,7 @@ void IRPresentationTransmitterMT2::sendMessage(const RCSPStream& stream)
 {
 	RCSPAggregator::Operation op;
 	bool success = true;
-	RCSPAggregator::instance().extractNextOperation(stream.getStream(), op, stream.getSize(), success);
+	m_rcspAggregator.extractNextOperation(stream.getStream(), op, stream.getSize(), success);
 	switch(op.code)
 	{
 		case ConfigCodes::HeadSensor::Functions::catchShot: {
@@ -144,6 +150,12 @@ void IRPresentationTransmitterMT2::sendCommand(uint8_t commandCode)
 // /////////////////////////
 // IRPresentationReceiverMT2
 
+IRPresentationReceiverMT2::IRPresentationReceiverMT2(RCSPAggregator& rcspAggregator) :
+	m_rcspAggregator(rcspAggregator)
+{
+
+}
+
 void IRPresentationReceiverMT2::init()
 {
 
@@ -234,7 +246,7 @@ void IRPresentationReceiverMT2::parseShot(const uint8_t* data, uint16_t size)
 		m_group->m_hasWaitingShot = true;
 		updateOperationCallback(
 			[this]() {
-				RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::catchShot, m_group->m_shotMessage);
+				m_rcspAggregator.doOperation(ConfigCodes::HeadSensor::Functions::catchShot, m_group->m_shotMessage);
 			}
 		);
 	}
@@ -247,8 +259,8 @@ void IRPresentationReceiverMT2::parseSetTeam(const uint8_t* data, uint16_t size)
 		warning << "Team id byte contains non-zero upper bits";
 	}
 	TeamGameId team = data[1] & 0x03;
-	updateOperationCallback([team]() mutable {
-		RCSPAggregator::instance().doOperation(
+	updateOperationCallback([team, this]() mutable {
+		m_rcspAggregator.doOperation(
 				ConfigCodes::HeadSensor::Functions::setTeam,
 				team);
 	});
@@ -258,8 +270,8 @@ void IRPresentationReceiverMT2::parseAddHealth(const uint8_t* data, uint16_t siz
 {
 	UNUSED_ARG(size);
 	int16_t healthDelta = MT2Extended::decodeAddHealth(data[1]);
-	updateOperationCallback([healthDelta]() mutable {
-		RCSPAggregator::instance().doOperation(
+	updateOperationCallback([healthDelta, this]() mutable {
+		m_rcspAggregator.doOperation(
 				ConfigCodes::HeadSensor::Functions::addMaxHealth,
 				healthDelta);
 	});
@@ -271,22 +283,22 @@ void IRPresentationReceiverMT2::parseMT2Command(const uint8_t* data, uint16_t si
 	switch(data[1])
 	{
 	case MT2Extended::Commands::adminKill:
-		updateOperationCallback([]() { RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerKill); });
+		updateOperationCallback([this]() { m_rcspAggregator.doOperation(ConfigCodes::HeadSensor::Functions::playerKill); });
 		break;
 	case MT2Extended::Commands::pauseOrUnpause:
 		break;
 	case MT2Extended::Commands::startGame:
-		updateOperationCallback([]() { RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerReset); });
+		updateOperationCallback([this]() { m_rcspAggregator.doOperation(ConfigCodes::HeadSensor::Functions::playerReset); });
 		break;
 	case MT2Extended::Commands::restoreDefaults:
-		updateOperationCallback([]() { RCSPAggregator::instance().doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults); });
+		updateOperationCallback([this]() { m_rcspAggregator.doOperation(ConfigCodes::AnyDevice::Functions::resetToDefaults); });
 		break;
 	case MT2Extended::Commands::fullHealth:
 	case MT2Extended::Commands::initializePlayer:
 	case MT2Extended::Commands::newGameReady:
 	case MT2Extended::Commands::newGameImmediate:
 	case MT2Extended::Commands::respawn:
-		updateOperationCallback([]() { RCSPAggregator::instance().doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn); });
+		updateOperationCallback([this]() { m_rcspAggregator.doOperation(ConfigCodes::HeadSensor::Functions::playerRespawn); });
 		break;
 	case MT2Extended::Commands::fullAmmo:
 		break;
@@ -315,7 +327,7 @@ void IRPresentationReceiverMT2::parseRCSP(const uint8_t* data, uint16_t size)
 {
 	const uint8_t* stream = &data[1];
 	uint16_t streamSize = size-1;
-	if (!RCSPAggregator::instance().isStreamConsistent(stream, streamSize))
+	if (!m_rcspAggregator.isStreamConsistent(stream, streamSize))
 	{
 		warning << "Inconsistent RCSP stream on IR channel";
 		return;
@@ -328,7 +340,7 @@ void IRPresentationReceiverMT2::parseRCSP(const uint8_t* data, uint16_t size)
 	}
 	memcpy(m_group->m_bufferForArgument, stream, streamSize);
 	updateOperationCallback([this, streamSize]() mutable {
-		RCSPAggregator::instance().dispatchStream(m_group->m_bufferForArgument, streamSize);
+		m_rcspAggregator.dispatchStream(m_group->m_bufferForArgument, streamSize);
 	});
 }
 

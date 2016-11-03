@@ -172,7 +172,8 @@ void RifleState::reset()
 	lastReloadTime = 0;
 }
 
-Rifle::Rifle()
+Rifle::Rifle(RCSPAggregator& rcspAggregator) :
+	m_rcspAggregator(rcspAggregator)
 {
 	deviceConfig.deviceType = DeviceTypes::rifle;
 	m_tasksPool.setStackSize(400);
@@ -354,7 +355,7 @@ void Rifle::init(const Pinout& pinout)
 	m_irPhysicalTransmitter->setPower(config.outputPower);
 	m_irPhysicalTransmitter->init(pinout);
 
-	m_irPresentationTransmitter = new IRPresentationTransmitterMT2();
+	m_irPresentationTransmitter = new IRPresentationTransmitterMT2(RCSPAggregator::instance());
 	m_irPresentationTransmitter->setPhysicalTransmitter(m_irPhysicalTransmitter);
 	m_irPresentationTransmitter->init();
 
