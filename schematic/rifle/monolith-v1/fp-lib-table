@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name micro-sd-112I-J)(type Legacy)(uri /home/dalexies/Projects/caustic-lasertag-system/schematic/components/micro-sd-112I-J.mod)(options "")(descr ""))
+  (lib (name components)(type KiCad)(uri /home/dalexies/Projects/caustic-lasertag-system/schematic/components.pretty)(options "")(descr ""))
+  (lib (name w_rf_modules)(type KiCad)(uri /home/dalexies/Projects/caustic-lasertag-system/schematic/components/3rdparty/w_rf/w_rf_modules.pretty)(options "")(descr ""))
+)
