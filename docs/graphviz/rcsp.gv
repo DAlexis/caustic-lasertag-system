@@ -1,0 +1,28 @@
+digraph RCSP {
+  node[shape="box", style="filled", margin="0.1"];
+  rankdir="BT"
+  bgcolor="transparent"
+  
+  subgraph cluster_physlevel {
+    node [shape="box"];
+    label = "Физический уровень";
+    "ir_phys";
+    radio_pres;
+  }
+  
+  rcsp[label="RCSP\n\nРазбор бинарного потока", fillcolor="green", fontcolor="black"]
+  ir_phys[label="IR physical level\n\n Кодирование 0 и 1 по ИК-каналу"]
+  ir_pres[label="IR presentation level\n\n Команды ИК-канала.\nПо умолчанию, MilesTag2"]
+  
+  radio_pres[label="Radio physical level\n\n Работа с радиомодулем.\nПо умолчанию, nrf24l01"]
+  radio_net[label="Radio network level\n\n Адресация по радиоканалу"]
+  radio_transport[label="Radio transport level\n\n Гарантия доставки, ретрансляция"]
+  files[label="File binary stream\n\nБинарные файлы \nна sd-карте"]
+  
+  rfid[label="RFID cards\n\nУстройство чтения\nRFID-карт"]
+  
+  ir_phys -> ir_pres -> rcsp;
+  radio_pres -> radio_net -> radio_transport -> rcsp
+  rfid -> rcsp
+  files -> rcsp
+}
