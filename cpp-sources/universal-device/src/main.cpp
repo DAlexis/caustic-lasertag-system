@@ -49,11 +49,7 @@ TaskOnce sound([](){
 int main(void)
 {
 	deviceInitializer.initEnvironment();
-	// Wait for voltages stabilization
-	printf("Hal delay\n");
 
-	HAL_Delay(100);
-	printf("delay done\n");
 #ifdef DEBUG
 	debug.enable();
 #ifndef DBG_RADIO_DISABLE
