@@ -22,15 +22,13 @@
 */
 
 
-#include "hw/fragment-player.hpp"
-//#include "core/logging.hpp"
-
+#include "hw/fragment-player-hw.hpp"
 #include <stdio.h>
 
 constexpr uint32_t sampleRate = 44100;
 
-FragmentPlayer fragmentPlayerInstance;
-IFragmentPlayer *fragmentPlayer = &fragmentPlayerInstance;
+FragmentPlayerCreator fragmentPlayerCreatorConcrete;
+IFragmentPlayerCreator* fragmentPlayerCreator = &fragmentPlayerCreatorConcrete;
 
 FragmentPlayer::FragmentPlayer()
 {
@@ -152,11 +150,21 @@ void FragmentPlayer::DMAInterruptionHandler()
 	//printf("DMA int handler\n");
 }
 
+IFragmentPlayer* FragmentPlayerCreator::get()
+{
+	if (m_fragmentPlayer == nullptr)
+	{
+		m_fragmentPlayer = new FragmentPlayer();
+	}
+	return m_fragmentPlayer;
+}
+
+
 extern "C" void DMA2_Channel3_IRQHandler(void)
 {
 	if (DMA_GetITStatus(DMA2_IT_TC3) != RESET)
 	{
-		fragmentPlayerInstance.DMAInterruptionHandler();
+		static_cast<FragmentPlayer*>(fragmentPlayerCreatorConcrete.get())->DMAInterruptionHandler();
 		DMA_ClearITPendingBit(DMA2_IT_TC3);
 	}
 }

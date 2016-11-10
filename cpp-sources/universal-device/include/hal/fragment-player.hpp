@@ -40,8 +40,6 @@ public:
 	virtual void stop() = 0;
 };
 
-extern IFragmentPlayer* fragmentPlayer;
-
 class FragmentPlayerBase : public IFragmentPlayer
 {
 public:
@@ -54,8 +52,14 @@ protected:
 	FragmentDoneCallback m_callback;
 };
 
+class IFragmentPlayerCreator
+{
+public:
+	virtual ~IFragmentPlayerCreator() {}
+	virtual IFragmentPlayer* get() = 0;
+};
 
-
+extern IFragmentPlayerCreator* fragmentPlayerCreator;
 
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_HAL_FRAGMENT_PLAYER_HPP_ */

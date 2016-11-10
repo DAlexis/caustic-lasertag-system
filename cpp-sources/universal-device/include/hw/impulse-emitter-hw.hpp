@@ -25,13 +25,13 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_HW_FIRE_EMITTER_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_HW_FIRE_EMITTER_HPP_
 
-#include "hal/fire-emitter.hpp"
+#include <hal/impulse-emitter.hpp>
 #include "utils/memory.hpp"
 
-class LEDFireEmitter : public FireEmitterBase
+class PwmIsrImpulseEmitter : public ImpulseEmitterBase
 {
 public:
-	LEDFireEmitter();
+	PwmIsrImpulseEmitter();
 	//~LEDFireEmitter() {}
 	void init(const Pinout& pinout);
 	void startImpulsePack(bool isLedOn, unsigned int delayMs);
@@ -55,13 +55,13 @@ private:
 	uint8_t m_powerChannels[4];
 };
 
-class FireEmittersPool : public IFireEmittersPool
+class PwmIsrImpulseEmittersPool : public IImpulseEmittersPool
 {
 public:
-	IFireEmitter* getFireEmitter(uint8_t emitterNumber);
+	IImpulseEmitter* get();
 
 private:
-	IFireEmitter* m_emitter = nullptr;
+	IImpulseEmitter* m_emitter = nullptr;
 };
 
 

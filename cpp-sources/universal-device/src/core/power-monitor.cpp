@@ -30,15 +30,27 @@ SINGLETON_IN_CPP(PowerMonitor)
 
 PowerMonitor::PowerMonitor()
 {
-	m_adc = ADCs->create();
-	m_adc->init(0,0);
 	supplyVoltageMin = 3.7;
 	supplyVoltageMax = 4.2;
 	adcCalibrationCoeff = 2.0;
+	supplyVoltage = 0;
+	chargePercent = 0;
+}
+
+void PowerMonitor::init()
+{
+	m_adc = ADCs->get();
+	m_adc->init(0,0);
 }
 
 void PowerMonitor::interrogate()
 {
+	if (!m_adc)
+	{
+		error << "Power monitor interrogation without initializing!";
+		return;
+	}
+
 	UintParameter value = m_adc->get();
 
 	supplyVoltage = ((float)value) * 3.3 * adcCalibrationCoeff * m_internalCalibrationCoeff / m_adc->max();

@@ -26,10 +26,10 @@
 #include "core/logging.hpp"
 #include "utils/memory.hpp"
 
-ADCBuilder builder;
-IADCBuilder* ADCs = &builder;
+ADCPool builder;
+IADCPool* ADCs = &builder;
 
-IADC* ADCBuilder::create()
+IADC* ADCPool::get()
 {
 	return new ADC;
 }

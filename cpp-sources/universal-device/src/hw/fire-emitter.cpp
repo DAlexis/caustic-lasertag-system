@@ -22,24 +22,24 @@
 */
 
 
-#include "hw/fire-emitter-hw.hpp"
+#include "hw/impulse-emitter-hw.hpp"
 #include "core/string-utils.hpp"
 #include <stdio.h>
 #include "stm32f10x.h"
 #include <math.h>
 
-FireEmittersPool fireEmittersPoolInstance;
-IFireEmittersPool* fireEmittersPool = &fireEmittersPoolInstance;
+PwmIsrImpulseEmittersPool fireEmittersPoolInstance;
+IImpulseEmittersPool* fireEmittersPool = &fireEmittersPoolInstance;
 
-LEDFireEmitter* defaultLEDFireEmitter = nullptr;
+PwmIsrImpulseEmitter* defaultLEDFireEmitter = nullptr;
 
-LEDFireEmitter::LEDFireEmitter() :
+PwmIsrImpulseEmitter::PwmIsrImpulseEmitter() :
         m_isOn(false)
 {
 	defaultLEDFireEmitter = this;
 }
 
-void LEDFireEmitter::init(const Pinout& pinout)
+void PwmIsrImpulseEmitter::init(const Pinout& pinout)
 {
 	//////////////////////
 	// GPIO initialization - PWM output pins
@@ -113,7 +113,7 @@ void LEDFireEmitter::init(const Pinout& pinout)
 	setPower(100);
 }
 
-void LEDFireEmitter::startImpulsePack(bool isLedOn, unsigned int delayMs)
+void PwmIsrImpulseEmitter::startImpulsePack(bool isLedOn, unsigned int delayMs)
 {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
@@ -138,7 +138,7 @@ void LEDFireEmitter::startImpulsePack(bool isLedOn, unsigned int delayMs)
 	TIM_Cmd(TIM7, ENABLE);
 }
 
-void LEDFireEmitter::setCarrierFrequency(uint32_t frequency)
+void PwmIsrImpulseEmitter::setCarrierFrequency(uint32_t frequency)
 {
 	m_carrierFrequency = frequency;
 
@@ -156,7 +156,7 @@ void LEDFireEmitter::setCarrierFrequency(uint32_t frequency)
 	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);
 }
 
-void LEDFireEmitter::setPower(UintParameter powerPercent)
+void PwmIsrImpulseEmitter::setPower(UintParameter powerPercent)
 {
 	if (m_powerLevelsCount == 0)
 		return;
@@ -169,7 +169,7 @@ void LEDFireEmitter::setPower(UintParameter powerPercent)
 	setChannel(m_powerChannels[powerLevel]);
 }
 
-void LEDFireEmitter::setChannel(unsigned int channel)
+void PwmIsrImpulseEmitter::setChannel(unsigned int channel)
 {
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 	TIM_OCStructInit(&TIM_OCInitStructure);
@@ -200,7 +200,7 @@ void LEDFireEmitter::setChannel(unsigned int channel)
 	//TIM_ARRPreloadConfig(TIM3, ENABLE);
 }
 
-void LEDFireEmitter::modulationOn()
+void PwmIsrImpulseEmitter::modulationOn()
 {
 	if (m_powerLevelsCount == 0)
 		return;
@@ -224,7 +224,7 @@ void LEDFireEmitter::modulationOn()
 	//TIM_CtrlPWMOutputs(TIM3, ENABLE);
 }
 
-void LEDFireEmitter::modulationOff()
+void PwmIsrImpulseEmitter::modulationOff()
 {
 	if (m_powerLevelsCount == 0)
 		return;
@@ -246,7 +246,7 @@ void LEDFireEmitter::modulationOff()
 	}
 }
 
-void LEDFireEmitter::IRQHandler()
+void PwmIsrImpulseEmitter::IRQHandler()
 {
 	modulationOff();
 	TIM_Cmd(TIM7, DISABLE);
@@ -271,9 +271,9 @@ extern "C" void TIM7_IRQHandler(void)
 
 //////////////////////
 // FireEmittersPool
-IFireEmitter* FireEmittersPool::getFireEmitter(uint8_t)
+IImpulseEmitter* PwmIsrImpulseEmittersPool::get()
 {
 	if (!m_emitter)
-		m_emitter = new LEDFireEmitter;
+		m_emitter = new PwmIsrImpulseEmitter;
 	return m_emitter;
 }

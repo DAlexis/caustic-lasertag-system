@@ -93,6 +93,8 @@ private:
 
 	bool m_fragmentPlayerReady = false;
 
+	IFragmentPlayer* m_fragmentPlayer = nullptr;
+
 	Worker m_loader{10};
 };
 

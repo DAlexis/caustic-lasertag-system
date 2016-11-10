@@ -40,6 +40,7 @@ public:
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, adcCalibrationCoeff);
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::State, chargePercent);
 
+	void init();
 	void interrogate() override;
 
 	SIGLETON_IN_CLASS(PowerMonitor)
@@ -47,7 +48,7 @@ public:
 private:
 	PowerMonitor();
 
-	IADC *m_adc;
+	IADC *m_adc = nullptr;
 	float m_internalCalibrationCoeff = 1.1954;
 };
 

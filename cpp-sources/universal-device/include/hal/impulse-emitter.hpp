@@ -30,10 +30,10 @@
 
 using FireEmitterCallback = std::function<void(bool)>;
 
-class IFireEmitter
+class IImpulseEmitter
 {
 public:
-	virtual ~IFireEmitter() {}
+	virtual ~IImpulseEmitter() {}
 	virtual void init(const Pinout& pinout) = 0;
 	virtual void setCallback(FireEmitterCallback callback) = 0;
 	virtual void startImpulsePack(bool isLedOn, unsigned int delayMs) = 0;
@@ -42,23 +42,23 @@ public:
 	virtual void setCarrierFrequency(uint32_t frequency) = 0;
 };
 
-class FireEmitterBase : public IFireEmitter
+class ImpulseEmitterBase : public IImpulseEmitter
 {
 public:
-	FireEmitterBase() : m_callback(nullptr) {}
+	ImpulseEmitterBase() : m_callback(nullptr) {}
 	void setCallback(FireEmitterCallback callback) { m_callback = callback; }
 
 protected:
 	FireEmitterCallback m_callback;
 };
 
-class IFireEmittersPool
+class IImpulseEmittersPool
 {
 public:
-	virtual ~IFireEmittersPool() {}
-	virtual IFireEmitter* getFireEmitter(uint8_t emitterNumber) = 0;
+	virtual ~IImpulseEmittersPool() {}
+	virtual IImpulseEmitter* get() = 0;
 };
 
-extern IFireEmittersPool* fireEmittersPool;
+extern IImpulseEmittersPool* fireEmittersPool;
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_HAL_FIRE_EMITTER_HPP_ */

@@ -27,6 +27,7 @@
 #include "network/broadcast.hpp"
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
+#include "core/power-monitor.hpp"
 
 #include "dev/nrf24l01.hpp"
 
@@ -45,6 +46,10 @@ AnyBuffer::AnyBuffer(uint16_t _size, const void *_data) :
 		memcpy(data, _data, size);
 }
 
+
+BluetoothBridge::BluetoothBridge()
+{
+}
 
 void BluetoothBridge::init(const Pinout& pinout)
 {
@@ -110,6 +115,15 @@ void BluetoothBridge::init(const Pinout& pinout)
 	m_workerToBluetooth.run();
 	m_workerToNetwork.setStackSize(256);
 	m_workerToNetwork.run();
+
+	PowerMonitor::instance().init();
+
+	m_tasksPool.add(
+			[this] { PowerMonitor::instance().interrogate(); },
+			100000
+	);
+	m_tasksPool.setStackSize(200);
+	m_tasksPool.run();
 }
 
 void BluetoothBridge::setDafaultPinout(Pinout& pinout)

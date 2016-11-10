@@ -37,10 +37,10 @@ private:
 	ADC_HandleTypeDef m_hadc;
 };
 
-class ADCBuilder : public IADCBuilder
+class ADCPool : public IADCPool
 {
 public:
-	IADC* create();
+	IADC* get() override;
 };
 
 #endif /* INCLUDE_HW_ADC_HW_HPP_ */

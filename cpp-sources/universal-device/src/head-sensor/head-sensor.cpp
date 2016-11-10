@@ -230,6 +230,8 @@ void HeadSensor::init(const Pinout &_pinout)
 			200000
 	);
 
+	PowerMonitor::instance().init();
+
 	m_tasksPool.add(
 			[this] { m_taskPoolStager.stage("PowerMonitor::interrogate()"); PowerMonitor::instance().interrogate(); },
 			100000

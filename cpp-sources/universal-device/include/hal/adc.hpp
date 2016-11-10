@@ -36,13 +36,13 @@ public:
 	virtual UintParameter max() = 0;
 };
 
-class IADCBuilder
+class IADCPool
 {
 public:
-	virtual ~IADCBuilder() {}
-	virtual IADC* create() = 0;
+	virtual ~IADCPool() {}
+	virtual IADC* get() = 0;
 };
 
-extern IADCBuilder* ADCs;
+extern IADCPool* ADCs;
 
 #endif /* INCLUDE_HAL_ADC_HPP_ */

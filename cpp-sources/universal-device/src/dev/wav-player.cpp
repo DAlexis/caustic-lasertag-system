@@ -63,15 +63,16 @@ WavPlayer::~WavPlayer()
 
 void WavPlayer::init()
 {
-	fragmentPlayer->init();
-	fragmentPlayer->setFragmentDoneCallback(std::bind(&WavPlayer::fragmentDoneCallback, this, std::placeholders::_1));
+	m_fragmentPlayer = fragmentPlayerCreator->get();
+	m_fragmentPlayer->init();
+	m_fragmentPlayer->setFragmentDoneCallback(std::bind(&WavPlayer::fragmentDoneCallback, this, std::placeholders::_1));
 	m_loader.run();
 
 	// Prepairing buffers
 	silenceToBuffer(m_currentBuffer);
 	silenceToBuffer(m_nextBuffer);
 	// Starting infinite playback
-	fragmentPlayer->setFragmentSize(audioBufferSize);
+	m_fragmentPlayer->setFragmentSize(audioBufferSize);
 }
 
 void WavPlayer::silenceToBuffer(SoundSample* buffer)
@@ -121,7 +122,7 @@ Result WavPlayer::play(const char* fileName, uint8_t channel)
 	if (!m_fragmentPlayerReady)
 	{
 		m_fragmentPlayerReady = true;
-		fragmentPlayer->playFragment(m_currentBuffer);
+		m_fragmentPlayer->playFragment(m_currentBuffer);
 	}
 	m_contexts[channel].filename = fileName;
 
@@ -136,7 +137,7 @@ void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 {
 	UNUSED_ARG(oldBuffer);
 	std::swap(m_currentBuffer, m_nextBuffer);
-	fragmentPlayer->playFragment(m_currentBuffer);
+	m_fragmentPlayer->playFragment(m_currentBuffer);
 
 	// Telling to clear buffer
 	m_loader.addFromISR(

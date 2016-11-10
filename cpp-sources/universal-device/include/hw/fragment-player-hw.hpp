@@ -41,6 +41,13 @@ private:
 	DMA_InitTypeDef m_DMA_InitStructure;
 };
 
+class FragmentPlayerCreator : public IFragmentPlayerCreator
+{
+public:
+	IFragmentPlayer* get() override;
 
+private:
+	FragmentPlayer* m_fragmentPlayer = nullptr;
+};
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_HW_FRAGMENT_PLAYER_HPP_ */

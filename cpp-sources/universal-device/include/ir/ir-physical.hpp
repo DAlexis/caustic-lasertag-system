@@ -25,8 +25,8 @@
 #ifndef INCLUDE_IR_IR_PHYSICAL_HPP_
 #define INCLUDE_IR_IR_PHYSICAL_HPP_
 
+#include <hal/impulse-emitter.hpp>
 #include "rcsp/base-types.hpp"
-#include "hal/fire-emitter.hpp"
 #include "hal/io-pins.hpp"
 #include "utils/interfaces.hpp"
 #include <functional>
@@ -39,7 +39,7 @@ class IIRTransmitter
 public:
 	virtual ~IIRTransmitter() {}
 	virtual void init(const Pinout& pinout) = 0;
-	virtual void setFireEmitter(IFireEmitter* emitter) = 0;
+	virtual void setFireEmitter(IImpulseEmitter* emitter) = 0;
 	virtual void setPower(const UintParameter& power) = 0;
 	virtual void send(const uint8_t* buffer, uint16_t size) = 0;
 	virtual bool busy() = 0;
@@ -62,12 +62,12 @@ class IRTransmitterBase : public IIRTransmitter
 {
 public:
 	void setPower(const UintParameter& power) { m_power = &power; }
-	void setFireEmitter(IFireEmitter* emitter) { m_emitter = emitter; }
+	void setFireEmitter(IImpulseEmitter* emitter) { m_emitter = emitter; }
 
 protected:
 	const UintParameter defaultPower = 100;
 	const UintParameter* m_power = &defaultPower;
-	IFireEmitter* m_emitter = nullptr;
+	IImpulseEmitter* m_emitter = nullptr;
 };
 
 class IRReceiverBase : public IIRPhysicalReceiver

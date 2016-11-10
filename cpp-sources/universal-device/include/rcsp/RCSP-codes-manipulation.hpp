@@ -27,15 +27,17 @@
 #include "utils/macro.hpp"
 #include "rcsp/RCSP-base-types.hpp"
 
-#define PAR_CODE(type, parameterName, value)    constexpr OperationCode parameterName = RCSPCodeManipulator::makeSetObject(value); \
-                                                constexpr const char parameterName##Text[] = STRINGIFICATE(variable); \
-                                                using parameterName##Type = type;
+#define PAR_CODE(type, parameterName, value) \
+    constexpr OperationCode parameterName = RCSPCodeManipulator::makeSetObject(value); \
+    using parameterName##Type = type;
 
 
-#define FUNC_CODE_NP(function, value)           constexpr OperationCode function = RCSPCodeManipulator::makeCallRequest(value);
+#define FUNC_CODE_NP(function, value) \
+	constexpr OperationCode function = RCSPCodeManipulator::makeCallRequest(value);
 
-#define FUNC_CODE_1P(function, argType, value)  constexpr OperationCode function = RCSPCodeManipulator::makeCallRequest(value); \
-                                                using function##Arg1Type = argType;
+#define FUNC_CODE_1P(function, argType, value) \
+	constexpr OperationCode function = RCSPCodeManipulator::makeCallRequest(value); \
+    using function##Arg1Type = argType;
 
 /**
  * Compile-time class used to manipulate with operation codes

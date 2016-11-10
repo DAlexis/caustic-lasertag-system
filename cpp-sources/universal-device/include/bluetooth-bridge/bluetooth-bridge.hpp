@@ -45,6 +45,7 @@ extern BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 class BluetoothBridge : public IAnyDevice
 {
 public:
+	BluetoothBridge();
 	void init(const Pinout& pinout);
 	void setDafaultPinout(Pinout& pinout);
 	bool checkPinout(const Pinout& pinout);
@@ -68,4 +69,5 @@ private:
 	Worker m_workerToBluetooth{30};
 	Worker m_workerToNetwork{30};
 	Bluetooth::MessageReceiver m_receiver;
+	TasksPool m_tasksPool{"BtBrPool"};
 };

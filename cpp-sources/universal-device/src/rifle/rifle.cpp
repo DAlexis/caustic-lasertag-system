@@ -249,6 +249,8 @@ void Rifle::init(const Pinout& pinout)
 			5000000
 	);
 
+	PowerMonitor::instance().init();
+
 	m_tasksPool.add(
 			[this] { PowerMonitor::instance().interrogate(); },
 			100000
@@ -351,7 +353,7 @@ void Rifle::init(const Pinout& pinout)
 	info << "Configuring MT2 transmitter";
 
 	m_irPhysicalTransmitter = new IRTransmitterTV();
-	m_irPhysicalTransmitter->setFireEmitter(fireEmittersPool->getFireEmitter(0));
+	m_irPhysicalTransmitter->setFireEmitter(fireEmittersPool->get());
 	m_irPhysicalTransmitter->setPower(config.outputPower);
 	m_irPhysicalTransmitter->init(pinout);
 
