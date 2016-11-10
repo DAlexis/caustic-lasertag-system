@@ -34,7 +34,7 @@ class Loggers
 	friend class Logger;
 	friend class ScopedTag;
 public:
-	static void initLoggers(uint8_t portNumber);
+	static void initLoggers();
 	static bool isInitialized();
 	static IUARTManager* __attribute__((always_inline)) getUsart() { return uart; }
 	static Mutex loggersMutex;

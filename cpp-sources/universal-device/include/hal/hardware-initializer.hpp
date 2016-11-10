@@ -27,7 +27,7 @@
 class IHardwareInitializer
 {
 public:
-	~IHardwareInitializer() {}
+	virtual ~IHardwareInitializer() {}
 	virtual void init() = 0;
 };
 

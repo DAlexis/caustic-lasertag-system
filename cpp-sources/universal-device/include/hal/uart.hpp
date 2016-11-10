@@ -34,7 +34,7 @@ public:
 	using TXDoneCallback = std::function<void(void)>;
 	using RXDoneCallback = std::function<void(uint8_t*, uint16_t)>;
 
-	virtual void init(uint8_t portNumber, uint32_t baudrate) = 0;
+	virtual void init(uint32_t baudrate) = 0;
 	virtual void setTXDoneCallback(TXDoneCallback callback) = 0;
 	virtual void setRXDoneCallback(RXDoneCallback callback) = 0;
 	virtual void setStopChar(uint8_t stopChar) = 0;
@@ -53,12 +53,12 @@ public:
 class UARTManagerBase : public IUARTManager
 {
 public:
-	void setTXDoneCallback(TXDoneCallback callback) { m_txCallback = callback; }
-	void setRXDoneCallback(RXDoneCallback callback) {m_rxCallback = callback; }
-	void setStopChar(uint8_t stopChar) { m_stopChar = stopChar; }
-	void enableStopChar(bool enabled) { m_stopCharEnabled = enabled; }
-	void setRXWorker(Worker* worker) { m_worker = worker; }
-	void setBlockSize(uint16_t blockSize) { m_blockSize = blockSize; }
+	void setTXDoneCallback(TXDoneCallback callback) override { m_txCallback = callback; }
+	void setRXDoneCallback(RXDoneCallback callback) override {m_rxCallback = callback; }
+	void setStopChar(uint8_t stopChar) override { m_stopChar = stopChar; }
+	void enableStopChar(bool enabled) override { m_stopCharEnabled = enabled; }
+	void setBlockSize(uint16_t blockSize) override { m_blockSize = blockSize; }
+	void setRXWorker(Worker* worker) override { m_worker = worker; }
 
 protected:
 	TXDoneCallback m_txCallback = nullptr;
@@ -69,13 +69,19 @@ protected:
 	bool m_stopCharEnabled = false;
 };
 
-class IUARTsFactory
+class IUARTSPool
 {
 public:
-	virtual ~IUARTsFactory() {}
-	virtual IUARTManager* create() = 0;
+	constexpr static uint8_t UART1 = 0;
+	constexpr static uint8_t UART2 = 1;
+	constexpr static uint8_t UART3 = 2;
+
+	virtual ~IUARTSPool() {}
+	virtual IUARTManager* get(uint8_t portNumber) = 0;
 };
 
-extern IUARTsFactory* UARTSFactory;
+extern IUARTSPool* UARTs;
+
+
 
 #endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_HAL_UART_HPP_ */

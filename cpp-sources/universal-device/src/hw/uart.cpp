@@ -26,53 +26,39 @@
 #include "core/logging.hpp"
 #include "utils/macro.hpp"
 
+// For STM32 HAL written in C, this global handlers should exist
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
-UARTManager* usart[3] = {nullptr, nullptr, nullptr};
+UARTSPool uartsPool;
+IUARTSPool* UARTs = &uartsPool;
 
-UARTsFactory factory;
-
-IUARTsFactory* UARTSFactory = &factory;
-
-UARTManager* handleToManager(UART_HandleTypeDef* handle)
+UARTManager::UARTManager(uint8_t portNumber)
 {
-	if (handle == &huart1)
-		return usart[0];
-	if (handle == &huart2)
-		return usart[1];
-	if (handle == &huart3)
-		return usart[2];
-	return nullptr;
-}
-
-void UARTManager::init(uint8_t portNumber, uint32_t baudrate)
-{
-	USART_TypeDef* instance;
 	switch (portNumber)
 	{
-	case 1:
+	case IUARTSPool::UART1:
 		m_huart = &huart1;
-		usart[0] = this;
-		instance = USART1;
+		m_instance = USART1;
 		break;
-	case 2:
+	case IUARTSPool::UART2:
 		m_huart = &huart2;
-		usart[1] = this;
-		instance = USART2;
+		m_instance = USART2;
 		break;
-	case 3:
+	case IUARTSPool::UART3:
 		m_huart = &huart3;
-		usart[2] = this;
-		instance = USART3;
+		m_instance = USART3;
 		break;
 	default:
 		error << "Cannot control usart " << portNumber;
 		return;
 	}
+}
 
-	m_huart->Instance = instance;
+void UARTManager::init(uint32_t baudrate)
+{
+	m_huart->Instance = m_instance;
 	m_huart->Init.BaudRate = baudrate;
 	m_huart->Init.WordLength = UART_WORDLENGTH_8B;
 	m_huart->Init.StopBits = UART_STOPBITS_1;
@@ -132,19 +118,11 @@ void UARTManager::rxDoneISR(uint8_t* buffer, uint16_t size)
 	HAL_UART_Receive_IT(m_huart, &(rxBuffer[rxCount]), 1);
 }
 
-///////////////////
-// UARTsFactory
-
-IUARTManager* UARTsFactory::create()
-{
-	return new UARTManager;
-}
-
 extern "C"
 {
 	void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
-		UARTManager *mgr = handleToManager(huart);
+		UARTManager *mgr = uartsPool.getByHandle(huart);
 		if (mgr)
 			mgr->rxDoneISR(huart->pRxBuffPtr, huart->RxXferSize);
 
@@ -152,9 +130,31 @@ extern "C"
 
 	void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 	{
-		UARTManager *mgr = handleToManager(huart);
+		UARTManager *mgr = uartsPool.getByHandle(huart);
 		if (mgr)
 			mgr->txDoneISR();
 
 	}
+}
+
+///////////////////
+// UARTSPool
+IUARTManager* UARTSPool::get(uint8_t portNumber)
+{
+	if (m_uarts[portNumber] == nullptr)
+	{
+		m_uarts[portNumber] = new UARTManager(portNumber);
+	}
+	return m_uarts[portNumber];
+}
+
+UARTManager* UARTSPool::getByHandle(UART_HandleTypeDef* handle)
+{
+	if (handle == &huart1)
+		return m_uarts[IUARTSPool::UART1];
+	if (handle == &huart2)
+		return m_uarts[IUARTSPool::UART2];
+	if (handle == &huart3)
+		return m_uarts[IUARTSPool::UART3];
+	return nullptr;
 }

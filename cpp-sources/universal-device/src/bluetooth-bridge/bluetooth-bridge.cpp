@@ -80,7 +80,7 @@ void BluetoothBridge::init(const Pinout& pinout)
 	//NetworkLayer::instance().enableRegularNRFReinit();
 
 
-	m_bluetoothPort = UARTSFactory->create();
+	m_bluetoothPort = UARTs->get(IUARTSPool::UART2);
 	m_bluetoothPort->setBlockSize(1);
 	m_bluetoothPort->setRXDoneCallback(
 		[this](uint8_t* buffer, uint16_t size)
@@ -89,7 +89,7 @@ void BluetoothBridge::init(const Pinout& pinout)
 			receiveBluetoothOneByteISR(buffer[0]);
 		}
 	);
-	m_bluetoothPort->init(2, 115200);
+	m_bluetoothPort->init(115200);
 	/*
 	m_bluetoothPort->setRXDoneCallback(
 			[this](uint8_t* buffer, uint16_t size)

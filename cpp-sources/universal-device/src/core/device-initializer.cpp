@@ -50,7 +50,7 @@ void DeviceInitializer::initEnvironment()
 	// Initializing base hardware
 	hardwareInitializer->init();
 	printf("\nPre-init log\n");
-	Loggers::initLoggers(1);
+	Loggers::initLoggers();
 	info << "Logging initialized";
 	systemClock->init();
 	RTCManager->init();

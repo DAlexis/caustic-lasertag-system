@@ -45,10 +45,10 @@ Logger debug  ("debug");
 Logger radio  ("radio");
 Logger trace  ("trace");
 
-void Loggers::initLoggers(uint8_t portNumber)
+void Loggers::initLoggers()
 {
-	uart = UARTSFactory->create();
-	uart->init(portNumber, 921600);
+	uart = UARTs->get(IUARTSPool::UART1);
+	uart->init(921600);
 	error.enable(true);
 	warning.enable(true);
 	info.enable(true);
