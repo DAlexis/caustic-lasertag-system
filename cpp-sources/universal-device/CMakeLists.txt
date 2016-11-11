@@ -78,6 +78,7 @@ set(EXE_SOURCES
     src/player/player.cpp
     src/bluetooth-bridge/bluetooth-protocol.cpp
     src/bluetooth-bridge/bluetooth-bridge.cpp
+    src/bluetooth-bridge/hc05-configurator.cpp
     src/network/network-layer.cpp
     src/network/broadcast.cpp
     src/device/device.cpp

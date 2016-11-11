@@ -290,7 +290,7 @@ public:
 	using TaskId = uint16_t;
 	TasksPool(const char *name = "UnkPool");
 	TaskId add(STask&& newTask, uint32_t period, uint32_t firstDelay = 0, uint32_t count = 0, uint32_t lifetime = 0);
-	TaskId addOnce(STask&& newTask, uint32_t firstDelay);
+	TaskId addOnce(STask&& newTask, uint32_t firstDelay = 0);
 	void stop(TaskId id);
 	void setStackSize(uint16_t stackSize);
 	void setName(char *name);

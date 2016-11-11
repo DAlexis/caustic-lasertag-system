@@ -32,6 +32,10 @@ using IOPinCallback = std::function<void(bool)>;
 class IIOPin
 {
 public:
+	constexpr static uint8_t PORTA = 0;
+	constexpr static uint8_t PORTB = 1;
+	constexpr static uint8_t PORTC = 2;
+	constexpr static uint8_t PORTD = 3;
 	virtual ~IIOPin() {}
 	virtual bool state() = 0;
 	/// Switch to state "1"

@@ -84,8 +84,54 @@ void BluetoothBridge::init(const Pinout& pinout)
 
 	//NetworkLayer::instance().enableRegularNRFReinit();
 
+	m_workerToNetwork.setStackSize(256);
+	m_workerToNetwork.run();
 
+	PowerMonitor::instance().init();
+
+	m_tasksPool.addOnce([this]{ configureBluetooth(); });
+
+	m_tasksPool.add(
+			[this] { PowerMonitor::instance().interrogate(); },
+			100000
+	);
+	m_tasksPool.setStackSize(256);
+	m_tasksPool.run();
+}
+
+void BluetoothBridge::setDafaultPinout(Pinout& pinout)
+{
+}
+
+bool BluetoothBridge::checkPinout(const Pinout& pinout)
+{
+	return true;
+}
+
+void BluetoothBridge::configureBluetooth()
+{
 	m_bluetoothPort = UARTs->get(IUARTSPool::UART2);
+
+	// First, configuring HC-05 bluetooth module to have proper name, UART speed and password
+	m_configurator.init(IOPins->getIOPin(IIOPin::PORTA, 1), m_bluetoothPort);
+	info << "Determining speed of UART for HC-05";
+	HC05Configurator::HC05Result result = m_configurator.selectSpeed();
+	if (result != HC05Configurator::HC05Result::ok)
+	{
+		error << "Cannot determine HC-05 speed. Somebody might have configured it by external tool";
+	}
+
+	info << "Testing bluetooth module HC05 in AT-mode";
+	result = m_configurator.test();
+	if (result == HC05Configurator::HC05Result::ok)
+		info << "HC-05 test OK";
+	else
+		error << "HC-05 test failed: " << HC05Configurator::parseResult(result);
+
+	m_configurator.configure();
+	m_configurator.leaveAT();
+
+	// Then we can initialize data receiving system and run worker that put data to bluetooth
 	m_bluetoothPort->setBlockSize(1);
 	m_bluetoothPort->setRXDoneCallback(
 		[this](uint8_t* buffer, uint16_t size)
@@ -113,26 +159,6 @@ void BluetoothBridge::init(const Pinout& pinout)
 
 	m_workerToBluetooth.setStackSize(256);
 	m_workerToBluetooth.run();
-	m_workerToNetwork.setStackSize(256);
-	m_workerToNetwork.run();
-
-	PowerMonitor::instance().init();
-
-	m_tasksPool.add(
-			[this] { PowerMonitor::instance().interrogate(); },
-			100000
-	);
-	m_tasksPool.setStackSize(200);
-	m_tasksPool.run();
-}
-
-void BluetoothBridge::setDafaultPinout(Pinout& pinout)
-{
-}
-
-bool BluetoothBridge::checkPinout(const Pinout& pinout)
-{
-	return true;
 }
 
 void BluetoothBridge::receiveNetworkPackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)

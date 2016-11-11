@@ -35,10 +35,10 @@ public:
 
 	UARTManager(uint8_t portNumber);
 	void init(uint32_t baudrate) override;
-	void transmit(uint8_t* buffer, uint16_t size);
-	void transmitSync(uint8_t* buffer, uint16_t size, uint32_t timeout = 10000);
-	bool txBusy();
-	bool rxBusy();
+	void transmit(uint8_t* buffer, uint16_t size) override;
+	void transmitSync(uint8_t* buffer, uint16_t size, uint32_t timeout = 10000) override;
+	bool txBusy() override;
+	bool rxBusy() override;
 
 	void txDoneISR();
 	void rxDoneISR(uint8_t* buffer, uint16_t size);

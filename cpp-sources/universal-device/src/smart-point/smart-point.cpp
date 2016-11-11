@@ -25,6 +25,7 @@
 #include "device/device-base-types.hpp"
 #include "network/network-layer.hpp"
 #include "core/logging.hpp"
+#include "core/power-monitor.hpp"
 #include "rcsp/RCSP-stream.hpp"
 #include "rcsp/RCSP-state-saver.hpp"
 
@@ -126,6 +127,13 @@ void SmartPoint::init(const Pinout& pinout)
 		},
 		50000,
 		0
+	);
+
+	PowerMonitor::instance().init();
+
+	m_tasksPool.add(
+			[this] { PowerMonitor::instance().interrogate(); },
+			100000
 	);
 /*
 	m_tasksPool.add([this](){

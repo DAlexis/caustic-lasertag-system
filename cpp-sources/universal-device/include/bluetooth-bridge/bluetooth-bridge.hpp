@@ -22,6 +22,7 @@
 */
 
 #include "bluetooth-bridge/bluetooth-protocol.hpp"
+#include "bluetooth-bridge/hc05-configurator.hpp"
 #include "core/device-initializer.hpp"
 #include "device/device.hpp"
 #include "hal/uart.hpp"
@@ -54,6 +55,7 @@ public:
 
 private:
 	constexpr static uint16_t bluetoothIncommingBufferSize = 200;
+	void configureBluetooth();
 	void receiveNetworkPackage(const DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
 	void receiveBluetoothOneByteISR(uint8_t byte);
 	void receiveBluetoothPackageISR(uint8_t* buffer, uint16_t size);
@@ -62,6 +64,7 @@ private:
 	void sendNetworkPackage(AnyBuffer* buffer);
 
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
+	HC05Configurator m_configurator;
 
 	IUARTManager* m_bluetoothPort = nullptr;
 
