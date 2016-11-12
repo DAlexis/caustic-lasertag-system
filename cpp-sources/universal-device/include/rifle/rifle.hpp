@@ -47,7 +47,7 @@ public:
 	Rifle(RCSPAggregator& rcspAggregator);
 
 	void registerWeapon();
-	void init(const Pinout& pinout) override;
+	void init(const Pinout& pinout, bool isSdcardOk) override;
 	void setDafaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 

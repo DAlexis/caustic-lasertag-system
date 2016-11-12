@@ -47,14 +47,16 @@ class BluetoothBridge : public IAnyDevice
 {
 public:
 	BluetoothBridge();
-	void init(const Pinout& pinout);
-	void setDafaultPinout(Pinout& pinout);
-	bool checkPinout(const Pinout& pinout);
+	void init(const Pinout& pinout, bool isSdcardOk) override;
+	void setDafaultPinout(Pinout& pinout) override;
+	bool checkPinout(const Pinout& pinout) override;
 
 	DeviceConfiguration deviceConfig;
+	BluetoothBridgeConfiguration config;
 
 private:
 	constexpr static uint16_t bluetoothIncommingBufferSize = 200;
+
 	void configureBluetooth();
 	void receiveNetworkPackage(const DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
 	void receiveBluetoothOneByteISR(uint8_t byte);
@@ -64,7 +66,7 @@ private:
 	void sendNetworkPackage(AnyBuffer* buffer);
 
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
-	HC05Configurator m_configurator;
+	HC05Configurator m_configurator{deviceConfig.deviceName, config.bluetoothPin};
 
 	IUARTManager* m_bluetoothPort = nullptr;
 

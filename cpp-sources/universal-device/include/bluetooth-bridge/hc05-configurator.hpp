@@ -24,8 +24,10 @@
 #ifndef UNIVERSAL_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_HC05_CONFIGURATOR_HPP_
 #define UNIVERSAL_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_HC05_CONFIGURATOR_HPP_
 
+#include "device/device-base-types.hpp"
 #include "hal/io-pins.hpp"
 #include "hal/uart.hpp"
+#include "bluetooth-bridge/bluetooth-bridge-config.hpp"
 
 class HC05Configurator
 {
@@ -41,6 +43,7 @@ public:
 		notRunned
 	};
 
+	HC05Configurator(DeviceName& deviceName, UintParameter& bluetoothPin);
 	void init(IIOPin* key, IUARTManager* uart);
 	HC05Result selectSpeed();
 	HC05Result test();
@@ -60,6 +63,8 @@ private:
 
 	IIOPin* m_key = nullptr;
 	IUARTManager* m_uart = nullptr;
+	DeviceName& m_devName;
+	UintParameter& m_pin;
 
 	HC05Result m_result = HC05Result::notRunned;
 	char m_response[100];

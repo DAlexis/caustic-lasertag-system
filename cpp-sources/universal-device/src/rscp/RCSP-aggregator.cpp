@@ -163,7 +163,7 @@ Result RCSPAggregator::parseSring(const char* key, const char* value)
 	auto it = m_accessorsByOpText.find(key);
 	if (it == m_accessorsByOpText.end())
 	{
-		printf("Unknown variable\n");
+		warning << "Unknown variable: " << key;
 		return Result("Unknown variable");
 	}
 	if (!it->second->isWritable())

@@ -51,11 +51,26 @@ BluetoothBridge::BluetoothBridge()
 {
 }
 
-void BluetoothBridge::init(const Pinout& pinout)
+void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 {
+	// default address for bluetooth bridge without SD-card
 	deviceConfig.devAddr.address[0] = 50;
 	deviceConfig.devAddr.address[1] = 50;
 	deviceConfig.devAddr.address[2] = 50;
+
+	// Power monitor should be initialized before configuration reading
+	PowerMonitor::instance().init();
+
+	if (isSdcardOk)
+	{
+		if (!RCSPAggregator::instance().readIni("config.ini"))
+		{
+			error << "Cannot read config file, so setting default values";
+			config.setDefault();
+		}
+	} else {
+		warning << "Bluetooth bridge operate without sd-card, it will use default settings";
+	}
 
 	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
 	NetworkLayer::instance().setPackageReceiver(
@@ -87,7 +102,7 @@ void BluetoothBridge::init(const Pinout& pinout)
 	m_workerToNetwork.setStackSize(256);
 	m_workerToNetwork.run();
 
-	PowerMonitor::instance().init();
+
 
 	m_tasksPool.addOnce([this]{ configureBluetooth(); });
 
@@ -140,7 +155,8 @@ void BluetoothBridge::configureBluetooth()
 			receiveBluetoothOneByteISR(buffer[0]);
 		}
 	);
-	m_bluetoothPort->init(115200);
+
+	m_bluetoothPort->init(HC05Configurator::uartTargetSpeed);
 	/*
 	m_bluetoothPort->setRXDoneCallback(
 			[this](uint8_t* buffer, uint16_t size)

@@ -222,10 +222,17 @@ bool Rifle::checkPinout(const Pinout& pinout)
 }
 
 
-void Rifle::init(const Pinout& pinout)
+void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 {
+	if (!isSdcardOk)
+	{
+		error << "Fatal error: rifle cannot operate without sdcard!";
+	}
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
+
+	// Power monitor should be initialized before configuration reading
+	PowerMonitor::instance().init();
 
 	info << "Loading default config";
 	RCSPAggregator::instance().readIni("config.ini");
@@ -248,8 +255,6 @@ void Rifle::init(const Pinout& pinout)
 			},
 			5000000
 	);
-
-	PowerMonitor::instance().init();
 
 	m_tasksPool.add(
 			[this] { PowerMonitor::instance().interrogate(); },

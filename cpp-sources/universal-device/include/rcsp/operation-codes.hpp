@@ -260,6 +260,14 @@ namespace ConfigCodes
 		}
 	}
 
+	namespace BluetoothBridge
+	{
+		namespace Configuration
+		{
+			PAR_CODE(UintParameter, bluetoothPin, 3010)
+		}
+	}
+
 	namespace Base
 	{
 		namespace Functions

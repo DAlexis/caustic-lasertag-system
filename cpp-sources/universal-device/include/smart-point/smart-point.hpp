@@ -41,7 +41,7 @@ class SmartPoint : public IAnyDevice
 public:
 	SmartPoint();
 	~SmartPoint() {}
-	void init(const Pinout& pinout) override;
+	void init(const Pinout& pinout, bool isSdcardOk) override;
 	void setDafaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 

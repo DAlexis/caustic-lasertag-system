@@ -40,8 +40,16 @@ SmartPoint::SmartPoint()
 	m_tasksPool.setStackSize(400);
 }
 
-void SmartPoint::init(const Pinout& pinout)
+void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 {
+	if (!isSdcardOk)
+	{
+		error << "Fatal error: smart point cannot operate without sdcard!";
+	}
+
+	// Power monitor should be initialized before configuration reading
+	PowerMonitor::instance().init();
+
 	info << "Loading default config";
 	if (!RCSPAggregator::instance().readIni("config.ini"))
 	{
@@ -128,8 +136,6 @@ void SmartPoint::init(const Pinout& pinout)
 		50000,
 		0
 	);
-
-	PowerMonitor::instance().init();
 
 	m_tasksPool.add(
 			[this] { PowerMonitor::instance().interrogate(); },

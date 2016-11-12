@@ -111,8 +111,12 @@ HeadSensor::HeadSensor()
 	//m_weapons.insert({1,1,1});
 }
 
-void HeadSensor::init(const Pinout &_pinout)
+void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 {
+	if (!isSdcardOk)
+	{
+		error << "Fatal error: head sensor cannot operate without sdcard!";
+	}
 	//debug.enable();
 
 	info << "Configuring power monitor";
@@ -159,8 +163,10 @@ void HeadSensor::init(const Pinout &_pinout)
 		}
 	}
 
-	info << "Parsing config file";
+	// Power monitor should be initialized before configuration reading
+	PowerMonitor::instance().init();
 
+	info << "Parsing config file";
 	if (!RCSPAggregator::instance().readIni("config.ini"))
 	{
 		error << "Cannot read config file, so setting default values";
@@ -229,8 +235,6 @@ void HeadSensor::init(const Pinout &_pinout)
 			[this] { m_taskPoolStager.stage("m_statsCounter.interrogate()"); m_statsCounter.interrogate(); },
 			200000
 	);
-
-	PowerMonitor::instance().init();
 
 	m_tasksPool.add(
 			[this] { m_taskPoolStager.stage("PowerMonitor::interrogate()"); PowerMonitor::instance().interrogate(); },

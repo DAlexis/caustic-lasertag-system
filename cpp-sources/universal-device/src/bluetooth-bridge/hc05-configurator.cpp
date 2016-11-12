@@ -26,6 +26,12 @@
 #include "core/logging.hpp"
 #include <string.h>
 
+HC05Configurator::HC05Configurator(DeviceName& deviceName, uint16_t& bluetoothPin) :
+	m_devName(deviceName),
+	m_pin(bluetoothPin)
+{
+}
+
 void HC05Configurator::init(IIOPin* key, IUARTManager* uart)
 {
 	m_key = key;
@@ -86,7 +92,7 @@ HC05Configurator::HC05Result HC05Configurator::selectSpeed()
 	{
 		debug << "Default HC-05 speed rejected due to error while testing: " << parseResult(result);
 		m_uart->init(uartTargetSpeed);
-		HC05Result result = test();
+		result = test();
 		if (result != HC05Result::ok)
 		{
 			error << "Cannot determine usart speed for HC-05!";
@@ -99,8 +105,16 @@ HC05Configurator::HC05Result HC05Configurator::selectSpeed()
 void HC05Configurator::configure()
 {
 	enterAT();
-	const char* atName="AT+NAME=CausticBridge2\r\n";
+
+	char atName[35]="AT+NAME=";
+	strcat(atName, m_devName.name);
+	strcat(atName, "\r\n");
+
 	const char* atUart="AT+UART=115200,1,0\r\n";
+
+	char atPswd[35]="AT+PSWD=";
+	strcat(atPswd, "1234");
+	strcat(atPswd, "\r\n");
 
 	systemClock->wait_us(10000);
 	sendATCommand(atUart, strlen(atUart));
@@ -121,6 +135,17 @@ void HC05Configurator::configure()
 		//return;
 	} else {
 		info << "Name set properly!";
+	}
+
+	systemClock->wait_us(10000);
+	sendATCommand(atPswd, strlen(atPswd));
+	waitForResult();
+	if (m_result != HC05Result::ok)
+	{
+		error << "Cannot set password for module: " << parseResult(m_result) << " resp: " << m_response;
+		//return;
+	} else {
+		info << "Password set properly!";
 	}
 
 	systemClock->wait_us(10000);

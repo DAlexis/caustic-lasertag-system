@@ -149,7 +149,7 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 	}
 
 	info << "Initializing device...";
-	resultDevice->init(*pinout);
+	resultDevice->init(*pinout, isSdcardOk());
 	delete pinout;
 	return resultDevice;
 }
