@@ -113,7 +113,12 @@ void HC05Configurator::configure()
 	const char* atUart="AT+UART=115200,1,0\r\n";
 
 	char atPswd[35]="AT+PSWD=";
-	strcat(atPswd, "1234");
+	char pass[5]="1234";
+	pass[0] = m_pin / 1000 % 10 + '0';
+	pass[1] = m_pin / 100 % 10  + '0';
+	pass[2] = m_pin / 10 % 10   + '0';
+	pass[3] = m_pin / 1 % 10    + '0';
+	strcat(atPswd, pass);
 	strcat(atPswd, "\r\n");
 
 	systemClock->wait_us(10000);
