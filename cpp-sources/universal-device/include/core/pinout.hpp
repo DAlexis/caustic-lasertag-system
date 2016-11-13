@@ -44,10 +44,9 @@ public:
 		}
 
 		PinDescr(uint8_t _port, uint8_t _pin, bool _inverted = false) :
-			port(_port),
-			pin(_pin),
-			inverted(_inverted)
-		{}
+				port(_port), pin(_pin), inverted(_inverted)
+		{
+		}
 
 		inline __attribute__ ((always_inline)) bool exists() const
 		{

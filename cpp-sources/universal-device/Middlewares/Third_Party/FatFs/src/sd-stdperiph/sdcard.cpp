@@ -1366,7 +1366,7 @@ SD_Error SD_WaitReadOperation(void)
 
   while ((SD_DMAEndOfTransferStatus() == RESET) && (TransferEnd == 0) && (TransferError == SD_OK))
   {
-	  Kernel::yeld();
+	  Kernel::yield();
 	  //taskYIELD();
   }
 
@@ -1603,7 +1603,7 @@ SD_Error SD_WaitWriteOperation(void)
 
   while ((SD_DMAEndOfTransferStatus() == RESET) && (TransferEnd == 0) && (TransferError == SD_OK))
   {
-	  Kernel::yeld();
+	  Kernel::yield();
 	  //taskYIELD();
   }
 

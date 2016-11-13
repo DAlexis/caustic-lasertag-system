@@ -35,7 +35,7 @@ void Kernel::run()
 	osKernelStart();
 }
 
-void Kernel::yeld()
+void Kernel::yield()
 {
 	if (Kernel::instance().m_isRunning)
 		taskYIELD();

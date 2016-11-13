@@ -143,12 +143,12 @@ bool checkSuffix(const char* where, const char* what)
 }
 
 
-void IniParcer::setCallback(AcceptKeyValueCallback callback)
+void IniParser::setCallback(AcceptKeyValueCallback callback)
 {
 	m_acceptKeyValueCallback = callback;
 }
 
-Result IniParcer::parseFile(const char* filename)
+Result IniParser::parseFile(const char* filename)
 {
 	if (!m_acceptKeyValueCallback)
 		return Result("Callback not set");

@@ -64,7 +64,7 @@ inline bool isNumber(char c)
 void printBar(int barLength, int filled);
 bool checkSuffix(const char* where, const char* what);
 
-class IniParcer
+class IniParser
 {
 public:
 	using AcceptKeyValueCallback = std::function<void(const char* key, const char* value)>;

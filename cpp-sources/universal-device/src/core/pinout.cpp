@@ -26,15 +26,14 @@
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
 #include <functional>
-
 ///////////////////
 // Pinout
 Result Pinout::readIni(const char* filename)
 {
-	IniParcer* parcer = new IniParcer;
-	parcer->setCallback(std::bind(&Pinout::readConfigLine, this, std::placeholders::_1, std::placeholders::_2));
-	Result res = parcer->parseFile(filename);
-	delete parcer;
+	IniParser* parser = new IniParser;
+	parser->setCallback(std::bind(&Pinout::readConfigLine, this, std::placeholders::_1, std::placeholders::_2));
+	Result res = parser->parseFile(filename);
+	delete parser;
 	return res;
 }
 
@@ -50,8 +49,7 @@ void Pinout::readConfigLine(const char* key, const char* value)
 	{
 		std::string name = std::string(key).substr(0, keyLen-portTextLen);
 		auto it = m_pins.find(name);
-		/// @todo [stability] replace atoi by ananlog without undefined behavior
-		uint8_t portNumber = atoi(value);
+		uint8_t portNumber = strtol(value, NULL, 10);
 		if (it != m_pins.end())
 			it->second.port = portNumber;
 		else
@@ -60,8 +58,8 @@ void Pinout::readConfigLine(const char* key, const char* value)
 	{
 		std::string name = std::string(key).substr(0, keyLen-pinTextLen);
 		auto it = m_pins.find(name);
-		/// @todo [stability] replace atoi by ananlog without undefined behavior
-		uint8_t pinNumber = atoi(value);
+		uint8_t pinNumber = strtol(value, NULL, 10);
+
 		if (it != m_pins.end())
 			it->second.pin = pinNumber;
 		else

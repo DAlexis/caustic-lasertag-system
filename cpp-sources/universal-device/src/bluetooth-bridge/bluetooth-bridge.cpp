@@ -227,7 +227,7 @@ void BluetoothBridge::sendBluetoothMessage(AnyBuffer* buffer)
 	// Transmitting to bluetooth module and waiting while transmit is done
 	m_bluetoothPort->transmit(buffer->data, buffer->size);
 	while (m_bluetoothPort->txBusy())
-		Kernel::yeld();
+		Kernel::yield();
 }
 
 void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)

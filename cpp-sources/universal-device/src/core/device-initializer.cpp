@@ -66,8 +66,8 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 	{
 		info << "Detecting device type using device.ini";
 		// We can read device type from config file
-		IniParcer* parcer = new IniParcer;
-		parcer->setCallback(
+		IniParser* parser = new IniParser;
+		parser->setCallback(
 			[&resultDevice] (const char* key, const char* value)
 			{
 				if (resultDevice != nullptr)
@@ -102,12 +102,12 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 				}
 			}
 		);
-		Result res = parcer->parseFile(filename);
+		Result res = parser->parseFile(filename);
 		if (!res)
 		{
 			error << "Error while reading " << filename << ": " << res.errorText;
 		}
-		delete parcer;
+		delete parser;
 	} else {
 		info << "SD-card unavaliable";
 		info << "Creating BLUETOOTH BRIDGE device";

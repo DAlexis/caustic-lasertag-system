@@ -290,7 +290,7 @@ DRESULT SD_read(BYTE *buff, DWORD sector, UINT count)
 	{
 		if (SD_TRANSFER_ERROR == transferState)
 			return RES_ERROR;
-		Kernel::yeld();//taskYIELD();
+		Kernel::yield();//taskYIELD();
 		transferState = SD_GetStatus();
 	}
 	return RES_OK;
@@ -334,7 +334,7 @@ DRESULT SD_write(const BYTE *buff, DWORD sector, UINT count)
 	{
 		if (SD_TRANSFER_ERROR == transferState)
 			return RES_ERROR;
-		Kernel::yeld();//taskYIELD();
+		Kernel::yield();//taskYIELD();
 		transferState = SD_GetStatus();
 	}
 	return RES_OK;
