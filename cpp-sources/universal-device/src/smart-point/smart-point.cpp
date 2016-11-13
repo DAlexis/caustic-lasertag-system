@@ -21,18 +21,16 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#include "smart-point/smart-point.hpp"
-#include "device/device-base-types.hpp"
-#include "network/network-layer.hpp"
 #include "core/logging.hpp"
 #include "core/power-monitor.hpp"
-#include "rcsp/RCSP-stream.hpp"
-#include "rcsp/RCSP-state-saver.hpp"
-
 #include "dev/nrf24l01.hpp"
-
+#include "device/device-base-types.hpp"
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
+#include "network/network-layer.hpp"
+#include "rcsp/RCSP-state-saver.hpp"
+#include "rcsp/RCSP-stream.hpp"
+#include "smart-point/smart-point.hpp"
 
 SmartPoint::SmartPoint()
 {
@@ -150,7 +148,7 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 
 }
 
-void SmartPoint::setDafaultPinout(Pinout& pinout)
+void SmartPoint::setDefaultPinout(Pinout& pinout)
 {
 
 }

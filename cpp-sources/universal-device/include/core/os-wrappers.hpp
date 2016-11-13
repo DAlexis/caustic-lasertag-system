@@ -21,8 +21,8 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SHEDULER_HPP_
-#define RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SHEDULER_HPP_
+#ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SCHEDULER_HPP_
+#define RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SCHEDULER_HPP_
 
 #include "utils/macro.hpp"
 #include "utils/interfaces.hpp"
@@ -39,7 +39,7 @@ using STaskId = osThreadId;
 class Kernel
 {
 public:
-	static void yeld();
+	static void yield();
 
 	void run();
 	inline bool isRunning() const { return m_isRunning; }

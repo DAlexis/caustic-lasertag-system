@@ -22,18 +22,18 @@
 */
 
 
+#include "bluetooth-bridge/bluetooth-bridge.hpp"
+#include "cmsis_os.h"
 #include "core/device-initializer.hpp"
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
+#include "fatfs.h"
+#include "hal/hardware-initializer.hpp"
 #include "hal/io-pins.hpp"
 #include "hal/rtc.hpp"
-#include "hal/hardware-initializer.hpp"
 #include "head-sensor/head-sensor.hpp"
-#include "smart-point/smart-point.hpp"
 #include "rifle/rifle.hpp"
-#include "bluetooth-bridge/bluetooth-bridge.hpp"
-#include "cmsis_os.h"
-#include "fatfs.h"
+#include "smart-point/smart-point.hpp"
 #include <stdio.h>
 
 #ifndef USE_STDPERIPH_SDCARD
@@ -64,10 +64,10 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 	IAnyDevice* resultDevice = nullptr;
 	if (isSdcardOk())
 	{
-		info << "Detecting device type using device.ini";
+		info << "Detecting device type using " << filename;
 		// We can read device type from config file
-		IniParcer* parcer = new IniParcer;
-		parcer->setCallback(
+		IniParser* parser = new IniParser;
+		parser->setCallback(
 			[&resultDevice] (const char* key, const char* value)
 			{
 				if (resultDevice != nullptr)
@@ -102,14 +102,14 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 				}
 			}
 		);
-		Result res = parcer->parseFile(filename);
+		Result res = parser->parseFile(filename);
 		if (!res)
 		{
 			error << "Error while reading " << filename << ": " << res.errorText;
 		}
-		delete parcer;
+		delete parser;
 	} else {
-		info << "SD-card unavaliable";
+		info << "SD-card unavailable";
 		info << "Creating BLUETOOTH BRIDGE device";
 		resultDevice = new BluetoothBridge;
 	}
@@ -139,7 +139,7 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 	if (!pinoutReadingSucceeded)
 	{
 		error << "Cannot read device pinout, setting to default";
-		resultDevice->setDafaultPinout(*pinout);
+		resultDevice->setDefaultPinout(*pinout);
 	}
 
 	if (!resultDevice->checkPinout(*pinout))

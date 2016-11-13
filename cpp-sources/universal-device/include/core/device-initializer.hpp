@@ -34,7 +34,7 @@ class IAnyDevice
 public:
 	virtual ~IAnyDevice() {}
 	virtual void init(const Pinout& pinout, bool isSdcardOk) = 0;
-	virtual void setDafaultPinout(Pinout& pinout) = 0;
+	virtual void setDefaultPinout(Pinout& pinout) = 0;
 	virtual bool checkPinout(const Pinout& pinout) = 0;
 };
 

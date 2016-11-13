@@ -24,20 +24,20 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 
-#include "head-sensor/resources.hpp"
-#include "head-sensor/player-config-and-state.hpp"
-#include "device/device.hpp"
-#include "head-sensor/head-sensor-base-types.hpp"
-#include "rcsp/operation-codes.hpp"
-#include "rcsp/RCSP-state-saver.hpp"
-#include "network/broadcast.hpp"
-#include "game/game-log.hpp"
-#include "dev/rgb-leds.hpp"
-#include "dev/RC522.hpp"
 #include "core/device-initializer.hpp"
 #include "dev/MFRC522-wrapper.hpp"
+#include "dev/RC522.hpp"
+#include "dev/rgb-leds.hpp"
+#include "device/device.hpp"
+#include "game/game-log.hpp"
+#include "head-sensor/head-sensor-base-types.hpp"
+#include "head-sensor/player-config-and-state.hpp"
+#include "head-sensor/resources.hpp"
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
+#include "network/broadcast.hpp"
+#include "rcsp/operation-codes.hpp"
+#include "rcsp/RCSP-state-saver.hpp"
 #include <set>
 
 class WeaponManager : public IWeaponObresver
@@ -68,7 +68,7 @@ class HeadSensor : public IAnyDevice
 public:
 	HeadSensor();
 	void init(const Pinout &pinout, bool isSdcardOk)  override;
-	void setDafaultPinout(Pinout& pinout) override;
+	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
 	DeviceConfiguration deviceConfig;
@@ -101,6 +101,7 @@ private:
 	//constexpr static uint32_t heartbeatPeriod = 200000;
 	constexpr static uint8_t killZonesCount = 6;
 	constexpr static uint16_t RFIDWriteBufferSize = 16;
+
 	// Test functions
 	void testDie(const char*);
 

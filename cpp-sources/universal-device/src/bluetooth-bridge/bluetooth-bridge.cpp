@@ -23,13 +23,12 @@
 
 
 #include "bluetooth-bridge/bluetooth-bridge.hpp"
-#include "network/network-layer.hpp"
-#include "network/broadcast.hpp"
 #include "core/logging.hpp"
-#include "core/string-utils.hpp"
 #include "core/power-monitor.hpp"
-
+#include "core/string-utils.hpp"
 #include "dev/nrf24l01.hpp"
+#include "network/broadcast.hpp"
+#include "network/network-layer.hpp"
 
 #include <string.h>
 
@@ -114,7 +113,7 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 	m_tasksPool.run();
 }
 
-void BluetoothBridge::setDafaultPinout(Pinout& pinout)
+void BluetoothBridge::setDefaultPinout(Pinout& pinout)
 {
 }
 
@@ -227,7 +226,7 @@ void BluetoothBridge::sendBluetoothMessage(AnyBuffer* buffer)
 	// Transmitting to bluetooth module and waiting while transmit is done
 	m_bluetoothPort->transmit(buffer->data, buffer->size);
 	while (m_bluetoothPort->txBusy())
-		Kernel::yeld();
+		Kernel::yield();
 }
 
 void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)

@@ -48,7 +48,7 @@ class BluetoothBridge : public IAnyDevice
 public:
 	BluetoothBridge();
 	void init(const Pinout& pinout, bool isSdcardOk) override;
-	void setDafaultPinout(Pinout& pinout) override;
+	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
 	DeviceConfiguration deviceConfig;

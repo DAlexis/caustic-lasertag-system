@@ -22,12 +22,12 @@
 */
 
 
-#include "hw/hardware-initializer-hw.hpp"
-#include "hal/io-pins.hpp"
-#include "utils/memory.hpp"
-#include "utils/macro.hpp"
 #include "fatfs.h"
+#include "hal/io-pins.hpp"
+#include "hw/hardware-initializer-hw.hpp"
 #include "stm32f1xx_hal.h"
+#include "utils/macro.hpp"
+#include "utils/memory.hpp"
 #include <string.h>
 
 HardwareInitializer instance;

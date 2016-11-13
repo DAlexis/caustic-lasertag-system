@@ -143,12 +143,12 @@ bool checkSuffix(const char* where, const char* what)
 }
 
 
-void IniParcer::setCallback(AcceptKeyValueCallback callback)
+void IniParser::setCallback(AcceptKeyValueCallback callback)
 {
 	m_acceptKeyValueCallback = callback;
 }
 
-Result IniParcer::parseFile(const char* filename)
+Result IniParser::parseFile(const char* filename)
 {
 	if (!m_acceptKeyValueCallback)
 		return Result("Callback not set");
@@ -162,7 +162,7 @@ Result IniParcer::parseFile(const char* filename)
 	}
 
 	Result result;
-	ParcerState state = PS_WAITING_KEY;
+	ParserState state = PS_WAITING_KEY;
 	unsigned int keyCursor = 0, valueCursor = 0;
 	unsigned int line = 1;
 	bool error = false;
@@ -272,7 +272,7 @@ Result IniParcer::parseFile(const char* filename)
 
 						if (!isSpace(buffer[cursor]))
 						{
-							sprintf(m_errorMessage, "Expexted \'=\' symbol at line %d\n", line);
+							sprintf(m_errorMessage, "Expected \'=\' symbol at line %d\n", line);
 							result.fail(m_errorMessage);
 							error = true;
 							break;
@@ -290,7 +290,7 @@ Result IniParcer::parseFile(const char* filename)
 						}
 						if (!isSpace(buffer[cursor]))
 						{
-							sprintf(m_errorMessage, "Expexted value at line %d\n", line);
+							sprintf(m_errorMessage, "Expected value at line %d\n", line);
 							result.fail(m_errorMessage);
 							error = true;
 							break;

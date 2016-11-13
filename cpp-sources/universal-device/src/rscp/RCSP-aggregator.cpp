@@ -248,7 +248,7 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeCallReques
 
 Result RCSPAggregator::readIni(const char* filename)
 {
-	IniParcer* parcer = new IniParcer;
+	IniParser* parcer = new IniParser;
 	//parcer->setCallback([this](const char* key, const char* value){ parseSring(key, value); });
 	parcer->setCallback(std::bind(&RCSPAggregator::parseSring, this, std::placeholders::_1, std::placeholders::_2));
 	Result res = parcer->parseFile(filename);

@@ -21,16 +21,16 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#include "head-sensor/head-sensor.hpp"
-#include "core/logging.hpp"
-#include "core/os-wrappers.hpp"
+#include "core/debug-settings.hpp"
 #include "core/device-initializer.hpp"
 #include "core/diagnostic.hpp"
-#include "core/debug-settings.hpp"
+#include "core/logging.hpp"
+#include "core/os-wrappers.hpp"
+#include "core/power-monitor.hpp"
 #include "dev/wav-player.hpp"
 #include "hal/adc.hpp"
 #include "hal/rtc.hpp"
-#include "core/power-monitor.hpp"
+#include "head-sensor/head-sensor.hpp"
 
 #include <functional>
 #include <stdio.h>

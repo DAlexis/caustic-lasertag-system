@@ -22,20 +22,20 @@
 */
 
 
-#include "rifle/resources.hpp"
-#include "rifle/rifle.hpp"
-#include "rcsp/RCSP-stream.hpp"
-#include "network/broadcast.hpp"
-#include "rcsp/RCSP-state-saver.hpp"
+#include "core/logging.hpp"
 #include "core/power-monitor.hpp"
 #include "core/string-utils.hpp"
-#include "core/logging.hpp"
-#include "dev/wav-player.hpp"
 #include "dev/io-pins-utils.hpp"
+#include "dev/nrf24l01.hpp"
+#include "dev/wav-player.hpp"
+#include "hal/system-clock.hpp"
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
-#include "hal/system-clock.hpp"
-#include "dev/nrf24l01.hpp"
+#include "network/broadcast.hpp"
+#include "rcsp/RCSP-state-saver.hpp"
+#include "rcsp/RCSP-stream.hpp"
+#include "rifle/resources.hpp"
+#include "rifle/rifle.hpp"
 
 #include <stdio.h>
 #include <string>
@@ -179,7 +179,7 @@ Rifle::Rifle(RCSPAggregator& rcspAggregator) :
 	m_tasksPool.setStackSize(400);
 }
 
-void Rifle::setDafaultPinout(Pinout& pinout)
+void Rifle::setDefaultPinout(Pinout& pinout)
 {
 	pinout.set(PinoutTexts::trigger, 0, 0);
 	pinout.set(PinoutTexts::reload, 1, 2);
@@ -208,7 +208,7 @@ bool Rifle::checkPinout(const Pinout& pinout)
 
 	if (!pinout[PinoutTexts::automatic].exists())
 	{
-		error << "Aitomatic switch pin is not set";
+		error << "Automatic switch pin is not set";
 		result = false;
 	}
 
@@ -455,7 +455,7 @@ void Rifle::detectRifleState()
 
 void Rifle::loadConfig()
 {
-	IniParcer *parcer = new IniParcer;
+	IniParser *parcer = new IniParser;
 	parcer->setCallback([](const char* key, const char* val) { printf("k = %s, v = %s\n", key, val); });
 	Result res = parcer->parseFile("default-config.ini");
 	if (!res.isSuccess)

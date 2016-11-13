@@ -75,7 +75,7 @@ void RGBLeds::blinkingTask()
 		osDelay(m_currentPattern.offStateDuration / 1000);
 		blinksCount--;
 	} else {
-		Kernel::yeld();
+		Kernel::yield();
 	}
 }
 

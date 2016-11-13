@@ -24,19 +24,19 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 
-#include "rifle/rifle-config-and-state.hpp"
-#include "rifle/resources.hpp"
-#include "rifle/rifle-base-types.hpp"
-#include "rifle/rifle-display.hpp"
+#include "core/device-initializer.hpp"
+#include "core/os-wrappers.hpp"
+#include "dev/buttons.hpp"
+#include "dev/MFRC522-wrapper.hpp"
+#include "dev/wav-player.hpp"
+#include "device/device.hpp"
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
-#include "dev/MFRC522-wrapper.hpp"
-#include "device/device.hpp"
 #include "rcsp/operation-codes.hpp"
-#include "dev/buttons.hpp"
-#include "dev/wav-player.hpp"
-#include "core/os-wrappers.hpp"
-#include "core/device-initializer.hpp"
+#include "rifle/resources.hpp"
+#include "rifle/rifle-base-types.hpp"
+#include "rifle/rifle-config-and-state.hpp"
+#include "rifle/rifle-display.hpp"
 
 #include <stdint.h>
 
@@ -48,7 +48,7 @@ public:
 
 	void registerWeapon();
 	void init(const Pinout& pinout, bool isSdcardOk) override;
-	void setDafaultPinout(Pinout& pinout) override;
+	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);

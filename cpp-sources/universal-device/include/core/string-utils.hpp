@@ -64,7 +64,7 @@ inline bool isNumber(char c)
 void printBar(int barLength, int filled);
 bool checkSuffix(const char* where, const char* what);
 
-class IniParcer
+class IniParser
 {
 public:
 	using AcceptKeyValueCallback = std::function<void(const char* key, const char* value)>;
@@ -73,7 +73,7 @@ public:
 	Result parseFile(const char* filename);
 
 private:
-	enum ParcerState
+	enum ParserState
 	{
 	    PS_COMMENT = 0,
 	    PS_WAITING_KEY,
