@@ -38,7 +38,7 @@
 										}
 
 
-#define SIGLETON_IN_CLASS(ClassName)	static ClassName& instance(); \
+#define SINGLETON_IN_CLASS(ClassName)	static ClassName& instance(); \
 										ClassName(const ClassName&) = delete;
 
 #define ADD_BITS(where, what)		(where) |= (what)

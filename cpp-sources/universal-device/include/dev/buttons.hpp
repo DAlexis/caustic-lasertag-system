@@ -81,7 +81,7 @@ public:
 	ButtonsPool() {}
 	ButtonManager* getButtonManager(uint8_t portNumber, uint8_t pinNumber);
 
-	SIGLETON_IN_CLASS(ButtonsPool)
+	SINGLETON_IN_CLASS(ButtonsPool)
 
 private:
 	void createButtonManager(uint8_t portNumber, uint8_t pinNumber);

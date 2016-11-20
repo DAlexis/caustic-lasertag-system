@@ -120,7 +120,7 @@ public:
 	void enableRegularNRFReinit(bool enabled = true);
 	void enableDebug(bool debug = true);
 
-	SIGLETON_IN_CLASS(NetworkLayer);
+	SINGLETON_IN_CLASS(NetworkLayer);
 private:
 
 	struct WaitingPackage

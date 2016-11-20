@@ -57,7 +57,7 @@ public:
 
     void registerStateSaver(IAnyStateSaver* saver);
 
-    SIGLETON_IN_CLASS(MainStateSaver)
+    SINGLETON_IN_CLASS(MainStateSaver)
 
 private:
     void saveAll();

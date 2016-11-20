@@ -43,7 +43,7 @@ public:
 	void init();
 	void interrogate() override;
 
-	SIGLETON_IN_CLASS(PowerMonitor)
+	SINGLETON_IN_CLASS(PowerMonitor)
 
 private:
 	PowerMonitor();

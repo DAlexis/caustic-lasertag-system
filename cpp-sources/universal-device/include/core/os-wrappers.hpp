@@ -47,7 +47,7 @@ public:
 
 	void assert(bool shouldBeTrue, const char* message);
 
-	SIGLETON_IN_CLASS(Kernel);
+	SINGLETON_IN_CLASS(Kernel);
 
 private:
 	Kernel() {}

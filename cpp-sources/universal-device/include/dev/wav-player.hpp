@@ -24,13 +24,13 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_DEV_WAV_PLAYER_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_DEV_WAV_PLAYER_HPP_
 
-#include "hal/fragment-player.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/result-code.hpp"
 #include "fatfs.h"
+#include "hal/fragment-player.hpp"
 #include "utils/macro.hpp"
-#include <vector>
 #include <string>
+#include <vector>
 
 class WavPlayer
 {
@@ -43,7 +43,7 @@ public:
 
 	Result play(const char* fileName, uint8_t channel);
 
-	SIGLETON_IN_CLASS(WavPlayer)
+	SINGLETON_IN_CLASS(WavPlayer)
 private:
 	struct WavHeader {
 		char riff[4];

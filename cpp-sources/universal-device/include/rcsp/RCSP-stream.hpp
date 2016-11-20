@@ -168,7 +168,7 @@ private:
 class RCSPNetworkListener
 {
 public:
-	SIGLETON_IN_CLASS(RCSPNetworkListener);
+	SINGLETON_IN_CLASS(RCSPNetworkListener);
 	ReceivePackageCallback getPackageReceiver();
 
 	bool hasSender();

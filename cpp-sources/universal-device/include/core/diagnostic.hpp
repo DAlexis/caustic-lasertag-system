@@ -77,7 +77,7 @@ public:
 	void printSummary();
 	void run();
 
-	SIGLETON_IN_CLASS(SystemMonitor)
+	SINGLETON_IN_CLASS(SystemMonitor)
 private:
 	SystemMonitor();
 	void printTime() const;

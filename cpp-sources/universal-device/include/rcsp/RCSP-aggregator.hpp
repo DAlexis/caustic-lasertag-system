@@ -294,7 +294,7 @@ public:
 		return DetailedResult<T>(result);
 	}
 
-	SIGLETON_IN_CLASS(RCSPAggregator)
+	SINGLETON_IN_CLASS(RCSPAggregator)
 private:
 	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits
 
