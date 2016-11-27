@@ -52,6 +52,7 @@ private:
 
 class IRPresentationReceiverMT2 : public IRPresentationReceiverBase
 {
+friend PresentationReceiversGroupMT2;
 public:
 	IRPresentationReceiverMT2(RCSPAggregator& rcspAggregator);
 	void init();
@@ -60,7 +61,7 @@ public:
 	void setDamageCoefficient(const FloatParameter* coefficient);
 
 private:
-	constexpr static uint32_t vibroPeriod = 200000;
+	constexpr static uint32_t vibroPeriod = 100000;
 	void receiverCallback(const uint8_t* data, uint16_t size);
 	void parseShot(const uint8_t* data, uint16_t size);
 	void parseMT2Command(const uint8_t* data, uint16_t size);
@@ -86,13 +87,14 @@ friend IRPresentationReceiverMT2;
 public:
 	void connectReceiver(IIRPresentationReceiver& receiver);
 	void interrogate();
+	void vibrateAllZones() override;
 
 private:
 	constexpr static uint32_t messageParsingDelay = 3000;
 	constexpr static uint16_t argumentBufferSize = 100;
 	std::list<IRPresentationReceiverMT2*> m_receivers;
 
-	bool m_hasWaitingShot = false;
+	bool m_waitingOtherKillzonesShot = false;
 
 	uint8_t m_bufferForArgument[argumentBufferSize];
 

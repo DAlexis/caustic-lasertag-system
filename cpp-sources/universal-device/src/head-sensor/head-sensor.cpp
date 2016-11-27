@@ -593,16 +593,11 @@ void HeadSensor::setDefaultPinout(Pinout& pinout)
 {
 	pinout.set("zone1", 0, 0);
 	pinout.set("zone1Vibro", 2, 0);
-	pinout.set("zone2", 0, 1);
-	pinout.set("zone2Vibro", 2, 1);
-	pinout.set("zone3", 0, 2);
-	pinout.set("zone3Vibro", 2, 2);
-	pinout.set("zone4", 0, 3);
-	pinout.set("zone4Vibro", 2, 3);
-	pinout.set("zone5", 0, 4);
-	pinout.set("zone5Vibro", 2, 4);
-	pinout.set("zone6", 0, 5);
-	pinout.set("zone6Vibro", 2, 5);
+	pinout.unset("zone2");
+	pinout.unset("zone3");
+	pinout.unset("zone4");
+	pinout.unset("zone5");
+	pinout.unset("zone6");
 	pinout.set("red", 1, 0);
 	pinout.set("green", 0, 7);
 	pinout.set("blue", 0, 6);
@@ -611,95 +606,24 @@ void HeadSensor::setDefaultPinout(Pinout& pinout)
 bool HeadSensor::checkPinout(const Pinout& pinout)
 {
 	bool result = true;
-		if (!pinout["zone1"].exists())
-		{
-			error << "Killzone 1 IR receiver pin is not set";
-			result = false;
-		}
+	if (!pinout["zone1"].exists()
+		&& !pinout["zone2"].exists()
+		&& !pinout["zone3"].exists()
+		&& !pinout["zone4"].exists()
+		&& !pinout["zone5"].exists()
+	)
+	{
+		error << "No killzones are specified in pinout";
+		return false;
+	}
+	if (!pinout["red"].exists()
+		|| !pinout["green"].exists()
+		|| !pinout["blue"].exists())
+	{
+		error << "RGB leds are not fully specified in pinout";
+		return false;
+	}
 
-		if (!pinout["zone1Vibro"].exists())
-		{
-					error << "Killzone 1 vibro engine pin is not set";
-					result = false;
-		}
-		if (!pinout["zone2"].exists())
-		{
-			error << "Killzone 2 IR receiver pin is not set";
-			result = false;
-		}
-
-		if (!pinout["zone2Vibro"].exists())
-		{
-					error << "Killzone 2 vibro engine pin is not set";
-					result = false;
-		}
-
-		if (!pinout["zone3"].exists())
-		{
-			error << "Killzone 3 IR receiver pin is not set";
-			result = false;
-		}
-
-		if (!pinout["zone3Vibro"].exists())
-		{
-					error << "Killzone 3 vibro engine pin is not set";
-					result = false;
-		}
-		if (!pinout["zone4"].exists())
-		{
-			error << "Killzone 4 IR receiver pin is not set";
-			result = false;
-		}
-
-		if (!pinout["zone4Vibro"].exists())
-		{
-					error << "Killzone 4 vibro engine pin is not set";
-					result = false;
-		}
-
-		if (!pinout["zone5"].exists())
-		{
-			error << "Killzone 5 IR receiver pin is not set";
-			result = false;
-		}
-
-		if (!pinout["zone5Vibro"].exists())
-		{
-					error << "Killzone 5 vibro engine pin is not set";
-					result = false;
-		}
-
-		if (!pinout["zone6"].exists())
-		{
-			error << "Killzone 6 IR receiver pin is not set";
-			result = false;
-		}
-
-		if (!pinout["zone6Vibro"].exists())
-		{
-					error << "Killzone 6 vibro engine pin is not set";
-					result = false;
-		}
-
-		if (!pinout["red"].exists())
-		{
-			error << "Red LED pin is not set";
-			result = false;
-		}
-
-		if (!pinout["green"].exists())
-		{
-			error << "Green LED pin is not set";
-			result = false;
-		}
-
-		if (!pinout["blue"].exists())
-		{
-			error << "Blue LED pin is not set";
-			result = false;
-		}
-
-		return result;
 	return true;
 }
 

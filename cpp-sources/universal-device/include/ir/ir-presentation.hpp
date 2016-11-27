@@ -51,6 +51,7 @@ public:
 	virtual ~IPresentationReceiversGroup() {}
 	virtual void connectReceiver(IIRPresentationReceiver& receiver) = 0;
 	virtual void enableLoggingUnknownCommands(bool enable = true) = 0;
+	virtual void vibrateAllZones() = 0;
 };
 
 class IIRPresentationTransmitter

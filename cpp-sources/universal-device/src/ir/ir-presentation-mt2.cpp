@@ -184,6 +184,7 @@ void IRPresentationReceiverMT2::receiverCallback(const uint8_t* data, uint16_t s
 {
 	debug << "IR receiver has data: ";
 	printHex(data, size);
+	enableVibro();
 	// If shot
 	if ((data[0] & ~MT2Extended::Byte1::shotMask) == 0)
 	{
@@ -240,10 +241,10 @@ void IRPresentationReceiverMT2::parseShot(const uint8_t* data, uint16_t size)
 	msg.teamId    = data[1] >> 6;
 	unsigned int damageCode = (data[1] & 0b00111100) >> 2;
 	msg.damage = decodeDamage(damageCode) * *m_damageCoefficient;
-	if (!m_group->m_hasWaitingShot || msg.damage > m_group->m_maxDamage)
+	if (!m_group->m_waitingOtherKillzonesShot || msg.damage > m_group->m_maxDamage)
 	{
 		m_group->m_shotMessage = msg;
-		m_group->m_hasWaitingShot = true;
+		m_group->m_waitingOtherKillzonesShot = true;
 		updateOperationCallback(
 			[this]() {
 				m_rcspAggregator.doOperation(ConfigCodes::HeadSensor::Functions::catchShot, m_group->m_shotMessage);
@@ -406,9 +407,17 @@ void PresentationReceiversGroupMT2::interrogate()
 		if (m_operation != nullptr)
 		{
 			m_operation();
-			m_hasWaitingShot = false;
+			m_waitingOtherKillzonesShot = false;
 			m_operation = nullptr;
 		}
+	}
+}
+
+void PresentationReceiversGroupMT2::vibrateAllZones()
+{
+	for (auto it = m_receivers.begin(); it != m_receivers.end(); it++)
+	{
+		(*it)->enableVibro();
 	}
 }
 

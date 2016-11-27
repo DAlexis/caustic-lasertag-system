@@ -63,10 +63,18 @@ public:
 		bool inverted = false;
 	};
 
+	// @todo Remove this strict inlines
 	Result readIni(const char* filename);
 	inline __attribute__ ((always_inline)) void set(const char* pinName, uint8_t port, uint8_t pin)
 	{
 		m_pins[pinName] = PinDescr(port, pin);
+	}
+
+	inline __attribute__ ((always_inline)) void unset(const char* pinName)
+	{
+		auto it = m_pins.find(pinName);
+		if (it != m_pins.end())
+			m_pins.erase(it);
 	}
 
 	inline const PinDescr& operator[](const char* key) const
