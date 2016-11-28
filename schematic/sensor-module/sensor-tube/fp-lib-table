@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name components)(type KiCad)(uri /home/dalexies/Projects/caustic-lasertag-system/schematic/components.pretty)(options "")(descr ""))
+)

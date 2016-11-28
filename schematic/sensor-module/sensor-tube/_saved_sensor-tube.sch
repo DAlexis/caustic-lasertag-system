@@ -1,0 +1,240 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:sensor_connector
+LIBS:tsop4856
+LIBS:rgb-led
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L RGB-LED U1
+U 1 1 583C7573
+P 6000 2150
+F 0 "U1" H 6000 1750 60  0000 C CNN
+F 1 "RGB-LED" H 6000 2550 60  0000 C CNN
+F 2 "LEDs:LED_WS2812-PLCC6" H 6000 2100 60  0001 C CNN
+F 3 "" H 6000 2100 60  0000 C CNN
+	1    6000 2150
+	-1   0    0    1   
+$EndComp
+$Comp
+L SENSOR_CONNECTOR P1
+U 1 1 583C7695
+P 4150 2200
+F 0 "P1" H 4250 1950 60  0000 C CNN
+F 1 "SENSOR_CONNECTOR" H 4250 2750 60  0000 C CNN
+F 2 "components:caustic-sensors-tube-connector" H 4250 2450 60  0001 C CNN
+F 3 "" H 4250 2450 60  0000 C CNN
+	1    4150 2200
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR01
+U 1 1 583C7877
+P 4850 3100
+F 0 "#PWR01" H 4850 2850 50  0001 C CNN
+F 1 "GND" H 4850 2950 50  0000 C CNN
+F 2 "" H 4850 3100 50  0000 C CNN
+F 3 "" H 4850 3100 50  0000 C CNN
+	1    4850 3100
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	5100 1950 5350 1950
+Wire Wire Line
+	5100 2100 5200 2100
+Wire Wire Line
+	5200 2100 5200 2150
+Wire Wire Line
+	5200 2150 5350 2150
+Wire Wire Line
+	5100 2250 5200 2250
+Wire Wire Line
+	5200 2250 5200 2350
+Wire Wire Line
+	5200 2350 5350 2350
+$Comp
+L R R1
+U 1 1 583C7A64
+P 6950 1950
+F 0 "R1" V 7030 1950 50  0000 C CNN
+F 1 "200" V 6950 1950 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 6880 1950 50  0001 C CNN
+F 3 "" H 6950 1950 50  0000 C CNN
+	1    6950 1950
+	0    1    1    0   
+$EndComp
+$Comp
+L R R2
+U 1 1 583C7AAD
+P 6950 2150
+F 0 "R2" V 7030 2150 50  0000 C CNN
+F 1 "150" V 6950 2150 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 6880 2150 50  0001 C CNN
+F 3 "" H 6950 2150 50  0000 C CNN
+	1    6950 2150
+	0    1    1    0   
+$EndComp
+$Comp
+L R R3
+U 1 1 583C7ACC
+P 6950 2350
+F 0 "R3" V 7030 2350 50  0000 C CNN
+F 1 "150" V 6950 2350 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 6880 2350 50  0001 C CNN
+F 3 "" H 6950 2350 50  0000 C CNN
+	1    6950 2350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6650 1950 6800 1950
+Wire Wire Line
+	6650 2150 6800 2150
+Wire Wire Line
+	6650 2350 6800 2350
+Wire Wire Line
+	5100 2700 7300 2700
+Wire Wire Line
+	7300 2700 7300 1950
+Wire Wire Line
+	7300 1950 7100 1950
+Wire Wire Line
+	7100 2150 7300 2150
+Connection ~ 7300 2150
+Wire Wire Line
+	7100 2350 7300 2350
+Connection ~ 7300 2350
+$Comp
+L TSOP4856 U2
+U 1 1 583C7B6E
+P 8000 2250
+F 0 "U2" H 7950 2600 60  0000 C CNN
+F 1 "TSOP4856" H 8000 1850 60  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 8000 2250 60  0001 C CNN
+F 3 "" H 8000 2250 60  0000 C CNN
+	1    8000 2250
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5100 2400 5550 2400
+Wire Wire Line
+	5550 2400 5550 4500
+Wire Wire Line
+	5550 2850 8000 2850
+Wire Wire Line
+	8000 2850 8000 2550
+Wire Wire Line
+	5100 2550 5450 2550
+Wire Wire Line
+	5450 2550 5450 4650
+Wire Wire Line
+	5450 2950 8200 2950
+Wire Wire Line
+	8200 2950 8200 2550
+$Comp
+L GND #PWR02
+U 1 1 583C7D73
+P 7800 2650
+F 0 "#PWR02" H 7800 2400 50  0001 C CNN
+F 1 "GND" H 7800 2500 50  0000 C CNN
+F 2 "" H 7800 2650 50  0000 C CNN
+F 3 "" H 7800 2650 50  0000 C CNN
+	1    7800 2650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7800 2650 7800 2550
+$Comp
+L SENSOR_CONNECTOR P2
+U 1 1 583C8034
+P 4150 4300
+F 0 "P2" H 4250 4050 60  0000 C CNN
+F 1 "SENSOR_CONNECTOR" H 4250 4850 60  0000 C CNN
+F 2 "components:caustic-sensors-tube-connector" H 4250 4550 60  0001 C CNN
+F 3 "" H 4250 4550 60  0000 C CNN
+	1    4150 4300
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	5150 1950 5150 4050
+Wire Wire Line
+	5150 4050 5100 4050
+Connection ~ 5150 1950
+Wire Wire Line
+	5250 2150 5250 4200
+Wire Wire Line
+	5250 4200 5100 4200
+Connection ~ 5250 2150
+Wire Wire Line
+	5300 2350 5300 4350
+Wire Wire Line
+	5300 4350 5100 4350
+Connection ~ 5300 2350
+Wire Wire Line
+	5550 4500 5100 4500
+Connection ~ 5550 2850
+Wire Wire Line
+	5450 4650 5100 4650
+Connection ~ 5450 2950
+Wire Wire Line
+	5750 2700 5750 4800
+Wire Wire Line
+	5750 4800 5100 4800
+Connection ~ 5750 2700
+Wire Wire Line
+	5100 2850 5100 3100
+Wire Wire Line
+	5100 3100 4850 3100
+$Comp
+L GND #PWR03
+U 1 1 583C855B
+P 5100 5050
+F 0 "#PWR03" H 5100 4800 50  0001 C CNN
+F 1 "GND" H 5100 4900 50  0000 C CNN
+F 2 "" H 5100 5050 50  0000 C CNN
+F 3 "" H 5100 5050 50  0000 C CNN
+	1    5100 5050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5100 4950 5100 5050
+$EndSCHEMATC
