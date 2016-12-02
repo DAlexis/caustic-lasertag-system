@@ -48,7 +48,7 @@
 #include "usart.h"
 
 /* USER CODE BEGIN Includes */     
-
+#include "ff.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -104,6 +104,9 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 }
 
+FATFS fs;
+FIL file;
+
 /* StartDefaultTask function */
 void StartDefaultTask(void const * argument)
 {
@@ -115,9 +118,40 @@ void StartDefaultTask(void const * argument)
 
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
+  osDelay(1000);
+  printf("Hello from new caustic device (in the future...)\n");
+  FRESULT res = f_mount(&fs, "", 1);
+
+	if (res == FR_OK)
+	{
+	  printf("File system successfuly mounted!\n");
+	} else {
+	  printf("Error while mounting fs\n");
+	}
+	char buffer[100];
+	res = f_open(&file, "config.ini", FA_READ);
+	if (res == FR_OK)
+	{
+	  printf("File opening successul\n");
+	} else {
+	  printf("File opening failed\n");
+	}
+	char buff[100];
   for(;;)
   {
-	HAL_UART_Transmit(&huart1, "t os ", 5, 100000);
+		UINT br = 0;
+		if (f_read(&file, buff, 10, &br) == FR_OK)
+		{
+			buff[10] = '\0';
+			printf("Content: %s\n", buff);
+			f_lseek(&file, 0);
+		} else
+		{
+			printf("Failed to read config.ini\n");
+		}
+
+	  //printf("Printf from OS over USB\n");
+	//HAL_UART_Transmit(&huart1, "t os ", 5, 100000);
     osDelay(100);
   }
   /* USER CODE END StartDefaultTask */

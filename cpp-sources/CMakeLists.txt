@@ -36,6 +36,7 @@ set(CMAKE_ASM_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}" )
 set(CMAKE_ASM_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
 
 add_definitions(-DSTM32F103xE)
+add_definitions(-DSTM32F1)
 add_definitions(-DSTM32F10X_HD)
 
 

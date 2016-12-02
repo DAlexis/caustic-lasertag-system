@@ -54,6 +54,7 @@
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
+#include "ff.h"
 
 /* USER CODE BEGIN Includes */
 
