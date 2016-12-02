@@ -39,7 +39,8 @@ add_definitions(-DSTM32F103xE)
 add_definitions(-DSTM32F10X_HD)
 
 
-add_subdirectory(bootloader-usb/bootloader-usb)
-add_subdirectory(universal-device)
+#add_subdirectory(bootloader-usb/bootloader-usb)
+#add_subdirectory(universal-device)
+add_subdirectory(new-universal-device)
 
 
