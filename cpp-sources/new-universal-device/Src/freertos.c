@@ -92,7 +92,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 2024);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -110,49 +110,23 @@ FIL file;
 /* StartDefaultTask function */
 void StartDefaultTask(void const * argument)
 {
-  /* init code for FATFS */
-  MX_FATFS_Init();
-
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
+
+  /* init code for FATFS */
+  MX_FATFS_Init();
 
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   osDelay(1000);
   printf("Hello from new caustic device (in the future...)\n");
-  FRESULT res = f_mount(&fs, "", 1);
-
-	if (res == FR_OK)
-	{
-	  printf("File system successfuly mounted!\n");
-	} else {
-	  printf("Error while mounting fs\n");
-	}
-	char buffer[100];
-	res = f_open(&file, "config.ini", FA_READ);
-	if (res == FR_OK)
-	{
-	  printf("File opening successul\n");
-	} else {
-	  printf("File opening failed\n");
-	}
-	char buff[100];
+  test_mount() && test_read_file("config.ini") && test_write_file("test00.txt");
   for(;;)
   {
-		UINT br = 0;
-		if (f_read(&file, buff, 10, &br) == FR_OK)
-		{
-			buff[10] = '\0';
-			printf("Content: %s\n", buff);
-			f_lseek(&file, 0);
-		} else
-		{
-			printf("Failed to read config.ini\n");
-		}
-
+      test_read_file("config.ini");
 	  //printf("Printf from OS over USB\n");
 	//HAL_UART_Transmit(&huart1, "t os ", 5, 100000);
-    osDelay(100);
+    osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
 }

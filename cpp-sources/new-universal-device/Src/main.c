@@ -54,7 +54,6 @@
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
-#include "ff.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -71,6 +70,7 @@
 void SystemClock_Config(void);
 void Error_Handler(void);
 void MX_FREERTOS_Init(void);
+static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -111,6 +111,9 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM6_Init();
 
+  /* Initialize interrupts */
+  MX_NVIC_Init();
+
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -128,8 +131,7 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-	  HAL_Delay(500);
-	  HAL_UART_Transmit(&huart1, "test ", 5, 100000);
+
   /* USER CODE BEGIN 3 */
 
   }
@@ -192,6 +194,18 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
+}
+
+/** NVIC Configuration
+*/
+static void MX_NVIC_Init(void)
+{
+  /* SDIO_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(SDIO_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(SDIO_IRQn);
+  /* DMA2_Channel4_5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Channel4_5_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Channel4_5_IRQn);
 }
 
 /* USER CODE BEGIN 4 */

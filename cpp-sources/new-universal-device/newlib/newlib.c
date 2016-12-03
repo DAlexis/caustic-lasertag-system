@@ -14,7 +14,7 @@
 #endif
 
 //extern uint32_t __get_MSP(void);
-//extern UART_HandleTypeDef UART_Handle;
+extern UART_HandleTypeDef huart1;
 //extern uint64_t virtualTimer;
 
 #undef errno
@@ -166,6 +166,7 @@ int _read(int file, char *ptr, int len)
     switch (file)
     {
     case STDIN_FILENO:
+    	//CDC_Receive_FS(ptr, len);
         //HAL_UART_Receive(&UART_Handle, (uint8_t *)ptr, 1, HAL_MAX_DELAY);
         //return 1;
     default:
@@ -202,12 +203,12 @@ int _write(int file, char *ptr, int len)
     switch (file)
     {
     case STDOUT_FILENO: /*stdout*/
-    	CDC_Transmit_FS(ptr, len);
-        //HAL_UART_Transmit(&UART_Handle, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+    	//CDC_Transmit_FS(ptr, len);
+        HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, HAL_MAX_DELAY);
         break;
     case STDERR_FILENO: /* stderr */
-    	CDC_Transmit_FS(ptr, len);
-        //HAL_UART_Transmit(&UART_Handle, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+    	//CDC_Transmit_FS(ptr, len);
+        HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, HAL_MAX_DELAY);
         break;
     default:
         errno = EBADF;

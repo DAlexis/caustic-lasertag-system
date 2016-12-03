@@ -28,6 +28,7 @@ include_directories(
     Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
     Middlewares/ST/STM32_USB_Device_Library/Core/Inc
     Inc
+    test
 )
 
 set(ELF_NAME ${PROJECT_NAME}.elf)

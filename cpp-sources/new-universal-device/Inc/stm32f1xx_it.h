@@ -55,7 +55,6 @@ void SysTick_Handler(void);
 void USB_LP_CAN1_RX0_IRQHandler(void);
 void TIM2_IRQHandler(void);
 void SDIO_IRQHandler(void);
-void DMA2_Channel3_IRQHandler(void);
 void DMA2_Channel4_5_IRQHandler(void);
 
 #ifdef __cplusplus
