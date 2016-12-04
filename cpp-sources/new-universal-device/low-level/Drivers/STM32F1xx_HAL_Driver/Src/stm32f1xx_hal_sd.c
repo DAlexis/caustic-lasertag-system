@@ -178,6 +178,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #ifdef HAL_SD_MODULE_ENABLED
 
@@ -522,6 +524,7 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
   }
   
   sdio_cmdinitstructure.Argument         = (uint32_t)ReadAddr;
+  taskENTER_CRITICAL(); // Experimtntally determined that SDIO_SendCommand and SD_CmdResp1Error should not be devided by delay
   SDIO_SendCommand(hsd->Instance, &sdio_cmdinitstructure);
   
   /* Read block(s) in polling mode */
@@ -530,6 +533,7 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
     /* Check for error conditions */
     errorstate = SD_CmdResp1Error(hsd, SD_CMD_READ_MULT_BLOCK);
     
+    taskEXIT_CRITICAL();
     if (errorstate != SD_OK)
     {
       return errorstate;
@@ -555,6 +559,7 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
     /* Check for error conditions */
     errorstate = SD_CmdResp1Error(hsd, SD_CMD_READ_SINGLE_BLOCK); 
     
+    taskEXIT_CRITICAL();
     if (errorstate != SD_OK)
     {
       return errorstate;
@@ -731,6 +736,7 @@ HAL_SD_ErrorTypedef HAL_SD_WriteBlocks(SD_HandleTypeDef *hsd, uint32_t *pWriteBu
   /* Write block(s) in polling mode */
   if(NumberOfBlocks > 1)
   {
+    taskENTER_CRITICAL();
     while(!__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_TXUNDERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR))
     {
       if (__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_TXFIFOHE))
@@ -760,9 +766,11 @@ HAL_SD_ErrorTypedef HAL_SD_WriteBlocks(SD_HandleTypeDef *hsd, uint32_t *pWriteBu
         }
       }
     }   
+    taskEXIT_CRITICAL();
   }
   else
   {
+    taskENTER_CRITICAL();
     /* In case of single data block transfer no need of stop command at all */ 
     while(!__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_TXUNDERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DBCKEND | SDIO_FLAG_STBITERR))
     {
@@ -793,6 +801,7 @@ HAL_SD_ErrorTypedef HAL_SD_WriteBlocks(SD_HandleTypeDef *hsd, uint32_t *pWriteBu
         }
       }
     }  
+    taskEXIT_CRITICAL();
   }
   
   /* Send stop transmission command in case of multiblock write */

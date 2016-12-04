@@ -17,18 +17,18 @@ set(EXE_SOURCES
 )
 
 include_directories(
-    Drivers/CMSIS/Include
-    Drivers/CMSIS/Device/ST/STM32F1xx/Include
-    Drivers/STM32F1xx_HAL_Driver/Inc
-    Middlewares/Third_Party/FreeRTOS/Source/include
-    Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
-    Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3
-    Middlewares/Third_Party/FatFs/src
-    Middlewares/Third_Party/FatFs/src/drivers
-    Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
-    Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-    Inc
-    test
+    low-level/Drivers/CMSIS/Include
+    low-level/Drivers/CMSIS/Device/ST/STM32F1xx/Include
+    low-level/Drivers/STM32F1xx_HAL_Driver/Inc
+    low-level/Middlewares/Third_Party/FreeRTOS/Source/include
+    low-level/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
+    low-level/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3
+    low-level/Middlewares/Third_Party/FatFs/src
+    low-level/Middlewares/Third_Party/FatFs/src/drivers
+    low-level/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
+    low-level/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+    low-level/Inc
+    low-level/test
 )
 
 set(ELF_NAME ${PROJECT_NAME}.elf)
@@ -43,7 +43,7 @@ add_definitions(-DUSE_STDPERIPH_SDCARD)
 
 
 set(LDSCRIPTS "-T STM32F103RETx_FLASH.ld")
-set(LDSCRIPTS_DIR "${PROJECT_SOURCE_DIR}")
+set(LDSCRIPTS_DIR "${PROJECT_SOURCE_DIR}/low-level")
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LDSCRIPTS} -Xlinker --gc-sections -L${LDSCRIPTS_DIR} -Wl,-Map,\"${MAP_NAME}\" --specs=nano.specs")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -nostartfiles")

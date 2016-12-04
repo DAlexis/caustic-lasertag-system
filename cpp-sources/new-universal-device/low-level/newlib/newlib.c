@@ -13,8 +13,13 @@
 # include <stm32f4xx_hal.h>
 #endif
 
+#include "low-level-debug-config.h"
+
 //extern uint32_t __get_MSP(void);
-extern UART_HandleTypeDef huart1;
+
+#ifdef USE_UART_DEBUG_OUTPUT
+    extern UART_HandleTypeDef huart1;
+#endif
 //extern uint64_t virtualTimer;
 
 #undef errno
@@ -203,12 +208,20 @@ int _write(int file, char *ptr, int len)
     switch (file)
     {
     case STDOUT_FILENO: /*stdout*/
-    	//CDC_Transmit_FS(ptr, len);
+#ifdef USE_USB_DEBUG_OUTPUT
+    	CDC_Transmit_FS(ptr, len);
+#endif
+#ifdef USE_UART_DEBUG_OUTPUT
         HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+#endif
         break;
     case STDERR_FILENO: /* stderr */
-    	//CDC_Transmit_FS(ptr, len);
+#ifdef USE_USB_DEBUG_OUTPUT
+    	CDC_Transmit_FS(ptr, len);
+#endif
+#ifdef USE_UART_DEBUG_OUTPUT
         HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+#endif
         break;
     default:
         errno = EBADF;

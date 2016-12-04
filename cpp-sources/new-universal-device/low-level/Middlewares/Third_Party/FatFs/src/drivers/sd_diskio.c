@@ -112,7 +112,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
 {
   DRESULT res = RES_OK;
   
-  if(BSP_SD_ReadBlocks((uint32_t*)buff, 
+  if(BSP_SD_ReadBlocks_DMA((uint32_t*)buff,
                        (uint64_t) (sector * BLOCK_SIZE), 
                        BLOCK_SIZE, 
                        count) != MSD_OK)

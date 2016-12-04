@@ -131,7 +131,8 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-
+      printf("OS was not started. It is bad if you did not planned it\n");
+      HAL_Delay(500);
   /* USER CODE BEGIN 3 */
 
   }

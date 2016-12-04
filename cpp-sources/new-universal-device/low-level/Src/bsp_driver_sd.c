@@ -168,11 +168,9 @@ uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint64_t WriteAddr, uint32_t BlockSi
 uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint64_t ReadAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
 {
   uint8_t sd_state = MSD_OK;
-  printf("Read with dma...\n");
+  //printf("Read with dma...\n");
   /* Read block(s) in DMA transfer mode */
   TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_DIR_TO_MEMORY);
-  HAL_NVIC_SetPriority(SDIO_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(SDIO_IRQn);
   if(HAL_SD_ReadBlocks_DMA(&hsd, pData, ReadAddr, BlockSize, NumOfBlocks) != SD_OK)  
   {
     sd_state = MSD_ERROR;
@@ -205,22 +203,19 @@ uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint64_t ReadAddr, uint32_t Block
 uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint64_t WriteAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
 {
   uint8_t sd_state = MSD_OK;
-  printf("Write BSP_SD_WriteBlocks_DMA\n");
+  //printf("Write BSP_SD_WriteBlocks_DMA\n");
   /* Write block(s) in DMA transfer mode */
   TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_DIR_TO_DEVICE);
-  //HAL_NVIC_SetPriority(SDIO_IRQn, 0, 0);
-  //HAL_NVIC_EnableIRQ(SDIO_IRQn);
-  printf("HAL_SD_WriteBlocks_DMA\n");
   if(HAL_SD_WriteBlocks_DMA(&hsd, pData, WriteAddr, BlockSize, NumOfBlocks) != SD_OK)  
   {
     sd_state = MSD_ERROR;
-    printf("HAL_SD_WriteBlocks_DMA errored\n");
+    //printf("HAL_SD_WriteBlocks_DMA errored\n");
   }
   
   /* Wait until transfer is complete */
   if(sd_state == MSD_OK)
   {
-      printf("waiting for write...\n");
+    //printf("waiting for write...\n");
     if(HAL_SD_CheckWriteOperation(&hsd, (uint32_t)SD_DATATIMEOUT) != SD_OK)  
     {
       sd_state = MSD_ERROR;
@@ -230,7 +225,7 @@ uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint64_t WriteAddr, uint32_t Blo
       sd_state = MSD_OK;
     }
   }
-  printf("BSP_SD_WriteBlocks_DMA end.\n");
+  //printf("BSP_SD_WriteBlocks_DMA end.\n");
   return sd_state; 
 }
 

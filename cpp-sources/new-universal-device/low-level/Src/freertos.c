@@ -49,6 +49,7 @@
 
 /* USER CODE BEGIN Includes */     
 #include "ff.h"
+#include "sdcard-tests.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -120,12 +121,14 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   osDelay(1000);
   printf("Hello from new caustic device (in the future...)\n");
-  test_mount() && test_read_file("config.ini") && test_write_file("test00.txt");
+
+  test_mount() && test_read_file("config.ini") && test_write_file("t1.txt")
+        && test_write_file("t1.txt")&& test_write_file("t1.txt");
+
   for(;;)
   {
-      test_read_file("config.ini");
-	  //printf("Printf from OS over USB\n");
-	//HAL_UART_Transmit(&huart1, "t os ", 5, 100000);
+    test_read_file("config.ini");
+    printf("Im alive\n");
     osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
