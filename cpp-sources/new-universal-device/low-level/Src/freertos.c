@@ -50,6 +50,7 @@
 /* USER CODE BEGIN Includes */     
 #include "ff.h"
 #include "sdcard-tests.h"
+#include "core/entry-point.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -121,7 +122,9 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   osDelay(1000);
   printf("Hello from new caustic device (in the future...)\n");
-
+  highLevelEntryPoint();
+  vTaskDelete(NULL);
+/*
   test_mount() && test_read_file("config.ini") && test_write_file("t1.txt")
         && test_write_file("t1.txt")&& test_write_file("t1.txt");
 
@@ -130,7 +133,7 @@ void StartDefaultTask(void const * argument)
     test_read_file("config.ini");
     printf("Im alive\n");
     osDelay(500);
-  }
+  }*/
   /* USER CODE END StartDefaultTask */
 }
 

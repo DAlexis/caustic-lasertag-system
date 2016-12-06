@@ -105,11 +105,12 @@ int main(void)
   MX_USART3_UART_Init();
   MX_ADC1_Init();
   MX_DAC_Init();
-  MX_SPI2_Init();
-  MX_SPI3_Init();
+  //MX_SPI2_Init();
+  //MX_SPI3_Init();
   MX_TIM3_Init();
-  MX_TIM5_Init();
+  //MX_TIM5_Init();
   MX_TIM6_Init();
+  //MX_TIM4_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();

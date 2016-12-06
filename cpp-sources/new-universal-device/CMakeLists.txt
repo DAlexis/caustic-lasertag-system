@@ -29,6 +29,12 @@ include_directories(
     low-level/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
     low-level/Inc
     low-level/test
+    high-level/src/hw/legacy-spl/include
+    high-level/include
+    high-level/glcd/devices/inc
+    high-level/glcd/controllers
+    high-level/glcd/fonts
+    high-level/glcd
 )
 
 set(ELF_NAME ${PROJECT_NAME}.elf)
