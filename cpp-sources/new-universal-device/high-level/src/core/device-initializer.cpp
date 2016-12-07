@@ -178,4 +178,5 @@ void highLevelEntryPoint()
 {
     DeviceInitializer::instance().initEnvironment();
     DeviceInitializer::instance().initDevice("device.ini");
+    SystemMonitor::instance().run();
 }

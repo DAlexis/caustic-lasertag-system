@@ -53,7 +53,6 @@ BluetoothBridge::BluetoothBridge()
 
 void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 {
-    systemClock->wait_us(100);
     debug << "Bluetooth bridge initialization";
 
 	// default address for bluetooth bridge without SD-card
@@ -99,24 +98,21 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 	radioReinit(nrf);
 	NetworkLayer::instance().setRadioReinitCallback(radioReinit);
 	NetworkLayer::instance().init(nrf);
-	debug << "bt init alive "<< __LINE__;
+
 	//NetworkLayer::instance().enableRegularNRFReinit();
 
 	m_workerToNetwork.setStackSize(256);
 	m_workerToNetwork.run();
 
-	debug << "bt init alive "<< __LINE__;
+	configureBluetooth();
 
-	m_tasksPool.addOnce([this]{ configureBluetooth(); });
-	debug << "bt init alive "<< __LINE__;
 	m_tasksPool.add(
 			[this] { PowerMonitor::instance().interrogate(); },
 			100000
 	);
-	debug << "bt init alive "<< __LINE__;
+
 	m_tasksPool.setStackSize(256);
 	m_tasksPool.run();
-	debug << "bt init alive "<< __LINE__;
 }
 
 void BluetoothBridge::setDefaultPinout(Pinout& pinout)

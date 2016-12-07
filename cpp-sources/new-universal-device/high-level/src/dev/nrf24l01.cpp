@@ -231,23 +231,19 @@ void NRF24L01Manager::init(
     trace << "setupRetransmission";
     setupRetransmission(2, 15);
     trace << "switchToRX";
-
     switchToRX();
-    debug << "nrf alive " << __LINE__;
+
     m_useInterrupts = useInterrupts;
     if (m_useInterrupts)
 	{
-        debug << "nrf alive " << __LINE__;
     	IRQPin->setExtiCallback(std::bind(&NRF24L01Manager::extiHandler, this, std::placeholders::_1), false);
 		IRQPin->enableExti(true);
-		debug << "nrf alive " << __LINE__;
 		if (false == m_IRQPin->state())
 			m_needInterrogation = true;
 		else
 			m_needInterrogation = false;
-		debug << "nrf alive " << __LINE__;
 	}
-    debug << "nrf alive " << __LINE__;
+    
     if (m_TXAdress[0] == 0xe7)
     {
         debug << "NRF24L01 initialization successfully done";
@@ -255,7 +251,6 @@ void NRF24L01Manager::init(
 		error << "Radio module seems to be not connected! Details:\n";
 		printStatus();
 	}
-
 }
 
 void NRF24L01Manager::setDataReceiveCallback(DataReceiveCallback callback)
@@ -287,13 +282,9 @@ void NRF24L01Manager::switchToTX()
 
 void NRF24L01Manager::switchToRX()
 {
-    debug << "switchToRX alive " << __LINE__;
     setConfig(IM_MASK_MAX_RETRIES, CRC_ENABLE, CRC2BYTES, POWER_ON, MODE_RECEIVER);
-    debug << "switchToRX alive " << __LINE__;
     systemClock->wait_us(150);
-    debug << "switchToRX alive " << __LINE__;
     chipEnableOn();
-    debug << "switchToRX alive " << __LINE__;
 }
 
 
@@ -334,16 +325,11 @@ void NRF24L01Manager::CEImpulse()
 
 void NRF24L01Manager::writeReg(unsigned char reg, unsigned char size, unsigned char *data)
 {
-    debug << "writeReg alive " << __LINE__;
     chipSelect();
-    debug << "writeReg alive " << __LINE__;
 	//HAL_SPI_TransmitReceive
     m_status = m_spi->TransmitReceive(W_REGISTER(reg));
-    debug << "writeReg alive " << __LINE__;
     if (size != 0) m_spi->Transmit(data, size);
-    debug << "writeReg alive " << __LINE__;
     chipDeselect();
-    debug << "writeReg alive " << __LINE__;
 }
 
 void NRF24L01Manager::readReg(unsigned char reg, unsigned char size, unsigned char *data)
@@ -432,9 +418,7 @@ void NRF24L01Manager::setConfig(unsigned char interruptionsMask,
             | (powerUP << NRF_REGF_PWR_UP)
             | (isRecieving << NRF_REGF_PRIM_RX);
     //printf("Config: %u\n", m_config);
-    debug << "setConfig alive " << __LINE__;
     writeReg(NRF_REG_CONFIG, 1, &m_config);
-    debug << "setConfig alive " << __LINE__;
 }
 
 /////////////////////
