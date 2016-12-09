@@ -1,13 +1,13 @@
 /**
-  *************** (C) COPYRIGHT 2014 STMicroelectronics ************************
+  *************** (C) COPYRIGHT 2016 STMicroelectronics ************************
   * @file      startup_stm32f103xe.s
   * @author    MCD Application Team
-  * @version   V4.0.0
-  * @date      16-December-2014
+  * @version   V4.1.0
+  * @date      29-April-2016
   * @brief     STM32F103xE Devices vector table for Atollic toolchain.
   *            This module performs:
   *                - Set the initial SP
-  *                - Set the initial PC == Reset_Handler
+  *                - Set the initial PC == Reset_Handler,
   *                - Set the vector table entries with the exceptions ISR address
   *                - Configure the clock system   
   *                - Configure external SRAM mounted on STM3210E-EVAL board
@@ -18,7 +18,7 @@
   *            priority is Privileged, and the Stack is set to Main.
   ******************************************************************************
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -112,7 +112,7 @@ LoopFillZerobss:
     bl  SystemInit
 /* Call static constructors */
     bl __libc_init_array
-/* Call the application's entry point. */
+/* Call the application's entry point.*/
   bl main
   bx lr
 .size Reset_Handler, .-Reset_Handler

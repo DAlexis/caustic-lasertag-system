@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32f1xx_hal_sd.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    15-December-2014
+  * @version V1.0.4
+  * @date    29-April-2016
   * @brief   SD card HAL module driver.
   *          This file provides firmware functions to manage the following 
   *          functionalities of the Secure Digital (SD) peripheral:
@@ -149,7 +149,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -178,6 +178,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #ifdef HAL_SD_MODULE_ENABLED
 
@@ -418,6 +420,8 @@ HAL_StatusTypeDef HAL_SD_DeInit(SD_HandleTypeDef *hsd)
   */
 __weak void HAL_SD_MspInit(SD_HandleTypeDef *hsd)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hsd);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_SD_MspInit could be implemented in the user file
    */
@@ -430,6 +434,8 @@ __weak void HAL_SD_MspInit(SD_HandleTypeDef *hsd)
   */
 __weak void HAL_SD_MspDeInit(SD_HandleTypeDef *hsd)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hsd);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_SD_MspDeInit could be implemented in the user file
    */
@@ -518,6 +524,7 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
   }
   
   sdio_cmdinitstructure.Argument         = (uint32_t)ReadAddr;
+  taskENTER_CRITICAL(); // Experimtntally determined that SDIO_SendCommand and SD_CmdResp1Error should not be devided by delay
   SDIO_SendCommand(hsd->Instance, &sdio_cmdinitstructure);
   
   /* Read block(s) in polling mode */
@@ -526,6 +533,7 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
     /* Check for error conditions */
     errorstate = SD_CmdResp1Error(hsd, SD_CMD_READ_MULT_BLOCK);
     
+    taskEXIT_CRITICAL();
     if (errorstate != SD_OK)
     {
       return errorstate;
@@ -551,6 +559,7 @@ HAL_SD_ErrorTypedef HAL_SD_ReadBlocks(SD_HandleTypeDef *hsd, uint32_t *pReadBuff
     /* Check for error conditions */
     errorstate = SD_CmdResp1Error(hsd, SD_CMD_READ_SINGLE_BLOCK); 
     
+    taskEXIT_CRITICAL();
     if (errorstate != SD_OK)
     {
       return errorstate;
@@ -727,6 +736,7 @@ HAL_SD_ErrorTypedef HAL_SD_WriteBlocks(SD_HandleTypeDef *hsd, uint32_t *pWriteBu
   /* Write block(s) in polling mode */
   if(NumberOfBlocks > 1)
   {
+    taskENTER_CRITICAL();
     while(!__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_TXUNDERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR))
     {
       if (__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_TXFIFOHE))
@@ -756,9 +766,11 @@ HAL_SD_ErrorTypedef HAL_SD_WriteBlocks(SD_HandleTypeDef *hsd, uint32_t *pWriteBu
         }
       }
     }   
+    taskEXIT_CRITICAL();
   }
   else
   {
+    taskENTER_CRITICAL();
     /* In case of single data block transfer no need of stop command at all */ 
     while(!__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_TXUNDERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DBCKEND | SDIO_FLAG_STBITERR))
     {
@@ -789,6 +801,7 @@ HAL_SD_ErrorTypedef HAL_SD_WriteBlocks(SD_HandleTypeDef *hsd, uint32_t *pWriteBu
         }
       }
     }  
+    taskEXIT_CRITICAL();
   }
   
   /* Send stop transmission command in case of multiblock write */
@@ -1162,17 +1175,16 @@ HAL_SD_ErrorTypedef HAL_SD_CheckReadOperation(SD_HandleTypeDef *hsd, uint32_t Ti
   */
 HAL_SD_ErrorTypedef HAL_SD_CheckWriteOperation(SD_HandleTypeDef *hsd, uint32_t Timeout)
 {
-	//printf("inside\n");
   HAL_SD_ErrorTypedef errorstate = SD_OK;
   uint32_t timeout = Timeout;
   uint32_t tmp1, tmp2;
   HAL_SD_ErrorTypedef tmp3;
- // printf("inside2\n");
+
   /* Wait for DMA/SD transfer end or SD error variables to be in SD handle */
   tmp1 = hsd->DmaTransferCplt; 
   tmp2 = hsd->SdTransferCplt;
   tmp3 = (HAL_SD_ErrorTypedef)hsd->SdTransferErr;
-    //printf("while1\n");
+    
   while (((tmp1 & tmp2) == 0) && (tmp3 == SD_OK) && (timeout > 0))
   {
     tmp1 = hsd->DmaTransferCplt; 
@@ -1180,16 +1192,14 @@ HAL_SD_ErrorTypedef HAL_SD_CheckWriteOperation(SD_HandleTypeDef *hsd, uint32_t T
     tmp3 = (HAL_SD_ErrorTypedef)hsd->SdTransferErr;
     timeout--;
   }
-  //printf("done\n");
   
   timeout = Timeout;
-  //printf("while2\n");
+  
   /* Wait until the Tx transfer is no longer active */
   while((__HAL_SD_SDIO_GET_FLAG(hsd, SDIO_FLAG_TXACT))  && (timeout > 0))
   {
     timeout--;  
   }
-  //printf("done\n");
 
   /* Send stop command in multiblock write */
   if (hsd->SdOperation == SD_WRITE_MULTIPLE_BLOCK)
@@ -1210,12 +1220,11 @@ HAL_SD_ErrorTypedef HAL_SD_CheckWriteOperation(SD_HandleTypeDef *hsd, uint32_t T
   {
     return (HAL_SD_ErrorTypedef)(hsd->SdTransferErr);
   }
-  //printf("while3\n");
+  
   /* Wait until write is complete */
   while(HAL_SD_GetStatus(hsd) != SD_TRANSFER_OK)
   {    
   }
-  //printf("done\n");
 
   return errorstate; 
 }
@@ -1340,7 +1349,7 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef *hsd)
       
     /* SD transfer is complete */
     hsd->SdTransferCplt = 1;
-//    printf("hsd->SdTransferCplt = 1;\n");
+
     /* No transfer error */ 
     hsd->SdTransferErr  = SD_OK;
 
@@ -1406,6 +1415,8 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef *hsd)
   */
 __weak void HAL_SD_XferCpltCallback(SD_HandleTypeDef *hsd)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hsd);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_SD_XferCpltCallback could be implemented in the user file
    */ 
@@ -1418,6 +1429,8 @@ __weak void HAL_SD_XferCpltCallback(SD_HandleTypeDef *hsd)
   */
 __weak void HAL_SD_XferErrorCallback(SD_HandleTypeDef *hsd)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hsd);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_SD_XferErrorCallback could be implemented in the user file
    */ 
@@ -1431,6 +1444,8 @@ __weak void HAL_SD_XferErrorCallback(SD_HandleTypeDef *hsd)
   */
 __weak void HAL_SD_DMA_RxCpltCallback(DMA_HandleTypeDef *hdma)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdma);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_SD_DMA_RxCpltCallback could be implemented in the user file
    */ 
@@ -1444,6 +1459,8 @@ __weak void HAL_SD_DMA_RxCpltCallback(DMA_HandleTypeDef *hdma)
   */
 __weak void HAL_SD_DMA_RxErrorCallback(DMA_HandleTypeDef *hdma)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdma);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_SD_DMA_RxErrorCallback could be implemented in the user file
    */ 
@@ -1457,6 +1474,8 @@ __weak void HAL_SD_DMA_RxErrorCallback(DMA_HandleTypeDef *hdma)
   */
 __weak void HAL_SD_DMA_TxCpltCallback(DMA_HandleTypeDef *hdma)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdma);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_SD_DMA_TxCpltCallback could be implemented in the user file
    */ 
@@ -1470,6 +1489,8 @@ __weak void HAL_SD_DMA_TxCpltCallback(DMA_HandleTypeDef *hdma)
   */
 __weak void HAL_SD_DMA_TxErrorCallback(DMA_HandleTypeDef *hdma)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdma);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_SD_DMA_TxErrorCallback could be implemented in the user file
    */ 
@@ -1592,7 +1613,7 @@ HAL_SD_ErrorTypedef HAL_SD_Get_CardInfo(SD_HandleTypeDef *hsd, HAL_SD_CardInfoTy
     /* Byte 10 */
     tmp = (uint8_t)((hsd->CSD[2] & 0x0000FF00) >> 8);
     
-    pCardInfo->CardCapacity  = ((pCardInfo->SD_csd.DeviceSize + 1)) * 512 * 1024;
+    pCardInfo->CardCapacity = (uint64_t)(((uint64_t)pCardInfo->SD_csd.DeviceSize + 1) * 512 * 1024);
     pCardInfo->CardBlockSize = 512;    
   }
   else
@@ -2271,16 +2292,12 @@ static void SD_DMA_TxCplt(DMA_HandleTypeDef *hdma)
   
   /* DMA transfer is complete */
   hsd->DmaTransferCplt = 1;
-//  printf("SD_DMA_TxCplt while\n");
-  // This cycle freeze code when using DMA. This line tell is called from IRQ,
-  // so SDIO_IRQ must have higher priority than DMA_ISR to set this flag.
-  // But documentation says: "...DMA priority is superior to SDIO's priority..."
-  // (DM00154093, p. 459/655, top line)
+  
   /* Wait until SD transfer is complete */
   while(hsd->SdTransferCplt == 0)
   {
   }
-//  printf("SD_DMA_TxCplt while done\n");
+  
   /* Transfer complete user callback */
   HAL_SD_DMA_TxCpltCallback(hsd->hdmatx);  
 }
