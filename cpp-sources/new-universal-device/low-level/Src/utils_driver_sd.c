@@ -5,12 +5,16 @@
  *      Author: dalexies
  */
 
-#include "tweaks_dma_sdio.h"
+#include "utils_driver_sd.h"
+
 #include "dma.h"
+#include "cmsis_os.h"
 
 extern DMA_HandleTypeDef hdma_sdio;
 extern SD_HandleTypeDef hsd;
 extern HAL_SD_CardInfoTypedef SDCardInfo;
+
+xSemaphoreHandle sdcard_mutex = NULL;
 
 void TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_Direction direction)
 {
@@ -40,4 +44,16 @@ void TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_Direction direction)
 
     /* HAL SD initialization */
     //HAL_SD_Init(&hsd, &SDCardInfo);
+}
+
+void sdcard_mutex_lock()
+{
+    if (!sdcard_mutex)
+        sdcard_mutex = xSemaphoreCreateMutex();
+    xSemaphoreTake( sdcard_mutex, portMAX_DELAY);
+}
+
+void sdcard_mutex_unlock()
+{
+    xSemaphoreGive( sdcard_mutex );
 }

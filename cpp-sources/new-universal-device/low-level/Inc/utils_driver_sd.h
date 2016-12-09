@@ -15,5 +15,7 @@ typedef enum {
 
 void TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_Direction direction);
 
+void sdcard_mutex_lock();
+void sdcard_mutex_unlock();
 
 #endif /* NEW_UNIVERSAL_DEVICE_INC_TWEAKS_DMA_SDIO_H_ */

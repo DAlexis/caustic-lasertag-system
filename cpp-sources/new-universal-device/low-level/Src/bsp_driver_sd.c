@@ -44,7 +44,7 @@
 /* USER CODE BEGIN 0 */
 /* Includes ------------------------------------------------------------------*/
 #include "bsp_driver_sd.h"
-#include "tweaks_dma_sdio.h"
+#include <utils_driver_sd.h>
 
 /* Extern variables ---------------------------------------------------------*/ 
   
@@ -123,6 +123,7 @@ __weak void BSP_SD_DetectCallback(void)
   */
 uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint64_t ReadAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
 {
+  sdcard_mutex_lock();
   uint8_t sd_state;
   if(HAL_SD_ReadBlocks(&hsd, pData, ReadAddr, BlockSize, NumOfBlocks) != SD_OK)
   {
@@ -132,6 +133,7 @@ uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint64_t ReadAddr, uint32_t BlockSize
   {
     sd_state = MSD_OK;
   }
+  sdcard_mutex_unlock();
   return sd_state;  
 }
 
@@ -145,6 +147,7 @@ uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint64_t ReadAddr, uint32_t BlockSize
   */
 uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint64_t WriteAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
 {
+  sdcard_mutex_lock();
   uint8_t sd_state;
   if(HAL_SD_WriteBlocks(&hsd, pData, WriteAddr, BlockSize, NumOfBlocks) != SD_OK)  
   {
@@ -154,6 +157,7 @@ uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint64_t WriteAddr, uint32_t BlockSi
   {
     sd_state = MSD_OK;
   }
+  sdcard_mutex_unlock();
   return sd_state;  
 }
 
@@ -168,6 +172,7 @@ uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint64_t WriteAddr, uint32_t BlockSi
 uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint64_t ReadAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
 {
   uint8_t sd_state = MSD_OK;
+  sdcard_mutex_lock();
   //printf("Read with dma...\n");
   /* Read block(s) in DMA transfer mode */
   TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_DIR_TO_MEMORY);
@@ -188,7 +193,7 @@ uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint64_t ReadAddr, uint32_t Block
       sd_state = MSD_OK;
     }
   }
-  
+  sdcard_mutex_unlock();
   return sd_state; 
 }
 
@@ -203,6 +208,7 @@ uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint64_t ReadAddr, uint32_t Block
 uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint64_t WriteAddr, uint32_t BlockSize, uint32_t NumOfBlocks)
 {
   uint8_t sd_state = MSD_OK;
+  sdcard_mutex_lock();
   //printf("Write BSP_SD_WriteBlocks_DMA\n");
   /* Write block(s) in DMA transfer mode */
   TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_DIR_TO_DEVICE);
@@ -225,6 +231,7 @@ uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint64_t WriteAddr, uint32_t Blo
       sd_state = MSD_OK;
     }
   }
+  sdcard_mutex_unlock();
   //printf("BSP_SD_WriteBlocks_DMA end.\n");
   return sd_state; 
 }
@@ -238,6 +245,7 @@ uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint64_t WriteAddr, uint32_t Blo
 uint8_t BSP_SD_Erase(uint64_t StartAddr, uint64_t EndAddr)
 {
   uint8_t sd_state;
+  sdcard_mutex_lock();
   if(HAL_SD_Erase(&hsd, StartAddr, EndAddr) != SD_OK)  
   {
     sd_state = MSD_ERROR;
@@ -246,6 +254,7 @@ uint8_t BSP_SD_Erase(uint64_t StartAddr, uint64_t EndAddr)
   {
     sd_state = MSD_OK;
   }
+  sdcard_mutex_unlock();
   return sd_state;
 }
 
