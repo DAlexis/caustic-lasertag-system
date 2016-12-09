@@ -28,6 +28,8 @@
 #include "core/debug-settings.hpp"
 #include "hal/rtc.hpp"
 #include "string.h"
+//#include "mpu_wrappers.h"
+//#include "portable.h"
 
 SINGLETON_IN_CPP(SystemMonitor)
 
@@ -153,6 +155,6 @@ void SystemMonitor::printOSDetails()
 		}
 	}
 
-	debug << "FreeRTOS free heap: " << xPortGetFreeHeapSize() << ", min: " << xPortGetMinimumEverFreeHeapSize();
+	//debug << "FreeRTOS free heap: " << xPortGetFreeHeapSize() << ", min: " << xPortGetMinimumEverFreeHeapSize();
 }
 
