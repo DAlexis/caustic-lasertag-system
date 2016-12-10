@@ -124,7 +124,7 @@ void IRReceiverTV::init()
 
 void IRReceiverTV::setEnabled(bool enabled)
 {
-		m_input->enableExti(enabled);
+	m_input->enableExti(enabled);
 }
 
 void IRReceiverTV::interrogate()
@@ -157,7 +157,6 @@ void IRReceiverTV::resetReceiver()
 	m_state = RS_WAITING_HEADER;
 	m_falseImpulse = false;
 	m_haveSomeData = false;
-
 }
 
 bool IRReceiverTV::isCorrect(unsigned int value, unsigned int min, unsigned int max)
@@ -186,7 +185,8 @@ void IRReceiverTV::saveBit(bool value)
 
 void IRReceiverTV::interruptHandler(bool state)
 {
-	//printf("i\n");
+	if (m_debug)
+	    printf("i\n");
 	Time time = systemClock->getTime();
 	uint32_t lastDtimeCandidate = m_dtime;
 	m_dtime = time - m_lastTime;

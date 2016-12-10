@@ -48,7 +48,7 @@ void SystemClock::MX_TIM4_Init()
 	zerify(sMasterConfig);
 
 	htim4.Instance = TIM4;
-	htim4.Init.Prescaler = 72-1;
+	htim4.Init.Prescaler = 72*0.7-1; // I have no idea why I should mul by ~0.7
 	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
 	htim4.Init.Period = msTimerPeriod;
 	htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

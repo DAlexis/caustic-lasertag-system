@@ -106,9 +106,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 }
 
-FATFS fs;
-FIL file;
-
 /* StartDefaultTask function */
 void StartDefaultTask(void const * argument)
 {

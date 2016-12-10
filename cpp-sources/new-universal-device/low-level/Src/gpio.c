@@ -73,8 +73,11 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  // Here STM32CubeMX generates code to initialize concrete EXTI pins,
+  // but we do not need it because it will be done by cpp code
 
   /* EXTI interrupt init*/
+  /*
   HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
@@ -92,7 +95,7 @@ void MX_GPIO_Init(void)
 
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
+*/
 }
 
 /* USER CODE BEGIN 2 */
