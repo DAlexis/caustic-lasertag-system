@@ -31,6 +31,8 @@ include_directories(
     Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3
     Middlewares/Third_Party/glcd/devices/inc
     Middlewares/Third_Party/glcd
+    Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
+    Middlewares/ST/STM32_USB_Device_Library/Core/Inc
     include/system-config
     include
     

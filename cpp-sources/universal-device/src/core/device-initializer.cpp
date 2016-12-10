@@ -53,7 +53,7 @@ void DeviceInitializer::initEnvironment()
 	Loggers::initLoggers();
 	info << "Logging initialized";
 	systemClock->init();
-	RTCManager->init();
+	//RTCManager->init();
 	initFatFS();
 	info << "Base environment initialization done";
 	printf("\nprintf works()\n");

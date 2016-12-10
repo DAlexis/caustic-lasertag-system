@@ -65,7 +65,7 @@
 //#define HAL_NOR_MODULE_ENABLED   
 //#define HAL_NAND_MODULE_ENABLED   
 //#define HAL_PCCARD_MODULE_ENABLED   
-//#define HAL_PCD_MODULE_ENABLED   
+#define HAL_PCD_MODULE_ENABLED   
 //#define HAL_HCD_MODULE_ENABLED   
 //#define HAL_PWR_MODULE_ENABLED   
 //#define HAL_RCC_MODULE_ENABLED   
@@ -100,7 +100,7 @@
 #endif /* HSE_VALUE */
 
 #if !defined  (HSE_STARTUP_TIMEOUT)
-  #define HSE_STARTUP_TIMEOUT    ((uint32_t)5000)   /*!< Time out for HSE start up, in ms */
+  #define HSE_STARTUP_TIMEOUT    ((uint32_t)100)   /*!< Time out for HSE start up, in ms */
 #endif /* HSE_STARTUP_TIMEOUT */
 
 /**
@@ -132,7 +132,7 @@
 /**
   * @brief This is the HAL system configuration section
   */     
-#define  VDD_VALUE                    ((uint32_t)3300)) /*!< Value of VDD in mv */           
+#define  VDD_VALUE                    ((uint32_t)3300) /*!< Value of VDD in mv */           
 #define  TICK_INT_PRIORITY            ((uint32_t)0)    /*!< tick interrupt priority (lowest by default)  */            
 #define  USE_RTOS                     0
 #define  PREFETCH_ENABLE              1
@@ -164,8 +164,8 @@
 
 /* Section 2: PHY configuration section */
 
-/* DP83848 PHY Address*/ 
-#define DP83848_PHY_ADDRESS             0x01
+/* DP83848_PHY_ADDRESS Address*/ 
+#define DP83848_PHY_ADDRESS           0x01U
 /* PHY Reset delay these values are based on a 1 ms Systick interrupt*/ 
 #define PHY_RESET_DELAY                 ((uint32_t)0x000000FF)
 /* PHY Configuration delay */
@@ -195,20 +195,10 @@
 #define PHY_JABBER_DETECTION            ((uint16_t)0x0002)  /*!< Jabber condition detected            */
   
 /* Section 4: Extended PHY Registers */
+#define PHY_SR                          ((uint16_t)0x10U)    /*!< PHY status register Offset                      */
 
-#define PHY_SR                          ((uint16_t)0x10)    /*!< PHY status register Offset                      */
-#define PHY_MICR                        ((uint16_t)0x11)    /*!< MII Interrupt Control Register                  */
-#define PHY_MISR                        ((uint16_t)0x12)    /*!< MII Interrupt Status and Misc. Control Register */
- 
-#define PHY_LINK_STATUS                 ((uint16_t)0x0001)  /*!< PHY Link mask                                   */
-#define PHY_SPEED_STATUS                ((uint16_t)0x0002)  /*!< PHY Speed mask                                  */
-#define PHY_DUPLEX_STATUS               ((uint16_t)0x0004)  /*!< PHY Duplex mask                                 */
-
-#define PHY_MICR_INT_EN                 ((uint16_t)0x0002)  /*!< PHY Enable interrupts                           */
-#define PHY_MICR_INT_OE                 ((uint16_t)0x0001)  /*!< PHY Enable output interrupt events              */
-
-#define PHY_MISR_LINK_INT_EN            ((uint16_t)0x0020)  /*!< Enable Interrupt on change of link status       */
-#define PHY_LINK_INTERRUPT              ((uint16_t)0x2000)  /*!< PHY link status interrupt mask                  */
+#define PHY_SPEED_STATUS                ((uint16_t)0x0002U)  /*!< PHY Speed mask                                  */
+#define PHY_DUPLEX_STATUS               ((uint16_t)0x0004U)  /*!< PHY Duplex mask                                 */
 
 /* Includes ------------------------------------------------------------------*/
 /**
