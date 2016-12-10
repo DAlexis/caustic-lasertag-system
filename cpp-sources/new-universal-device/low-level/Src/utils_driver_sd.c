@@ -10,12 +10,15 @@
 #include "dma.h"
 #include "cmsis_os.h"
 
+#ifndef USE_STDPERIPH_SDCARD
 extern DMA_HandleTypeDef hdma_sdio;
 extern SD_HandleTypeDef hsd;
 extern HAL_SD_CardInfoTypedef SDCardInfo;
+#endif
 
 xSemaphoreHandle sdcard_mutex = NULL;
 
+#ifndef USE_STDPERIPH_SDCARD
 void TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_Direction direction)
 {
 	switch (direction)
@@ -45,6 +48,7 @@ void TWEAK_Set_DMA_SDIO_Direction(TWEAK_DMA_SDIO_Direction direction)
     /* HAL SD initialization */
     //HAL_SD_Init(&hsd, &SDCardInfo);
 }
+#endif
 
 void sdcard_mutex_lock()
 {

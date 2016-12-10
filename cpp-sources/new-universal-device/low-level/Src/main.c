@@ -99,7 +99,9 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+#ifndef USE_STDPERIPH_SDCARD
   MX_SDIO_SD_Init();
+#endif
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
@@ -202,12 +204,14 @@ void SystemClock_Config(void)
 */
 static void MX_NVIC_Init(void)
 {
+#ifndef USE_STDPERIPH_SDCARD
   /* SDIO_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SDIO_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(SDIO_IRQn);
   /* DMA2_Channel4_5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Channel4_5_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(DMA2_Channel4_5_IRQn);
+#endif
 }
 
 /* USER CODE BEGIN 4 */
@@ -265,6 +269,7 @@ void assert_failed(uint8_t* file, uint32_t line)
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
+printf("Wrong parameters value: file %s on line %d\r\n", (char*)file, (int)line);
 
 }
 

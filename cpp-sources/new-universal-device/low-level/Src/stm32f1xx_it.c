@@ -43,7 +43,9 @@
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_FS;
 extern DMA_HandleTypeDef hdma_sdio;
-extern SD_HandleTypeDef hsd;
+#ifndef USE_STDPERIPH_SDCARD
+    extern SD_HandleTypeDef hsd;
+#endif
 extern SPI_HandleTypeDef hspi2;
 extern SPI_HandleTypeDef hspi3;
 extern UART_HandleTypeDef huart2;
@@ -78,6 +80,7 @@ void HardFault_Handler(void)
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
+      printf("HardFault_Handler\n");
   }
   /* USER CODE BEGIN HardFault_IRQn 1 */
 
@@ -94,6 +97,7 @@ void MemManage_Handler(void)
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
   {
+      printf("HardFault_Handler\n");
   }
   /* USER CODE BEGIN MemoryManagement_IRQn 1 */
 
@@ -110,6 +114,7 @@ void BusFault_Handler(void)
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
   {
+      printf("BusFault_Handler\n");
   }
   /* USER CODE BEGIN BusFault_IRQn 1 */
 
@@ -126,6 +131,7 @@ void UsageFault_Handler(void)
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)
   {
+      printf("UsageFault_Handler\n");
   }
   /* USER CODE BEGIN UsageFault_IRQn 1 */
 
@@ -347,7 +353,11 @@ void SDIO_IRQHandler(void)
   /* USER CODE BEGIN SDIO_IRQn 0 */
 
   /* USER CODE END SDIO_IRQn 0 */
+#ifndef USE_STDPERIPH_SDCARD
   HAL_SD_IRQHandler(&hsd);
+#else
+  SD_ProcessIRQSrc();
+#endif
   /* USER CODE BEGIN SDIO_IRQn 1 */
 
   /* USER CODE END SDIO_IRQn 1 */
@@ -367,6 +377,7 @@ void SPI3_IRQHandler(void)
   /* USER CODE END SPI3_IRQn 1 */
 }
 
+#ifndef USE_STDPERIPH_SDCARD
 /**
 * @brief This function handles DMA2 channel4 and channel5 global interrupts.
 */
@@ -380,6 +391,7 @@ void DMA2_Channel4_5_IRQHandler(void)
 
   /* USER CODE END DMA2_Channel4_5_IRQn 1 */
 }
+#endif
 
 /* USER CODE BEGIN 1 */
 

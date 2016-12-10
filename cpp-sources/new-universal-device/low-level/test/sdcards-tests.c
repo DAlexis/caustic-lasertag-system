@@ -7,8 +7,9 @@
 
 #include "sdcard-tests.h"
 #include "ff.h"
-#include "bsp_driver_sd.h"
-
+#ifndef USE_STDPERIPH_SDCARD
+    #include "bsp_driver_sd.h"
+#endif
 #include <string.h>
 #include <stdint.h>
 
@@ -99,6 +100,7 @@ int test_write_file(const char* name)
     return 1;
 }
 
+#ifndef USE_STDPERIPH_SDCARD
 int test_block_write(Test_DMA_Settings dma)
 {
     printf("Writing test block...\n");
@@ -143,3 +145,4 @@ int test_block_read_and_write(Test_DMA_Settings dma)
 {
     return test_block_read(dma) && test_block_write(dma);
 }
+#endif

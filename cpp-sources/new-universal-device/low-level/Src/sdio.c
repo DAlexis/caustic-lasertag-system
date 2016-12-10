@@ -51,7 +51,7 @@
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
-
+#ifndef USE_STDPERIPH_SDCARD
 SD_HandleTypeDef hsd;
 HAL_SD_CardInfoTypedef SDCardInfo;
 DMA_HandleTypeDef hdma_sdio;
@@ -166,7 +166,7 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef* sdHandle)
 
   /* USER CODE END SDIO_MspDeInit 1 */
 } 
-
+#endif
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

@@ -20,6 +20,8 @@ include_directories(
     low-level/Drivers/CMSIS/Include
     low-level/Drivers/CMSIS/Device/ST/STM32F1xx/Include
     low-level/Drivers/STM32F1xx_HAL_Driver/Inc
+    low-level/Drivers/legacy-spl/include
+    low-level/Drivers/sd-stdperiph
     low-level/Middlewares/Third_Party/FreeRTOS/Source/include
     low-level/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
     low-level/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3
@@ -29,7 +31,6 @@ include_directories(
     low-level/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
     low-level/Inc
     low-level/test
-    high-level/src/hw/legacy-spl/include
     high-level/include
     high-level/glcd/devices/inc
     high-level/glcd/controllers

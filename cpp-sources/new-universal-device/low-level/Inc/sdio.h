@@ -55,10 +55,10 @@
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
-
+#ifndef USE_STDPERIPH_SDCARD
 extern SD_HandleTypeDef hsd;
 extern HAL_SD_CardInfoTypedef SDCardInfo;
-
+#endif
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

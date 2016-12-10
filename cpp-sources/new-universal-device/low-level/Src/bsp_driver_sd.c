@@ -42,6 +42,8 @@
   */
 #define BUS_4BITS 1
 /* USER CODE BEGIN 0 */
+#ifndef USE_STDPERIPH_SDCARD
+
 /* Includes ------------------------------------------------------------------*/
 #include "bsp_driver_sd.h"
 #include <utils_driver_sd.h>
@@ -324,5 +326,5 @@ uint8_t BSP_SD_IsDetected(void)
 /* USER CODE BEGIN AdditionalCode */
 /* user code can be inserted here */
 /* USER CODE END AdditionalCode */
-
+#endif
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

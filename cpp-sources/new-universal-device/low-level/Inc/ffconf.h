@@ -46,9 +46,16 @@
 /*-----------------------------------------------------------------------------/
 / Additional user header to be used  
 /-----------------------------------------------------------------------------*/
-#include "stm32f1xx_hal.h"
+#ifndef USE_STDPERIPH_SDCARD
+    #include "stm32f1xx_hal.h"
+#else
+    #define __IO volatile
+    #define __weak   __attribute__((weak))
+#endif
 #include "cmsis_os.h"    /* _FS_REENTRANT set to 1 */                
-#include "bsp_driver_sd.h"
+#ifndef USE_STDPERIPH_SDCARD
+    #include "bsp_driver_sd.h"
+#endif
 
 /*-----------------------------------------------------------------------------/
 / Functions and Buffer Configurations
