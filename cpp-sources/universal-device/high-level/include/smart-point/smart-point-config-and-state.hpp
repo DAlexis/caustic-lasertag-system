@@ -24,8 +24,8 @@
 #ifndef UNIVERSAL_DEVICE_LDSCRIPTS_SMART_POINT_STATE_HPP_
 #define UNIVERSAL_DEVICE_LDSCRIPTS_SMART_POINT_STATE_HPP_
 
+#include "rcsp/aggregator.hpp"
 #include "hal/system-clock.hpp"
-#include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
 
 class SmartPointConfig

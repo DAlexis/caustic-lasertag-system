@@ -24,7 +24,7 @@
 #ifndef INCLUDE_CORE_POWER_MONITOR_HPP_
 #define INCLUDE_CORE_POWER_MONITOR_HPP_
 
-#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "utils/macro.hpp"
 #include "hal/adc.hpp"

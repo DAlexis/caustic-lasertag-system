@@ -52,8 +52,7 @@ void PlayerConfiguration::setDefault()
 	preRespawnDelay = 0;
 	postRespawnDelay = 0;
 	autoRespawn = 0;
-	//plyerId = 1;
-	plyerMT2Id = 1;
+	playerId = 1;
 	teamId = 1;
 	slot1MaxWeight = UINT16_MAX;
 	slot2MaxWeight = UINT16_MAX;

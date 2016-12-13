@@ -22,8 +22,8 @@
 */
 
 
-#include "rcsp/RCSP-state-saver.hpp"
-#include "rcsp/RCSP-stream.hpp"
+#include "rcsp/state-saver.hpp"
+#include "rcsp/stream.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
 //#include "dev/sdcard-fs.hpp"

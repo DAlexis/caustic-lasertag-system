@@ -28,8 +28,8 @@
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
 #include "network/network-layer.hpp"
-#include "rcsp/RCSP-state-saver.hpp"
-#include "rcsp/RCSP-stream.hpp"
+#include "rcsp/state-saver.hpp"
+#include "rcsp/stream.hpp"
 #include "smart-point/smart-point.hpp"
 
 SmartPoint::SmartPoint()

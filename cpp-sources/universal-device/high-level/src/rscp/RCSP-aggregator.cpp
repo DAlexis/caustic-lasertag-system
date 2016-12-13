@@ -22,9 +22,9 @@
 */
 
 
-#include "rcsp/RCSP-aggregator.hpp"
-#include "rcsp/RCSP-stream.hpp"
-#include "rcsp/RCSP-state-saver.hpp"
+#include "rcsp/aggregator.hpp"
+#include "rcsp/state-saver.hpp"
+#include "rcsp/stream.hpp"
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
 #include "fatfs.h"

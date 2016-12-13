@@ -24,9 +24,9 @@
 #ifndef INCLUDE_DEV_LCD5110_HPP_
 #define INCLUDE_DEV_LCD5110_HPP_
 
+#include "rcsp/aggregator.hpp"
 #include "hal/spi.hpp"
 #include "hal/io-pins.hpp"
-#include "rcsp/RCSP-aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
 
 class LCD5110Controller : public ISPIUser

@@ -21,7 +21,7 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#include "rcsp/RCSP-stream.hpp"
+#include "rcsp/stream.hpp"
 #include "core/string-utils.hpp"
 #include "fatfs.h"
 #include <stdio.h>

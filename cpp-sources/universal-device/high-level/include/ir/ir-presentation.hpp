@@ -24,9 +24,9 @@
 #ifndef INCLUDE_IR_IR_PRESENTATION_HPP_
 #define INCLUDE_IR_IR_PRESENTATION_HPP_
 
+#include "rcsp/stream.hpp"
 #include "ir-physical.hpp"
 #include "rcsp/RCSP-base-types.hpp"
-#include "rcsp/RCSP-stream.hpp"
 
 class IPresentationReceiversGroup;
 

@@ -24,10 +24,10 @@
 #ifndef UNIVERSAL_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_BLUETOOTH_BRIDGE_CONFIG_HPP_
 #define UNIVERSAL_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_BLUETOOTH_BRIDGE_CONFIG_HPP_
 
+#include "rcsp/aggregator.hpp"
 #include "rcsp/RCSP-base-types.hpp"
 #include "rcsp/base-types.hpp"
 #include "rcsp/operation-codes.hpp"
-#include "rcsp/RCSP-aggregator.hpp"
 #include "network/network-base-types.hpp"
 
 class BluetoothBridgeConfiguration

@@ -21,9 +21,9 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
+#include "rcsp/aggregator.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "core/logging.hpp"
-#include "rcsp/RCSP-aggregator.hpp"
 
 //////////////////////
 // ConnectedWeaponsList

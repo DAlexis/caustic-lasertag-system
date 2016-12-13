@@ -25,10 +25,10 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
 
+#include "rcsp/aggregator.hpp"
 #include "device/device-base-types.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "rcsp/RCSP-base-types.hpp"
-#include "rcsp/RCSP-aggregator.hpp"
 #include <stdint.h>
 #include <string.h>
 

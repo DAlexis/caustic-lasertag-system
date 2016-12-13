@@ -24,17 +24,18 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_CONFIG_AND_STATE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_CONFIG_AND_STATE_HPP_
 
-#include <stdint.h>
-#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
+
+#include <stdint.h>
 
 class RifleOwnerConfiguration
 {
 public:
-	RifleOwnerConfiguration() : plyerMT2Id(1), teamId(0)
+	RifleOwnerConfiguration() : playerId(1), teamId(0)
 	{}
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerMT2Id);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerId);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, teamId);
 };
 

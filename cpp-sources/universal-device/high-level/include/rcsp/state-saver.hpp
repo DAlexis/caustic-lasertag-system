@@ -24,7 +24,7 @@
 #ifndef INCLUDE_RCSP_RCSP_STATE_SAVER_HPP_
 #define INCLUDE_RCSP_RCSP_STATE_SAVER_HPP_
 
-#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/aggregator.hpp"
 #include "rcsp/state-saver-interface.hpp"
 #include "core/os-wrappers.hpp"
 #include "utils/macro.hpp"

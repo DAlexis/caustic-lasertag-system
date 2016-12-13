@@ -24,7 +24,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_
 
-#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/aggregator.hpp"
 #include "network/network-layer.hpp"
 #include "fatfs.h"
 #include "core/result-code.hpp"

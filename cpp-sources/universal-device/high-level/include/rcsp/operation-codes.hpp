@@ -24,10 +24,8 @@
 #ifndef LOGIC_CONFIGS_H_
 #define LOGIC_CONFIGS_H_
 
+#include "rcsp/operation-codes-manipulation.hpp"
 #include "rcsp/base-types.hpp"
-#include "rcsp/RCSP-codes-manipulation.hpp"
-
-// Includes that contains types which might be used as parameters types
 #include "device/device-base-types.hpp"
 #include "rcsp/RCSP-base-types.hpp"
 #include "network/network-base-types.hpp"
@@ -181,8 +179,7 @@ namespace ConfigCodes
 			PAR_CODE(TimeInterval, shockDelayInactive, 1025)
 
 
-			//PAR_CODE(UintParameter, plyerId,        1030)
-			PAR_CODE(PlayerGameId,   plyerMT2Id,     1031)
+			PAR_CODE(PlayerGameId,   playerId,     1031)
 			PAR_CODE(TeamGameId,     teamId,         1032)
 
 			PAR_CODE(UintParameter, slot1MaxWeight,    1041)

@@ -32,10 +32,9 @@
 #include "head-sensor/resources.hpp"
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
-#include "rcsp/RCSP-stream.hpp"
+#include "rcsp/stream.hpp"
 
 #include <stdio.h>
-
 #include <math.h>
 
 WeaponManager::~WeaponManager()
@@ -298,7 +297,7 @@ void HeadSensor::catchShot(ShotMessage msg)
 	}
 	else if (playerState.isAlive()) {
 
-		if (msg.playerId == playerConfig.plyerMT2Id)
+		if (msg.playerId == playerConfig.playerId)
 		{
 			debug << "self-shot";
 			msg.damage *= playerConfig.selfShotCoeff;
@@ -327,7 +326,7 @@ void HeadSensor::catchShot(ShotMessage msg)
 				m_statsCounter.registerDamage(msg.playerId, msg.damage);
 			}
 			m_leds.blink(blinkPatterns.wound);
-			if (msg.playerId != playerConfig.plyerMT2Id)
+			if (msg.playerId != playerConfig.playerId)
 			{
 				notifyDamager(msg.playerId, msg.teamId, DamageNotification::injured);
 			}
@@ -335,7 +334,7 @@ void HeadSensor::catchShot(ShotMessage msg)
 			//Player was killed
 			info << "xx Player died";
 			dieWeapons();
-			if (msg.playerId != playerConfig.plyerMT2Id)
+			if (msg.playerId != playerConfig.playerId)
 			{
 				notifyDamager(msg.playerId, msg.teamId, DamageNotification::killed);
 			}
@@ -477,7 +476,7 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 	}
 
 	RCSPStream stream;
-	stream.addValue(ConfigCodes::HeadSensor::Configuration::plyerMT2Id);
+	stream.addValue(ConfigCodes::HeadSensor::Configuration::playerId);
 	stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
 	stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
 
@@ -536,7 +535,7 @@ void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_
 	notification.damager = damager;
 	notification.damagedTeam = playerConfig.teamId;
 	notification.state = state;
-	notification.target = playerConfig.plyerMT2Id;
+	notification.target = playerConfig.playerId;
 	info << "Notifying damager";
 	RCSPStream::remoteCall(
 			broadcast.headSensors,
@@ -551,7 +550,7 @@ void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_
 void HeadSensor::notifyIsDamager(DamageNotification notification)
 {
 	info << "By the time " << notification.damager << " damaged " << notification.target;
-	if (notification.damager != playerConfig.plyerMT2Id)
+	if (notification.damager != playerConfig.playerId)
 		return;
 
 	if (!playerState.weaponsList.weapons().empty())

@@ -24,7 +24,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PLAYER_SETTINGS_HPP_
 
-#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
 #include <stdint.h>
@@ -56,7 +56,7 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, autoRespawn);
 
 	//PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerId);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerMT2Id);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerId);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, teamId);
 
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot1MaxWeight);

@@ -21,8 +21,8 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
+#include "rcsp/stream.hpp"
 #include "game/game-log.hpp"
-#include "rcsp/RCSP-stream.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "core/logging.hpp"
 #include "string.h"

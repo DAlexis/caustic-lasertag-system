@@ -8,7 +8,7 @@
 #ifndef UNIVERSAL_DEVICE_INCLUDE_CORE_SERVICE_LOCATOR_HPP_
 #define UNIVERSAL_DEVICE_INCLUDE_CORE_SERVICE_LOCATOR_HPP_
 
-#include "rcsp/RCSP-aggregator.hpp"
+#include "rcsp/aggregator.hpp"
 
 class ServiceLocator
 {

@@ -32,8 +32,8 @@
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
 #include "network/broadcast.hpp"
-#include "rcsp/RCSP-state-saver.hpp"
-#include "rcsp/RCSP-stream.hpp"
+#include "rcsp/state-saver.hpp"
+#include "rcsp/stream.hpp"
 #include "rifle/resources.hpp"
 #include "rifle/rifle.hpp"
 
@@ -564,7 +564,7 @@ void Rifle::prepareAndSendShotMsg()
 	RCSPStream stream;
 	ShotMessage msg;
 	msg.damage = config.damageMin;
-	msg.playerId = rifleOwner.plyerMT2Id;
+	msg.playerId = rifleOwner.playerId;
 	msg.teamId = rifleOwner.teamId;
 	stream.addCall(ConfigCodes::HeadSensor::Functions::catchShot, msg);
 	m_irPresentationTransmitter->sendMessage(stream);

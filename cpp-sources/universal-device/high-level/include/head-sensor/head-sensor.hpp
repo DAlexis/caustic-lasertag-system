@@ -24,6 +24,7 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 
+#include "rcsp/state-saver.hpp"
 #include "core/device-initializer.hpp"
 #include "dev/MFRC522-wrapper.hpp"
 #include "dev/RC522.hpp"
@@ -37,7 +38,6 @@
 #include "ir/ir-presentation.hpp"
 #include "network/broadcast.hpp"
 #include "rcsp/operation-codes.hpp"
-#include "rcsp/RCSP-state-saver.hpp"
 #include <set>
 
 class WeaponManager : public IWeaponObresver
@@ -125,14 +125,14 @@ private:
 	class TeamBroadcastTester : public Broadcast::IBroadcastTester
 	{
 	public:
-		TeamBroadcastTester(const TYPE_OF(ConfigCodes::HeadSensor::Configuration, plyerMT2Id)& pId) :
+		TeamBroadcastTester(const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)& pId) :
 			m_pId(&pId)
 		{}
 
 		bool isAcceptableBroadcast(const DeviceAddress& addr);
 	private:
 
-		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, plyerMT2Id)* m_pId;
+		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)* m_pId;
 	};
 
 	IIRPhysicalReceiver* m_irPhysicalReceivers[killZonesCount];
@@ -141,7 +141,7 @@ private:
 
 	Interrogator m_killZonesInterogator;
 
-	GameLog::BaseStatsCounter m_statsCounter{playerConfig.plyerMT2Id};
+	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId};
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
 	RC552Wrapper m_mfrcWrapper;
