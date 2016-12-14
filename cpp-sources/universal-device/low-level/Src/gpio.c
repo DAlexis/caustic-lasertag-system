@@ -73,6 +73,33 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  // Resetting all pint to output and to 0
+  GPIO_InitTypeDef GPIO_InitStructure;
+  memset(&GPIO_InitStructure, 0, sizeof(GPIO_InitStructure));
+  // Resetting all pins except PA11 and PA12, that are for USBDM, USBDP
+  uint16_t pinMask = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+          GPIO_PIN_4 | GPIO_PIN_5  | GPIO_PIN_6  | GPIO_PIN_7  | GPIO_PIN_8  |
+          GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_13 |
+          GPIO_PIN_14 | GPIO_PIN_15;
+  GPIO_InitStructure.Pin = pinMask;
+  GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStructure.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+  HAL_GPIO_WritePin(GPIOA, pinMask, GPIO_PIN_RESET);
+
+  // For other GPIO we should add this pins
+  GPIO_InitStructure.Pin |= GPIO_PIN_11 | GPIO_PIN_12;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+  HAL_GPIO_WritePin(GPIOB, pinMask, GPIO_PIN_RESET);
+
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+  HAL_GPIO_WritePin(GPIOC, pinMask, GPIO_PIN_RESET);
+
+  GPIO_InitStructure.Pin = GPIO_PIN_2;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+
   // Here STM32CubeMX generates code to initialize concrete EXTI pins,
   // but we do not need it because it will be done by cpp code
 

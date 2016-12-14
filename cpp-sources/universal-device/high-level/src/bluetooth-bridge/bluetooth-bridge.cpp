@@ -74,6 +74,18 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 		warning << "Bluetooth bridge operate without sd-card, it will use default settings";
 	}
 
+	m_networkClient.setMyAddress(deviceConfig.devAddr);
+	m_networkClient.setPackageReceiver(
+        [this](DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+        {
+            receiveNetworkPackage(sender, payload, payloadLength);
+        }
+	);
+	m_networkClient.registerMyBroadcast(broadcast.any);
+	m_networkClient.registerMyBroadcast(broadcast.bluetoothBridges);
+	NetworkLayer::instance().connectClient(&m_networkClient);
+
+	/*
 	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
 	NetworkLayer::instance().setPackageReceiver(
 		[this](DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
@@ -83,7 +95,7 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 	);
 	NetworkLayer::instance().registerBroadcast(broadcast.any);
 	NetworkLayer::instance().registerBroadcast(broadcast.bluetoothBridges);
-
+*/
 	NRF24L01Manager *nrf = new NRF24L01Manager();
 	auto radioReinit = [](IRadioPhysicalDevice* rf) {
 		static_cast<NRF24L01Manager*>(rf)->init(
@@ -242,17 +254,17 @@ void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
 	if (broadcast.isBroadcast(bluetoothMessage->address))
 	{
 		// We need special timings for broadcasts
-		NetworkLayer::instance().send(
-				bluetoothMessage->address,
-				bluetoothMessage->data,
-				bluetoothMessage->payloadLength(),
-				true,
-				nullptr,
-				bluetoothBridgePackageTimings.broadcast
-		);
+	    m_networkClient.send(
+                bluetoothMessage->address,
+                bluetoothMessage->data,
+                bluetoothMessage->payloadLength(),
+                true,
+                nullptr,
+                bluetoothBridgePackageTimings.broadcast
+        );
 	} else {
-		// Not broadcast packages are with default timings
-		NetworkLayer::instance().send(bluetoothMessage->address, bluetoothMessage->data, bluetoothMessage->payloadLength(), true);
+	    // Not broadcast packages are with default timings
+	    m_networkClient.send(bluetoothMessage->address, bluetoothMessage->data, bluetoothMessage->payloadLength(), true);
 	}
 
 }

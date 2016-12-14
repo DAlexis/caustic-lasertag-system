@@ -27,6 +27,7 @@
 #include "device/device.hpp"
 #include "hal/uart.hpp"
 #include "core/os-wrappers.hpp"
+#include "network/network-layer.hpp"
 
 struct AnyBuffer
 {
@@ -65,6 +66,7 @@ private:
 	void sendBluetoothMessage(AnyBuffer* buffer);
 	void sendNetworkPackage(AnyBuffer* buffer);
 
+	OrdinaryNetworkClient m_networkClient;
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
 	HC05Configurator m_configurator{deviceConfig.deviceName, config.bluetoothPin};
 

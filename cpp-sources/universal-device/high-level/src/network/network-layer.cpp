@@ -71,6 +71,69 @@ void DeviceAddress::convertFromString(const char* str)
 	}
 	trace << "Parsed: " << address[0] << "-" << address[1] << "-" << address[2];
 }
+
+///////////////////////
+//OrdinaryNetworkClient
+
+void OrdinaryNetworkClient::connect(NetworkLayer& nl)
+{
+    m_nl = &nl;
+}
+
+bool OrdinaryNetworkClient::isForMe(const DeviceAddress& addr)
+{
+    return addr == *m_address || isMyBroadcast(addr);
+}
+
+ReceivePackageCallback OrdinaryNetworkClient::getReceiver()
+{
+    return m_receiverCallback;
+}
+
+void OrdinaryNetworkClient::setMyAddress(const DeviceAddress& address)
+{
+    m_address = &address;
+}
+
+void OrdinaryNetworkClient::setPackageReceiver(ReceivePackageCallback callback)
+{
+    m_receiverCallback = callback;
+}
+
+void OrdinaryNetworkClient::registerMyBroadcast(const DeviceAddress& address)
+{
+    m_broadcasts.insert(address);
+}
+
+void OrdinaryNetworkClient::registerMyBroadcastTester(Broadcast::IBroadcastTester* tester)
+{
+    m_broadcastTesters.push_back(tester);
+}
+
+PackageId OrdinaryNetworkClient::send(
+    DeviceAddress target,
+    uint8_t* data,
+    uint16_t size,
+    bool waitForAck,
+    PackageSendingDoneCallback doneCallback,
+    PackageTimings timings
+)
+{
+    return m_nl->send2(target, *m_address, data, size, waitForAck, doneCallback, timings);
+}
+
+bool OrdinaryNetworkClient::isMyBroadcast(const DeviceAddress& addr)
+{
+    if (m_broadcasts.find(addr) != m_broadcasts.end())
+        return true;
+    for (auto it = m_broadcastTesters.begin(); it != m_broadcastTesters.end(); it++)
+        if (*it && (*it)->isAcceptableBroadcast(addr))
+            return true;
+    return false;
+}
+
+
+
 ///////////////////////
 // NetworkLayer
 NetworkLayer::NetworkLayer()
@@ -107,8 +170,8 @@ void NetworkLayer::setRadioReinitCallback(RadioReinitCallback callback)
 void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
 {
 	Kernel::instance().assert(
-			m_selfAddress != nullptr
-			&& m_receivePackageCallback != nullptr,
+			(m_selfAddress != nullptr
+			&& m_receivePackageCallback != nullptr) || m_clients.size() != 0,
 			"Modem initialisation fail: self address or package receiver not set"
 		);
 	m_rfPhysicalDevice = rfPhysicalDevice;
@@ -116,6 +179,12 @@ void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
 	m_rfPhysicalDevice->setDataReceiveCallback(std::bind(&NetworkLayer::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
 	info << "Starting m_modemTask";
 	m_modemTask.run(0, 1, 1);
+}
+
+void NetworkLayer::connectClient(INetworkClient* client)
+{
+    client->connect(*this);
+    m_clients.push_back(client);
 }
 
 void NetworkLayer::registerBroadcast(const DeviceAddress& address)
@@ -156,58 +225,71 @@ PackageId NetworkLayer::send(
 	PackageTimings timings
 )
 {
-	m_stager.stage("send()");
-	if (size > Package::payloadLength)
-	{
-		error << "Error: too long payload!";
-		return 0;
-	}
-	PackageDetails details;
-	details.packageId = generatePackageId();
+    return send2(target, *m_selfAddress, data, size, waitForAck, doneCallback, timings);
+}
 
-	if (waitForAck)
-	{
-		Time time = systemClock->getTime();
-		details.needAck = 1;
-		ScopedLock<Mutex> lock(m_packagesQueueMutex);
-		m_stager.stage("send(): +ack lock");
-		m_packages[details.packageId] = WaitingPackage();
-		WaitingPackage& waitingPackage = m_packages[details.packageId];
-		waitingPackage.wasCreated = time;
-		waitingPackage.nextTransmission = time;
-		waitingPackage.isBroadcast = broadcast.isBroadcast(target);
+PackageId NetworkLayer::send2(
+        DeviceAddress target,
+        DeviceAddress sender,
+        uint8_t* data,
+        uint16_t size,
+        bool waitForAck,
+        PackageSendingDoneCallback doneCallback,
+        PackageTimings timings
+    )
+{
+    m_stager.stage("send2()");
+    if (size > Package::payloadLength)
+    {
+        error << "Error: too long payload!";
+        return 0;
+    }
+    PackageDetails details;
+    details.packageId = generatePackageId();
 
-		waitingPackage.timings = timings;
+    if (waitForAck)
+    {
+        Time time = systemClock->getTime();
+        details.needAck = 1;
+        ScopedLock<Mutex> lock(m_packagesQueueMutex);
+        m_stager.stage("send(): +ack lock");
+        m_packages[details.packageId] = WaitingPackage();
+        WaitingPackage& waitingPackage = m_packages[details.packageId];
+        waitingPackage.wasCreated = time;
+        waitingPackage.nextTransmission = time;
+        waitingPackage.isBroadcast = broadcast.isBroadcast(target);
 
-		waitingPackage.callback = doneCallback;
-		waitingPackage.package.sender = *m_selfAddress;
-		waitingPackage.package.target = target;
-		waitingPackage.package.details = details;
-		memcpy(waitingPackage.package.payload, data, size);
-		/// @todo Check package zerification!
-		if (size<Package::payloadLength)
-		{
-			memset(&(waitingPackage.package.payload[size]), 0, Package::payloadLength-size);
-		}
-		//trace << "Ack-using package queued";
-		m_stager.stage("send(): +ack queued");
-		return details.packageId;
-	} else {
-		ScopedLock<Mutex> lock(m_packagesQueueMutex);
-		m_stager.stage("send(): -ack lock");
-		m_packagesNoAck.push_back(Package());
-		m_packagesNoAck.back().sender = *m_selfAddress;
-		m_packagesNoAck.back().target = target;
-		m_packagesNoAck.back().details = details;
-		memcpy(m_packagesNoAck.back().payload, data, size);
-		if (size<Package::payloadLength)
-		{
-			memset(m_packagesNoAck.back().payload+size, 0, Package::payloadLength-size); //< fixed third argument
-		}
-		m_stager.stage("send(): -ack queued");
-		//trace << "No-ack package queued";
-		return 0;
-	}
+        waitingPackage.timings = timings;
+
+        waitingPackage.callback = doneCallback;
+        waitingPackage.package.sender = sender;
+        waitingPackage.package.target = target;
+        waitingPackage.package.details = details;
+        memcpy(waitingPackage.package.payload, data, size);
+        /// @todo Check package zerification!
+        if (size<Package::payloadLength)
+        {
+            memset(&(waitingPackage.package.payload[size]), 0, Package::payloadLength-size);
+        }
+        //trace << "Ack-using package queued";
+        m_stager.stage("send(): +ack queued");
+        return details.packageId;
+    } else {
+        ScopedLock<Mutex> lock(m_packagesQueueMutex);
+        m_stager.stage("send(): -ack lock");
+        m_packagesNoAck.push_back(Package());
+        m_packagesNoAck.back().sender = sender;
+        m_packagesNoAck.back().target = target;
+        m_packagesNoAck.back().details = details;
+        memcpy(m_packagesNoAck.back().payload, data, size);
+        if (size<Package::payloadLength)
+        {
+            memset(m_packagesNoAck.back().payload+size, 0, Package::payloadLength-size); //< fixed third argument
+        }
+        m_stager.stage("send(): -ack queued");
+        //trace << "No-ack package queued";
+        return 0;
+    }
 }
 
 void NetworkLayer::TXDoneCallback()
@@ -227,8 +309,21 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 	temproraryProhibitTransmission(8000);
 
 	// Skipping packages for other devices
+
+	// New approach
+	bool forMe = false;
+	for (auto &it : m_clients)
+	{
+	    if (it->isForMe(received.target))
+	        forMe = true;
+	}
+
+	bool oldApproachForMe = false;
+	if (m_selfAddress && (received.target == *m_selfAddress || isBroadcast(received.target)))
+	    oldApproachForMe = true;
+
 	//received.target.print();
-	if (received.target != *m_selfAddress && !isBroadcast(received.target))
+	if (!forMe && !oldApproachForMe)
 		return;
 
 	if (trace.isEnabled() && radio.isEnabled())
@@ -416,7 +511,24 @@ void NetworkLayer::receiveIncoming()
 			<< " from " << ADDRESS_TO_STREAM(m_incoming.front().sender)
 			<< " need ack: " << m_incoming.front().details.needAck;
 
-		m_receivePackageCallback(m_incoming.front().sender, m_incoming.front().payload, m_incoming.front().payloadLength);
+		// New approach
+		bool receiverFound = false;
+		for (auto &it : m_clients)
+		{
+		    if (it->isForMe(m_incoming.front().target))
+		    {
+		        it->getReceiver()
+		            (m_incoming.front().sender, m_incoming.front().payload, m_incoming.front().payloadLength);
+		        receiverFound = true;
+		        break;
+		    }
+		}
+
+		if (!receiverFound)
+		{
+		    if (m_receivePackageCallback)
+		        m_receivePackageCallback(m_incoming.front().sender, m_incoming.front().payload, m_incoming.front().payloadLength);
+		}
 /*
 		RCSPMultiStream answerStream;
 		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
