@@ -85,10 +85,12 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 
 
 	info << "RCSP modem initialization";
-	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
-	NetworkLayer::instance().setPackageReceiver(RCSPNetworkListener::instance().getPackageReceiver());
-	NetworkLayer::instance().registerBroadcast(broadcast.any);
-	NetworkLayer::instance().registerBroadcast(broadcast.smartPoint);
+	m_networkClient.setMyAddress(deviceConfig.devAddr);
+    m_networkClient.connectPackageReceiver(&m_networkPackagesListener);
+    m_networkClient.registerMyBroadcast(broadcast.any);
+    m_networkClient.registerMyBroadcast(broadcast.smartPoint);
+
+    NetworkLayer::instance().connectClient(&m_networkClient);
 
 	NRF24L01Manager *nrf = new NRF24L01Manager();
 	auto radioReinit = [](IRadioPhysicalDevice* rf) {

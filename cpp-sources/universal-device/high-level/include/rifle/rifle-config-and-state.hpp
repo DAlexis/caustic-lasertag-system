@@ -26,6 +26,7 @@
 
 #include "rcsp/aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
+#include "network/network-client.hpp"
 
 #include <stdint.h>
 
@@ -109,7 +110,7 @@ private:
 class PlayerPartialState
 {
 public:
-	PlayerPartialState(const DeviceAddress& headSensorAddress);
+	PlayerPartialState(const DeviceAddress& headSensorAddress, OrdinaryNetworkClient* networkClient);
 	void syncAll();
 	void print();
 	bool isAlive();
@@ -127,6 +128,7 @@ public:
 
 private:
 	const DeviceAddress* m_headSensorAddress;
+	OrdinaryNetworkClient* m_networkClient;
 };
 
 

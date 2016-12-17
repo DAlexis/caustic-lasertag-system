@@ -37,6 +37,7 @@
 #include "rifle/rifle-base-types.hpp"
 #include "rifle/rifle-config-and-state.hpp"
 #include "rifle/rifle-display.hpp"
+#include "network/network-client.hpp"
 
 #include <stdint.h>
 
@@ -71,7 +72,7 @@ public:
 	RifleState state{&config};
 	//DeviceParameters device;
 
-	PlayerPartialState playerState{config.headSensorAddr};
+	PlayerPartialState playerState{config.headSensorAddr, &m_networkClient};
 
 
 private:
@@ -126,6 +127,9 @@ private:
 	/// This function could be called any time when head sensor is connected. Double calling does not hurt anything
 	void onHSConnected();
 	void onHSDisconnected();
+
+	RCSPNetworkListener m_networkPackagesListener;
+	OrdinaryNetworkClient m_networkClient;
 
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;

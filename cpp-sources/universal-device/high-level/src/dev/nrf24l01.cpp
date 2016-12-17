@@ -644,6 +644,8 @@ void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 		printHex(data, size);
 	}
     switchToTX();
+    systemClock->wait_us(200); // Strange workaround to prevent hard fault about here. 
+                               // If you think that is bad - go and investigate just now.
     chipSelect();
     m_status = m_spi->TransmitReceive(W_TX_PAYLOAD);
     m_spi->Transmit(data, size);

@@ -24,8 +24,8 @@
 #ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_DEVICE_INITIALIZER_HPP_
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_DEVICE_INITIALIZER_HPP_
 
-#include "fatfs.h"
 #include "core/result-code.hpp"
+#include "fatfs.h"
 #include "core/pinout.hpp"
 #include "core/service-locator.hpp"
 

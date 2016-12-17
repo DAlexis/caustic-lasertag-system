@@ -53,6 +53,7 @@ BluetoothBridge::BluetoothBridge()
 
 void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 {
+    UNUSED_ARG(pinout);
     debug << "Bluetooth bridge initialization";
 
 	// default address for bluetooth bridge without SD-card
@@ -75,12 +76,7 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 	}
 
 	m_networkClient.setMyAddress(deviceConfig.devAddr);
-	m_networkClient.setPackageReceiver(
-        [this](DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
-        {
-            receiveNetworkPackage(sender, payload, payloadLength);
-        }
-	);
+	m_networkClient.connectPackageReceiver(this);
 	m_networkClient.registerMyBroadcast(broadcast.any);
 	m_networkClient.registerMyBroadcast(broadcast.bluetoothBridges);
 	NetworkLayer::instance().connectClient(&m_networkClient);
@@ -129,12 +125,39 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 
 void BluetoothBridge::setDefaultPinout(Pinout& pinout)
 {
+    UNUSED_ARG(pinout);
 }
 
 bool BluetoothBridge::checkPinout(const Pinout& pinout)
 {
+    UNUSED_ARG(pinout);
 	return true;
 }
+
+void BluetoothBridge::receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+{
+    debug << "Processing incoming network package";
+    m_bluetoothMsgCreator.clear();
+    m_bluetoothMsgCreator.setSender(std::move(sender));
+    m_bluetoothMsgCreator.addData(payloadLength, payload);
+    AnyBuffer* msgBuffer = new AnyBuffer(m_bluetoothMsgCreator.size(), m_bluetoothMsgCreator.data());
+    trace << "Bluetooth message to be sent: ";
+    printHex(msgBuffer->data, msgBuffer->size);
+    m_workerToBluetooth.add(
+        [this, msgBuffer] ()
+        {
+            sendBluetoothMessage(msgBuffer);
+            systemClock->wait_us(1000);
+            delete msgBuffer;
+        }
+    );
+}
+
+void BluetoothBridge::connectClient(INetworkClient* client)
+{
+    UNUSED_ARG(client);
+}
+
 
 void BluetoothBridge::configureBluetooth()
 {
@@ -188,25 +211,6 @@ void BluetoothBridge::configureBluetooth()
 
 	m_workerToBluetooth.setStackSize(256);
 	m_workerToBluetooth.run();
-}
-
-void BluetoothBridge::receiveNetworkPackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
-{
-	debug << "Processing incoming network package";
-	m_bluetoothMsgCreator.clear();
-	m_bluetoothMsgCreator.setSender(std::move(sender));
-	m_bluetoothMsgCreator.addData(payloadLength, payload);
-	AnyBuffer* msgBuffer = new AnyBuffer(m_bluetoothMsgCreator.size(), m_bluetoothMsgCreator.data());
-	trace << "Bluetooth message to be sent: ";
-	printHex(msgBuffer->data, msgBuffer->size);
-	m_workerToBluetooth.add(
-		[this, msgBuffer] ()
-		{
-			sendBluetoothMessage(msgBuffer);
-			systemClock->wait_us(1000);
-			delete msgBuffer;
-		}
-	);
 }
 
 void BluetoothBridge::receiveBluetoothOneByteISR(uint8_t byte)

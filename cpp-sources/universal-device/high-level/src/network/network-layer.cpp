@@ -23,6 +23,7 @@
 
 #include "network/network-layer.hpp"
 #include "network/broadcast.hpp"
+#include "network/network-client.hpp"
 
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
@@ -73,72 +74,10 @@ void DeviceAddress::convertFromString(const char* str)
 }
 
 ///////////////////////
-//OrdinaryNetworkClient
-
-void OrdinaryNetworkClient::connect(NetworkLayer& nl)
-{
-    m_nl = &nl;
-}
-
-bool OrdinaryNetworkClient::isForMe(const DeviceAddress& addr)
-{
-    return addr == *m_address || isMyBroadcast(addr);
-}
-
-ReceivePackageCallback OrdinaryNetworkClient::getReceiver()
-{
-    return m_receiverCallback;
-}
-
-void OrdinaryNetworkClient::setMyAddress(const DeviceAddress& address)
-{
-    m_address = &address;
-}
-
-void OrdinaryNetworkClient::setPackageReceiver(ReceivePackageCallback callback)
-{
-    m_receiverCallback = callback;
-}
-
-void OrdinaryNetworkClient::registerMyBroadcast(const DeviceAddress& address)
-{
-    m_broadcasts.insert(address);
-}
-
-void OrdinaryNetworkClient::registerMyBroadcastTester(Broadcast::IBroadcastTester* tester)
-{
-    m_broadcastTesters.push_back(tester);
-}
-
-PackageId OrdinaryNetworkClient::send(
-    DeviceAddress target,
-    uint8_t* data,
-    uint16_t size,
-    bool waitForAck,
-    PackageSendingDoneCallback doneCallback,
-    PackageTimings timings
-)
-{
-    return m_nl->send2(target, *m_address, data, size, waitForAck, doneCallback, timings);
-}
-
-bool OrdinaryNetworkClient::isMyBroadcast(const DeviceAddress& addr)
-{
-    if (m_broadcasts.find(addr) != m_broadcasts.end())
-        return true;
-    for (auto it = m_broadcastTesters.begin(); it != m_broadcastTesters.end(); it++)
-        if (*it && (*it)->isAcceptableBroadcast(addr))
-            return true;
-    return false;
-}
-
-
-
-///////////////////////
 // NetworkLayer
 NetworkLayer::NetworkLayer()
 {
-	m_modemTask.setStackSize(800);
+	m_modemTask.setStackSize(1600);
 	m_modemTask.setName("NetLay");
 	m_modemTask.setTask(std::bind(&NetworkLayer::interrogate, this));
 }
@@ -152,16 +91,6 @@ NetworkLayer::~NetworkLayer()
 	}
 }
 
-void NetworkLayer::setAddress(const DeviceAddress& address)
-{
-	m_selfAddress = &address;
-}
-
-void NetworkLayer::setPackageReceiver(ReceivePackageCallback callback)
-{
-	m_receivePackageCallback = callback;
-}
-
 void NetworkLayer::setRadioReinitCallback(RadioReinitCallback callback)
 {
 	m_radioReinitCallback = callback;
@@ -169,9 +98,7 @@ void NetworkLayer::setRadioReinitCallback(RadioReinitCallback callback)
 
 void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
 {
-	Kernel::instance().assert(
-			(m_selfAddress != nullptr
-			&& m_receivePackageCallback != nullptr) || m_clients.size() != 0,
+	Kernel::instance().assert(m_clients.size() != 0,
 			"Modem initialisation fail: self address or package receiver not set"
 		);
 	m_rfPhysicalDevice = rfPhysicalDevice;
@@ -183,7 +110,7 @@ void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
 
 void NetworkLayer::connectClient(INetworkClient* client)
 {
-    client->connect(*this);
+    client->connectNetworkLayer(*this);
     m_clients.push_back(client);
 }
 
@@ -215,20 +142,7 @@ uint16_t NetworkLayer::generatePackageId()
 	return id;
 }
 
-
 PackageId NetworkLayer::send(
-	DeviceAddress target,
-	uint8_t* data,
-	uint16_t size,
-	bool waitForAck,
-	PackageSendingDoneCallback doneCallback,
-	PackageTimings timings
-)
-{
-    return send2(target, *m_selfAddress, data, size, waitForAck, doneCallback, timings);
-}
-
-PackageId NetworkLayer::send2(
         DeviceAddress target,
         DeviceAddress sender,
         uint8_t* data,
@@ -238,7 +152,7 @@ PackageId NetworkLayer::send2(
         PackageTimings timings
     )
 {
-    m_stager.stage("send2()");
+    m_stager.stage("send()");
     if (size > Package::payloadLength)
     {
         error << "Error: too long payload!";
@@ -312,18 +226,19 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 
 	// New approach
 	bool forMe = false;
+	DeviceAddress backAddr;
 	for (auto &it : m_clients)
 	{
 	    if (it->isForMe(received.target))
+	    {
 	        forMe = true;
+	        backAddr = *it->mainBackAddress();
+	        break;
+	    }
 	}
 
-	bool oldApproachForMe = false;
-	if (m_selfAddress && (received.target == *m_selfAddress || isBroadcast(received.target)))
-	    oldApproachForMe = true;
-
 	//received.target.print();
-	if (!forMe && !oldApproachForMe)
+	if (!forMe)
 		return;
 
 	if (trace.isEnabled() && radio.isEnabled())
@@ -367,7 +282,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 		// Forming ack package
 		Package ack;
 		ack.target = received.sender;
-		ack.sender = *m_selfAddress;
+		ack.sender = backAddr; // We already get it from one of registered INetworkClient s
 		ack.details.packageId = generatePackageId();
 		memcpy(&ack.payload, &ackPayload, sizeof(ackPayload));
 		memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
@@ -512,22 +427,14 @@ void NetworkLayer::receiveIncoming()
 			<< " need ack: " << m_incoming.front().details.needAck;
 
 		// New approach
-		bool receiverFound = false;
 		for (auto &it : m_clients)
 		{
 		    if (it->isForMe(m_incoming.front().target))
 		    {
 		        it->getReceiver()
 		            (m_incoming.front().sender, m_incoming.front().payload, m_incoming.front().payloadLength);
-		        receiverFound = true;
 		        break;
 		    }
-		}
-
-		if (!receiverFound)
-		{
-		    if (m_receivePackageCallback)
-		        m_receivePackageCallback(m_incoming.front().sender, m_incoming.front().payload, m_incoming.front().payloadLength);
 		}
 /*
 		RCSPMultiStream answerStream;
@@ -630,5 +537,5 @@ void NetworkLayer::reinitNRF()
 	if (m_radioReinitCallback)
 		m_radioReinitCallback(m_rfPhysicalDevice);
 	else
-		warning << "Radio reinitiallization callback was not set but it is time to reinit";
+		warning << "Radio re-initialization callback was not set but it is time to reinit";
 }

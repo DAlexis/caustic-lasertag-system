@@ -26,8 +26,9 @@
 
 #include "rcsp/aggregator.hpp"
 #include "network/network-layer.hpp"
-#include "fatfs.h"
+#include "network/network-client.hpp"
 #include "core/result-code.hpp"
+#include "fatfs.h"
 #include <list>
 #include <memory>
 
@@ -39,6 +40,7 @@ public:
 	~RCSPStream();
 
 	static PackageId remoteCall(
+	        INetworkClient* client,
 			DeviceAddress target,
 			OperationCode code,
 			bool waitForAck = true,
@@ -48,11 +50,14 @@ public:
 	{
 		RCSPStream stream;
 		stream.addCall(code);
-		return stream.send(target, waitForAck, callback, std::forward<PackageTimings>(timings));
+		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
+
+
 
 	template <typename Type>
 	static PackageId remoteCall(
+	        INetworkClient* client,
 			DeviceAddress target,
 			OperationCode code,
 			Type& argument,
@@ -63,10 +68,11 @@ public:
 	{
 		RCSPStream stream;
 		stream.addCall(code, argument);
-		return stream.send(target, waitForAck, callback, std::forward<PackageTimings>(timings));
+		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
 	static PackageId remotePullValue(
+	        INetworkClient* client,
 			DeviceAddress target,
 			OperationCode code,
 			bool waitForAck = true,
@@ -76,7 +82,7 @@ public:
 	{
 		RCSPStream stream;
 		stream.addValue(code);
-		return stream.send(target, waitForAck, callback, std::forward<PackageTimings>(timings));
+		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
 	uint8_t* getStream() const;
@@ -100,7 +106,7 @@ public:
 
 	/**
 	 * Send current stream with specified timeout, resend period and resend period delta
-	 * @TODO Move sending function from stream. Stream only for multiply serializetion
+	 * @TODO Move sending function from stream. Stream only for multiply serialization
 	 * @param target Address of receiver
 	 * @param waitForAck Need resend while no ACK received
 	 * @param doneCallback Callback after successful/not successful delivery
@@ -108,6 +114,7 @@ public:
 	 * @return Package id
 	 */
 	PackageId send(
+	    INetworkClient* client,
 		DeviceAddress target,
 		bool waitForAck = false,
 		PackageSendingDoneCallback doneCallback = nullptr,
@@ -149,6 +156,7 @@ public:
 	}
 
 	void send(
+	    INetworkClient* client,
 		DeviceAddress target,
 		bool waitForAck = false,
 		PackageTimings&& timings = PackageTimings()
@@ -165,20 +173,21 @@ private:
 	std::list<std::shared_ptr<RCSPStream>> m_streams;
 };
 
-class RCSPNetworkListener
+class RCSPNetworkListener : public IPackageReceiver
 {
 public:
-	SINGLETON_IN_CLASS(RCSPNetworkListener);
-	ReceivePackageCallback getPackageReceiver();
+    RCSPNetworkListener();
 
 	bool hasSender();
 	DeviceAddress sender();
 
+	void receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength) override;
+    void connectClient(INetworkClient* client) override;
+
 private:
-	RCSPNetworkListener();
-	void packagesReceiver(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
 	bool m_hasDeviceAddress = false;
 	DeviceAddress m_currentDeviceAddress;
+	INetworkClient* m_networkClient = nullptr;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_ */

@@ -23,10 +23,9 @@
 
 #include "rcsp/stream.hpp"
 #include "core/string-utils.hpp"
+#include "core/logging.hpp"
 #include "fatfs.h"
 #include <stdio.h>
-
-SINGLETON_IN_CPP(RCSPNetworkListener)
 
 RCSPStream::RCSPStream(uint16_t size) :
 	m_size(size)
@@ -103,13 +102,14 @@ RCSPAggregator::ResultType RCSPStream::serializeAnything(OperationCode code, Ser
 }
 
 PackageId RCSPStream::send(
+    INetworkClient* client,
 	DeviceAddress target,
 	bool waitForAck,
 	PackageSendingDoneCallback doneCallback,
 	PackageTimings&& timings
 )
 {
-	return NetworkLayer::instance().send(
+	return client->send(
 		target,
 		m_stream,
 		m_size,
@@ -180,6 +180,7 @@ RCSPAggregator::ResultType RCSPMultiStream::addCall(OperationCode code)
 }
 
 void RCSPMultiStream::send(
+        INetworkClient* client,
 		DeviceAddress target,
 		bool waitForAck,
 		PackageTimings&& timings
@@ -187,7 +188,7 @@ void RCSPMultiStream::send(
 {
 	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
 	{
-		(*it)->send(target, waitForAck, nullptr, std::forward<PackageTimings>(timings));
+		(*it)->send(client, target, waitForAck, nullptr, std::forward<PackageTimings>(timings));
 	}
 }
 
@@ -220,32 +221,12 @@ DetailedResult<FRESULT> RCSPMultiStream::writeToFile(FIL* file)
 			return DetailedResult<FRESULT>(res, "Invalid written bytes count");
 		}
 	}
+	return DetailedResult<FRESULT>(res);
 }
 
 RCSPNetworkListener::RCSPNetworkListener()
 {
 
-}
-
-ReceivePackageCallback RCSPNetworkListener::getPackageReceiver()
-{
-	return [this](DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
-	{
-		packagesReceiver(sender, payload, payloadLength);
-	};
-}
-
-void RCSPNetworkListener::packagesReceiver(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
-{
-	RCSPMultiStream answerStream;
-	m_currentDeviceAddress = sender;
-	m_hasDeviceAddress = true;
-	RCSPAggregator::instance().dispatchStream(payload, payloadLength, &answerStream);
-	m_hasDeviceAddress = false;
-	if (!answerStream.empty())
-	{
-		answerStream.send(sender, true);
-	}
 }
 
 bool RCSPNetworkListener::hasSender()
@@ -256,4 +237,27 @@ bool RCSPNetworkListener::hasSender()
 DeviceAddress RCSPNetworkListener::sender()
 {
 	return m_currentDeviceAddress;
+}
+
+void RCSPNetworkListener::receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+{
+    if (m_networkClient == nullptr)
+    {
+        error << "Network client was not connected to package receiver! Cannot dispatch stream now";
+        return;
+    }
+    RCSPMultiStream answerStream;
+    m_currentDeviceAddress = sender;
+    m_hasDeviceAddress = true;
+    RCSPAggregator::instance().dispatchStream(payload, payloadLength, &answerStream);
+    m_hasDeviceAddress = false;
+    if (!answerStream.empty())
+    {
+        answerStream.send(m_networkClient, sender, true);
+    }
+}
+
+void RCSPNetworkListener::connectClient(INetworkClient* client)
+{
+    m_networkClient = client;
 }

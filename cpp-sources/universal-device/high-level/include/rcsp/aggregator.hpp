@@ -25,12 +25,12 @@
 #ifndef LOGIC_CONFIGURATION_HPP_
 #define LOGIC_CONFIGURATION_HPP_
 
+
 #include "rcsp/operation-codes-manipulation.hpp"
 #include "rcsp/RCSP-base-types.hpp"
 #include "utils/macro.hpp"
-#include "core/string-utils.hpp"
 #include "core/result-code.hpp"
-
+#include "core/string-utils.hpp"
 #include <vector>
 #include <map>
 #include <functional>

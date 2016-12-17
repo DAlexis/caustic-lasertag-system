@@ -37,6 +37,7 @@
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
 #include "network/broadcast.hpp"
+#include "network/network-client.hpp"
 #include "rcsp/operation-codes.hpp"
 #include <set>
 
@@ -48,8 +49,8 @@ public:
 
 	void dropAllPackages();
 
-	void respawn();
-	void die();
+	void respawn(INetworkClient* client);
+	void die(INetworkClient* client);
 private:
 	PackageId m_respawnPackage = 0;
 	PackageId m_diePackage = 0;
@@ -135,13 +136,16 @@ private:
 		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)* m_pId;
 	};
 
+	OrdinaryNetworkClient m_networkClient;
+	RCSPNetworkListener m_networkPackagesListener;
+
 	IIRPhysicalReceiver* m_irPhysicalReceivers[killZonesCount];
 	IIRPresentationReceiver* m_irPresentationReceivers[killZonesCount];
 	IPresentationReceiversGroup* m_irPresentationReceiversGroup = nullptr;
 
 	Interrogator m_killZonesInterogator;
 
-	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId};
+	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, &m_networkClient};
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
 	RC552Wrapper m_mfrcWrapper;

@@ -59,6 +59,9 @@ private:
 	SoundPlayer m_systemReadySound;
 	SmartPointUI m_ui{state};
 
+	OrdinaryNetworkClient m_networkClient;
+	RCSPNetworkListener m_networkPackagesListener;
+
 	IIRPhysicalReceiver* m_irPhysicalReceiver = nullptr;
 	IIRPresentationReceiver* m_irPresentationReceiver = nullptr;
 	IPresentationReceiversGroup* m_irPresentationReceiversGroup = nullptr;

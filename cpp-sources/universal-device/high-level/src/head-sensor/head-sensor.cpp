@@ -61,7 +61,7 @@ void WeaponManager::dropAllPackages()
 	checkAndDrop(m_diePackage);
 }
 
-void WeaponManager::respawn()
+void WeaponManager::respawn(INetworkClient* client)
 {
 	if (m_respawnPackage != 0)
 	{
@@ -70,6 +70,7 @@ void WeaponManager::respawn()
 		info << "WeaponManager::respawn() sending package";
 		m_respawnPackage = RCSPStream::remoteCall
 			(
+                client,
 				m_addr,
 				ConfigCodes::Rifle::Functions::rifleRespawn,
 				true,
@@ -78,7 +79,7 @@ void WeaponManager::respawn()
 	}
 }
 
-void WeaponManager::die()
+void WeaponManager::die(INetworkClient* client)
 {
 	if (m_diePackage != 0)
 	{
@@ -86,7 +87,8 @@ void WeaponManager::die()
 	} else {
 		m_diePackage = RCSPStream::remoteCall
 			(
-				m_addr,
+                client,
+                m_addr,
 				ConfigCodes::Rifle::Functions::rifleDie,
 				true,
 				[this](PackageId, bool){ m_diePackage = 0; },
@@ -102,7 +104,7 @@ IWeaponObresver *WeaponManagerFactory::create() const
 
 HeadSensor::HeadSensor()
 {
-	m_tasksPool.setStackSize(256);
+	m_tasksPool.setStackSize(512);
 	deviceConfig.deviceType = DeviceTypes::headSensor;
 	playerState.weaponsList.setWeaponObserverFactory(&weaponManagerFactory);
 	//m_weapons.insert({1,1,1});
@@ -193,11 +195,13 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	m_leds.blink(blinkPatterns.init);
 
 	info << "Network initialization";
-	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
-	NetworkLayer::instance().setPackageReceiver(RCSPNetworkListener::instance().getPackageReceiver());
-	NetworkLayer::instance().registerBroadcast(broadcast.any);
-	NetworkLayer::instance().registerBroadcast(broadcast.headSensors);
-	NetworkLayer::instance().registerBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
+	m_networkClient.setMyAddress(deviceConfig.devAddr);
+	m_networkClient.connectPackageReceiver(&m_networkPackagesListener);
+	m_networkClient.registerMyBroadcast(broadcast.any);
+	m_networkClient.registerMyBroadcast(broadcast.headSensors);
+	m_networkClient.registerMyBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
+
+	NetworkLayer::instance().connectClient(&m_networkClient);
 
 	NRF24L01Manager *nrf = new NRF24L01Manager();
 	auto radioReinit = [](IRadioPhysicalDevice* rf) {
@@ -395,11 +399,11 @@ void HeadSensor::resetStats()
 void HeadSensor::readStats()
 {
 	debug << "Stats reading requested";
-	if (!RCSPNetworkListener::instance().hasSender())
+	if (!m_networkPackagesListener.hasSender())
 	{
 		warning << "Stats reading request not over network!";
 	}
-	m_statsCounter.sendStats(RCSPNetworkListener::instance().sender());
+	m_statsCounter.sendStats(m_networkPackagesListener.sender());
 }
 
 void HeadSensor::dieWeapons()
@@ -409,7 +413,7 @@ void HeadSensor::dieWeapons()
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Sending kill signal to weapon...";
-		static_cast<WeaponManager*>(it->second)->die();
+		static_cast<WeaponManager*>(it->second)->die(&m_networkClient);
 		//RCSPStream::remoteCall(it->first, ConfigCodes::Rifle::Functions::rifleDie, true, nullptr, std::move(headSensorPackageTimings.killPlayer));
 	}
 }
@@ -421,7 +425,7 @@ void HeadSensor::respawnWeapons()
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Resetting weapon...";
-		static_cast<WeaponManager*>(it->second)->respawn();
+		static_cast<WeaponManager*>(it->second)->respawn(&m_networkClient);
 		//RCSPStream::remoteCall(it->first, ConfigCodes::Rifle::Functions::rifleRespawn);
 	}
 }
@@ -431,7 +435,7 @@ void HeadSensor::turnOffWeapons()
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Turning off weapon...";
-		RCSPStream::remoteCall(it->first, ConfigCodes::Rifle::Functions::rifleTurnOff);
+		RCSPStream::remoteCall(&m_networkClient, it->first, ConfigCodes::Rifle::Functions::rifleTurnOff);
 	}
 }
 
@@ -447,7 +451,7 @@ void HeadSensor::weaponWoundAndShock()
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleWound); // 3b (13 free)
 		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent); // 3b + 2b (8 free)
 		stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent); // 3b + 2b (3 free)
-		stream.send(it->first, true, std::move(headSensorPackageTimings.woundPlayer));
+		stream.send(&m_networkClient, it->first, true, std::move(headSensorPackageTimings.woundPlayer));
 	}
 }
 
@@ -461,7 +465,7 @@ void HeadSensor::sendHeartbeat()
 		stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
 		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
 		stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
-		stream.send(it->first, false);
+		stream.send(&m_networkClient, it->first, false);
 		//RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat, false, nullptr);
 	}
 }
@@ -486,7 +490,7 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 	} else {
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOff);
 	}
-	stream.send(weaponAddress, true);
+	stream.send(&m_networkClient, weaponAddress, true);
 }
 
 void HeadSensor::deregisterWeapon(DeviceAddress weaponAddress)
@@ -506,7 +510,7 @@ void HeadSensor::setTeam(uint8_t teamId)
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Changing weapon team id to" << teamId;
-		RCSPStream::remotePullValue(it->first, ConfigCodes::HeadSensor::Configuration::teamId);
+		RCSPStream::remotePullValue(&m_networkClient, it->first, ConfigCodes::HeadSensor::Configuration::teamId);
 	}
 }
 
@@ -538,6 +542,7 @@ void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_
 	notification.target = playerConfig.playerId;
 	info << "Notifying damager";
 	RCSPStream::remoteCall(
+	        &m_networkClient,
 			broadcast.headSensors,
 			ConfigCodes::HeadSensor::Functions::notifyIsDamager,
 			notification,
@@ -560,7 +565,12 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 				NotificationSoundCase::friendInjured :
 				notification.state;
 		// Now notifying over first attached weapon
-		RCSPStream::remoteCall(playerState.weaponsList.weapons().begin()->first, ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged, sound);
+		RCSPStream::remoteCall(
+		        &m_networkClient,
+		        playerState.weaponsList.weapons().begin()->first,
+		        ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged,
+		        sound
+		);
 	}
 
 }
@@ -604,7 +614,6 @@ void HeadSensor::setDefaultPinout(Pinout& pinout)
 
 bool HeadSensor::checkPinout(const Pinout& pinout)
 {
-	bool result = true;
 	if (!pinout["zone1"].exists()
 		&& !pinout["zone2"].exists()
 		&& !pinout["zone3"].exists()

@@ -27,6 +27,7 @@
 #include "core/string-utils.hpp"
 
 #include "core/logging.hpp"
+#include "core/os-wrappers.hpp"
 #include "hal/system-clock.hpp"
 
 static SPIsPool pool;
@@ -121,7 +122,11 @@ void SPIManager::init(uint32_t prescaler, IIOPin* NSSPin, uint8_t SPIPhase)
 	m_hspi->Init.TIMode = SPI_TIMODE_DISABLED;
 	m_hspi->Init.CRCCalculation = SPI_CRCCALCULATION_DISABLED;
 	m_hspi->Init.CRCPolynomial = 7;
-	HAL_SPI_Init(m_hspi);
+
+	taskENTER_CRITICAL();
+	    HAL_SPI_Init(m_hspi);
+	taskEXIT_CRITICAL();
+
 
 
 	m_NSSPin = NSSPin;

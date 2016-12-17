@@ -41,8 +41,9 @@
 #include <string>
 #include <utility>
 
-PlayerPartialState::PlayerPartialState(const DeviceAddress& headSensorAddress) :
-	m_headSensorAddress(&headSensorAddress)
+PlayerPartialState::PlayerPartialState(const DeviceAddress& headSensorAddress, OrdinaryNetworkClient* networkClient) :
+	m_headSensorAddress(&headSensorAddress),
+	m_networkClient(networkClient)
 {
 	healthMax = 0;
 	armorMax = 0;
@@ -68,7 +69,7 @@ void PlayerPartialState::syncAll()
 	stream.addRequest(ConfigCodes::HeadSensor::State::killsCount);
 	stream.addRequest(ConfigCodes::HeadSensor::State::deathsCount);
 
-	stream.send(*m_headSensorAddress, false);
+	stream.send(m_networkClient, *m_headSensorAddress, false);
 }
 
 void PlayerPartialState::print()
@@ -370,10 +371,12 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	initSounds();
 
 	info << "RCSP modem initialization";
-	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
-	NetworkLayer::instance().setPackageReceiver(RCSPNetworkListener::instance().getPackageReceiver());
-	NetworkLayer::instance().registerBroadcast(broadcast.any);
-	NetworkLayer::instance().registerBroadcast(broadcast.rifles);
+	info << "Network initialization";
+    m_networkClient.setMyAddress(deviceConfig.devAddr);
+    m_networkClient.connectPackageReceiver(&m_networkPackagesListener);
+    m_networkClient.registerMyBroadcast(broadcast.any);
+    m_networkClient.registerMyBroadcast(broadcast.rifles);
+    NetworkLayer::instance().connectClient(&m_networkClient);
 
 	NRF24L01Manager *nrf = new NRF24L01Manager();
 	auto radioReinit = [](IRadioPhysicalDevice* rf) {
@@ -887,6 +890,7 @@ void Rifle::rifleChangeHS(DeviceAddress newAddr)
 	NetworkLayer::instance().dropAllForAddress(config.headSensorAddr);
 
 	RCSPStream::remoteCall(
+	        &m_networkClient,
 			config.headSensorAddr,
 			ConfigCodes::HeadSensor::Functions::deregisterWeapon,
 			deviceConfig.devAddr
@@ -909,6 +913,7 @@ void Rifle::registerWeapon()
 	info << "Registering weapon...\n";
 	//config.headSensorAddr.print();
 	m_registerWeaponPAckageId = RCSPStream::remoteCall(
+	        &m_networkClient,
 			config.headSensorAddr,
 			ConfigCodes::HeadSensor::Functions::registerWeapon,
 			deviceConfig.devAddr,

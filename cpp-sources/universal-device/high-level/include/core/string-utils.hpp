@@ -24,10 +24,9 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_CORE_STRING_CONVERSIONS_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_CORE_STRING_CONVERSIONS_HPP_
 
-#include "result-code.hpp"
-
+#include "core/result-code.hpp"
 #include <functional>
-#include "string.h"
+#include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
 

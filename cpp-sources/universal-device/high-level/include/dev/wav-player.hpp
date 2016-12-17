@@ -25,10 +25,10 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_WAV_PLAYER_HPP_
 
 #include "core/os-wrappers.hpp"
-#include "core/result-code.hpp"
 #include "fatfs.h"
 #include "hal/fragment-player.hpp"
 #include "utils/macro.hpp"
+#include "core/result-code.hpp"
 #include <string>
 #include <vector>
 

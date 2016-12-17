@@ -27,7 +27,7 @@
 #include "device/device.hpp"
 #include "hal/uart.hpp"
 #include "core/os-wrappers.hpp"
-#include "network/network-layer.hpp"
+#include "network/network-client.hpp"
 
 struct AnyBuffer
 {
@@ -44,7 +44,7 @@ public:
 
 extern BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 
-class BluetoothBridge : public IAnyDevice
+class BluetoothBridge : public IAnyDevice, public IPackageReceiver
 {
 public:
 	BluetoothBridge();
@@ -57,6 +57,9 @@ public:
 
 private:
 	constexpr static uint16_t bluetoothIncommingBufferSize = 200;
+
+	void receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength) override;
+    void connectClient(INetworkClient* client) override;
 
 	void configureBluetooth();
 	void receiveNetworkPackage(const DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);

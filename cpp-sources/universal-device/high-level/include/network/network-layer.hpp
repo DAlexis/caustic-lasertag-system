@@ -75,61 +75,7 @@ struct Package
 static_assert(sizeof(Package) == Package::packageLength, "Network layer package size is bad");
 #pragma pack(pop)
 
-class NetworkLayer;
-
-/**
- * This class represents one network participant that can:
- * - accept network addresses and receive package
- * - send network packages with concrete sender address
- */
-class INetworkClient
-{
-public:
-    virtual ~INetworkClient() {}
-
-    virtual void connect(NetworkLayer& nl) = 0;
-    virtual bool isForMe(const DeviceAddress& addr) = 0;
-    virtual ReceivePackageCallback getReceiver() = 0;
-    virtual PackageId send(
-        DeviceAddress target,
-        uint8_t* data,
-        uint16_t size,
-        bool waitForAck = false,
-        PackageSendingDoneCallback doneCallback = nullptr,
-        PackageTimings timings = PackageTimings()
-    ) = 0;
-};
-
-class OrdinaryNetworkClient : public INetworkClient
-{
-public:
-    void connect(NetworkLayer& nl) override;
-    bool isForMe(const DeviceAddress& addr) override;
-    ReceivePackageCallback getReceiver() override;
-
-    void setMyAddress(const DeviceAddress& address);
-    void setPackageReceiver(ReceivePackageCallback callback);
-    void registerMyBroadcast(const DeviceAddress& address);
-    void registerMyBroadcastTester(Broadcast::IBroadcastTester* tester);
-
-    virtual PackageId send(
-        DeviceAddress target,
-        uint8_t* data,
-        uint16_t size,
-        bool waitForAck = false,
-        PackageSendingDoneCallback doneCallback = nullptr,
-        PackageTimings timings = PackageTimings()
-    ) override;
-
-private:
-    bool isMyBroadcast(const DeviceAddress& addr);
-    NetworkLayer* m_nl = nullptr;
-    ReceivePackageCallback m_receiverCallback = nullptr;
-    const DeviceAddress* m_address = nullptr;
-
-    std::set<DeviceAddress> m_broadcasts;
-    std::list<Broadcast::IBroadcastTester*> m_broadcastTesters;
-};
+class INetworkClient;
 
 class NetworkLayer
 {
@@ -144,40 +90,20 @@ public:
 	void init(IRadioPhysicalDevice* rfPhysicalDevice);
 	void connectClient(INetworkClient* client);
 	void setAddress(const DeviceAddress& address);
-	void setPackageReceiver(ReceivePackageCallback callback);
 
 	void setRadioReinitCallback(RadioReinitCallback callback);
 
 	/**
-	 * Send package and optionaly wait for acknowledgement
-	 * @param target Target device address
-	 * @param data Payload
-	 * @param size Payload's size
-	 * @param waitForAck Need waiting for acknoledgement
-	 * @param doneCallback Function to call after sending done
-	 * @param timings Timings for package
-	 * @return
-	 */
-	PackageId send(
-		DeviceAddress target,
-		uint8_t* data,
-		uint16_t size,
-		bool waitForAck = false,
-		PackageSendingDoneCallback doneCallback = nullptr,
-		PackageTimings timings = PackageTimings()
-	);
-
-	/**
-	     * Send package and optionaly wait for acknowledgement
-	     * @param target Target device address
-	     * @param data Payload
-	     * @param size Payload's size
-	     * @param waitForAck Need waiting for acknoledgement
-	     * @param doneCallback Function to call after sending done
-	     * @param timings Timings for package
-	     * @return
-	     */
-    PackageId send2(
+     * Send package and optionaly wait for acknowledgement
+     * @param target Target device address
+     * @param data Payload
+     * @param size Payload's size
+     * @param waitForAck Need waiting for acknoledgement
+     * @param doneCallback Function to call after sending done
+     * @param timings Timings for package
+     * @return
+     */
+    PackageId send(
         DeviceAddress target,
         DeviceAddress sender,
         uint8_t* data,
@@ -266,9 +192,6 @@ private:
 	std::list<Broadcast::IBroadcastTester*> m_broadcastTesters;
 
 	std::list<INetworkClient*> m_clients;
-
-	const DeviceAddress* m_selfAddress = nullptr;
-	ReceivePackageCallback m_receivePackageCallback = nullptr;
 
 	TaskCycled m_modemTask{std::bind(&NetworkLayer::interrogate, this)};
 

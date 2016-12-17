@@ -30,6 +30,7 @@
 #include "hal/system-clock.hpp"
 #include "network/network-base-types.hpp"
 #include "network/broadcast.hpp"
+#include "network/network-client.hpp"
 #include "core/os-wrappers.hpp"
 #include "fatfs.h"
 
@@ -40,7 +41,7 @@ namespace GameLog
 	class BaseStatsCounter : public IAnyStateSaver
 	{
 	public:
-		BaseStatsCounter(const PlayerGameId& hostPlayerId);
+		BaseStatsCounter(const PlayerGameId& hostPlayerId, INetworkClient* networkClient);
 		void registerDamage(PlayerGameId player, uint16_t damage);
 		void registerHit(PlayerGameId player);
 		void registerKill(PlayerGameId player);
@@ -84,6 +85,7 @@ namespace GameLog
 		Time m_waitingBeginned = 0;
 
 		const PlayerGameId& m_hostPlayerId;
+        INetworkClient* m_networkClient = nullptr;
 	};
 
 	struct Event

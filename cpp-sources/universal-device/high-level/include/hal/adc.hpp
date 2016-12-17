@@ -24,8 +24,8 @@
 #ifndef INCLUDE_HAL_ADC_HPP_
 #define INCLUDE_HAL_ADC_HPP_
 
-#include "rcsp/base-types.hpp"
 #include "core/result-code.hpp"
+#include "rcsp/base-types.hpp"
 
 class IADC
 {

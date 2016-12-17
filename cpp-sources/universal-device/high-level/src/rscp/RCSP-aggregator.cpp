@@ -53,7 +53,7 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 {
 	uint8_t* position = stream;
 	uint32_t unsupported = 0;
-	while ((position - stream) <= size - (sizeof(OperationSize)+sizeof(OperationCode)) )
+	while ( (uint32_t) (position - stream) <= size - (sizeof(OperationSize)+sizeof(OperationCode)) )
 	{
 		OperationSize *pOperationSize = reinterpret_cast<OperationSize*> (position);
 		position += sizeof(OperationSize);
@@ -141,16 +141,15 @@ void RCSPAggregator::printWarningUnknownCode(OperationCode code)
 
 bool RCSPAggregator::isStreamConsistent(const uint8_t* stream, uint32_t size)
 {
-	//uint8_t* position = stream;
-	for (const uint8_t* position = stream; position - stream <= size; position++)
+	for (const uint8_t* position = stream; (uint32_t) (position - stream) <= size; position++)
 	{
 		OperationSize operationSize = *position;
 		unsigned int thisOperationSize = sizeof(operationSize)+sizeof(OperationCode)+operationSize;
 		position += thisOperationSize;
 		/// TODO Add "nope" ignoring support
-		if (position - stream == size)
+		if ((uint32_t) (position - stream) == size)
 			return true;
-		else if (position - stream > size)
+		else if ((uint32_t) (position - stream) > size)
 			return false;
 	}
 	return false;
