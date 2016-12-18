@@ -101,6 +101,7 @@ public:
      * @param waitForAck Need waiting for acknoledgement
      * @param doneCallback Function to call after sending done
      * @param timings Timings for package
+     * @param doNotReceiveBy Local network client that should not receive this package
      * @return
      */
     PackageId send(
@@ -110,7 +111,8 @@ public:
         uint16_t size,
         bool waitForAck = false,
         PackageSendingDoneCallback doneCallback = nullptr,
-        PackageTimings timings = PackageTimings()
+        PackageTimings timings = PackageTimings(),
+        INetworkClient* doNotReceiveBy = nullptr
     );
 
 	bool stopSending(PackageId packageId);
@@ -159,6 +161,7 @@ private:
 
 	void interrogate();
 	uint16_t generatePackageId();
+	INetworkClient* findClient(const DeviceAddress& target);
 	void TXDoneCallback();
 	void RXCallback(uint8_t channel, uint8_t* data);
 	void sendNext();

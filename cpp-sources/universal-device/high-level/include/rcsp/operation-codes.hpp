@@ -24,9 +24,9 @@
 #ifndef LOGIC_CONFIGS_H_
 #define LOGIC_CONFIGS_H_
 
+#include "any-device/device-base-types.hpp"
 #include "rcsp/operation-codes-manipulation.hpp"
 #include "rcsp/base-types.hpp"
-#include "device/device-base-types.hpp"
 #include "rcsp/RCSP-base-types.hpp"
 #include "network/network-base-types.hpp"
 #include "rifle/rifle-base-types.hpp"

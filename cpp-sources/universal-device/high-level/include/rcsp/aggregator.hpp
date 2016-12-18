@@ -34,6 +34,7 @@
 #include <vector>
 #include <map>
 #include <functional>
+#include <list>
 #include <string>
 #include <string.h>
 #include <stdint.h>
@@ -72,16 +73,18 @@
  *  ST = Simple Types, that can be parsed from string using StringParser<Type>::parse(str)
  */
 
-#define PAR_ST(restorable, NameSpace, name)   NameSpace::name##Type name; \
-                                              StandartStrParseParameterAccessor<NameSpace::name##Type> name##Accessor \
-                                                  {NameSpace::name, STRINGIFICATE(name), &name, restorable}
+#define PAR_ST(restorable, NameSpace, name) \
+    NameSpace::name##Type name; \
+    StandartStrParseParameterAccessor<NameSpace::name##Type> name##Accessor \
+      {NameSpace::name, STRINGIFICATE(name), &name, restorable}
 
 /** The same as PAR_ST, but string parsing using convertFromString function
  *  CL = CLass
  */
-#define PAR_CL(restorable, NameSpace, name)   NameSpace::name##Type name; \
-                                              CustomStrParseParameterAccessor<NameSpace::name##Type> name##Accessor \
-                                                  {NameSpace::name, STRINGIFICATE(name), &name, restorable}
+#define PAR_CL(restorable, NameSpace, name) \
+    NameSpace::name##Type name; \
+    CustomStrParseParameterAccessor<NameSpace::name##Type> name##Accessor \
+        {NameSpace::name, STRINGIFICATE(name), &name, restorable}
 
 /** The same as PAR_CL, but SS means 'Self serializing'
  *  This macro should be used with classes that has methods
@@ -89,26 +92,30 @@
  *
  *  Also no str parsing avaliable for typed this macro applied to
  */
-#define PAR_CL_SS(restorable, NameSpace, name) NameSpace::name##Type name; \
-                                               SelfSerializingParameterAccessor<NameSpace::name##Type> name##Accessor \
-                                                   {NameSpace::name, STRINGIFICATE(name), &name, restorable}
+#define PAR_CL_SS(restorable, NameSpace, name) \
+    NameSpace::name##Type name; \
+    SelfSerializingParameterAccessor<NameSpace::name##Type> name##Accessor \
+        {NameSpace::name, STRINGIFICATE(name), &name, restorable}
 
 
 /*
 /// Create variable in class and connect in to configs aggregator with custom test name
-#define PARAMETER_S(NameSpace, Type, name, textName)   Type name; \
-                                                       DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, textName, &name}
+#define PARAMETER_S(NameSpace, Type, name, textName) \
+    Type name; \
+    DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, textName, &name}
 */
 /// Create function in class with 1 parameter and connect it to configs aggregator
-#define FUNCTION_1P(NameSpace, ClassName, functionName)    void functionName(NameSpace::functionName##Arg1Type argument); \
-                                                          DefaultFunctionAccessor<NameSpace::functionName##Arg1Type> \
-                                                              functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
-                                                                  std::bind(&ClassName::functionName, this, std::placeholders::_1)}
+#define FUNCTION_1P(NameSpace, ClassName, functionName) \
+    void functionName(NameSpace::functionName##Arg1Type argument); \
+    DefaultFunctionAccessor<NameSpace::functionName##Arg1Type> \
+        functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
+            std::bind(&ClassName::functionName, this, std::placeholders::_1)}
 
 /// Create function in class with no parameters and connect it to configs aggregator
-#define FUNCTION_NP(NameSpace, ClassName, functionName)     void functionName(); \
-                                                           DefaultFunctionAccessor<> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
-                                                           std::bind(&ClassName::functionName, this)}
+#define FUNCTION_NP(NameSpace, ClassName, functionName) \
+    void functionName(); \
+    DefaultFunctionAccessor<> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
+        std::bind(&ClassName::functionName, this)}
 
 
 
@@ -146,7 +153,8 @@ public:
 		OK = 0,
 		INVALID_OPCODE,
 		NOT_ENOUGH_SPACE,
-		NOT_READABLE
+		NOT_READABLE,
+		AGGREGATOR_IS_NULLPTR
 	};
 
 	struct Operation
@@ -212,7 +220,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	ResultType serializeObjectRequest(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
+	static ResultType serializeObjectRequest(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
 
 	/**
 	 * Put to stream request for function call without parameters
@@ -221,7 +229,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	ResultType serializeCallRequest(
+	static ResultType serializeCallRequest(
 			uint8_t* stream,
 			OperationCode functionCode,
 			uint16_t freeSpace,
@@ -237,7 +245,7 @@ public:
 	 * @return result of operation
 	 */
 	template<typename Type>
-	ResultType serializeCallRequest(
+	static ResultType serializeCallRequest(
 			uint8_t* stream,
 			OperationCode functionCode,
 			uint16_t freeSpace,
@@ -294,7 +302,12 @@ public:
 		return DetailedResult<T>(result);
 	}
 
-	SINGLETON_IN_CLASS(RCSPAggregator)
+	static RCSPAggregator& getActiveAggregator();
+	static void setActiveAggregator(RCSPAggregator* aggregator);
+
+	const std::list<OperationCode>& getRestorableOperationCodes() { return m_restorable; }
+
+	RCSPAggregator(const RCSPAggregator&) = delete;
 private:
 	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits
 
@@ -302,10 +315,9 @@ private:
 	void printWarningUnknownCode(OperationCode code);
 
 	std::map<OperationCode, IOperationAccessor*> m_accessorsByOpCode;
+	std::list<OperationCode> m_restorable;
 	std::map<std::string, IOperationAccessor*> m_accessorsByOpText;
-	static RCSPAggregator* m_RCSPAggregator;
-
-
+	static RCSPAggregator* m_activeAggregator;
 };
 
 template<typename T>
@@ -347,10 +359,13 @@ class DefaultFunctionAccessor<> : public IOperationAccessor
 public:
 	using FunctionAccessorCallback = std::function<void(void)>;
 
-	DefaultFunctionAccessor(OperationCode code, const char* textName, FunctionAccessorCallback _callback) :
+	DefaultFunctionAccessor(
+	        OperationCode code,
+	        const char* textName,
+	        FunctionAccessorCallback _callback) :
 		callback(_callback)
 	{
-		RCSPAggregator::instance().registerAccessor(code, textName, this);
+	    RCSPAggregator::getActiveAggregator().registerAccessor(code, textName, this);
 	}
 
 	void deserialize(void*, OperationSize size)
@@ -377,10 +392,13 @@ class DefaultFunctionAccessor<ArgType> : public IOperationAccessor
 public:
 	using FunctionAccessorCallback = std::function<void(ArgType)>;
 
-	DefaultFunctionAccessor(OperationCode code, const char* textName, FunctionAccessorCallback _callback) :
+	DefaultFunctionAccessor(
+	        OperationCode code,
+	        const char* textName,
+	        FunctionAccessorCallback _callback) :
 		callback(_callback)
 	{
-		RCSPAggregator::instance().registerAccessor(code, textName, this);
+	    RCSPAggregator::getActiveAggregator().registerAccessor(code, textName, this);
 	}
 
 	void deserialize(void* source, OperationSize size)
@@ -409,10 +427,14 @@ template<class Type>
 class SelfSerializingParameterAccessor : public IOperationAccessor
 {
 public:
-	SelfSerializingParameterAccessor(OperationCode code, const char* textName, Type* _parameter, bool restorable = false) :
+	SelfSerializingParameterAccessor(
+	        OperationCode code,
+	        const char* textName,
+	        Type* _parameter,
+	        bool restorable = false) :
 		parameter(_parameter)
 	{
-		RCSPAggregator::instance().registerAccessor(code, textName, this, restorable);
+	    RCSPAggregator::getActiveAggregator().registerAccessor(code, textName, this, restorable);
 	}
 
 	void deserialize(void* source, OperationSize size)
@@ -442,10 +464,14 @@ template<class Type>
 class ParameterAccessorBase : public IOperationAccessor
 {
 public:
-	ParameterAccessorBase(OperationCode code, const char* textName, Type* _parameter, bool restorable = false) :
+	ParameterAccessorBase(
+	        OperationCode code,
+	        const char* textName,
+	        Type* _parameter,
+	        bool restorable = false) :
 		parameter(_parameter)
 	{
-		RCSPAggregator::instance().registerAccessor(code, textName, this, restorable);
+	    RCSPAggregator::getActiveAggregator().registerAccessor(code, textName, this, restorable);
 	}
 
 	void deserialize(void* source, OperationSize size)
@@ -478,7 +504,11 @@ template<class Type>
 class StandartStrParseParameterAccessor : public ParameterAccessorBase<Type>
 {
 public:
-	StandartStrParseParameterAccessor(OperationCode code, const char* textName, Type* _parameter, bool restorable = false):
+	StandartStrParseParameterAccessor(
+	        OperationCode code,
+	        const char* textName,
+	        Type* _parameter,
+	        bool restorable = false):
 		ParameterAccessorBase<Type>(code, textName, _parameter, restorable)
 	{
 	}
@@ -499,7 +529,11 @@ template<class Type>
 class CustomStrParseParameterAccessor : public ParameterAccessorBase<Type>
 {
 public:
-	CustomStrParseParameterAccessor(OperationCode code, const char* textName, Type* _parameter, bool restorable = false):
+	CustomStrParseParameterAccessor(
+	        OperationCode code,
+	        const char* textName,
+	        Type* _parameter,
+	        bool restorable = false):
 		ParameterAccessorBase<Type>(code, textName, _parameter, restorable)
 	{
 	}

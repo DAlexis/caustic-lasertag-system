@@ -61,6 +61,7 @@ void DeviceInitializer::initEnvironment()
 
 IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 {
+    RCSPAggregator::setActiveAggregator(new RCSPAggregator);
 	if (isSdcardOk())
 	{
 		info << "Detecting device type using " << filename;
@@ -84,7 +85,7 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 					else if (0 == strcmp(value, "rifle"))
 					{
 						info << "Creating RIFLE device";
-						m_device = new Rifle(RCSPAggregator::instance());
+						m_device = new Rifle;
 					}
 					else if (0 == strcmp(value, "smart_point"))
 					{

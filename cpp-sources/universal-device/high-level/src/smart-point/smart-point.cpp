@@ -21,10 +21,10 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
+#include <any-device/device-base-types.hpp>
 #include "core/logging.hpp"
 #include "core/power-monitor.hpp"
 #include "dev/nrf24l01.hpp"
-#include "device/device-base-types.hpp"
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
 #include "network/network-layer.hpp"
@@ -49,16 +49,16 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 	PowerMonitor::instance().init();
 
 	info << "Loading default config";
-	if (!RCSPAggregator::instance().readIni("config.ini"))
+	if (!m_aggregator->readIni("config.ini"))
 	{
 		error << "Cannot read config file, so setting default values";
 		samrtPointConfig.resetToDefault();
 	}
 
 	info << "Restoring state";
-	MainStateSaver::instance().setFilename("state-save");
+	m_stateSaver.setFilename("state-save");
 	/// @todo Chack that rife is turned on/off correctly anway
-	if (MainStateSaver::instance().tryRestore())
+	if (m_stateSaver.tryRestore())
 	{
 		info  << "  restored";
 	} else {
@@ -72,7 +72,7 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 	m_irPhysicalReceiver->init();
 	m_irPhysicalReceiver->setEnabled(true);
 
-	m_irPresentationReceiver = new IRPresentationReceiverMT2(RCSPAggregator::instance());
+	m_irPresentationReceiver = new IRPresentationReceiverMT2(*m_aggregator);
 	m_irPresentationReceiver->setPhysicalReceiver(m_irPhysicalReceiver);
 	m_irPresentationReceiver->init();
 
@@ -115,7 +115,7 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 			1
 	);
 
-	MainStateSaver::instance().runSaver(8000);
+	m_stateSaver.runSaver(8000);
 
 	m_tasksPool.run();
 

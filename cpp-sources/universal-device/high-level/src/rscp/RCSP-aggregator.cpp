@@ -30,9 +30,17 @@
 #include "fatfs.h"
 #include <stdio.h>
 
-RCSPAggregator* RCSPAggregator::m_RCSPAggregator = nullptr;
+RCSPAggregator* RCSPAggregator::m_activeAggregator = nullptr;
 
-SINGLETON_IN_CPP(RCSPAggregator)
+RCSPAggregator& RCSPAggregator::getActiveAggregator()
+{
+    return *m_activeAggregator;
+}
+
+void RCSPAggregator::setActiveAggregator(RCSPAggregator* aggregator)
+{
+    m_activeAggregator = aggregator;
+}
 
 void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor, bool restorable)
 {
@@ -45,7 +53,7 @@ void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, 
 			error << "Only parameter\'s values can save states!";
 			return;
 		}
-		MainStateSaver::instance().addValue(code);
+		m_restorable.push_back(code);
 	}
 }
 

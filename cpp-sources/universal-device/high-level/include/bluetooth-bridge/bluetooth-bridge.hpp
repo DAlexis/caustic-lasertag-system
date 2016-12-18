@@ -21,10 +21,11 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
+#include <any-device/device.hpp>
+#include "any-device/any-device-base.hpp"
 #include "bluetooth-bridge/bluetooth-protocol.hpp"
 #include "bluetooth-bridge/hc05-configurator.hpp"
 #include "core/device-initializer.hpp"
-#include "device/device.hpp"
 #include "hal/uart.hpp"
 #include "core/os-wrappers.hpp"
 #include "network/network-client.hpp"
@@ -44,10 +45,11 @@ public:
 
 extern BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 
-class BluetoothBridge : public IAnyDevice, public IPackageReceiver
+class BluetoothBridge : public AnyDeviceBase, public IPackageReceiver
 {
 public:
 	BluetoothBridge();
+	void initByHeadSensor(const Pinout& pinout, bool isSdcardOk);
 	void init(const Pinout& pinout, bool isSdcardOk) override;
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
@@ -69,7 +71,6 @@ private:
 	void sendBluetoothMessage(AnyBuffer* buffer);
 	void sendNetworkPackage(AnyBuffer* buffer);
 
-	OrdinaryNetworkClient m_networkClient;
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
 	HC05Configurator m_configurator{deviceConfig.deviceName, config.bluetoothPin};
 

@@ -51,6 +51,11 @@ BluetoothBridge::BluetoothBridge()
     debug << "Bluetooth bridge constructor";
 }
 
+void BluetoothBridge::initByHeadSensor(const Pinout& pinout, bool isSdcardOk)
+{
+    UNUSED_ARG(pinout);
+}
+
 void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 {
     UNUSED_ARG(pinout);
@@ -66,7 +71,7 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 
 	if (isSdcardOk)
 	{
-		if (!RCSPAggregator::instance().readIni("config.ini"))
+		if (!m_aggregator->readIni("config.ini"))
 		{
 			error << "Cannot read config file, so setting default values";
 			config.setDefault();
@@ -255,7 +260,7 @@ void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
 
 	debug << "Bluetooth message for " << ADDRESS_TO_STREAM(bluetoothMessage->address);
 	// Sending message body as is
-	if (broadcast.isBroadcast(bluetoothMessage->address))
+	if (Broadcast::isBroadcast(bluetoothMessage->address))
 	{
 		// We need special timings for broadcasts
 	    m_networkClient.send(
@@ -268,7 +273,12 @@ void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
         );
 	} else {
 	    // Not broadcast packages are with default timings
-	    m_networkClient.send(bluetoothMessage->address, bluetoothMessage->data, bluetoothMessage->payloadLength(), true);
+	    m_networkClient.send(
+	            bluetoothMessage->address,
+	            bluetoothMessage->data,
+	            bluetoothMessage->payloadLength(),
+	            true
+	    );
 	}
 
 }

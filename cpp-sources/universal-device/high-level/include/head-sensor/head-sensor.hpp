@@ -24,12 +24,13 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 
+#include "any-device/device.hpp"
+#include "any-device/any-device-base.hpp"
 #include "rcsp/state-saver.hpp"
 #include "core/device-initializer.hpp"
 #include "dev/MFRC522-wrapper.hpp"
 #include "dev/RC522.hpp"
 #include "dev/rgb-leds.hpp"
-#include "device/device.hpp"
 #include "game/game-log.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "head-sensor/player-config-and-state.hpp"
@@ -64,11 +65,11 @@ public:
 	IWeaponObresver *create() const;
 };
 
-class HeadSensor : public IAnyDevice
+class HeadSensor : public AnyDeviceBase
 {
 public:
 	HeadSensor();
-	void init(const Pinout &pinout, bool isSdcardOk)  override;
+	void init(const Pinout &pinout, bool isSdcardOk) override;
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
@@ -136,8 +137,7 @@ private:
 		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)* m_pId;
 	};
 
-	OrdinaryNetworkClient m_networkClient;
-	RCSPNetworkListener m_networkPackagesListener;
+	RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
 
 	IIRPhysicalReceiver* m_irPhysicalReceivers[killZonesCount];
 	IIRPresentationReceiver* m_irPresentationReceivers[killZonesCount];

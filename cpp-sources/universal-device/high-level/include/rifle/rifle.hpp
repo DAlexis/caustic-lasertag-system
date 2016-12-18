@@ -24,12 +24,13 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 
+#include <any-device/device.hpp>
+#include "any-device/any-device-base.hpp"
 #include "core/device-initializer.hpp"
 #include "core/os-wrappers.hpp"
 #include "dev/buttons.hpp"
 #include "dev/MFRC522-wrapper.hpp"
 #include "dev/wav-player.hpp"
-#include "device/device.hpp"
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
 #include "rcsp/operation-codes.hpp"
@@ -42,10 +43,10 @@
 #include <stdint.h>
 
 
-class Rifle : public IAnyDevice
+class Rifle : public AnyDeviceBase
 {
 public:
-	Rifle(RCSPAggregator& rcspAggregator);
+	Rifle();
 
 	void registerWeapon();
 	void init(const Pinout& pinout, bool isSdcardOk) override;
@@ -72,7 +73,7 @@ public:
 	RifleState state{&config};
 	//DeviceParameters device;
 
-	PlayerPartialState playerState{config.headSensorAddr, &m_networkClient};
+	PlayerPartialState playerState{config.headSensorAddr, &m_networkClient, &RCSPAggregator::getActiveAggregator()};
 
 
 private:
@@ -128,8 +129,7 @@ private:
 	void onHSConnected();
 	void onHSDisconnected();
 
-	RCSPNetworkListener m_networkPackagesListener;
-	OrdinaryNetworkClient m_networkClient;
+	RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
 
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;
@@ -174,7 +174,6 @@ private:
 	RifleLCD5110Display m_display{&rifleOwner, &state, &playerState};
 
 	RC552Wrapper m_mfrcWrapper;
-	RCSPAggregator& m_rcspAggregator;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

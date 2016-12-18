@@ -110,7 +110,11 @@ private:
 class PlayerPartialState
 {
 public:
-	PlayerPartialState(const DeviceAddress& headSensorAddress, OrdinaryNetworkClient* networkClient);
+	PlayerPartialState(
+	        const DeviceAddress& headSensorAddress,
+	        OrdinaryNetworkClient* networkClient,
+	        RCSPAggregator* aggregator
+	        );
 	void syncAll();
 	void print();
 	bool isAlive();
@@ -129,6 +133,7 @@ public:
 private:
 	const DeviceAddress* m_headSensorAddress;
 	OrdinaryNetworkClient* m_networkClient;
+	RCSPAggregator* m_aggregator;
 };
 
 

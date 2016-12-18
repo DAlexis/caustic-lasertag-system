@@ -24,7 +24,7 @@
 #ifndef UNIVERSAL_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_HC05_CONFIGURATOR_HPP_
 #define UNIVERSAL_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_HC05_CONFIGURATOR_HPP_
 
-#include "device/device-base-types.hpp"
+#include "any-device/device-base-types.hpp"
 #include "hal/io-pins.hpp"
 #include "hal/uart.hpp"
 #include "bluetooth-bridge/bluetooth-bridge-config.hpp"

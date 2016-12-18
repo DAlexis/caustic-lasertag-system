@@ -36,7 +36,7 @@ class RCSPStream
 {
 public:
 	constexpr static uint16_t defaultLength = Package::payloadLength;
-	RCSPStream(uint16_t size = defaultLength);
+	RCSPStream(RCSPAggregator* aggregator, uint16_t size = defaultLength);
 	~RCSPStream();
 
 	static PackageId remoteCall(
@@ -48,7 +48,7 @@ public:
 			PackageTimings&& timings = PackageTimings()
 			)
 	{
-		RCSPStream stream;
+		RCSPStream stream(nullptr);
 		stream.addCall(code);
 		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
@@ -66,12 +66,13 @@ public:
 			PackageTimings&& timings = PackageTimings()
 			)
 	{
-		RCSPStream stream;
+		RCSPStream stream(nullptr);
 		stream.addCall(code, argument);
 		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
 	static PackageId remotePullValue(
+	        RCSPAggregator* aggregator,
 	        INetworkClient* client,
 			DeviceAddress target,
 			OperationCode code,
@@ -80,7 +81,7 @@ public:
 			PackageTimings&& timings = PackageTimings()
 			)
 	{
-		RCSPStream stream;
+		RCSPStream stream(aggregator);
 		stream.addValue(code);
 		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
@@ -99,7 +100,7 @@ public:
 			code,
 			[this, &arg] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
 			{
-				return RCSPAggregator::instance().serializeCallRequest(pos, code, m_size - m_cursor, addedSize, arg);
+				return m_aggregator->serializeCallRequest(pos, code, m_size - m_cursor, addedSize, arg);
 			}
 		);
 	}
@@ -129,6 +130,8 @@ private:
 
 	using SerializationFunc = std::function<RCSPAggregator::ResultType (uint8_t * /*pos*/, OperationCode /*code*/, uint16_t & /*addedSize*/)>;
 	RCSPAggregator::ResultType serializeAnything(OperationCode code, SerializationFunc serializer);
+
+	RCSPAggregator* m_aggregator;
 	uint8_t* m_stream = nullptr;
 	uint16_t m_cursor = 0;
 	uint16_t m_freeSpace = 0;
@@ -138,7 +141,7 @@ private:
 class RCSPMultiStream
 {
 public:
-	RCSPMultiStream();
+	RCSPMultiStream(RCSPAggregator* aggregator);
 	RCSPAggregator::ResultType addValue(OperationCode code);
 	RCSPAggregator::ResultType addRequest(OperationCode code);
 	RCSPAggregator::ResultType addCall(OperationCode code);
@@ -170,13 +173,14 @@ public:
 
 private:
 	void pushBackStream();
+	RCSPAggregator* m_aggregator;
 	std::list<std::shared_ptr<RCSPStream>> m_streams;
 };
 
 class RCSPNetworkListener : public IPackageReceiver
 {
 public:
-    RCSPNetworkListener();
+    RCSPNetworkListener(RCSPAggregator* aggregator = nullptr);
 
 	bool hasSender();
 	DeviceAddress sender();
@@ -188,6 +192,7 @@ private:
 	bool m_hasDeviceAddress = false;
 	DeviceAddress m_currentDeviceAddress;
 	INetworkClient* m_networkClient = nullptr;
+	RCSPAggregator* m_aggregator = nullptr;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_ */

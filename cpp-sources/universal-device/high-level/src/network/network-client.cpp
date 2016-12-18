@@ -55,6 +55,11 @@ void OrdinaryNetworkClient::connectPackageReceiver(IPackageReceiver* receiver)
     m_packageReceiver->connectClient(this);
 }
 
+void OrdinaryNetworkClient::setSendingToMyself(bool sendToMyself)
+{
+    m_sendToMyself = sendToMyself;
+}
+
 PackageId OrdinaryNetworkClient::send(
     DeviceAddress target,
     uint8_t* data,
@@ -69,7 +74,10 @@ PackageId OrdinaryNetworkClient::send(
         error << "OrdinaryNetworkClient error: m_address == nullptr";
         return 0;
     }
-    return m_nl->send(target, *m_address, data, size, waitForAck, doneCallback, timings);
+    if (m_sendToMyself)
+        return m_nl->send(target, *m_address, data, size, waitForAck, doneCallback, timings);
+    else
+        return m_nl->send(target, *m_address, data, size, waitForAck, doneCallback, timings, this);
 }
 
 bool OrdinaryNetworkClient::isMyBroadcast(const DeviceAddress& addr)

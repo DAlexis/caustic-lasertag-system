@@ -41,9 +41,14 @@
 #include <string>
 #include <utility>
 
-PlayerPartialState::PlayerPartialState(const DeviceAddress& headSensorAddress, OrdinaryNetworkClient* networkClient) :
+PlayerPartialState::PlayerPartialState(
+        const DeviceAddress& headSensorAddress,
+        OrdinaryNetworkClient* networkClient,
+        RCSPAggregator* aggregator
+        ) :
 	m_headSensorAddress(&headSensorAddress),
-	m_networkClient(networkClient)
+	m_networkClient(networkClient),
+	m_aggregator(aggregator)
 {
 	healthMax = 0;
 	armorMax = 0;
@@ -59,7 +64,7 @@ PlayerPartialState::PlayerPartialState(const DeviceAddress& headSensorAddress, O
 
 void PlayerPartialState::syncAll()
 {
-	RCSPMultiStream stream;
+	RCSPMultiStream stream(m_aggregator);
 	stream.addRequest(ConfigCodes::HeadSensor::Configuration::healthMax);
 	stream.addRequest(ConfigCodes::HeadSensor::Configuration::armorMax);
 	stream.addRequest(ConfigCodes::HeadSensor::State::healthCurrent);
@@ -173,8 +178,7 @@ void RifleState::reset()
 	lastReloadTime = 0;
 }
 
-Rifle::Rifle(RCSPAggregator& rcspAggregator) :
-	m_rcspAggregator(rcspAggregator)
+Rifle::Rifle()
 {
 	deviceConfig.deviceType = DeviceTypes::rifle;
 	m_tasksPool.setStackSize(400);
@@ -236,12 +240,12 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	PowerMonitor::instance().init();
 
 	info << "Loading default config";
-	RCSPAggregator::instance().readIni("config.ini");
+	m_aggregator->readIni("config.ini");
 
 	info << "Restoring state";
-	MainStateSaver::instance().setFilename("state-save");
+	m_stateSaver.setFilename("state-save");
 	/// @todo Chack that rife is turned on/off correctly anway
-	if (MainStateSaver::instance().tryRestore())
+	if (m_stateSaver.tryRestore())
 	{
 		info  << "  restored";
 	} else {
@@ -363,7 +367,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	m_irPhysicalTransmitter->setPower(config.outputPower);
 	m_irPhysicalTransmitter->init(pinout);
 
-	m_irPresentationTransmitter = new IRPresentationTransmitterMT2(RCSPAggregator::instance());
+	m_irPresentationTransmitter = new IRPresentationTransmitterMT2(*m_aggregator);
 	m_irPresentationTransmitter->setPhysicalTransmitter(m_irPhysicalTransmitter);
 	m_irPresentationTransmitter->init();
 
@@ -417,7 +421,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 
 	updatePlayerState();
 
-	MainStateSaver::instance().runSaver(8000);
+	m_stateSaver.runSaver(8000);
 	m_tasksPool.run();
 
 	m_mfrcWrapper.init();
@@ -564,7 +568,7 @@ void Rifle::makeShot(bool isFirst)
 
 void Rifle::prepareAndSendShotMsg()
 {
-	RCSPStream stream;
+	RCSPStream stream(m_aggregator);
 	ShotMessage msg;
 	msg.damage = config.damageMin;
 	msg.playerId = rifleOwner.playerId;
@@ -851,7 +855,7 @@ void Rifle::onCardReaded(uint8_t* buffer, uint16_t size)
 
 	printHex(buffer, size);
 
-	RCSPAggregator::instance().dispatchStream(buffer, size);
+	m_aggregator->dispatchStream(buffer, size);
 
 }
 

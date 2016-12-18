@@ -31,19 +31,13 @@
 
 #include <string.h>
 
-SINGLETON_IN_CPP(MainStateSaver)
-
-MainStateSaver::MainStateSaver()
+MainStateSaver::MainStateSaver(RCSPAggregator* aggregator) :
+    m_aggregator(aggregator)
 {
 	m_savers.push_back(this);
 	m_savingTask.setTask(std::bind(&MainStateSaver::saveAll, this));
 	m_savingTask.setStackSize(512);
 	m_savingTask.setName("StatSav");
-}
-
-void MainStateSaver::addValue(OperationCode code)
-{
-	m_codes.push_back(code);
 }
 
 void MainStateSaver::setFilename(const std::string& filename)
@@ -86,8 +80,8 @@ void MainStateSaver::saveState()
 		return;
 	}
 	// Putting data to state file
-	RCSPMultiStream stream;
-	for (OperationCode code : m_codes)
+	RCSPMultiStream stream(m_aggregator);
+	for (OperationCode code : m_aggregator->getRestorableOperationCodes())
 		stream.addValue(code);
 	stream.writeToFile(&m_fil);
 	f_close(&m_fil);
@@ -162,7 +156,7 @@ bool MainStateSaver::tryRestore(uint8_t variant)
 		if (readed != 0)
 		{
 			//trace << "Dispatching restored parameters chunk...";
-			RCSPAggregator::instance().dispatchStream(buffer, readed);
+			m_aggregator->dispatchStream(buffer, readed);
 		}
 		else
 			break;

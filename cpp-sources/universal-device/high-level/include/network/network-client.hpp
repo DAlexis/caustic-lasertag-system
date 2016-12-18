@@ -73,6 +73,8 @@ public:
     void registerMyBroadcast(const DeviceAddress& address);
     void registerMyBroadcastTester(Broadcast::IBroadcastTester* tester);
 
+    void setSendingToMyself(bool sendToMyself);
+
     virtual PackageId send(
         DeviceAddress target,
         uint8_t* data,
@@ -86,6 +88,8 @@ private:
     bool isMyBroadcast(const DeviceAddress& addr);
     NetworkLayer* m_nl = nullptr;
     IPackageReceiver* m_packageReceiver = nullptr;
+    bool m_sendToMyself = false;
+
     const DeviceAddress* m_address = nullptr;
 
     std::set<DeviceAddress> m_broadcasts;

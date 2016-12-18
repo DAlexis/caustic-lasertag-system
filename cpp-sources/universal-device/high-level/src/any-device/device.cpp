@@ -22,23 +22,10 @@
 */
 
 
-#ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
-#define LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_
-
-#include "rcsp/aggregator.hpp"
-#include "device/device-base-types.hpp"
-#include "rcsp/operation-codes.hpp"
-#include "rcsp/RCSP-base-types.hpp"
-#include <stdint.h>
+#include "any-device/device.hpp"
 #include <string.h>
 
-class DeviceConfiguration
+void DeviceName::convertFromString(const char* str)
 {
-public:
-
-	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr);
-	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, deviceName);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, deviceType);
-};
-
-#endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_ */
+	strlcpy(name, str, nameLength);
+}

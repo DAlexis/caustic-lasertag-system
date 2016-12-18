@@ -45,7 +45,7 @@ public:
 
 	const DeviceAddress any{255, 255, 255};
 
-	bool isBroadcast(const DeviceAddress& addr);
+	static bool isBroadcast(const DeviceAddress& addr);
 
 	class IBroadcastTester
 	{

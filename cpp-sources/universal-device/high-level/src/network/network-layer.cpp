@@ -134,11 +134,23 @@ void NetworkLayer::enableDebug(bool debug)
 	m_debug = debug;
 }
 
+INetworkClient* NetworkLayer::findClient(const DeviceAddress& target)
+{
+    for (auto &it : m_clients)
+    {
+        if (it->isForMe(target))
+        {
+            return it;
+        }
+    }
+    return nullptr;
+}
+
 uint16_t NetworkLayer::generatePackageId()
 {
 	uint16_t id = (systemClock->getTime()) & 0xFFFF;
-	if (id == 0)
-		id = 1;
+	if (id == 0 || id == 1)
+		id = 2;
 	return id;
 }
 
@@ -149,7 +161,8 @@ PackageId NetworkLayer::send(
         uint16_t size,
         bool waitForAck,
         PackageSendingDoneCallback doneCallback,
-        PackageTimings timings
+        PackageTimings timings,
+        INetworkClient* doNotReceiveBy
     )
 {
     m_stager.stage("send()");
@@ -158,6 +171,20 @@ PackageId NetworkLayer::send(
         error << "Error: too long payload!";
         return 0;
     }
+    // Looking for receiver on local host
+    INetworkClient* localReceiverClient = findClient(target);
+    if (localReceiverClient && localReceiverClient != doNotReceiveBy)
+    {
+        localReceiverClient->getReceiver()
+                (sender, data, size);
+
+        if (!Broadcast::isBroadcast(target))
+        {
+            // Package is not broadcast and target is found so it was successfuly delivered
+            return 1;
+        }
+    }
+
     PackageDetails details;
     details.packageId = generatePackageId();
 
@@ -171,7 +198,7 @@ PackageId NetworkLayer::send(
         WaitingPackage& waitingPackage = m_packages[details.packageId];
         waitingPackage.wasCreated = time;
         waitingPackage.nextTransmission = time;
-        waitingPackage.isBroadcast = broadcast.isBroadcast(target);
+        waitingPackage.isBroadcast = Broadcast::isBroadcast(target);
 
         waitingPackage.timings = timings;
 
@@ -225,21 +252,11 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 	// Skipping packages for other devices
 
 	// New approach
-	bool forMe = false;
-	DeviceAddress backAddr;
-	for (auto &it : m_clients)
-	{
-	    if (it->isForMe(received.target))
-	    {
-	        forMe = true;
-	        backAddr = *it->mainBackAddress();
-	        break;
-	    }
-	}
+	INetworkClient* receiverClient = findClient(received.target);
+	if (receiverClient == nullptr)
+	    return; // Not for me.
 
-	//received.target.print();
-	if (!forMe)
-		return;
+	DeviceAddress backAddr = *receiverClient->mainBackAddress();
 
 	if (trace.isEnabled() && radio.isEnabled())
 	{

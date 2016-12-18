@@ -135,7 +135,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 		m_irPhysicalReceivers[index]->init();
 		m_irPhysicalReceivers[index]->setEnabled(true);
 
-		m_irPresentationReceivers[index] = new IRPresentationReceiverMT2(RCSPAggregator::instance());
+		m_irPresentationReceivers[index] = new IRPresentationReceiverMT2(*m_aggregator);
 		m_irPresentationReceivers[index]->setPhysicalReceiver(m_irPhysicalReceivers[index]);
 		m_irPresentationReceivers[index]->setDamageCoefficient(damageCoefficient);
 		m_irPresentationReceivers[index]->setVibroEngine(vibroPin);
@@ -166,23 +166,23 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	PowerMonitor::instance().init();
 
 	info << "Parsing config file";
-	if (!RCSPAggregator::instance().readIni("config.ini"))
+	if (!m_aggregator->readIni("config.ini"))
 	{
 		error << "Cannot read config file, so setting default values";
 		playerConfig.setDefault();
 	}
 
 	info << "Restoring last state and config";
-	MainStateSaver::instance().setFilename("state-save");
+	m_stateSaver.setFilename("state-save");
 	// State restoring is always after config reading, so not stored data will be default
-	if (MainStateSaver::instance().tryRestore())
+	if (m_stateSaver.tryRestore())
 	{
 		info << "  restored";
 	} else {
 		error << "  restoring failed, using default config";
 		// setting player state to default
 		playerState.reset();
-		MainStateSaver::instance().saveState();
+		m_stateSaver.saveState();
 	}
 
 	info << "Initializing visual effects";
@@ -250,10 +250,10 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	info << "Stats restoring";
 	m_statsCounter.restoreFromFile();
 
-	MainStateSaver::instance().registerStateSaver(&m_statsCounter);
+	m_stateSaver.registerStateSaver(&m_statsCounter);
 
 	m_tasksPool.run();
-	MainStateSaver::instance().runSaver(8000);
+	m_stateSaver.runSaver(8000);
 
 	m_killZonesInterogator.run();
 	info << "Head sensor ready to use";
@@ -279,14 +279,14 @@ void HeadSensor::resetToDefaults()
 	m_callbackStager.stage("reset");
 	info << "Resetting configuration to default";
 	m_leds.blink(blinkPatterns.anyCommand);
-	if (!RCSPAggregator::instance().readIni("config.ini"))
+	if (!m_aggregator->readIni("config.ini"))
 	{
 		error << "Cannot read config file, so setting default values";
 		playerConfig.setDefault();
 	}
 	playerState.reset();
-	MainStateSaver::instance().resetSaves();
-	MainStateSaver::instance().saveState();
+	m_stateSaver.resetSaves();
+	m_stateSaver.saveState();
 }
 
 
@@ -445,7 +445,7 @@ void HeadSensor::weaponWoundAndShock()
 	info << "Weapons shock delay notification";
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
-		RCSPMultiStream stream;
+		RCSPMultiStream stream(m_aggregator);
 		// We have 23 bytes free in one stream (and should try to use only one)
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleShock, playerConfig.shockDelayInactive); // 3b + 4b (16 free)
 		stream.addCall(ConfigCodes::Rifle::Functions::rifleWound); // 3b (13 free)
@@ -460,7 +460,7 @@ void HeadSensor::sendHeartbeat()
 	trace << "Sending heartbeat";
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
-		RCSPStream stream;
+		RCSPStream stream(m_aggregator);
 		// This line is temporary solution if team was changed by value, not by setter func call
 		stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
 		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
@@ -479,7 +479,7 @@ void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
 		playerState.weaponsList.insert(weaponAddress);
 	}
 
-	RCSPStream stream;
+	RCSPStream stream(m_aggregator);
 	stream.addValue(ConfigCodes::HeadSensor::Configuration::playerId);
 	stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
 	stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
@@ -510,7 +510,12 @@ void HeadSensor::setTeam(uint8_t teamId)
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Changing weapon team id to" << teamId;
-		RCSPStream::remotePullValue(&m_networkClient, it->first, ConfigCodes::HeadSensor::Configuration::teamId);
+		RCSPStream::remotePullValue(
+		        m_aggregator,
+		        &m_networkClient,
+		        it->first,
+		        ConfigCodes::HeadSensor::Configuration::teamId
+		);
 	}
 }
 
@@ -580,7 +585,7 @@ void HeadSensor::setFRIDToWriteAddr()
 	uint16_t size = sizeof(m_RFIDWriteBuffer[0])*RFIDWriteBufferSize;
 	memset(m_RFIDWriteBuffer, 0, size);
 	uint16_t actualSize = 0;
-	RCSPAggregator::instance().serializeCallRequest(
+	RCSPAggregator::serializeCallRequest(
 			m_RFIDWriteBuffer,
 			ConfigCodes::Rifle::Functions::rifleChangeHS,
 			size,

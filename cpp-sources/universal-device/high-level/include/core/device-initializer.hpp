@@ -24,19 +24,10 @@
 #ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_DEVICE_INITIALIZER_HPP_
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_DEVICE_INITIALIZER_HPP_
 
+#include "any-device/any-device-interface.hpp"
 #include "core/result-code.hpp"
 #include "fatfs.h"
-#include "core/pinout.hpp"
 #include "core/service-locator.hpp"
-
-class IAnyDevice
-{
-public:
-	virtual ~IAnyDevice() {}
-	virtual void init(const Pinout& pinout, bool isSdcardOk) = 0;
-	virtual void setDefaultPinout(Pinout& pinout) = 0;
-	virtual bool checkPinout(const Pinout& pinout) = 0;
-};
 
 class DeviceInitializer
 {

@@ -43,8 +43,7 @@
 class MainStateSaver : public IAnyStateSaver
 {
 public:
-	MainStateSaver();
-    void addValue(OperationCode code);
+	MainStateSaver(RCSPAggregator* aggregator);
     void setFilename(const std::string& filename);
 
     void runSaver(uint32_t period);
@@ -56,8 +55,6 @@ public:
     void resetSaves();
 
     void registerStateSaver(IAnyStateSaver* saver);
-
-    SINGLETON_IN_CLASS(MainStateSaver)
 
 private:
     void saveAll();
@@ -73,9 +70,9 @@ private:
     std::string m_filename;
 #endif
 
-    std::list<OperationCode> m_codes;
     std::list<IAnyStateSaver*> m_savers;
     TaskCycled m_savingTask;
+    RCSPAggregator* m_aggregator;
 };
 
 #endif /* INCLUDE_RCSP_RCSP_STATE_SAVER_HPP_ */

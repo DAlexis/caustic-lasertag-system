@@ -24,10 +24,11 @@
 #ifndef UNIVERSAL_DEVICE_INCLUDE_SMART_POINT_SMART_POINT_HPP_
 #define UNIVERSAL_DEVICE_INCLUDE_SMART_POINT_SMART_POINT_HPP_
 
+#include <any-device/device.hpp>
+#include "any-device/any-device-base.hpp"
 #include "smart-point/smart-point-config-and-state.hpp"
 #include "smart-point/smart-point-display.hpp"
 #include "smart-point/smart-point-ui.hpp"
-#include "device/device.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/device-initializer.hpp"
 #include "dev/wav-player.hpp"
@@ -36,7 +37,7 @@
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
 
-class SmartPoint : public IAnyDevice
+class SmartPoint : public AnyDeviceBase
 {
 public:
 	SmartPoint();
@@ -59,8 +60,7 @@ private:
 	SoundPlayer m_systemReadySound;
 	SmartPointUI m_ui{state};
 
-	OrdinaryNetworkClient m_networkClient;
-	RCSPNetworkListener m_networkPackagesListener;
+	RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
 
 	IIRPhysicalReceiver* m_irPhysicalReceiver = nullptr;
 	IIRPresentationReceiver* m_irPresentationReceiver = nullptr;
