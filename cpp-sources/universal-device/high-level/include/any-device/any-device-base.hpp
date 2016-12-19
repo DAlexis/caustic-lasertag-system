@@ -11,6 +11,7 @@
 #include "any-device/any-device-interface.hpp"
 #include "any-device/device.hpp"
 #include "network/network-client.hpp"
+#include "rcsp/stream.hpp"
 #include "rcsp/state-saver.hpp"
 
 class AnyDeviceBase : public IAnyDevice
@@ -21,12 +22,22 @@ public:
     DeviceConfiguration deviceConfig;
 
 protected:
+    virtual void initNetworkClient();
+    void initNetwork();
 
     OrdinaryNetworkClient m_networkClient;
+
     RCSPAggregator* m_aggregator;
     MainStateSaver m_stateSaver;
 };
 
+class AnyRCSPClientDeviceBase : public AnyDeviceBase
+{
+protected:
+    void initNetworkClient() override;
+    RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
+
+};
 
 
 

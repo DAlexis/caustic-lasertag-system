@@ -65,7 +65,7 @@ public:
 	IWeaponObresver *create() const;
 };
 
-class HeadSensor : public AnyDeviceBase
+class HeadSensor : public AnyRCSPClientDeviceBase
 {
 public:
 	HeadSensor();
@@ -73,7 +73,6 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	DeviceConfiguration deviceConfig;
 	PlayerConfiguration playerConfig;
 	PlayerState playerState{&playerConfig};
 	//DeviceParameters device;
@@ -137,8 +136,6 @@ private:
 		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)* m_pId;
 	};
 
-	RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
-
 	IIRPhysicalReceiver* m_irPhysicalReceivers[killZonesCount];
 	IIRPresentationReceiver* m_irPresentationReceivers[killZonesCount];
 	IPresentationReceiversGroup* m_irPresentationReceiversGroup = nullptr;
@@ -151,6 +148,8 @@ private:
 	RC552Wrapper m_mfrcWrapper;
 
 	uint8_t m_RFIDWriteBuffer[RFIDWriteBufferSize];
+
+	IAnyDevice* m_bluetoothBridge = nullptr;
 };
 
 

@@ -5,7 +5,7 @@
 
 void printUsageErrorMsg(uint32_t CFSRValue)
 {
-   printf("Usage fault: \n");
+   printf("Usage fault:\n");
    CFSRValue >>= 16;                  // right shift to lsb
    if((CFSRValue & (1 << 9)) != 0) {
       printf("Divide by zero\n");
@@ -14,14 +14,56 @@ void printUsageErrorMsg(uint32_t CFSRValue)
 
 void printBusFaultErrorMsg(uint32_t CFSRValue)
 {
-   printf("Bus fault: ");
-   CFSRValue = ((CFSRValue & 0x0000FF00) >> 8); // mask and right shift to lsb
+   printf("Bus fault:\n");
+   CFSRValue = (CFSRValue & 0x0000FF00); // mask
+
+   if (CFSRValue & SCB_CFSR_DIVBYZERO)
+           printf("DIV0: Divide-by-Zero Usage Fault\n");
+   if (CFSRValue & SCB_CFSR_UNALIGNED)
+       printf("UNALIGN: Unaligned Access Usage Fault\n");
+   if (CFSRValue & SCB_CFSR_NOCP)
+       printf("NOCP: No Coprocessor Usage Fault\n");
+   if (CFSRValue & SCB_CFSR_INVPC)
+       printf("INVCP: Invalid PC Load Usage Fault\n");
+   if (CFSRValue & SCB_CFSR_INVSTATE)
+       printf("INVSTAT: Invalid State Usage Fault\n");
+   if (CFSRValue & SCB_CFSR_UNDEFINSTR)
+       printf("UNDEF: Undefined Instruction Usage Fault\n");
+   if (CFSRValue & SCB_CFSR_BFARVALID)
+       printf("BFARV: Bus Fault Address Register Valid\n");
+   if (CFSRValue & (1 << 13) )
+       printf("BLSPERR: Bus Fault on Floating-Point Lazy State Preservation\n");
+   if (CFSRValue & SCB_CFSR_STKERR)
+       printf("BSTKE: Stack Bus Fault\n");
+   if (CFSRValue & SCB_CFSR_UNSTKERR)
+       printf("BUSTKE: Unstack Bus Fault. This is an asynchronous fault.\n");
+   if (CFSRValue & SCB_CFSR_IMPRECISERR)
+       printf("IMPRE: Imprecise Data Bus Error\n");
+   if (CFSRValue & SCB_CFSR_PRECISERR)
+       printf("PRECISE: Precise Data Bus Error\n");
+   if (CFSRValue & SCB_CFSR_IBUSERR)
+       printf("IBUS: Instruction Bus Error\n");
+
 }
 
 void printMemoryManagementErrorMsg(uint32_t CFSRValue)
 {
-   printf("Memory Management fault: ");
-   CFSRValue &= 0x000000FF; // mask just mem faults
+    printf("Memory Management fault:\n");
+    CFSRValue &= 0x000000FF; // mask just mem faults
+
+    if (CFSRValue & SCB_CFSR_MMARVALID)
+          printf("MMARV: Memory Management Fault Address Register Valid\n");
+    if (CFSRValue & (1 << 5) )
+        printf("MLSPERR: Memory Management Fault on Floating-Point Lazy State Preservation\n");
+    if (CFSRValue & SCB_CFSR_MSTKERR)
+        printf("MSTKE: Stack Access Violation\n");
+    if (CFSRValue & SCB_CFSR_MUNSTKERR)
+        printf("MUSTKE: Unstack Access Violation\n");
+    if (CFSRValue & SCB_CFSR_DACCVIOL)
+        printf("DERR: Data Access Violation\n");
+    if (CFSRValue & SCB_CFSR_IACCVIOL)
+        printf("SCB_CFSR_IACCVIOL = 1: processor attempted "
+               "an instruction fetch from a location that does not permit execution\n");
 }
 
 enum { r0, r1, r2, r3, r12, lr, pc, psr};

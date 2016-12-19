@@ -49,12 +49,11 @@ class BluetoothBridge : public AnyDeviceBase, public IPackageReceiver
 {
 public:
 	BluetoothBridge();
-	void initByHeadSensor(const Pinout& pinout, bool isSdcardOk);
+	void initAsSecondaryDevice(const Pinout& pinout, bool isSdcardOk);
 	void init(const Pinout& pinout, bool isSdcardOk) override;
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	DeviceConfiguration deviceConfig;
 	BluetoothBridgeConfiguration config;
 
 private:

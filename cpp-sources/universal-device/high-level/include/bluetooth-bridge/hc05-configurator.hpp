@@ -54,6 +54,9 @@ public:
 	void leaveAT();
 	static const char* parseResult(HC05Result result);
 
+	// This function simply test if bluetooth module connected to MCU
+	static bool quickTestBluetooth(IIOPin* key, IUARTManager* uart);
+
 private:
 
 	void waitForResult();

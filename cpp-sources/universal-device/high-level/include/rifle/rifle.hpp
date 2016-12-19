@@ -43,7 +43,7 @@
 #include <stdint.h>
 
 
-class Rifle : public AnyDeviceBase
+class Rifle : public AnyRCSPClientDeviceBase
 {
 public:
 	Rifle();
@@ -67,7 +67,6 @@ public:
 	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);      ///< Play enemy damaged sound
 	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS);      ///< Play enemy damaged sound
 
-	DeviceConfiguration deviceConfig;
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;
 	RifleState state{&config};
@@ -128,8 +127,6 @@ private:
 	/// This function could be called any time when head sensor is connected. Double calling does not hurt anything
 	void onHSConnected();
 	void onHSDisconnected();
-
-	RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
 
 	ButtonManager* m_fireButton = nullptr;
 	ButtonManager* m_reloadButton = nullptr;

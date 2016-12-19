@@ -28,11 +28,13 @@
 #include "core/os-wrappers.hpp"
 #include "core/power-monitor.hpp"
 #include "dev/nrf24l01.hpp"
+#include "bluetooth-bridge/bluetooth-bridge.hpp"
 #include "head-sensor/head-sensor.hpp"
 #include "head-sensor/resources.hpp"
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
 #include "rcsp/stream.hpp"
+#include "hal/system-controls.hpp"
 
 #include <stdio.h>
 #include <math.h>
@@ -195,36 +197,14 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	m_leds.blink(blinkPatterns.init);
 
 	info << "Network initialization";
-	m_networkClient.setMyAddress(deviceConfig.devAddr);
-	m_networkClient.connectPackageReceiver(&m_networkPackagesListener);
-	m_networkClient.registerMyBroadcast(broadcast.any);
+	initNetworkClient();
+	initNetwork();
 	m_networkClient.registerMyBroadcast(broadcast.headSensors);
-	m_networkClient.registerMyBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
-
-	NetworkLayer::instance().connectClient(&m_networkClient);
-
-	NRF24L01Manager *nrf = new NRF24L01Manager();
-	auto radioReinit = [](IRadioPhysicalDevice* rf) {
-		static_cast<NRF24L01Manager*>(rf)->init(
-				IOPins->getIOPin(1, 7),
-				IOPins->getIOPin(1, 12),
-				IOPins->getIOPin(1, 8),
-				2,
-				true,
-				1
-			);
-	};
-	radioReinit(nrf);
-	NetworkLayer::instance().setRadioReinitCallback(radioReinit);
-	NetworkLayer::instance().init(nrf);
-
-
+    m_networkClient.registerMyBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
 
 #ifdef DEBUG
 	NetworkLayer::instance().enableDebug(true);
 #endif
-
-	//NetworkLayer::instance().enableRegularNRFReinit(true);
 
 	info << "Other initialization";
 	m_tasksPool.add(
@@ -246,6 +226,20 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 			[this] { m_mfrcWrapper.interrogate(); },
 			10000
 	);
+
+	info << "Discovering bluetooth module";
+	// First, configuring HC-05 bluetooth module to have proper name, UART speed and password
+	bool hasBtModule = HC05Configurator::quickTestBluetooth(IOPins->getIOPin(IIOPin::PORTA, 1), UARTs->get(IUARTSPool::UART2));
+	if (hasBtModule)
+	{
+	    info << "Initializing built-in bluetooth bridge device";
+	    RCSPAggregator::setActiveAggregator(new RCSPAggregator);
+	    BluetoothBridge *bb = new BluetoothBridge();
+	    bb->initAsSecondaryDevice(_pinout, isSdcardOk);
+	    RCSPAggregator::setActiveAggregator(m_aggregator);
+	} else {
+	    info << "Bluetooth module not installed, running without it";
+	}
 
 	info << "Stats restoring";
 	m_statsCounter.restoreFromFile();
@@ -276,17 +270,26 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 
 void HeadSensor::resetToDefaults()
 {
+    m_callbackStager.stage("reset");
+    m_stateSaver.resetSaves();
+    systemControls->rebootMCU();
+    /*
+    // Important!! Code below makes hard fault usually. And I dont know why.
+
 	m_callbackStager.stage("reset");
-	info << "Resetting configuration to default";
 	m_leds.blink(blinkPatterns.anyCommand);
 	if (!m_aggregator->readIni("config.ini"))
 	{
 		error << "Cannot read config file, so setting default values";
 		playerConfig.setDefault();
 	}
+
 	playerState.reset();
 	m_stateSaver.resetSaves();
 	m_stateSaver.saveState();
+
+	// Hard fault-making code end
+	 */
 }
 
 

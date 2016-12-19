@@ -77,6 +77,7 @@ void HC05Configurator::sendATCommand(const char* command, uint16_t size)
 HC05Configurator::HC05Result HC05Configurator::test()
 {
 	enterAT();
+	systemClock->wait_us(100);
 	const char* at="AT\r\n";
 	sendATCommand(at, sizeof(at));
 	waitForResult();
@@ -88,14 +89,20 @@ HC05Configurator::HC05Result HC05Configurator::selectSpeed()
 	// Trying default:
 	m_uart->init(uartDefaultSpeed);
 	HC05Result result = test();
-	if (result != HC05Result::ok)
+	result = test();
+	if (result == HC05Result::ok)
 	{
+	    debug << "HC-05 speed determined as " << uartDefaultSpeed << " b/s";
+	} else {
 		debug << "Default HC-05 speed rejected due to error while testing: " << parseResult(result);
 		m_uart->init(uartTargetSpeed);
+		result = test();
 		result = test();
 		if (result != HC05Result::ok)
 		{
 			error << "Cannot determine usart speed for HC-05!";
+		} else {
+		    debug << "HC-05 speed determined as " << uartTargetSpeed << " b/s";
 		}
 	}
 
@@ -184,4 +191,16 @@ void HC05Configurator::rxCallbackResult(uint8_t* data, uint16_t size)
 	} else {
 		m_result = HC05Result::failed;
 	}
+}
+
+
+bool HC05Configurator::quickTestBluetooth(IIOPin* key, IUARTManager* uart)
+{
+    UintParameter pinStub = 1234;
+    DeviceName devNameStub;
+    HC05Configurator* btConfigurator = new HC05Configurator(devNameStub, pinStub);
+    btConfigurator->init(key, uart);
+    bool result = (btConfigurator->selectSpeed() == HC05Result::ok);
+    delete btConfigurator;
+    return result;
 }

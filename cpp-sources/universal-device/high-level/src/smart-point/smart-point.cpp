@@ -84,30 +84,13 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 	WavPlayer::instance().init();
 
 
-	info << "RCSP modem initialization";
-	m_networkClient.setMyAddress(deviceConfig.devAddr);
-    m_networkClient.connectPackageReceiver(&m_networkPackagesListener);
-    m_networkClient.registerMyBroadcast(broadcast.any);
-    m_networkClient.registerMyBroadcast(broadcast.smartPoint);
-
-    NetworkLayer::instance().connectClient(&m_networkClient);
-
-	NRF24L01Manager *nrf = new NRF24L01Manager();
-	auto radioReinit = [](IRadioPhysicalDevice* rf) {
-		static_cast<NRF24L01Manager*>(rf)->init(
-				IOPins->getIOPin(1, 7),
-				IOPins->getIOPin(1, 12),
-				IOPins->getIOPin(1, 8),
-				2,
-				true,
-				1
-			);
-	};
-	radioReinit(nrf);
-	NetworkLayer::instance().setRadioReinitCallback(radioReinit);
-	NetworkLayer::instance().init(nrf);
+	info << "Network initialization";
+    initNetworkClient();
+    initNetwork();
+	m_networkClient.registerMyBroadcast(broadcast.smartPoint);
 
 	initSounds();
+
 	m_tasksPool.add(
 			[this] { m_systemReadySound.play(); },
 			100000,

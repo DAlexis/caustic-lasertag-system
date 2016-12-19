@@ -37,7 +37,7 @@
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
 
-class SmartPoint : public AnyDeviceBase
+class SmartPoint : public AnyRCSPClientDeviceBase
 {
 public:
 	SmartPoint();
@@ -46,7 +46,6 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	DeviceConfiguration deviceConfig;
 	SmartPointConfig samrtPointConfig;
 	SmartPointState state{samrtPointConfig};
 	SmartPointUI ui{state};
@@ -59,8 +58,6 @@ private:
 	TasksPool m_tasksPool{"SmPntPl"};
 	SoundPlayer m_systemReadySound;
 	SmartPointUI m_ui{state};
-
-	RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
 
 	IIRPhysicalReceiver* m_irPhysicalReceiver = nullptr;
 	IIRPresentationReceiver* m_irPresentationReceiver = nullptr;

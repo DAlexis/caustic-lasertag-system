@@ -77,7 +77,7 @@ void DeviceAddress::convertFromString(const char* str)
 // NetworkLayer
 NetworkLayer::NetworkLayer()
 {
-	m_modemTask.setStackSize(1600);
+	m_modemTask.setStackSize(1024);
 	m_modemTask.setName("NetLay");
 	m_modemTask.setTask(std::bind(&NetworkLayer::interrogate, this));
 }
@@ -99,7 +99,7 @@ void NetworkLayer::setRadioReinitCallback(RadioReinitCallback callback)
 void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
 {
 	Kernel::instance().assert(m_clients.size() != 0,
-			"Modem initialisation fail: self address or package receiver not set"
+			"Network layer initialisation fail: no clients connected"
 		);
 	m_rfPhysicalDevice = rfPhysicalDevice;
 	m_rfPhysicalDevice->setTXDoneCallback(std::bind(&NetworkLayer::TXDoneCallback, this));

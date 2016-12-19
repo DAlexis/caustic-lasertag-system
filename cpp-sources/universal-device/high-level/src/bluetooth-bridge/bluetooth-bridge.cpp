@@ -51,73 +51,46 @@ BluetoothBridge::BluetoothBridge()
     debug << "Bluetooth bridge constructor";
 }
 
-void BluetoothBridge::initByHeadSensor(const Pinout& pinout, bool isSdcardOk)
+void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardOk)
 {
     UNUSED_ARG(pinout);
+    debug << "Bluetooth bridge initialization";
+
+    // default address for bluetooth bridge without SD-card
+    deviceConfig.devAddr.address[0] = 50;
+    deviceConfig.devAddr.address[1] = 50;
+    deviceConfig.devAddr.address[2] = 50;
+
+    // Power monitor should be initialized before configuration reading
+    PowerMonitor::instance().init();
+
+    if (isSdcardOk)
+    {
+        if (!m_aggregator->readIni("bb-config.ini"))
+        {
+            error << "Cannot read config file, so setting default values";
+            config.setDefault();
+        }
+    } else {
+        warning << "Bluetooth bridge operate without sd-card, it will use default settings";
+    }
+
+    initNetworkClient();
+    m_networkClient.connectPackageReceiver(this);
+
+    m_workerToNetwork.setStackSize(512);
+    m_workerToNetwork.run();
+
+    configureBluetooth();
 }
 
 void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 {
     UNUSED_ARG(pinout);
-    debug << "Bluetooth bridge initialization";
 
-	// default address for bluetooth bridge without SD-card
-	deviceConfig.devAddr.address[0] = 50;
-	deviceConfig.devAddr.address[1] = 50;
-	deviceConfig.devAddr.address[2] = 50;
-
-	// Power monitor should be initialized before configuration reading
-	PowerMonitor::instance().init();
-
-	if (isSdcardOk)
-	{
-		if (!m_aggregator->readIni("config.ini"))
-		{
-			error << "Cannot read config file, so setting default values";
-			config.setDefault();
-		}
-	} else {
-		warning << "Bluetooth bridge operate without sd-card, it will use default settings";
-	}
-
-	m_networkClient.setMyAddress(deviceConfig.devAddr);
-	m_networkClient.connectPackageReceiver(this);
-	m_networkClient.registerMyBroadcast(broadcast.any);
-	m_networkClient.registerMyBroadcast(broadcast.bluetoothBridges);
-	NetworkLayer::instance().connectClient(&m_networkClient);
-
-	/*
-	NetworkLayer::instance().setAddress(deviceConfig.devAddr);
-	NetworkLayer::instance().setPackageReceiver(
-		[this](DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
-		{
-			receiveNetworkPackage(sender, payload, payloadLength);
-		}
-	);
-	NetworkLayer::instance().registerBroadcast(broadcast.any);
-	NetworkLayer::instance().registerBroadcast(broadcast.bluetoothBridges);
-*/
-	NRF24L01Manager *nrf = new NRF24L01Manager();
-	auto radioReinit = [](IRadioPhysicalDevice* rf) {
-		static_cast<NRF24L01Manager*>(rf)->init(
-				IOPins->getIOPin(1, 7),
-				IOPins->getIOPin(1, 12),
-				IOPins->getIOPin(1, 8),
-				2,
-				true,
-				1
-			);
-	};
-	radioReinit(nrf);
-	NetworkLayer::instance().setRadioReinitCallback(radioReinit);
-	NetworkLayer::instance().init(nrf);
-
-	//NetworkLayer::instance().enableRegularNRFReinit();
-
-	m_workerToNetwork.setStackSize(256);
-	m_workerToNetwork.run();
-
-	configureBluetooth();
+    initAsSecondaryDevice(pinout, isSdcardOk);
+    initNetwork();
+    //NetworkLayer::instance().enableRegularNRFReinit();
 
 	m_tasksPool.add(
 			[this] { PowerMonitor::instance().interrogate(); },
@@ -170,19 +143,14 @@ void BluetoothBridge::configureBluetooth()
 
 	// First, configuring HC-05 bluetooth module to have proper name, UART speed and password
 	m_configurator.init(IOPins->getIOPin(IIOPin::PORTA, 1), m_bluetoothPort);
+
 	info << "Determining speed of UART for HC-05";
 	HC05Configurator::HC05Result result = m_configurator.selectSpeed();
 	if (result != HC05Configurator::HC05Result::ok)
 	{
-		error << "Cannot determine HC-05 speed. Somebody might have configured it by external tool";
+		error << "Cannot determine HC-05 speed. Somebody might have configured "
+		         "it by external tool. Bluetooth bridge will not operate! Error: " << HC05Configurator::parseResult(result);
 	}
-
-	info << "Testing bluetooth module HC05 in AT-mode";
-	result = m_configurator.test();
-	if (result == HC05Configurator::HC05Result::ok)
-		info << "HC-05 test OK";
-	else
-		error << "HC-05 test failed: " << HC05Configurator::parseResult(result);
 
 	m_configurator.configure();
 	m_configurator.leaveAT();
@@ -198,23 +166,7 @@ void BluetoothBridge::configureBluetooth()
 	);
 
 	m_bluetoothPort->init(HC05Configurator::uartTargetSpeed);
-	/*
-	m_bluetoothPort->setRXDoneCallback(
-			[this](uint8_t* buffer, uint16_t size)
-			{
-				memcpy(m_tmpBuffer, buffer, size);
-				m_tmpBuffer[size] = '\0';
-				m_worker.addFromISR(
-						[this]()
-						{
-							info << "Incoming: " << m_tmpBuffer;
-						}
-				);
-
-			}
-	);*/
-
-	m_workerToBluetooth.setStackSize(256);
+	m_workerToBluetooth.setStackSize(512);
 	m_workerToBluetooth.run();
 }
 
@@ -280,5 +232,4 @@ void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
 	            true
 	    );
 	}
-
 }

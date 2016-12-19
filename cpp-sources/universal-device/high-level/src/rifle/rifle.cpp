@@ -375,28 +375,9 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	initSounds();
 
 	info << "RCSP modem initialization";
-	info << "Network initialization";
-    m_networkClient.setMyAddress(deviceConfig.devAddr);
-    m_networkClient.connectPackageReceiver(&m_networkPackagesListener);
-    m_networkClient.registerMyBroadcast(broadcast.any);
+	initNetworkClient();
+    initNetwork();
     m_networkClient.registerMyBroadcast(broadcast.rifles);
-    NetworkLayer::instance().connectClient(&m_networkClient);
-
-	NRF24L01Manager *nrf = new NRF24L01Manager();
-	auto radioReinit = [](IRadioPhysicalDevice* rf) {
-		static_cast<NRF24L01Manager*>(rf)->init(
-				IOPins->getIOPin(1, 7),
-				IOPins->getIOPin(1, 12),
-				IOPins->getIOPin(1, 8),
-				2,
-				true,
-				1
-			);
-	};
-	radioReinit(nrf);
-	NetworkLayer::instance().setRadioReinitCallback(radioReinit);
-	NetworkLayer::instance().init(nrf);
-
 
 #ifdef DEBUG
 	NetworkLayer::instance().enableDebug(true);
