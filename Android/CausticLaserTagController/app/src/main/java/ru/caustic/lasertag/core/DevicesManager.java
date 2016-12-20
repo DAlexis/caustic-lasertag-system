@@ -326,7 +326,7 @@ public class DevicesManager {
         stream.addObjectRequest(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId());
         stream.addObjectRequest(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId());
         devices.clear();
-        stream.send(BridgeConnector.Broadcasts.any);
+        stream.send(BridgeConnector.Broadcasts.anyGameDevice);
     }
     public void asyncPopParametersFromDevices(SynchronizationEndListener endHandler, final Set<BridgeConnector.DeviceAddress> devices) {
         // @todo Remove this line and create AsyncDataPopper only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again

@@ -45,6 +45,11 @@ public:
 
 	const DeviceAddress any{255, 255, 255};
 
+	/** For all devices except bluetooth bridges for now.
+	 * To prevend discovering bridges by themselves
+	 */
+	const DeviceAddress anyGameDevice{255, 255, 254};
+
 	static bool isBroadcast(const DeviceAddress& addr);
 
 	class IBroadcastTester

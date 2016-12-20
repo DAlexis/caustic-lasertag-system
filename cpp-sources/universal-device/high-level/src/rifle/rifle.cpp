@@ -377,6 +377,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	info << "RCSP modem initialization";
 	initNetworkClient();
     initNetwork();
+    m_networkClient.registerMyBroadcast(broadcast.anyGameDevice);
     m_networkClient.registerMyBroadcast(broadcast.rifles);
 
 #ifdef DEBUG
