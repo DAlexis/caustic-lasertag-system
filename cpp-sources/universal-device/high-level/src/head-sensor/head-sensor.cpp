@@ -466,11 +466,11 @@ void HeadSensor::sendHeartbeat()
 	{
 		RCSPStream stream(m_aggregator);
 		// This line is temporary solution if team was changed by value, not by setter func call
-		stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
-		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent);
-		stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
+		stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId); // 3b+1b
+		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent); // 3b+2b
+		stream.addValue(ConfigCodes::HeadSensor::Configuration::playerId); // 3b+1b
+		stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat); // 3b
 		stream.send(&m_networkClient, it->first, false);
-		//RCSPStream::remoteCall(*it, ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat, false, nullptr);
 	}
 }
 
@@ -565,7 +565,10 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 {
 	info << "By the time " << notification.damager << " damaged " << notification.target;
 	if (notification.damager != playerConfig.playerId)
+	{
+	    debug << "not for me: my id is " << playerConfig.playerId;
 		return;
+	}
 
 	if (!playerState.weaponsList.weapons().empty())
 	{

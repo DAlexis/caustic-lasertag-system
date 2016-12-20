@@ -64,8 +64,8 @@ public:
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound);
 
 	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged);      ///< Play enemy damaged sound
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);      ///< Play enemy damaged sound
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS);      ///< Play enemy damaged sound
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS);
 
 	RifleConfiguration config;
 	RifleOwnerConfiguration rifleOwner;

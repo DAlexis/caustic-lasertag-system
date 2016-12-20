@@ -69,6 +69,10 @@ void RifleLCD5110Display::update()
 		m_lcd.stringXY(0, 2, buffer);
 		sprintf(buffer, "A: %u, M: %u", m_state->bulletsInMagazineCurrent, m_state->magazinesCountCurrent);
 		m_lcd.stringXY(0, 3, buffer);
+		sprintf(buffer, "Team: %d", (int)m_owner->teamId);
+        m_lcd.stringXY(0, 4, buffer);
+		sprintf(buffer, "Player: %d", (int)m_owner->playerId);
+        m_lcd.stringXY(0, 5, buffer);
 	} else {
 		m_lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
 		m_lcd.stringXY(0, 2, "Head sensor");
