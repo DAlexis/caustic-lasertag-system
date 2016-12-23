@@ -28,6 +28,7 @@
 #include "dev/io-pins-utils.hpp"
 #include "dev/nrf24l01.hpp"
 #include "dev/wav-player.hpp"
+#include "hal/i2c.hpp"
 #include "hal/system-clock.hpp"
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
@@ -36,6 +37,7 @@
 #include "rcsp/stream.hpp"
 #include "rifle/resources.hpp"
 #include "rifle/rifle.hpp"
+
 
 #include <stdio.h>
 #include <string>
@@ -229,6 +231,21 @@ bool Rifle::checkPinout(const Pinout& pinout)
 
 void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 {
+    debug << "Initializing display...";
+    if (m_disp2.init(I2Cs->get(2)))
+    {
+        debug << "Display init done!";
+        m_disp2.DrawLine(1, 1, 20, 20, 1);
+        m_disp2.DrawLine(20, 1, 1, 20, 0);
+        m_disp2.updateScreen();
+    } else {
+        debug << "Display initialization failed!";
+    }
+
+    debug << "Rifle disabled temporary";
+    for (;;) {
+    }
+
 	if (!isSdcardOk)
 	{
 		error << "Fatal error: rifle cannot operate without sdcard!";

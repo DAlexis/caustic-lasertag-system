@@ -31,6 +31,7 @@
 #include "dev/buttons.hpp"
 #include "dev/MFRC522-wrapper.hpp"
 #include "dev/wav-player.hpp"
+#include "dev/ssd1306-display.hpp"
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
 #include "rcsp/operation-codes.hpp"
@@ -171,6 +172,8 @@ private:
 	RifleLCD5110Display m_display{&rifleOwner, &state, &playerState};
 
 	RC552Wrapper m_mfrcWrapper;
+
+	SSD1306Display m_disp2;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

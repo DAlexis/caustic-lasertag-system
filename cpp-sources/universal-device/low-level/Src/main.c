@@ -103,8 +103,8 @@ int main(void)
   MX_SDIO_SD_Init();
 #endif
   MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
-  MX_USART3_UART_Init();
+  //MX_USART2_UART_Init();
+  //MX_USART3_UART_Init();
   MX_ADC1_Init();
   MX_DAC_Init();
   //MX_SPI2_Init();
