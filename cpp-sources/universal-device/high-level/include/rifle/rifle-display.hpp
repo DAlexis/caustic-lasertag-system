@@ -26,22 +26,21 @@
 #define INCLUDE_RIFLE_RIFLE_DISPLAY_HPP_
 
 #include "rifle-config-and-state.hpp"
-#include "dev/lcd5110.hpp"
 
-class RifleLCD5110Display
+class RifleDisplayBase
 {
 public:
-	RifleLCD5110Display(const RifleOwnerConfiguration *owner, const RifleState *state, const PlayerPartialState *playerState);
-	void init();
-	void update();
+    virtual ~RifleDisplayBase() {}
+    virtual bool init() = 0;
+    virtual void update() = 0;
 
-private:
-	LCD5110Controller m_lcd;
-	const RifleOwnerConfiguration *m_owner;
-	const RifleState *m_state;
-	const PlayerPartialState *m_playerState;
+    void setData(const RifleOwnerConfiguration *owner, const RifleState *state, const PlayerPartialState *playerState);
+
+protected:
+    const RifleOwnerConfiguration *m_owner;
+    const RifleState *m_state;
+    const PlayerPartialState *m_playerState;
 };
-
 
 
 

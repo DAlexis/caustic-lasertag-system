@@ -37,7 +37,8 @@
 #include "rcsp/stream.hpp"
 #include "rifle/resources.hpp"
 #include "rifle/rifle.hpp"
-
+#include "rifle/rifle-display-lcd5110.hpp"
+#include "rifle/rifle-display-ssd1306.hpp"
 
 #include <stdio.h>
 #include <string>
@@ -231,21 +232,6 @@ bool Rifle::checkPinout(const Pinout& pinout)
 
 void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 {
-    debug << "Initializing display...";
-    if (m_disp2.init(I2Cs->get(2)))
-    {
-        debug << "Display init done!";
-        m_disp2.DrawLine(1, 1, 20, 20, 1);
-        m_disp2.DrawLine(20, 1, 1, 20, 0);
-        m_disp2.updateScreen();
-    } else {
-        debug << "Display initialization failed!";
-    }
-
-    debug << "Rifle disabled temporary";
-    for (;;) {
-    }
-
 	if (!isSdcardOk)
 	{
 		error << "Fatal error: rifle cannot operate without sdcard!";
@@ -431,12 +417,34 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	);
 
 	info << "Display initialization";
-	m_display.init();
-	m_tasksPool.add([this](){
-			m_display.update();
-		},
-		500000
-	);
+	auto pinoutRes = pinout.getParameter("display");
+	if (pinoutRes)
+	{
+        if (pinoutRes.details == "lcd5110")
+        {
+            info << "Creating lcd 5110 display controller";
+            m_display = new RifleLCD5110Display;
+        } else if (pinoutRes.details == "ssd1306")
+        {
+            info << "Creating ssd1306 display controller";
+            m_display = new RifleSSD1306Display;
+        }
+	}
+
+	if (m_display)
+	{
+	    m_display->setData(&rifleOwner, &state, &playerState);
+	    if (m_display->init())
+	    {
+            m_tasksPool.add([this](){
+                    m_display->update();
+                },
+                500000
+            );
+	    } else {
+	        delete m_display;
+	    }
+	}
 
 	info << "Rifle ready to use\n";
 }

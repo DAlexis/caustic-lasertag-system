@@ -13,6 +13,11 @@
 class SSD1306Display
 {
 public:
+    struct Color {
+        constexpr static uint8_t black = 0x00;
+        constexpr static uint8_t white = 0x01;
+    };
+
     bool init(II2CManager* i2c);
     void updateScreen(void);
     void ToggleInvert(void);

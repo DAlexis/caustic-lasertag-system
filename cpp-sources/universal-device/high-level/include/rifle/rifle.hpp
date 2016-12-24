@@ -169,11 +169,9 @@ private:
 
 	/// If current time > m_unshockTime, player is not shocked now
 	Time m_unshockTime = 0;
-	RifleLCD5110Display m_display{&rifleOwner, &state, &playerState};
+	RifleDisplayBase* m_display = nullptr;
 
 	RC552Wrapper m_mfrcWrapper;
-
-	SSD1306Display m_disp2;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

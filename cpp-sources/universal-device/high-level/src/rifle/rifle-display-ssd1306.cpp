@@ -21,12 +21,18 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#include "rifle/rifle-display.hpp"
+#include "rifle/rifle-display-ssd1306.hpp"
+#include "hal/i2c.hpp"
 
-
-void RifleDisplayBase::setData(const RifleOwnerConfiguration *owner, const RifleState *state, const PlayerPartialState *playerState)
+bool RifleSSD1306Display::init()
 {
-    m_owner = owner;
-    m_state = state;
-    m_playerState = playerState;
+    return m_display.init(I2Cs->get(2));
 }
+
+void RifleSSD1306Display::update()
+{
+    m_display.DrawLine(1, 1, 20, 20, SSD1306Display::Color::white);
+    m_display.DrawLine(20, 1, 1, 20, SSD1306Display::Color::black);
+    m_display.updateScreen();
+}
+

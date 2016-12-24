@@ -26,23 +26,14 @@
 // Absolute value
 #define ABS(x)   ((x) > 0 ? (x) : -(x))
 
-// Black color, no pixel
-#define SSD1306_COLOR_BLACK 0x00
-
-// Pixel is set. Color depends on LCD
-#define SSD1306_COLOR_WHITE 0x01
-
 bool SSD1306Display::init(II2CManager* i2c)
 {
     m_i2c = i2c;
 
-
     debug << "SSD1306 initialization";
     // Init I2C
     m_i2c->init();
-    /*debug << "test transmit";
-    m_i2c->transmit(m_addr, (uint8_t*)"\0", 1);
-    debug << "test transmit end";*/
+
     // Check if LCD connected to I2C
     if (!m_i2c->isDeviceReady(m_addr, 1, 1000))
     {
@@ -50,13 +41,10 @@ bool SSD1306Display::init(II2CManager* i2c)
         return false;
     }
 
-    systemClock->wait_us(15);
-    /* A little delay */
-    uint32_t p = 2500;
-    while(p>0)
-        p--;
+    // A little delay
+    systemClock->wait_us(150);
 
-    /* Init LCD */
+    // Init LCD
     writeCommand(0xAE); //display off
     writeCommand(0x20); //Set Memory Addressing Mode
     writeCommand(0x10); //00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
@@ -86,22 +74,22 @@ bool SSD1306Display::init(II2CManager* i2c)
     writeCommand(0x14); //
     writeCommand(0xAF); //--turn on SSD1306 panel
 
-    /* Clear screen */
-    Fill(SSD1306_COLOR_BLACK);
+    // Clear screen
+    Fill(Color::black);
 
-    /* Update screen */
+    // Update screen
     updateScreen();
 
-    /* Set default values */
+    // Set default values
     SSD1306.CurrentX = 0;
     SSD1306.CurrentY = 0;
 
-    /* Initialized OK */
+    // Initialized OK
     SSD1306.Initialized = 1;
 
     debug << "SSD1306 init OK";
 
-    /* Return OK */
+    // Return OK
     return true;
 }
 
@@ -126,7 +114,7 @@ void SSD1306Display::ToggleInvert(void)
 
 void SSD1306Display::Fill(uint8_t color)
 {
-    memset(SSD1306_Buffer, (color == SSD1306_COLOR_BLACK) ? 0x00 : 0xFF, m_width * m_height / 8);
+    memset(SSD1306_Buffer, (color == Color::black) ? 0x00 : 0xFF, m_width * m_height / 8);
 }
 
 void SSD1306Display::DrawPixel(uint16_t x, uint16_t y, uint8_t color)
@@ -145,7 +133,7 @@ void SSD1306Display::DrawPixel(uint16_t x, uint16_t y, uint8_t color)
     }
 
     /* Set color */
-    if (color == SSD1306_COLOR_WHITE) {
+    if (color == Color::white) {
        SSD1306_Buffer[x + (y / 8) * m_width] |= 1 << (y % 8);
     } else {
        SSD1306_Buffer[x + (y / 8) * m_height] &= ~(1 << (y % 8));
