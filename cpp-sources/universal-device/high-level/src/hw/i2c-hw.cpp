@@ -44,17 +44,16 @@ void I2CManager::init()
 
 bool I2CManager::transmit(uint16_t address, uint8_t* data, uint16_t size)
 {
+    HAL_StatusTypeDef res = HAL_I2C_Master_Transmit_DMA(m_hi2c, address, data, size);
 
-    //HAL_StatusTypeDef res = HAL_I2C_Master_Transmit_DMA(m_hi2c, address, data, size);
-    HAL_StatusTypeDef res = HAL_I2C_Master_Transmit(m_hi2c, address, data, size, 100);
     if (res != HAL_OK)
     {
         error << "Error while HAL_I2C_Master_Transmit_DMA(...): " << res;
         return false;
-    }/*
+    }
     while(HAL_DMA_GetState(m_hi2c->hdmatx) != HAL_DMA_STATE_READY)
     {
-    }*/
+    }
     return true;
 }
 

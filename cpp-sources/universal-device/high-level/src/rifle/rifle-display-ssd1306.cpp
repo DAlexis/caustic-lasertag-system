@@ -31,8 +31,34 @@ bool RifleSSD1306Display::init()
 
 void RifleSSD1306Display::update()
 {
-    m_display.DrawLine(1, 1, 20, 20, SSD1306Display::Color::white);
-    m_display.DrawLine(20, 1, 1, 20, SSD1306Display::Color::black);
+    m_display.GotoXY(0, 0);
+    m_display.Puts("Caustic LTS", &Font_7x10, SSD1306Display::Color::white);
+
+    if (m_state->isHSConnected)
+    {
+        char buffer[15];
+        m_display.GotoXY(0, 24);
+        sprintf(buffer, "H: %u/%u", m_playerState->healthCurrent, m_playerState->healthMax);
+        m_display.Puts(buffer, &Font_7x10, SSD1306Display::Color::white);
+
+        m_display.GotoXY(0, 36);
+        sprintf(buffer, "A: %u, M: %u", m_state->bulletsInMagazineCurrent, m_state->magazinesCountCurrent);
+        m_display.Puts(buffer, &Font_7x10, SSD1306Display::Color::white);
+
+        m_display.GotoXY(0, 48);
+        sprintf(buffer, "Team: %d", (int)m_owner->teamId);
+        m_display.Puts(buffer, &Font_7x10, SSD1306Display::Color::white);
+
+        m_display.GotoXY(0, 60);
+        sprintf(buffer, "Player: %d", (int)m_owner->playerId);
+        m_display.Puts(buffer, &Font_7x10, SSD1306Display::Color::white);
+
+    } else {
+        m_display.GotoXY(0, 24);
+        m_display.Puts("Head sensor", &Font_7x10, SSD1306Display::Color::white);
+        m_display.GotoXY(0, 40);
+        m_display.Puts("not connected", &Font_7x10, SSD1306Display::Color::white);
+    }
     m_display.updateScreen();
 }
 
