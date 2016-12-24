@@ -136,7 +136,7 @@ void SSD1306Display::DrawPixel(uint16_t x, uint16_t y, uint8_t color)
     if (color == Color::white) {
        SSD1306_Buffer[x + (y / 8) * m_width] |= 1 << (y % 8);
     } else {
-       SSD1306_Buffer[x + (y / 8) * m_height] &= ~(1 << (y % 8));
+       SSD1306_Buffer[x + (y / 8) * m_width] &= ~(1 << (y % 8));
     }
 }
 
