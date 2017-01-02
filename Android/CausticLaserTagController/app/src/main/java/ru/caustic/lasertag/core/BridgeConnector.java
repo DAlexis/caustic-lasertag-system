@@ -188,6 +188,7 @@ public class BridgeConnector {
     public static class Broadcasts
     {
         public static final DeviceAddress any = new DeviceAddress("255.255.255");
+        public static final DeviceAddress anyGameDevice = new DeviceAddress("255.255.254");
         public static final DeviceAddress headSensors = new DeviceAddress("255.255.4");
         public static final DeviceAddress headSensorsRed    = new DeviceAddress("255.255.0");
         public static final DeviceAddress headSensorsBlue   = new DeviceAddress("255.255.1");
@@ -198,6 +199,7 @@ public class BridgeConnector {
         public static boolean isBroadcast(DeviceAddress addr)
         {
             return addr == any
+                    || addr == anyGameDevice
                     || addr == headSensors
                     || addr == headSensorsRed
                     || addr == headSensorsBlue
