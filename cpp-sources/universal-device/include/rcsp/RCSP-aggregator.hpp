@@ -118,16 +118,22 @@ class IOperationAccessor
 {
 public:
 	virtual ~IOperationAccessor() {}
+
 	/// Get data from stream and set parameter, call function etc.
 	virtual void deserialize(void* source, OperationSize size) = 0;
+
 	/// Put parameter, function return value etc. to stream
 	virtual void serialize(void* destination) = 0;
+
 	/// Get data from string
 	virtual void parseString(const char* str) = 0;
+
 	/// Check if serialize is callable method
 	virtual bool isReadable() = 0;
+
 	/// Check if deserialize is callable method
 	virtual bool isWritable() = 0;
+
 	/// Get data size in stream
 	virtual uint32_t getSize() = 0;
 };

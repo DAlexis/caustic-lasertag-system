@@ -79,7 +79,7 @@ void ConnectedWeaponsList::clear()
 
 void ConnectedWeaponsList::insert(DeviceAddress addr)
 {
-	IWeaponObresver *obs;
+	IWeaponObserver *obs;
 	if (m_factory)
 	{
 		obs = m_factory->create();
@@ -101,7 +101,7 @@ void ConnectedWeaponsList::remove(DeviceAddress addr)
 	}
 }
 
-const std::map<DeviceAddress, IWeaponObresver*>& ConnectedWeaponsList::weapons()
+const std::map<DeviceAddress, IWeaponObserver*>& ConnectedWeaponsList::weapons()
 {
 	return m_weapons;
 }

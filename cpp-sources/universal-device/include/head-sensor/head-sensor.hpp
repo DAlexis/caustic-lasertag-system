@@ -40,7 +40,7 @@
 #include "rcsp/RCSP-state-saver.hpp"
 #include <set>
 
-class WeaponManager : public IWeaponObresver
+class WeaponManager : public IWeaponObserver
 {
 public:
 	~WeaponManager();
@@ -60,7 +60,7 @@ private:
 class WeaponManagerFactory : public IWeaponObserverFactory
 {
 public:
-	IWeaponObresver *create() const;
+	IWeaponObserver *create() const;
 };
 
 class HeadSensor : public IAnyDevice

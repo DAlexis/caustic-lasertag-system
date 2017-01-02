@@ -140,8 +140,8 @@ public:
 	 */
 	bool isPlanned();
 	/**
-	* Defer task runing from ISR using Free RTOS mechanism.
-	* Calls yeld so would stop the ISR
+	* Defer task running from ISR using Free RTOS mechanism.
+	* Calls yield so would stop the ISR
 	* @param task
 	* @return false if task is already planned
 	*/

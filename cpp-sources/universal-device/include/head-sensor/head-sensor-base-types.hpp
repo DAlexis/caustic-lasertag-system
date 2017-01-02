@@ -29,10 +29,10 @@
 #include "communication/head-sensor-rifle-communication.hpp"
 #include <map>
 
-class IWeaponObresver
+class IWeaponObserver
 {
 public:
-	virtual ~IWeaponObresver() {}
+	virtual ~IWeaponObserver() {}
 	virtual void assign(const DeviceAddress& addr) = 0;
 };
 
@@ -40,7 +40,7 @@ class IWeaponObserverFactory
 {
 public:
 	virtual ~IWeaponObserverFactory() {}
-	virtual IWeaponObresver *create() const = 0;
+	virtual IWeaponObserver *create() const = 0;
 };
 
 class ConnectedWeaponsList
@@ -58,11 +58,11 @@ public:
 
 	bool empty();
 
-	const std::map<DeviceAddress, IWeaponObresver*>& weapons();
+	const std::map<DeviceAddress, IWeaponObserver*>& weapons();
 
 private:
 	const IWeaponObserverFactory *m_factory = nullptr;
-	std::map<DeviceAddress, IWeaponObresver*> m_weapons;
+	std::map<DeviceAddress, IWeaponObserver*> m_weapons;
 };
 
 

@@ -96,7 +96,7 @@ void WeaponManager::die()
 	}
 }
 
-IWeaponObresver *WeaponManagerFactory::create() const
+IWeaponObserver *WeaponManagerFactory::create() const
 {
 	return new WeaponManager();
 }
