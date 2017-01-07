@@ -2,7 +2,6 @@ package ru.caustic.lasertag.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -10,11 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.Map;
-
-import ru.caustic.lasertag.core.BridgeConnector;
-import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.DevicesManager;
+import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.DevicesManager;
 
 
 public class MainControlsActivity extends AppCompatActivity {

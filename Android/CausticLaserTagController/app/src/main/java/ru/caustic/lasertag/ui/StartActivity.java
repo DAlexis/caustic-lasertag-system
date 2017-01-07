@@ -18,7 +18,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ru.caustic.lasertag.core.CausticController;
+import ru.caustic.rcspcore.BluetoothManager;
+import ru.caustic.rcspcore.CausticController;
 
 public class StartActivity extends AppCompatActivity {
 

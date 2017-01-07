@@ -1,6 +1,5 @@
-package ru.caustic.lasertag.core;
+package ru.caustic.rcspcore;
 
-import android.os.Handler;
 import android.os.SystemClock;
 
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * This class knows all connected devices and can pop their full states (all their parameters).

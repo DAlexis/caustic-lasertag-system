@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.ui;
+package ru.caustic.rcspcore;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,8 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
-
-import ru.caustic.lasertag.core.BridgeConnector;
 
 
 /**

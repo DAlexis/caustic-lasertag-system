@@ -1,0 +1,3 @@
+include ':app'
+include ':rcspcore'
+project (':rcspcore').projectDir = new File('../CausticLaserTagController/rcspcore')

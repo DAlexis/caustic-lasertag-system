@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.core;
+package ru.caustic.rcspcore;
 
 import java.util.ArrayList;
 import java.util.HashSet;
