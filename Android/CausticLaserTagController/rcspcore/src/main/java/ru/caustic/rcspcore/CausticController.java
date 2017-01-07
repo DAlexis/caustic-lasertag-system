@@ -1,6 +1,5 @@
-package ru.caustic.lasertag.core;
+package ru.caustic.rcspcore;
 
-import ru.caustic.lasertag.ui.BluetoothManager;
 
 /**
  * Created by dalexies on 13.10.16.

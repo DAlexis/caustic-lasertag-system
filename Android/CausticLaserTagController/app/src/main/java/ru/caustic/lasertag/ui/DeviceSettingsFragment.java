@@ -24,11 +24,11 @@ import android.widget.TextView;
 
 import java.util.Set;
 
-import ru.caustic.lasertag.core.BridgeConnector;
-import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.DevicesManager;
-import ru.caustic.lasertag.core.RCSProtocol;
-import ru.caustic.lasertag.core.SettingsEditorContext;
+import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.DevicesManager;
+import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.SettingsEditorContext;
 
 public class DeviceSettingsFragment extends Fragment {
     private static final String TAG = "CC.DevSetFragment";

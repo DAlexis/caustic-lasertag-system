@@ -1,11 +1,11 @@
-package ru.caustic.lasertag.core;
+package ru.caustic.rcspcore;
 
 import android.os.Handler;
 import android.util.Log;
 
 import java.util.Arrays;
 
-//import ru.caustic.lasertag.ui.BluetoothManager;
+import ru.caustic.rcspcore.BluetoothManager;
 
 /**
  * Created by alexey on 18.09.15.

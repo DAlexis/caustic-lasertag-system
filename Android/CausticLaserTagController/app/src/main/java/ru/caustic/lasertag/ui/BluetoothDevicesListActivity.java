@@ -1,9 +1,7 @@
 package ru.caustic.lasertag.ui;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,13 +9,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import ru.caustic.rcspcore.BluetoothManager;
 
 public class BluetoothDevicesListActivity extends AppCompatActivity {
 

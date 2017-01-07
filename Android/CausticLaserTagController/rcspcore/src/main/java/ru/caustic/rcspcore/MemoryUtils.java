@@ -1,4 +1,4 @@
-package ru.caustic.lasertag.core;
+package ru.caustic.rcspcore;
 
 /**
  * Created by alexey on 19.09.15.

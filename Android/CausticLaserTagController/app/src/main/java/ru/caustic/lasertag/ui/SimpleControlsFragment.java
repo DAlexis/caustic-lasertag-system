@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 
-import ru.caustic.lasertag.core.BridgeConnector;
-import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.DevicesManager;
-import ru.caustic.lasertag.core.RCSProtocol;
+import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.DevicesManager;
+import ru.caustic.rcspcore.RCSProtocol;
 
 public class SimpleControlsFragment extends Fragment {
 

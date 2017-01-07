@@ -4,8 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.GameStatistics;
+import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.GameStatistics;
 
 public class GameStatsActivity extends AppCompatActivity {
 

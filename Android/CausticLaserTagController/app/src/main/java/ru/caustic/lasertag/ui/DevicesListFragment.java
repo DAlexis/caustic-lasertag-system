@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +16,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Map;
 
-import ru.caustic.lasertag.core.BridgeConnector;
-import ru.caustic.lasertag.core.CausticController;
-import ru.caustic.lasertag.core.DevicesManager;
-import ru.caustic.lasertag.core.RCSProtocol;
-import ru.caustic.lasertag.core.SettingsEditorContext;
+import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.DevicesManager;
+import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.SettingsEditorContext;
 
 public class DevicesListFragment extends Fragment {
 
