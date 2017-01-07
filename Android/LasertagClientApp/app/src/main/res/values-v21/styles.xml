@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="LasertagAppTheme" parent="android:Theme.Material" >
+        <item name="android:colorAccent">@color/lasertag_accent</item>
+    </style>
+
+</resources>
