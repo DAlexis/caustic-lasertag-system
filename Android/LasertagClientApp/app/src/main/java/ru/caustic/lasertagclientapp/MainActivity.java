@@ -1,23 +1,26 @@
 package ru.caustic.lasertagclientapp;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ShareActionProvider;
+import android.support.v7.widget.ShareActionProvider;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String EXTRAS_MODE = "mode";
@@ -48,11 +51,21 @@ public class MainActivity extends Activity {
         }
         else
         {
-            selectItem(0);
+            currentMode = 0;
+            selectMode(currentMode, false);
+            setActionBarTitle(currentMode);
         }
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
+        else {
+            Log.d(TAG, "Action bar not found onCreate");
+        }
+
 
 
         drawerList.setOnItemClickListener(new DrawerClickListener());
@@ -112,7 +125,7 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem menuItem = (MenuItem) menu.findItem(R.id.action_share);
-        shareActionProvider = (ShareActionProvider) menuItem.getActionProvider();
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
         setShareIntent("Default text");
         return super.onCreateOptionsMenu(menu);
     }
@@ -128,7 +141,7 @@ public class MainActivity extends Activity {
     {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            selectItem(i);
+            selectMode(i, true);
         }
     }
 
@@ -175,7 +188,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void selectItem(int position)
+    private void selectMode(int position, boolean pushToBackStack)
     {
         currentMode = position;
         Fragment fragment;
@@ -198,7 +211,9 @@ public class MainActivity extends Activity {
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.content_frame, fragment, "visible_fragment");
-        ft.addToBackStack(null);
+        if (pushToBackStack) {
+            ft.addToBackStack(null);
+        }
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
 
@@ -206,17 +221,17 @@ public class MainActivity extends Activity {
         drawerLayout.closeDrawer(drawerList);
     }
 
-    private void setActionBarTitle(int position)
-    {
+    private void setActionBarTitle(int position) {
         String title;
-        if (position == 0)
-        {
-            title = getResources().getString(R.string.app_name);
+        title = modeTitles[position];
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
         }
         else {
-            title = modeTitles[position];
+            Log.d(TAG, "Action bar not found");
         }
-        getActionBar().setTitle(title);
     }
 
     @Override
