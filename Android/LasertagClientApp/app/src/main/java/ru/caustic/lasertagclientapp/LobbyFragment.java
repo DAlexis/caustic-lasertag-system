@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import ru.caustic.rcspcore.BluetoothManager;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,7 +35,7 @@ public class LobbyFragment extends Fragment {
 
         Fragment fragment;
 
-        if (mainActivity.isBtConnected())
+        if (BluetoothManager.getInstance().getStatus()==BluetoothManager.BT_CONNECTED)
         {
             fragment = new PlayerListFragment();
         }

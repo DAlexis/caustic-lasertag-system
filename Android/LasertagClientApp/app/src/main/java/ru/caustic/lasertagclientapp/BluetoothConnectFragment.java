@@ -68,16 +68,11 @@ public class BluetoothConnectFragment extends Fragment implements View.OnClickLi
                     startActivityForResult(BluetoothManager.getInstance().getIntentEnable(), BluetoothManager.REQUEST_ENABLE_BT);
                     break;
                 case BluetoothManager.BLUETOOTH_ENABLED:
+                    Intent intent = new Intent(getActivity(), BluetoothDevicesActivity.class);
+                    startActivityForResult(intent, CHOOSE_BT_DEVICE);
                     break;
             }
 
-            if (btState == BluetoothManager.BLUETOOTH_DISABLED) {
-                Toast.makeText(getActivity(), "Could not enable Bluetooth", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            Intent intent = new Intent(getActivity(), BluetoothDevicesActivity.class);
-            startActivityForResult(intent, CHOOSE_BT_DEVICE);
         }
     }
 
@@ -85,6 +80,19 @@ public class BluetoothConnectFragment extends Fragment implements View.OnClickLi
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == BluetoothManager.REQUEST_ENABLE_BT)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                Intent intent = new Intent(getActivity(), BluetoothDevicesActivity.class);
+                startActivityForResult(intent, CHOOSE_BT_DEVICE);
+            }
+            else {
+                Toast.makeText(getActivity(), "Could not enable Bluetooth", Toast.LENGTH_LONG).show();
+            }
+        }
+
         if (requestCode == CHOOSE_BT_DEVICE) {
             if (resultCode == RESULT_OK) {
                 String device = data.getStringExtra(BluetoothDevicesActivity.BT_DEVICE);

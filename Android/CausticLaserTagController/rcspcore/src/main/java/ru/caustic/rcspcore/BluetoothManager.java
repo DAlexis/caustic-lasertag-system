@@ -249,7 +249,7 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
             // Create a data stream so we can talk to server.
             Log.d(TAG, "Creating data stream...");
 
-            mConnectedThread = new ConnectedThread(btSocket);
+            mConnectedThread = new ConnectedThread(btSocket, listener);
             mConnectedThread.start();
             status = BT_CONNECTED;
             listener.onConnectionDone(true);
@@ -260,11 +260,13 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private final ConnectionDoneListener listener;
 
-        public ConnectedThread(BluetoothSocket socket) {
+        public ConnectedThread(BluetoothSocket socket, ConnectionDoneListener listener) {
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
+            this.listener = listener;
 
             // Get the input and output streams, using temp objects because
             // member streams are final
@@ -295,6 +297,8 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
 
                 } catch (IOException e) {
                     Log.d(TAG, "run died due to exception!");
+                    onConnectionClosed();
+                    listener.onConnectionDone(false);
                     break;
                 }
             }

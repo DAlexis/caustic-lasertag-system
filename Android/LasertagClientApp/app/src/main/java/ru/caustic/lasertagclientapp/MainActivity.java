@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.support.v7.widget.ShareActionProvider;
+import android.widget.Toast;
 
 import ru.caustic.rcspcore.BluetoothManager;
 
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
     private static final String TAG = "MainActivity";
     private static final String EXTRAS_MODE = "mode";
     private static final String EXTRAS_BT_CONNECTED = "btConnected";
+
+    public static boolean activityVisible = false;
 
     private ListView drawerList;
     private String modeTitles[];
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
     }
 
     public void setBtConnected(boolean btConnected) {
+        if (this.btConnected != btConnected)
         this.btConnected = btConnected;
     }
 
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         //Initialize activity members
         drawerList = (ListView) findViewById(R.id.drawer);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -57,11 +62,16 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         //Get array of options titles in the navigation drawer
         modeTitles = getResources().getStringArray(R.array.mode_titles);
 
+        //Need to set BT state here to know which fragment to display
+        if (BluetoothManager.getInstance().getStatus() == BluetoothManager.BT_CONNECTED)
+        {
+            setBtConnected(true);
+        }
+
         if (savedInstanceState != null)
         {
             currentMode = (int) savedInstanceState.getInt(EXTRAS_MODE);
             setActionBarTitle(currentMode);
-            btConnected = savedInstanceState.getBoolean(EXTRAS_BT_CONNECTED);
         }
         else
         {
@@ -152,14 +162,19 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
     }
 
     @Override
-    public void onConnectionDone(boolean result) {
-
+    public void onConnectionDone(final boolean result) {
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                setBtConnected(true);
-                selectMode(0, true);
+                if (result == true) {
+                    setBtConnected(true);
+                }
+                else {
+                    setBtConnected(false);
+                    Toast.makeText(MainActivity.this, "Bluetooth connection failed", Toast.LENGTH_SHORT).show();
+                }
+                if (activityVisible) selectMode(0, false);
             }
         });
 
@@ -262,10 +277,34 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         }
     }
 
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(EXTRAS_MODE, currentMode);
+        activityVisible = false;
     }
 
+    @Override
+    protected void onStop() {
+        activityVisible = false;
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        activityVisible = false;
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //Check whether BT connection is alive
+        if (BluetoothManager.getInstance().getStatus() == BluetoothManager.BT_CONNECTED)
+        {
+            setBtConnected(true);
+        }
+        activityVisible = true;
+    }
 }
