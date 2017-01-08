@@ -2,12 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ru.caustic.lasertagclientapp.LobbyFragment">
+    tools:context="ru.caustic.lasertagclientapp.LobbyFragment"
+    android:id="@+id/lobby_fragment_container"
+    >
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Lobby" />
 
 </FrameLayout>

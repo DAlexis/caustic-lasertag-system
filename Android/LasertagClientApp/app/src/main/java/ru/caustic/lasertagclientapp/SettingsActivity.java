@@ -4,6 +4,7 @@ package ru.caustic.lasertagclientapp;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -17,9 +18,15 @@ import android.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.annotation.ColorInt;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+
+import com.enrico.colorpicker.colorDialog;
 
 import java.util.List;
 
@@ -34,11 +41,12 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener {
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
+    private static final String TAG = "SettingsActivity";
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -121,6 +129,10 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new GeneralPreferenceFragment())
+                .commit();
+
     }
 
     /**
@@ -134,34 +146,9 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
-                NavUtils.navigateUpFromSameTask(this);
-            }
-            return true;
-        }
-        return super.onMenuItemSelected(featureId, item);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
-    }
+
 
     /**
      * This method stops fragment injection in malicious applications.
@@ -169,10 +156,10 @@ public class SettingsActivity extends PreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
-                || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
     }
+
+
 
     /**
      * This fragment shows general preferences only. It is used when the
@@ -190,9 +177,29 @@ public class SettingsActivity extends PreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            bindPreferenceSummaryToValue(findPreference("display_name_key"));
+
+            Preference colorPreference = findPreference("marker_color_key");
+
+            int color = getActivity().getPreferences(MODE_PRIVATE).getInt("marker_color_key", 0);
+
+            colorDialog.setColorPreferenceSummary(colorPreference, color, getActivity(), getResources());
+
+            colorPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                @Override
+
+                public boolean onPreferenceClick(Preference preference) {
+
+                    colorDialog.showColorPicker((AppCompatActivity) getActivity(), 0);
+
+                    return false;
+                }
+            });
         }
+
+
+
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
@@ -205,63 +212,22 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
-    /**
-     * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class NotificationPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
-            setHasOptionsMenu(true);
+    @Override
+    public void onColorSelection(DialogFragment dialogFragment, @ColorInt int selectedColor) {
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
-        }
+        //Set start color for the picker
+        colorDialog.setPickerColor(SettingsActivity.this, 0, selectedColor);
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
+        //Set preference summary after picking new color
+        GeneralPreferenceFragment prefFrag = (GeneralPreferenceFragment) getFragmentManager().findFragmentById(android.R.id.content);
+        Preference colorPreference = prefFrag.findPreference("marker_color_key");
+        colorDialog.setColorPreferenceSummary(colorPreference, selectedColor, this, getResources());
+
+        //Update related shared preference
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        prefs.edit().putInt("marker_color_key", selectedColor).apply();
+        Log.d(TAG, "Color is " + getPreferences(MODE_PRIVATE).getInt("marker_color_key", 0));
     }
 
-    /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
-            setHasOptionsMenu(true);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
 }

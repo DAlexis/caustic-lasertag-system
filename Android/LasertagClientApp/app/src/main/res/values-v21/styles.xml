@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="LasertagAppTheme" parent="Theme.AppCompat" >
+    <style name="LasertagAppTheme" parent="Base.Theme.AppCompat" >
         <item name="android:colorAccent">@color/lasertag_accent</item>
         <item name="android:colorBackground">@color/background_material_dark</item>
         <item name="android:textColorPrimary">@color/abc_primary_text_material_dark</item>

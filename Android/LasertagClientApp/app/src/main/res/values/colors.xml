@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="lasertag_accent">#bf360c</color>
+    <color name="color_default">#33B5E5</color>
 </resources>

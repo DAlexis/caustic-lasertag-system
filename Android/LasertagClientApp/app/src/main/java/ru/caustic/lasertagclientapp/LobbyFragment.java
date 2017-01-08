@@ -1,8 +1,12 @@
 package ru.caustic.lasertagclientapp;
 
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +27,27 @@ public class LobbyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lobby, container, false);
+        View layout = inflater.inflate(R.layout.fragment_lobby, container, false);
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+
+        Fragment fragment;
+
+        if (mainActivity.isBtConnected())
+        {
+            fragment = new PlayerListFragment();
+        }
+        else {
+            fragment = new BluetoothConnectFragment();
+        }
+
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        ft.replace(R.id.lobby_fragment_container, fragment);
+        ft.addToBackStack(null);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.commit();
+
+        return layout;
     }
 
 }

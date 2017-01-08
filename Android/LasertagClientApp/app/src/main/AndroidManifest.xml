@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.caustic.lasertagclientapp">
 
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -24,6 +27,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertagclientapp.MainActivity" />
         </activity>
+        <activity android:name=".BluetoothDevicesActivity"></activity>
     </application>
 
 </manifest>

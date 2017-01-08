@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="LasertagAppTheme" parent="Theme.AppCompat" >
+    <style name="LasertagAppTheme" parent="Base.Theme.AppCompat" >
 
         <item name="colorAccent">@color/lasertag_accent</item>
     </style>

@@ -1,8 +1,8 @@
 package ru.caustic.lasertagclientapp;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -20,10 +20,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.support.v7.widget.ShareActionProvider;
 
-public class MainActivity extends AppCompatActivity {
+import ru.caustic.rcspcore.BluetoothManager;
+
+public class MainActivity extends AppCompatActivity implements BluetoothManager.ConnectionDoneListener {
 
     private static final String TAG = "MainActivity";
     private static final String EXTRAS_MODE = "mode";
+    private static final String EXTRAS_BT_CONNECTED = "btConnected";
 
     private ListView drawerList;
     private String modeTitles[];
@@ -31,6 +34,16 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private int currentMode = 0; //for determining fragment to display
     private ShareActionProvider shareActionProvider;
+
+    public boolean isBtConnected() {
+        return btConnected;
+    }
+
+    public void setBtConnected(boolean btConnected) {
+        this.btConnected = btConnected;
+    }
+
+    private boolean btConnected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         {
             currentMode = (int) savedInstanceState.getInt(EXTRAS_MODE);
             setActionBarTitle(currentMode);
+            btConnected = savedInstanceState.getBoolean(EXTRAS_BT_CONNECTED);
         }
         else
         {
@@ -92,10 +106,10 @@ public class MainActivity extends AppCompatActivity {
         };
         drawerLayout.addDrawerListener(drawerToggle);
 
-        getFragmentManager().addOnBackStackChangedListener(
+        getSupportFragmentManager().addOnBackStackChangedListener(
                 new FragmentManager.OnBackStackChangedListener() {
                     public void onBackStackChanged() {
-                        FragmentManager fragMan = getFragmentManager();
+                        FragmentManager fragMan = getSupportFragmentManager();
                         Fragment fragment = fragMan.findFragmentByTag("visible_fragment");
                         if (fragment instanceof LobbyFragment)
                         {
@@ -137,6 +151,20 @@ public class MainActivity extends AppCompatActivity {
         shareActionProvider.setShareIntent(intent);
     }
 
+    @Override
+    public void onConnectionDone(boolean result) {
+
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setBtConnected(true);
+                selectMode(0, true);
+            }
+        });
+
+    }
+
     private class DrawerClickListener implements ListView.OnItemClickListener
     {
         @Override
@@ -162,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
 
         boolean drawerOpen = drawerLayout.isDrawerOpen(drawerList);
-        //menu.findItem(R.id.action_share).setVisible(!drawerOpen);
+        menu.findItem(R.id.action_share).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -209,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.content_frame, fragment, "visible_fragment");
         if (pushToBackStack) {
             ft.addToBackStack(null);
