@@ -50,7 +50,13 @@
             android:text="@string/connecting"
             android:id="@+id/bt_scanning"
             />
-
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/cancel_bt_scan"
+            android:text="@string/cancel"
+            />
 
     </LinearLayout>
 

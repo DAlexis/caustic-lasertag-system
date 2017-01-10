@@ -1,5 +1,6 @@
 package ru.caustic.lasertagclientapp;
 
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,8 +29,10 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
     private static final String TAG = "MainActivity";
     private static final String EXTRAS_MODE = "mode";
     private static final String EXTRAS_BT_CONNECTED = "btConnected";
+    private static final String EXTRAS_BT_HANDLER_RUNNING = "monitorRunning";
 
     public static boolean activityVisible = false;
+    public boolean monitorRunning = false;
 
     private ListView drawerList;
     private String modeTitles[];
@@ -38,13 +41,52 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
     private int currentMode = 0; //for determining fragment to display
     private ShareActionProvider shareActionProvider;
 
+    private static Handler btConnectionMonitorHandler = new Handler();
+    private Runnable btConnMon = new Runnable(){
+        //Time interval in msecs for checking BT connection status
+        public static final long BT_CONNECTION_MONITOR_PERIODICITY = 1000;
+
+        @Override
+        public void run() {
+            boolean btCurrentStatus = false;
+            if (BluetoothManager.getInstance().getStatus() == BluetoothManager.BT_CONNECTED)
+            {
+                btCurrentStatus = true;
+            }
+            boolean btStatusChanged = setBtConnected(btCurrentStatus);
+            Log.d(TAG, "BTConnMon: btStatus " + isBtConnected() + ", btStatusChanged " + btStatusChanged);
+            if (btStatusChanged)
+            {
+                //Update fragment view if BT status changed
+                selectMode(currentMode, false);
+                //Show notification
+                if (isBtConnected())
+                {
+                    Toast.makeText(MainActivity.this, "Bluetooth connection established", Toast.LENGTH_SHORT).show();
+
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "Bluetooth connection failed", Toast.LENGTH_SHORT).show();
+                }
+
+                //Redraw action bar to show/hide disconnect option
+                invalidateOptionsMenu();
+            }
+            btConnectionMonitorHandler.postDelayed(this, BT_CONNECTION_MONITOR_PERIODICITY);
+        }
+    };
+
     public boolean isBtConnected() {
         return btConnected;
     }
 
-    public void setBtConnected(boolean btConnected) {
-        if (this.btConnected != btConnected)
-        this.btConnected = btConnected;
+    public boolean setBtConnected(boolean btConnected) {
+        //Returns true if BT connection status changed, and false if did not change
+        if (this.btConnected != btConnected) {
+            this.btConnected = btConnected;
+            return true;
+        }
+        else return false;
     }
 
     private boolean btConnected = false;
@@ -62,16 +104,13 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         //Get array of options titles in the navigation drawer
         modeTitles = getResources().getStringArray(R.array.mode_titles);
 
-        //Need to set BT state here to know which fragment to display
-        if (BluetoothManager.getInstance().getStatus() == BluetoothManager.BT_CONNECTED)
-        {
-            setBtConnected(true);
-        }
 
         if (savedInstanceState != null)
         {
             currentMode = (int) savedInstanceState.getInt(EXTRAS_MODE);
             setActionBarTitle(currentMode);
+            setBtConnected(savedInstanceState.getBoolean(EXTRAS_BT_CONNECTED));
+            monitorRunning =savedInstanceState.getBoolean(EXTRAS_BT_HANDLER_RUNNING);
         }
         else
         {
@@ -151,6 +190,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         MenuItem menuItem = (MenuItem) menu.findItem(R.id.action_share);
         shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
         setShareIntent("Default text");
+        MenuItem disconnectMenu = (MenuItem) menu.findItem(R.id.action_disconnect);
+        disconnectMenu.setVisible(isBtConnected());
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -163,20 +204,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
 
     @Override
     public void onConnectionDone(final boolean result) {
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (result == true) {
-                    setBtConnected(true);
-                }
-                else {
-                    setBtConnected(false);
-                    Toast.makeText(MainActivity.this, "Bluetooth connection failed", Toast.LENGTH_SHORT).show();
-                }
-                if (activityVisible) selectMode(0, false);
-            }
-        });
 
     }
 
@@ -225,6 +252,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
                     Intent intent = new Intent(this, SettingsActivity.class);
                     startActivity(intent);
                     return true;
+                case R.id.action_disconnect:
+                    BluetoothManager.getInstance().cancel();
+                    return true;
                 default:
                     return super.onOptionsItemSelected(item);
             }
@@ -252,6 +282,16 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
                 break;
         }
 
+//        //If in lobby, BT monitor should be running, if not, stop it
+//        if (position == 0 && !monitorRunning)
+//        {
+//            startBTMonitor();
+//        }
+//        else if (monitorRunning && isBtConnected() == false)
+//        {
+//            stopBTMonitor();
+//        }
+
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.content_frame, fragment, "visible_fragment");
         if (pushToBackStack) {
@@ -262,6 +302,16 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
 
         setActionBarTitle(position);
         drawerLayout.closeDrawer(drawerList);
+    }
+
+    private void startBTMonitor() {
+        btConnectionMonitorHandler.post(btConnMon);
+        monitorRunning = true;
+    }
+
+    private void stopBTMonitor() {
+        btConnectionMonitorHandler.removeCallbacks(btConnMon);
+        monitorRunning = false;
     }
 
     private void setActionBarTitle(int position) {
@@ -282,12 +332,15 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(EXTRAS_MODE, currentMode);
+        outState.putBoolean(EXTRAS_BT_CONNECTED, isBtConnected());
+        outState.putBoolean(EXTRAS_BT_HANDLER_RUNNING, monitorRunning);
         activityVisible = false;
     }
 
     @Override
     protected void onStop() {
         activityVisible = false;
+        stopBTMonitor();
         super.onStop();
     }
 
@@ -300,11 +353,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
     @Override
     protected void onStart() {
         super.onStart();
-        //Check whether BT connection is alive
-        if (BluetoothManager.getInstance().getStatus() == BluetoothManager.BT_CONNECTED)
-        {
-            setBtConnected(true);
-        }
         activityVisible = true;
+        if (!monitorRunning){
+            startBTMonitor();
+        }
     }
 }

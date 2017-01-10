@@ -104,5 +104,7 @@
     <string name="scan_for_devices">Scan for devices</string>
     <string name="bt_connect_prompt">Connect to a Caustic head sensor to display game information.</string>
     <string name="connecting">Connecting...</string>
+    <string name="cancel">Cancel</string>
+    <string name="disconnect">Disconnect</string>
 
 </resources>

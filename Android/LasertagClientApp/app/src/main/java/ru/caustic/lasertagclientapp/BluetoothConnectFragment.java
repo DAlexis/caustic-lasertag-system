@@ -28,7 +28,8 @@ public class BluetoothConnectFragment extends Fragment implements View.OnClickLi
     private static final int CHOOSE_BT_DEVICE = 1337;
     LinearLayout notConnectedLayout;
     LinearLayout connectingNowLayout;
-    Button btButton;
+    private Button btButton;
+    private Button cancelScanButton;
 
 
     public BluetoothConnectFragment() {
@@ -44,12 +45,14 @@ public class BluetoothConnectFragment extends Fragment implements View.OnClickLi
 
         //Initialize layout element references
         btButton = (Button) layout.findViewById(R.id.bt_scan);
+        cancelScanButton = (Button) layout.findViewById(R.id.cancel_bt_scan);
         notConnectedLayout = (LinearLayout) layout.findViewById(R.id.not_connected_layout);
         connectingNowLayout = (LinearLayout) layout.findViewById(R.id.connecting_now_layout);
 
 
         //Set listener for BT scan button
         btButton.setOnClickListener(this);
+        cancelScanButton.setOnClickListener(this);
 
         return layout;
 
@@ -69,10 +72,18 @@ public class BluetoothConnectFragment extends Fragment implements View.OnClickLi
                     break;
                 case BluetoothManager.BLUETOOTH_ENABLED:
                     Intent intent = new Intent(getActivity(), BluetoothDevicesActivity.class);
+
+                    MainActivity activity = (MainActivity) getActivity();
+
                     startActivityForResult(intent, CHOOSE_BT_DEVICE);
                     break;
             }
-
+        }
+        if (view.getId() == R.id.cancel_bt_scan)
+        {
+            BluetoothManager.getInstance().cancel();
+            notConnectedLayout.setVisibility(View.VISIBLE);
+            connectingNowLayout.setVisibility(View.GONE);
         }
     }
 

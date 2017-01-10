@@ -7,12 +7,16 @@
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
-        android:showAsAction="never" />
+        app:showAsAction="never" />
 
     <item android:id="@+id/action_share"
         android:title="@string/action_share"
         android:orderInCategory="2"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+    <item android:id="@+id/action_disconnect"
+        android:title="@string/disconnect"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom" />
 
 </menu>
