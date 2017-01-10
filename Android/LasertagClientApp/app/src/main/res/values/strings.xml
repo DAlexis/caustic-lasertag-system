@@ -106,5 +106,10 @@
     <string name="connecting">Connecting...</string>
     <string name="cancel">Cancel</string>
     <string name="disconnect">Disconnect</string>
+    <string name="team_yellow">Team Yellow</string>
+    <string name="team_green">Team Green</string>
+    <string name="team_blue">Team Blue</string>
+    <string name="team_red">Team Red</string>
+    <string name="update">Update</string>
 
 </resources>

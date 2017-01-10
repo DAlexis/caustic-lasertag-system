@@ -23,6 +23,8 @@ import android.support.v7.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import ru.caustic.rcspcore.BluetoothManager;
+import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.GameStatistics;
 
 public class MainActivity extends AppCompatActivity implements BluetoothManager.ConnectionDoneListener {
 
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         setContentView(R.layout.activity_main);
 
 
+        CausticController.getInstance().systemInit();
+
         //Initialize activity members
         drawerList = (ListView) findViewById(R.id.drawer);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -110,13 +114,13 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
             currentMode = (int) savedInstanceState.getInt(EXTRAS_MODE);
             setActionBarTitle(currentMode);
             setBtConnected(savedInstanceState.getBoolean(EXTRAS_BT_CONNECTED));
-            monitorRunning =savedInstanceState.getBoolean(EXTRAS_BT_HANDLER_RUNNING);
         }
         else
         {
             currentMode = 0;
             selectMode(currentMode, false);
             setActionBarTitle(currentMode);
+            drawerList.setItemChecked(currentMode, true);
         }
 
 
@@ -333,7 +337,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         super.onSaveInstanceState(outState);
         outState.putInt(EXTRAS_MODE, currentMode);
         outState.putBoolean(EXTRAS_BT_CONNECTED, isBtConnected());
-        outState.putBoolean(EXTRAS_BT_HANDLER_RUNNING, monitorRunning);
         activityVisible = false;
     }
 

@@ -1,29 +1,336 @@
 package ru.caustic.lasertagclientapp;
 
 
+import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.DevicesManager;
+import ru.caustic.rcspcore.RCSProtocol;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayerListFragment extends Fragment {
+public class PlayerListFragment extends Fragment implements View.OnClickListener {
 
+    private DevicesManager devMan;
+    private PlayerListAdapter adapter;
 
-    public PlayerListFragment() {
-        // Required empty public constructor
+    private Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> headSensors = new HashMap<>();
+    private ListView playerList;
+    private static final String TAG = "PlayerListFragment";
+
+    private Handler listUpdateHandler = new Handler();
+    boolean handlerRunning = false;
+    private long lastAutoUpdateRun = SystemClock.elapsedRealtime();
+    private static final int AUTO_UPDATE_INTERVAL_MILLIS = 2000;
+    private boolean deviceSyncRunning = false;
+
+    private DevicesManager.SynchronizationEndListener syncListener = new DevicesManager.SynchronizationEndListener() {
+        @Override
+        public void onSynchronizationEnd(boolean isSuccess, Set<BridgeConnector.DeviceAddress> notSynchronized) {
+            Log.d(TAG, "Sync completed, result: " + isSuccess + ", not synchronized: " + notSynchronized.size());
+            //List population occurs here.
+
+            refreshPlayerListAdapter();
+            deviceSyncRunning = false;
+        }
+    };
+
+    private DevicesManager.DeviceListUpdatedListener devListener = new DevicesManager.DeviceListUpdatedListener() {
+        @Override
+        public void onDevicesListUpdated() {
+
+            deviceSyncRunning = true;
+            devMan.asyncPopParametersFromDevices(syncListener, getHeadSensorsMap(devMan.devices).keySet());
+            Log.d(TAG, "Updated devices list");
+
+        }
+    };
+
+    private Runnable listUpdateMonitor = new Runnable(){
+        @Override
+        public void run() {
+
+            if (!deviceSyncRunning && allDevsSynced(getHeadSensorsMap(devMan.devices))) {
+                devMan.updateDevicesList();
+                Log.d(TAG, "listUpdateMonitor updating player list");
+            }
+            listUpdateHandler.postDelayed(this, AUTO_UPDATE_INTERVAL_MILLIS);
+//            if ((SystemClock.elapsedRealtime()-lastAutoUpdateRun)>AUTO_UPDATE_INTERVAL_MILLIS) {
+//                devMan.updateDevicesList();
+//            }
+//
+        }
+    };
+
+    private void refreshPlayerListAdapter() {
+        synchronized (this) {
+            adapter.clear();
+
+            //This array contains the player list sorted by team. First entry of each team has a visible separator in its View
+            players = populatePlayersArray(devMan.devices);
+
+            //Add everything in headSensors map to be displayed
+            for (PlayerListEntryHolder entry : players) {
+                adapter.addItem(entry);
+            }
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.update_players_list_button)
+        devMan.updateDevicesList();
+        refreshPlayerListAdapter();
+    }
+
+    private ArrayList<PlayerListEntryHolder> players;
+
+    public class PlayerListAdapter extends BaseAdapter{
+
+        private ArrayList<PlayerListEntryHolder> mHolders = new ArrayList();
+        private LayoutInflater mInflater;
+
+        public PlayerListAdapter() {
+            mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        public void addItem(PlayerListEntryHolder item) {
+            mHolders.add(item);
+        }
+
+        public void clear() {
+            mHolders.clear();
+        }
+
+        @Override
+        public int getCount() {
+            return mHolders.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return mHolders.get(i);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (mHolders.get(position).getView() == null) {
+                mHolders.get(position).setView(mInflater.inflate(R.layout.layout_player_list_entry, null));
+            }
+            mHolders.get(position).updateView();
+            return mHolders.get(position).getView();
+        }
+
+    }
+
+    private class PlayerListEntryHolder implements Comparable<PlayerListEntryHolder> {
+        public TextView playerNameTextView = null;
+        public TextView entrySeparatorTeamTag = null;
+
+        public String playerName;
+        public String team = "Default";
+        public boolean needSeparator = true;
+
+        View convertView = null;
+
+        PlayerListEntryHolder(DevicesManager.CausticDevice device) {
+            playerName = device.getName();
+
+            RCSProtocol.teamEnum teamEnum = (RCSProtocol.teamEnum) device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId()).getDescription();
+            team = teamEnum.getCurrentValueString(Integer.parseInt(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId()).getValue()));
+
+        }
+
+        public View getView() {
+            return convertView;
+        }
+
+        public void setView(View convertView) {
+            this.convertView = convertView;
+        }
+
+        public void updateView() {
+
+            playerNameTextView = (TextView) convertView.findViewById(R.id.player_list_entry_name);
+            entrySeparatorTeamTag = (TextView) convertView.findViewById(R.id.player_list_entry_separator);
+
+            int backColor;
+            int separColor;
+            switch (team)
+            {
+                case "Red":
+                    separColor=ContextCompat.getColor(getContext(), R.color.red);
+                    break;
+                case "Blue":
+                    separColor=ContextCompat.getColor(getContext(), R.color.blue);
+                    break;
+                case "Green":
+                    separColor=ContextCompat.getColor(getContext(), R.color.green);
+                    break;
+                case "Yellow":
+                    separColor=ContextCompat.getColor(getContext(), R.color.yellow);
+                    break;
+                default:
+                    separColor=ContextCompat.getColor(getContext(), R.color.grey);
+             }
+
+            backColor=separColor-0x99000000;
+
+            playerNameTextView.setText(playerName);
+            playerNameTextView.setBackgroundColor(backColor);
+
+            entrySeparatorTeamTag.setTypeface(null, Typeface.BOLD);
+            entrySeparatorTeamTag.setText("Team " + team);
+            entrySeparatorTeamTag.setTextColor(separColor);
+
+            if (needSeparator)
+            {
+                entrySeparatorTeamTag.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                entrySeparatorTeamTag.setVisibility(View.GONE);
+            }
+
+        }
+
+        @Override
+        public int compareTo(PlayerListEntryHolder playerListEntryHolder) {
+            return this.team.compareTo(playerListEntryHolder.team);
+        }
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                         Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_player_list, container, false);
+        View layout = inflater.inflate(R.layout.fragment_player_list, container, false);
+
+        Button updateButton = (Button) layout.findViewById(R.id.update_players_list_button);
+        updateButton.setOnClickListener(this);
+
+        adapter= new PlayerListAdapter();
+        playerList = (ListView) layout.findViewById(R.id.players_listview);
+        playerList.setAdapter(adapter);
+
+        devMan=CausticController.getInstance().getDevicesManager();
+        devMan.setDeviceListUpdatedListener(devListener);
+        devMan.updateDevicesList();
+
+       // listUpdateHandler.postDelayed(listUpdateMonitor, AUTO_UPDATE_INTERVAL_MILLIS);
+
+        return layout;
     }
 
+    private Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> getHeadSensorsMap(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devices) {
+        Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> returnMap = new HashMap<>();
+        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devices.entrySet()) {
+
+            DevicesManager.CausticDevice dev = entry.getValue();
+            int devTypeInt = Integer.parseInt(
+                    dev.parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()).getValue()
+            );
+
+            //Add only head sensors
+            if (devTypeInt == RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_HEAD_SENSOR) {
+                returnMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return returnMap;
+    }
+
+    private ArrayList<PlayerListEntryHolder> populatePlayersArray(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devices) {
+
+        ArrayList<PlayerListEntryHolder> array = new ArrayList<>();
+        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devices.entrySet()) {
+
+            DevicesManager.CausticDevice dev = entry.getValue();
+            int devTypeInt = Integer.parseInt(
+                    dev.parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()).getValue()
+            );
+
+            //Add only head sensors to be displayed as players
+            if (devTypeInt == RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_HEAD_SENSOR){
+                if (dev.areDeviceRelatedParametersAdded()&&dev.areParametersSync())
+                {
+                    PlayerListEntryHolder player = new PlayerListEntryHolder(dev);
+                    array.add(player);
+                }
+            }
+        }
+
+        if (array != null) {
+            //Sort by team
+            Collections.sort(array);
+
+            //Add separators between teams and in the beginning of the list
+
+            Iterator<PlayerListEntryHolder> arrIterator = array.iterator();
+
+            String oldTeam = "";
+
+            while (arrIterator.hasNext()) {
+                PlayerListEntryHolder current = arrIterator.next();
+                if (current.team != oldTeam) {
+                    current.needSeparator = true;
+                    oldTeam = current.team;
+                }
+            }
+        }
+        return array;
+    }
+
+    private boolean allDevsSynced (Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devices)
+    {
+        boolean result = true;
+        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devices.entrySet()) {
+            DevicesManager.CausticDevice dev = entry.getValue();
+            result = result && dev.areDeviceRelatedParametersAdded() && dev.areParametersSync();
+        }
+        return result;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        listUpdateHandler.removeCallbacks(listUpdateMonitor);
+    }
 }
