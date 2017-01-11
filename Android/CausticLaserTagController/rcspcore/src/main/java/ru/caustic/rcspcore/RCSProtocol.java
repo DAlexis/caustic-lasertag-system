@@ -896,6 +896,8 @@ public class RCSProtocol {
                         = new FunctionDescriptionNoArg(functionsSerializers, 1204, "Respawn player");
                 public static final FunctionDescription playerKill
                         = new FunctionDescriptionNoArg(functionsSerializers, 1205, "Kill player");
+                public static final FunctionDescription resetStats
+                        = new FunctionDescriptionNoArg(functionsSerializers, 1210, "Reset statistics at head sensor");
                 public static final FunctionDescription readStats
                         = new FunctionDescriptionNoArg(functionsSerializers, 1211, "Read statistics from head sensor");
 

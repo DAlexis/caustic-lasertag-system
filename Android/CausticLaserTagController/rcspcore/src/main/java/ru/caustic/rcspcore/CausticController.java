@@ -46,6 +46,32 @@ public class CausticController {
             );
         }
 
+        public void resetPlayers(int team) {
+            broadcastCallForTeam(
+                    team,
+                    RCSProtocol.Operations.HeadSensor.functionsSerializers,
+                    RCSProtocol.Operations.HeadSensor.Functions.playerReset.getId(),
+                    ""
+            );
+        }
+
+        public void resetStats(int team) {
+            broadcastCallForTeam(
+                    team,
+                    RCSProtocol.Operations.HeadSensor.functionsSerializers,
+                    RCSProtocol.Operations.HeadSensor.Functions.resetStats.getId(),
+                    ""
+            );
+        }
+
+        public void newRound() {
+            resetPlayers(ALL_TEAMS);
+            respawn(ALL_TEAMS);
+            resetStats(ALL_TEAMS);
+
+        }
+
+
         // Private
         private void broadcastCallForTeam(int team, RCSProtocol.FunctionsContainer functionsContainer, int operationId, String argument) {
             if (team == ALL_TEAMS) {
