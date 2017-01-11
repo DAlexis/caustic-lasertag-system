@@ -71,6 +71,11 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone4DamageCoeff);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone5DamageCoeff);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone6DamageCoeff);
+
+	/// @todo Move to PlayerState
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLat);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLon);
+
 };
 
 class PlayerState
@@ -94,6 +99,8 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount);
 
 	PAR_CL_SS(RESTORABLE, ConfigCodes::HeadSensor::State, weaponsList);
+
+
 
 	/**
 	 * Cough some damage and calculate s_armor and s_health after it

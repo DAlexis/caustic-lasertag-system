@@ -182,6 +182,11 @@ namespace ConfigCodes
 			PAR_CODE(PlayerGameId,   playerId,     1031)
 			PAR_CODE(TeamGameId,     teamId,         1032)
 
+			//Latitude and longitude as inferred from the connected Android device
+			///@todo Move to State
+			PAR_CODE(FloatParameter, playerLat, 1033)
+			PAR_CODE(FloatParameter, playerLon, 1034)
+
 			PAR_CODE(UintParameter, slot1MaxWeight,    1041)
 			PAR_CODE(UintParameter, slot2MaxWeight,    1042)
 			PAR_CODE(UintParameter, slot3MaxWeight,    1043)
@@ -195,6 +200,8 @@ namespace ConfigCodes
 			PAR_CODE(FloatParameter, zone4DamageCoeff,    1054)
 			PAR_CODE(FloatParameter, zone5DamageCoeff,    1055)
 			PAR_CODE(FloatParameter, zone6DamageCoeff,    1056)
+
+
 		}
 
 		namespace State
@@ -212,6 +219,8 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, deathsCount, 1112)
 
 			PAR_CODE(ConnectedWeaponsList, weaponsList, 1200)
+
+
 		}
 
 		namespace Functions

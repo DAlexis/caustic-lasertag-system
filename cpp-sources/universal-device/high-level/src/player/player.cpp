@@ -66,6 +66,13 @@ void PlayerConfiguration::setDefault()
 	zone4DamageCoeff = 1.0;
 	zone5DamageCoeff = 1.0;
 	zone6DamageCoeff = 1.0;
+
+
+	//Default values do not point to valid location,
+	//signaling that this head sensor doesn't have an Android device connected yet
+	///@todo Move to PlayerState
+	playerLat = 200.0;
+	playerLon = 200.0;
 }
 
 bool PlayerState::damage(uint8_t damage)
@@ -102,6 +109,7 @@ void PlayerState::reset()
 	killsCount = 0;
 	deathsCount = 0;
 	weaponsList.clear();
+
 }
 
 bool PlayerState::respawn()
