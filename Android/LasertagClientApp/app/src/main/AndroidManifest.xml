@@ -24,12 +24,13 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="ru.caustic.lasertagclientapp.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertagclientapp.MainActivity" />
         </activity>
-        <activity android:name=".BluetoothDevicesActivity">
+        <activity android:name=".BluetoothDevicesActivity"
+            android:parentActivityName="ru.caustic.lasertagclientapp.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertagclientapp.MainActivity" />

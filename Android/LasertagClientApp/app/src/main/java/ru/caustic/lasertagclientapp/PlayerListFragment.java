@@ -297,22 +297,21 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
             }
         }
 
-        if (array != null) {
+        if (array.size()>0) {
             //Sort by team
             Collections.sort(array);
 
             //Add separators between teams and in the beginning of the list
 
-            Iterator<PlayerListEntryHolder> arrIterator = array.iterator();
-
             String oldTeam = "";
 
-            while (arrIterator.hasNext()) {
-                PlayerListEntryHolder current = arrIterator.next();
-                if (current.team != oldTeam) {
-                    current.needSeparator = true;
-                    oldTeam = current.team;
+            for (int i=0; i<array.size(); i++) {
+                PlayerListEntryHolder current = array.get(i);
+                if (current.team.equals(oldTeam)) {
+                    current.needSeparator = false;
+                    array.set(i, current);
                 }
+                oldTeam = current.team;
             }
         }
         return array;
