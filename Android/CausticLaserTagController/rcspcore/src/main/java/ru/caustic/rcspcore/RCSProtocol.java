@@ -640,6 +640,10 @@ public class RCSProtocol {
             return isSynchronized;
         }
 
+        public void invalidate() {
+            isSynchronized = false;
+        }
+
         public AnyParameterSerializer(ParameterDescription descr) {
             super(descr);
         }

@@ -3,6 +3,7 @@ package ru.caustic.rcspcore;
 import android.os.SystemClock;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -186,6 +187,17 @@ public class DevicesManager {
 
             parametersAreAdded = true;
         }
+
+        public void invalidateParameters() {
+            if (!parametersAreAdded)
+                return;
+            for (RCSProtocol.AnyParameterSerializer param : parameters.allParameters.values())
+            {
+                param.invalidate();
+            }
+
+        }
+
         public void pushToDevice() {
             RCSPMultiStream stream = new RCSPMultiStream();
             for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : parameters.entrySet()) {
@@ -340,6 +352,14 @@ public class DevicesManager {
     }
     public void asyncPopPlayerIdsForAllSupportingDevices(SynchronizationEndListener endHandler) {
         asyncPopOneParameter(endHandler, devices.keySet(), RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId());
+    }
+
+    public void invalidateDevsParams(final Collection<CausticDevice> devices)
+    {
+        for (CausticDevice dev : devices)
+        {
+            dev.invalidateParameters();
+        }
     }
 
     public int getPlayerGameId(BridgeConnector.DeviceAddress deviceAddress) {

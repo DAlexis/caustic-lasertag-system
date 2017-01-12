@@ -7,14 +7,17 @@ import android.graphics.drawable.ShapeDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.graphics.drawable.shapes.OvalShape;
+import android.os.Handler;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,6 +32,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
@@ -44,13 +48,78 @@ import static ru.caustic.lasertagclientapp.DeviceUtils.getDeviceTeam;
  */
 public class HUDFragment extends Fragment implements OnMapReadyCallback{
 
-    private DevicesManager devMan = CausticController.getInstance().getDevicesManager();
-    ArrayList<PlayerOnMap> playerOnMapList = new ArrayList<>();
-    private GoogleMap map;
+    private static DevicesManager devMan = CausticController.getInstance().getDevicesManager();
+    private static ArrayList<PlayerOnMap> playerOnMapList = new ArrayList<>();
+    private static GoogleMap map;
     private static final String TAG = "HUDFragment";
+    private static AppCompatActivity parentActivity;
 
     private static final int MARKER_BORDER_WIDTH_SP = 4;
     private static final int MARKER_RADIUS_SP = 20;
+    private static final int STATE_UPDATE_DELAY_MS = 5000;
+    private static boolean devStateUpdaterRunning = false;
+
+    private static DevicesManager.SynchronizationEndListener mListener;
+
+    private Handler devStateUpdateHandler = new Handler();
+    private static Runnable devStateUpdater = new Runnable(){
+        @Override
+        public void run() {
+            devMan.invalidateDevsParams(DeviceUtils.getHeadSensorsMap(devMan.devices).values());
+            devMan.asyncPopParametersFromDevices(mListener, DeviceUtils.getHeadSensorsMap(devMan.devices).keySet());
+        }
+    };
+
+    private DevicesManager.SynchronizationEndListener synchronizationEndListener = new DevicesManager.SynchronizationEndListener() {
+        @Override
+        public void onSynchronizationEnd(boolean isSuccess, Set<BridgeConnector.DeviceAddress> notSynchronized) {
+
+            Log.d(TAG, "Sync completed, result: " + isSuccess + ", not synchronized: " + notSynchronized.size());
+
+            playerOnMapList = populatePlayerOnMapList(DeviceUtils.getHeadSensorsMap(devMan.devices));
+            FragmentActivity activity=getActivity();
+            if (activity!=null)
+            {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        TextView locs = (TextView) getActivity().findViewById(R.id.locs_test);
+                        String testDisplay = "";
+                        for (PlayerOnMap player : playerOnMapList) {
+                            testDisplay = testDisplay + player.name + " - team " + player.team + ", lat: " + player.lat +
+                                    ", lon: " + player.lon + " , marker:" + player.markerColor + "\n";
+                            Log.d(TAG, "Updating text");
+                        }
+                        if (locs != null) {
+                            locs.setText(testDisplay);
+                        }
+                        refreshMarkersOnMap();
+                        Log.d(TAG, "Updating markers");
+                    }
+                });
+            }
+
+            devStateUpdateHandler.postDelayed(devStateUpdater, STATE_UPDATE_DELAY_MS);
+        }
+
+    };
+
+    private void refreshMarkersOnMap() {
+        if (map!=null) {
+            map.clear();
+            for (PlayerOnMap player : playerOnMapList) {
+                Log.d(TAG, "Setting marker at " + player.lat + ", " + player.lon);
+                LatLng latLng = new LatLng(player.lat, player.lon);
+                //map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                Bitmap icon = createMarkerIcon(player.markerColor, player.team);
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng).title(player.name).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap(icon));
+                map.addMarker(options);
+            }
+        }
+    }
+
 
     public HUDFragment() {
         // Required empty public constructor
@@ -59,16 +128,8 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        for (PlayerOnMap player : playerOnMapList)
-        {
-            Log.d(TAG, "Setting marker at " + player.lat + ", " + player.lon);
-            LatLng latLng = new LatLng(player.lat, player.lon);
-            //map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            Bitmap icon = createMarkerIcon(player.markerColor, player.team);
-            MarkerOptions options =new MarkerOptions()
-                    .position(latLng).title(player.name).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap(icon));
-            map.addMarker(options);
-        }
+        refreshMarkersOnMap();
+
     }
 
     private Bitmap createMarkerIcon(int markerColor, String team) {
@@ -139,16 +200,10 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_hud, container, false);
 
-        TextView locs = (TextView) layout.findViewById(R.id.locs_test);
+
+
         Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devsToLocate = DeviceUtils.getHeadSensorsMap(devMan.devices);
         playerOnMapList = populatePlayerOnMapList(devsToLocate);
-        String testDisplay = "";
-        for (PlayerOnMap player : playerOnMapList)
-        {
-            testDisplay = testDisplay + player.name + " - team " + player.team + ", lat: " + player.lat +
-                    ", lon: " + player.lon + " , marker:" + player.markerColor + "\n";
-        }
-        locs.setText(testDisplay);
 
         Fragment mMapFragment = SupportMapFragment.newInstance();
         FragmentTransaction fragmentTransaction =
@@ -159,6 +214,8 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
         //Need to call getMapAsync to receive a OnMapReady callback
         SupportMapFragment mapFrag = (SupportMapFragment) mMapFragment;
         mapFrag.getMapAsync(this);
+
+        startDevStateUpdater();
 
         return layout;
     }
@@ -174,22 +231,21 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
         return returnList;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (devStateUpdaterRunning) stopDevStateUpdater();
+    }
 
-    public static class MarkerMapFragment extends SupportMapFragment {
+    private void startDevStateUpdater() {
+        mListener=synchronizationEndListener;
+        devStateUpdateHandler.post(devStateUpdater);
+        devStateUpdaterRunning = true;
+    }
 
-
-        public MarkerMapFragment() {
-            // Required empty public constructor
-        }
-
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            return null;
-        }
-
+    private void stopDevStateUpdater() {
+        devStateUpdateHandler.removeCallbacks(devStateUpdater);
+        devStateUpdaterRunning = false;
     }
 
 
