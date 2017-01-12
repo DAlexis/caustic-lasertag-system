@@ -62,12 +62,9 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         @Override
         public void onDevicesListUpdated() {
             Log.d(TAG, "Updated devices list");
-            if (!deviceSyncRunning&& relatedParamsAdded(getHeadSensorsMap(devMan.devices))) {
                 deviceSyncRunning = true;
                 Log.d(TAG, "Starting parameters sync");
                 devMan.asyncPopParametersFromDevices(syncListener, getHeadSensorsMap(devMan.devices).keySet());
-            }
-
         }
     };
 

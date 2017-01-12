@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * Created by alexey on 18.09.15.
@@ -691,7 +692,7 @@ public class RCSProtocol {
         }
     }
     public static class ParametersContainer implements IParameterSerializersHolder {
-        public Map<Integer, AnyParameterSerializer> allParameters = new TreeMap<>();
+        public Map<Integer, AnyParameterSerializer> allParameters = new ConcurrentSkipListMap<>();
         public ArrayList<Integer> orderedIds = new ArrayList<>();
 
         @Override
