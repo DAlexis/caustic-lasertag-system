@@ -883,6 +883,12 @@ public class RCSProtocol {
                 public static final ParameterDescription selfShotCoeff
                         = new FloatParameter(parametersDescriptions, 1016, "Self shot coefficient", true, 0.0f, 1.0f);
 
+
+                public static final ParameterDescription playerLat
+                        = new FloatParameter(parametersDescriptions, 1033, "Player's latitude", true, -180.0f, 180.0f);
+                public static final ParameterDescription playerLon
+                        = new FloatParameter(parametersDescriptions, 1034, "Player's longitude", true, -180.0f, 180.0f);
+
             }
 
             public static class Functions {

@@ -619,9 +619,9 @@ void HeadSensor::setDefaultPinout(Pinout& pinout)
 	pinout.unset("zone4");
 	pinout.unset("zone5");
 	pinout.unset("zone6");
-	pinout.set("red", 1, 0);
+	pinout.set("red", 0, 6);
 	pinout.set("green", 0, 7);
-	pinout.set("blue", 0, 6);
+	pinout.set("blue", 1, 0);
 }
 
 bool HeadSensor::checkPinout(const Pinout& pinout)
