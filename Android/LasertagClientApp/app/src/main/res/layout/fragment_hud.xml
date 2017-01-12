@@ -5,9 +5,29 @@
     tools:context="ru.caustic.lasertagclientapp.HUDFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="HUD" />
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="HUD"
+            android:id="@+id/locs_test"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/map_fragment_container">
+
+        </FrameLayout>
+
+
+    </LinearLayout>
+
+
+
 
 </FrameLayout>

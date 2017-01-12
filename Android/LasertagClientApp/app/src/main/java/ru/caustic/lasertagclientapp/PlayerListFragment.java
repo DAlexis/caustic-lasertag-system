@@ -29,6 +29,10 @@ import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DevicesManager;
 import ru.caustic.rcspcore.RCSProtocol;
 
+import static ru.caustic.lasertagclientapp.DeviceUtils.allDevsSynced;
+import static ru.caustic.lasertagclientapp.DeviceUtils.getDeviceTeam;
+import static ru.caustic.lasertagclientapp.DeviceUtils.getHeadSensorsMap;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,6 +69,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
                 deviceSyncRunning = true;
                 Log.d(TAG, "Starting parameters sync");
                 devMan.asyncPopParametersFromDevices(syncListener, getHeadSensorsMap(devMan.devices).keySet());
+
         }
     };
 
@@ -196,10 +201,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
 
         PlayerListEntryHolder(DevicesManager.CausticDevice device) {
             playerName = device.getName();
-
-            RCSProtocol.teamEnum teamEnum = (RCSProtocol.teamEnum) device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId()).getDescription();
-            team = teamEnum.getCurrentValueString(Integer.parseInt(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId()).getValue()));
-
+            team = getDeviceTeam(device);
         }
 
         public View getView() {
@@ -295,22 +297,6 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         return layout;
     }
 
-    private Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> getHeadSensorsMap(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devices) {
-        Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> returnMap = new HashMap<>();
-        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devices.entrySet()) {
-
-            DevicesManager.CausticDevice dev = entry.getValue();
-            int devTypeInt = Integer.parseInt(
-                    dev.parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()).getValue()
-            );
-
-            //Add only head sensors
-            if (devTypeInt == RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_HEAD_SENSOR) {
-                returnMap.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return returnMap;
-    }
 
     private ArrayList<PlayerListEntryHolder> populatePlayersArray(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devices) {
 
@@ -352,15 +338,6 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         return array;
     }
 
-    private boolean allDevsSynced (Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devices)
-    {
-        boolean result = true;
-        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devices.entrySet()) {
-            DevicesManager.CausticDevice dev = entry.getValue();
-            result = result && dev.areDeviceRelatedParametersAdded() && dev.areParametersSync();
-        }
-        return result;
-    }
 
     @Override
     public void onDestroyView() {

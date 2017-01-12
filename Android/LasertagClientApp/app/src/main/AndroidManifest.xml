@@ -35,6 +35,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.caustic.lasertagclientapp.MainActivity" />
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBhBmM09kk-Z_a678WfKZmO2mjqbWUXZo4"/>
     </application>
 
 </manifest>

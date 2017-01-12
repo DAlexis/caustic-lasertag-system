@@ -21,14 +21,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(":rcspcore")
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':rcspcore')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:support-v4:25.1.0'
     compile 'com.android.support:support-vector-drawable:25.1.0'
-    compile 'com.github.kizitonwose.colorpreference:core:1.0.2'
     compile 'com.github.enricocid:cpl:1.0.2'
     testCompile 'junit:junit:4.12'
+    compile 'com.google.android.gms:play-services:10.0.1'
 }
