@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,8 +21,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,14 +46,13 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     boolean handlerRunning = false;
     private long lastAutoUpdateRun = SystemClock.elapsedRealtime();
     private static final int AUTO_UPDATE_INTERVAL_MILLIS = 2000;
-    private boolean deviceSyncRunning = false;
+    private static boolean deviceSyncRunning = false;
 
     private DevicesManager.SynchronizationEndListener syncListener = new DevicesManager.SynchronizationEndListener() {
         @Override
         public void onSynchronizationEnd(boolean isSuccess, Set<BridgeConnector.DeviceAddress> notSynchronized) {
             Log.d(TAG, "Sync completed, result: " + isSuccess + ", not synchronized: " + notSynchronized.size());
             //List population occurs here.
-
             refreshPlayerListAdapter();
             deviceSyncRunning = false;
         }
@@ -63,13 +61,25 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     private DevicesManager.DeviceListUpdatedListener devListener = new DevicesManager.DeviceListUpdatedListener() {
         @Override
         public void onDevicesListUpdated() {
-
-            deviceSyncRunning = true;
-            devMan.asyncPopParametersFromDevices(syncListener, getHeadSensorsMap(devMan.devices).keySet());
             Log.d(TAG, "Updated devices list");
+            if (!deviceSyncRunning&& relatedParamsAdded(getHeadSensorsMap(devMan.devices))) {
+                deviceSyncRunning = true;
+                Log.d(TAG, "Starting parameters sync");
+                devMan.asyncPopParametersFromDevices(syncListener, getHeadSensorsMap(devMan.devices).keySet());
+            }
 
         }
     };
+
+    private boolean relatedParamsAdded(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> headSensorsMap) {
+        boolean result = true;
+        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : headSensorsMap.entrySet()) {
+            DevicesManager.CausticDevice dev = entry.getValue();
+            result = result && dev.areDeviceRelatedParametersAdded();
+        }
+        return result;
+    }
+
 
     private Runnable listUpdateMonitor = new Runnable(){
         @Override
@@ -88,31 +98,48 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     };
 
     private void refreshPlayerListAdapter() {
-        synchronized (this) {
-            adapter.clear();
+        synchronized (adapter) {
 
             //This array contains the player list sorted by team. First entry of each team has a visible separator in its View
-            players = populatePlayersArray(devMan.devices);
+            ArrayList<PlayerListEntryHolder> newPlayersList = populatePlayersArray(devMan.devices);
+            if (newPlayersList.equals(players)) {
+                Log.d(TAG, "New player list is equal to the old one, no refresh done");
+                return;
+            }
+            else {
+                //Replacing list
+                players = newPlayersList;
+                adapter.clear();
 
-            //Add everything in headSensors map to be displayed
-            for (PlayerListEntryHolder entry : players) {
-                adapter.addItem(entry);
+                for (PlayerListEntryHolder entry : players) {
+                    adapter.addItem(entry);
+                }
+
+
+                Log.d(TAG, "Player list adapter refreshed");
+
+                FragmentActivity activity = getActivity();
+
+                //Check if the activity hasn't been destroyed in the meantime
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                            Log.d(TAG, "Notifying adapter to redraw list");
+                        }
+                    });
+                }
             }
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                }
-            });
         }
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.update_players_list_button)
-        devMan.updateDevicesList();
-        refreshPlayerListAdapter();
+        if (view.getId() == R.id.update_players_list_button) {
+                devMan.updateDevicesList();
+        }
     }
 
     private ArrayList<PlayerListEntryHolder> players;
@@ -153,8 +180,8 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         public View getView(int position, View convertView, ViewGroup parent) {
             if (mHolders.get(position).getView() == null) {
                 mHolders.get(position).setView(mInflater.inflate(R.layout.layout_player_list_entry, null));
+                mHolders.get(position).updateView();
             }
-            mHolders.get(position).updateView();
             return mHolders.get(position).getView();
         }
 
@@ -234,6 +261,17 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         @Override
         public int compareTo(PlayerListEntryHolder playerListEntryHolder) {
             return this.team.compareTo(playerListEntryHolder.team);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            PlayerListEntryHolder rhs = (PlayerListEntryHolder) obj;
+
+            boolean result = true;
+            result = result && rhs.playerName.equals(this.playerName);
+            result = result && rhs.team.equals(this.team);
+            result = result && (rhs.needSeparator==this.needSeparator);
+            return result;
         }
     }
 

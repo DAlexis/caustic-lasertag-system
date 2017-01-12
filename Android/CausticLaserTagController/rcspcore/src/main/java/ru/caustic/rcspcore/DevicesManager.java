@@ -281,16 +281,17 @@ public class DevicesManager {
 
         private boolean waitForDeviceSync(CausticDevice device) {
             // @todo Add timeout and handler support here
-            needStop = false;
-            long startTime = System.currentTimeMillis();
-            for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : device.parameters.entrySet()) {
-                while (!entry.getValue().isSync()) {
-                    SystemClock.sleep(30);
-                    if (needStop || System.currentTimeMillis() - startTime > syncTimeout)
-                        return false;
+
+                needStop = false;
+                long startTime = System.currentTimeMillis();
+                for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : device.parameters.entrySet()) {
+                    while (!entry.getValue().isSync()) {
+                        SystemClock.sleep(30);
+                        if (needStop || System.currentTimeMillis() - startTime > syncTimeout)
+                            return false;
+                    }
                 }
-            }
-            return true;
+                return true;
         }
 
         private boolean waitForDeviceSync(CausticDevice device, int parameterId) {
