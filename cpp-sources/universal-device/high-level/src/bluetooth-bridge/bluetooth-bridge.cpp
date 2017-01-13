@@ -61,9 +61,6 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
     deviceConfig.devAddr.address[1] = 50;
     deviceConfig.devAddr.address[2] = 50;
 
-    // Power monitor should be initialized before configuration reading
-    PowerMonitor::instance().init();
-
     if (isSdcardOk)
     {
         if (!m_aggregator->readIni("bb-config.ini"))
@@ -81,12 +78,18 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
     m_workerToNetwork.setStackSize(512);
     m_workerToNetwork.run();
 
+    m_workerToBluetooth.setStackSize(512); // This worker causes hard fault
+    m_workerToBluetooth.run();
+
     configureBluetooth();
 }
 
 void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 {
     UNUSED_ARG(pinout);
+
+    // Power monitor should be initialized before configuration reading
+    PowerMonitor::instance().init();
 
     initAsSecondaryDevice(pinout, isSdcardOk);
     initNetwork();
@@ -166,8 +169,6 @@ void BluetoothBridge::configureBluetooth()
 	);
 
 	m_bluetoothPort->init(HC05Configurator::uartTargetSpeed);
-	m_workerToBluetooth.setStackSize(512);
-	m_workerToBluetooth.run();
 }
 
 void BluetoothBridge::receiveBluetoothOneByteISR(uint8_t byte)

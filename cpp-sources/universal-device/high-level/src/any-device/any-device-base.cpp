@@ -40,7 +40,6 @@ void AnyDeviceBase::initNetwork()
 
 void AnyRCSPClientDeviceBase::initNetworkClient()
 {
-    debug << "XXXXXXXXXXX AnyRCSPClientDeviceBase::initNetworkClient()";
     AnyDeviceBase::initNetworkClient();
     m_networkClient.connectPackageReceiver(&m_networkPackagesListener);
 }

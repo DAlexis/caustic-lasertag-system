@@ -76,7 +76,7 @@ private:
 	IUARTManager* m_bluetoothPort = nullptr;
 
 	/// @todo Queues should be as large as possible, so need to increase its size
-	Worker m_workerToBluetooth{30};
+ 	Worker m_workerToBluetooth{30};
 	Worker m_workerToNetwork{30};
 	Bluetooth::MessageReceiver m_receiver;
 	TasksPool m_tasksPool{"BtBrPool"};
