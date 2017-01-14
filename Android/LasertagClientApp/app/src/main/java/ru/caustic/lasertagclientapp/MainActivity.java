@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import ru.caustic.rcspcore.BluetoothManager;
 import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.DevicesManager;
 import ru.caustic.rcspcore.GameStatistics;
 
 public class MainActivity extends AppCompatActivity implements BluetoothManager.ConnectionDoneListener {
@@ -65,10 +66,13 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
                 if (isBtConnected())
                 {
                     Toast.makeText(MainActivity.this, "Bluetooth connection established", Toast.LENGTH_SHORT).show();
+                    CausticController.getInstance().getDevicesManager().associateWithHeadSensor();
 
                 }
                 else {
                     Toast.makeText(MainActivity.this, "Bluetooth connection failed", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, HeadSensorLocationUpdateService.class);
+                    stopService(intent);
                 }
 
                 //Redraw action bar to show/hide disconnect option

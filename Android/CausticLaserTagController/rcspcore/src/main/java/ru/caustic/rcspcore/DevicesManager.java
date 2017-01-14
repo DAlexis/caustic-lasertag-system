@@ -206,6 +206,13 @@ public class DevicesManager {
             }
             stream.send(address);
         }
+
+        public void pushToDevice(int parameterToPush) {
+            RCSPMultiStream stream = new RCSPMultiStream();
+            stream.addSetObject(this, parameterToPush);
+            stream.send(address);
+        }
+
         public void popFromDevice() {
             RCSPMultiStream stream = new RCSPMultiStream();
             for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : parameters.entrySet()) {
@@ -374,9 +381,22 @@ public class DevicesManager {
         externalDispatchers.put(operationCode, dispatcher);
     }
 
+
+    public void associateWithHeadSensor() {
+        ///@todo Add proper head sensor association
+        String deviceName = BluetoothManager.getInstance().getDeviceName();
+        if (deviceName.equals("Integrated CBB")) {
+            associatedHeadSensorAddress = new BridgeConnector.DeviceAddress(10, 0, 3);
+        }
+        if (deviceName.equals("nrfBridge")) {
+            associatedHeadSensorAddress = new BridgeConnector.DeviceAddress(5, 0, 1);
+        }
+    }
+
     // Public fields
     public static final int DEVICES_LIST_UPDATED = 1;
     public Map<BridgeConnector.DeviceAddress, CausticDevice> devices = new HashMap<BridgeConnector.DeviceAddress, CausticDevice>();
+    public BridgeConnector.DeviceAddress associatedHeadSensorAddress;
 
     // Private
     private class Receiver implements BridgeConnector.IncomingPackagesListener {

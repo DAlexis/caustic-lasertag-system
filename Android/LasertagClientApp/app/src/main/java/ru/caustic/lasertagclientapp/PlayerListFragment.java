@@ -103,22 +103,13 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         synchronized (adapter) {
 
             //This array contains the player list sorted by team. First entry of each team has a visible separator in its View
-            ArrayList<PlayerListEntryHolder> newPlayersList = populatePlayersArray(devMan.devices);
+            final ArrayList<PlayerListEntryHolder> newPlayersList = populatePlayersArray(devMan.devices);
             if (newPlayersList.equals(players)) {
                 Log.d(TAG, "New player list is equal to the old one, no refresh done");
                 return;
             }
             else {
-                //Replacing list
-                players = newPlayersList;
-                adapter.clear();
 
-                for (PlayerListEntryHolder entry : players) {
-                    adapter.addItem(entry);
-                }
-
-
-                Log.d(TAG, "Player list adapter refreshed");
 
                 FragmentActivity activity = getActivity();
 
@@ -127,6 +118,18 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
+                            //Replacing list
+                            players = newPlayersList;
+                            adapter.clear();
+
+                            for (PlayerListEntryHolder entry : players) {
+                                adapter.addItem(entry);
+                            }
+
+
+                            Log.d(TAG, "Player list adapter refreshed");
+
                             adapter.notifyDataSetChanged();
                             Log.d(TAG, "Notifying adapter to redraw list");
                         }

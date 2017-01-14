@@ -106,8 +106,9 @@ public class BluetoothConnectFragment extends Fragment implements View.OnClickLi
 
         if (requestCode == CHOOSE_BT_DEVICE) {
             if (resultCode == RESULT_OK) {
-                String device = data.getStringExtra(BluetoothDevicesActivity.BT_DEVICE);
-                String mac = device.split("\\n")[1];
+                String devMac = data.getStringExtra(BluetoothDevicesActivity.BT_DEVICE);
+                String device = devMac.split("\\n")[0];
+                String mac = devMac.split("\\n")[1];
 
                 connectToBluetoothDevice(mac, device);
             }

@@ -161,6 +161,7 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
         return deviceName;
     }
 
+
     public interface ConnectionDoneListener {
         void onConnectionDone(boolean result);
     }

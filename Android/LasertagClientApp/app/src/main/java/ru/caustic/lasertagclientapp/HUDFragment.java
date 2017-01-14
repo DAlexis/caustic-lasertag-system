@@ -1,6 +1,7 @@
 package ru.caustic.lasertagclientapp;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.ShapeDrawable;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
+import ru.caustic.rcspcore.BluetoothManager;
 import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DevicesManager;
@@ -52,11 +54,10 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
     private static ArrayList<PlayerOnMap> playerOnMapList = new ArrayList<>();
     private static GoogleMap map;
     private static final String TAG = "HUDFragment";
-    private static AppCompatActivity parentActivity;
 
     private static final int MARKER_BORDER_WIDTH_SP = 4;
     private static final int MARKER_RADIUS_SP = 20;
-    private static final int STATE_UPDATE_DELAY_MS = 5000;
+    private static final int STATE_UPDATE_DELAY_MS = 3000;
     private static boolean devStateUpdaterRunning = false;
 
     private static DevicesManager.SynchronizationEndListener mListener;
@@ -89,6 +90,10 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
                         for (PlayerOnMap player : playerOnMapList) {
                             testDisplay = testDisplay + player.name + " - team " + player.team + ", lat: " + player.lat +
                                     ", lon: " + player.lon + " , marker:" + player.markerColor + "\n";
+                            DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
+                            if (headSensor!=null) {
+                                testDisplay += "Associated head sensor: " + headSensor.getName();
+                            }
                             Log.d(TAG, "Updating text");
                         }
                         if (locs != null) {
@@ -215,7 +220,9 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
         SupportMapFragment mapFrag = (SupportMapFragment) mMapFragment;
         mapFrag.getMapAsync(this);
 
-        startDevStateUpdater();
+        Intent intent = new Intent(getActivity(), HeadSensorLocationUpdateService.class);
+
+        getActivity().startService(intent);
 
         return layout;
     }
@@ -232,8 +239,16 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onStart() {
+        super.onStart();
+        if (!devStateUpdaterRunning) {
+            startDevStateUpdater();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         if (devStateUpdaterRunning) stopDevStateUpdater();
     }
 
