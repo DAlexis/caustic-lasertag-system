@@ -1,9 +1,14 @@
 package ru.caustic.lasertagclientapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DevicesManager;
 import ru.caustic.rcspcore.RCSProtocol;
 
@@ -47,6 +52,35 @@ public class DeviceUtils {
 
     public static String getDeviceName(DevicesManager.CausticDevice device) {
         return device.parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId()).getValue();
+    }
+
+    public static int getMarkerColor(DevicesManager.CausticDevice device) {
+        int result = Integer.parseInt(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.markerColor.getId()).getValue());
+        return result;
+    }
+
+
+    public static void pushLocalSettingsToAssociatedHeadSensor(Context context) {
+        DevicesManager devMan = CausticController.getInstance().getDevicesManager();
+        DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
+        if (headSensor!=null) {
+            if (headSensor.areDeviceRelatedParametersAdded()) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+
+                //Setting displayed name
+                //@todo Make separate fields for device name and player name
+                String playerName = sharedPref.getString("display_name_key", "Default Player2");
+                headSensor.parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId())
+                        .setValue(playerName);
+                headSensor.pushToDevice(RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId());
+
+                //Setting on-map marker color
+                String markerColor = Integer.toString(sharedPref.getInt("marker_color_key", -1));
+                headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.markerColor.getId())
+                        .setValue(markerColor);
+                headSensor.pushToDevice(RCSProtocol.Operations.HeadSensor.Configuration.markerColor.getId());
+            }
+        }
     }
 
 }

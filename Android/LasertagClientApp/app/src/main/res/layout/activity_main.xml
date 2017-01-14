@@ -16,5 +16,6 @@
         android:layout_gravity="start"
         android:id="@+id/drawer"
         android:choiceMode="singleChoice"
+        android:background="@color/drawer_background_color_dark"
         />
 </android.support.v4.widget.DrawerLayout>

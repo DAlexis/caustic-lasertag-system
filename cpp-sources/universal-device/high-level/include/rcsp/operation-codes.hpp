@@ -187,6 +187,9 @@ namespace ConfigCodes
 			PAR_CODE(FloatParameter, playerLat, 1033)
 			PAR_CODE(FloatParameter, playerLon, 1034)
 
+			//Marker color (4 bytes, ARGB)
+			PAR_CODE(ColorParameter, markerColor, 1035)
+
 			PAR_CODE(UintParameter, slot1MaxWeight,    1041)
 			PAR_CODE(UintParameter, slot2MaxWeight,    1042)
 			PAR_CODE(UintParameter, slot3MaxWeight,    1043)

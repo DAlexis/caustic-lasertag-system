@@ -73,6 +73,8 @@ void PlayerConfiguration::setDefault()
 	///@todo Move to PlayerState
 	playerLat = 200.0;
 	playerLon = 200.0;
+
+	markerColor = -1;
 }
 
 bool PlayerState::damage(uint8_t damage)

@@ -27,6 +27,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.w3c.dom.Text;
@@ -43,6 +44,7 @@ import ru.caustic.rcspcore.RCSProtocol;
 
 import static ru.caustic.lasertagclientapp.DeviceUtils.getDeviceName;
 import static ru.caustic.lasertagclientapp.DeviceUtils.getDeviceTeam;
+import static ru.caustic.lasertagclientapp.DeviceUtils.getMarkerColor;
 
 
 /**
@@ -133,6 +135,12 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        FragmentActivity activity = getActivity();
+        if (activity!=null) {
+            map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            activity, R.raw.map_style_json));
+        }
         refreshMarkersOnMap();
 
     }
@@ -195,6 +203,7 @@ public class HUDFragment extends Fragment implements OnMapReadyCallback{
                 if (lat>90 || lat<-90 || lon>180 || lon<-180) isVisible = false;
                 team = getDeviceTeam(device);
                 name = getDeviceName(device);
+                markerColor = getMarkerColor(device);
             }
         }
     }

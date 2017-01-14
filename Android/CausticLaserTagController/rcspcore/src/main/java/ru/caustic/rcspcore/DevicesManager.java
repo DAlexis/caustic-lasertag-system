@@ -382,15 +382,18 @@ public class DevicesManager {
     }
 
 
-    public void associateWithHeadSensor() {
+    public boolean associateWithHeadSensor() {
         ///@todo Add proper head sensor association
         String deviceName = BluetoothManager.getInstance().getDeviceName();
         if (deviceName.equals("Integrated CBB")) {
             associatedHeadSensorAddress = new BridgeConnector.DeviceAddress(10, 0, 3);
+            return true;
         }
         if (deviceName.equals("nrfBridge")) {
             associatedHeadSensorAddress = new BridgeConnector.DeviceAddress(5, 0, 1);
+            return true;
         }
+        return false;
     }
 
     // Public fields

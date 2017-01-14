@@ -292,6 +292,53 @@ public class RCSProtocol {
             this.maxValue = 0;
         }
     }
+
+
+    public static class ColorParameter extends ParameterDescription {
+        //This is basically int32
+        public final long minValue;
+        public final long maxValue;
+
+        public AnyParameterSerializer createSerializer() { return new Serializer(this); }
+
+        public static class Serializer extends AnyParameterSerializer{
+            public Serializer(ParameterDescription descr) {
+                super(descr);
+                super.value = "0";
+            }
+
+            public void deserialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                long result = MemoryUtils.bytesArrayToInt32(memory, offset);
+                super.value = Long.toString(result);
+            }
+
+            public int serialize(byte[] memory, int offset) {
+                isSynchronized = true;
+                long l = Long.parseLong(super.value);
+                MemoryUtils.int32ToByteArray(memory, offset, l);
+                return size();
+            }
+
+            public int size() {
+                return 4;
+            }
+        }
+
+        public ColorParameter(IDescriptionsHolder descrSet, int id, String name, long minValue, long maxValue) {
+            super(descrSet, id, name, true);
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+
+        public ColorParameter(IDescriptionsHolder descrSet, int id, String name) {
+            super(descrSet, id, name, false);
+            this.minValue = 0;
+            this.maxValue = 0;
+        }
+    }
+
+
     public static class BooleanParameter extends ParameterDescription {
 
         public AnyParameterSerializer createSerializer() { return new Serializer(this); }
@@ -818,7 +865,7 @@ public class RCSProtocol {
                 Class.forName(Operations.class.getName());
                 Class.forName(Operations.AnyDevice.class.getName());
                 Class.forName(Operations.AnyDevice.Configuration.class.getName());
-                Class.forName(Operations.AnyDevice.Funcitons.class.getName());
+                Class.forName(AnyDevice.Functions.class.getName());
                 Class.forName(Operations.Rifle.class.getName());
                 Class.forName(Operations.Rifle.Configuration.class.getName());
                 Class.forName(Rifle.Functions.class.getName());
@@ -845,7 +892,7 @@ public class RCSProtocol {
                         = new DevNameParameter(parametersDescriptions, 2001, "Device name", false);
             }
 
-            public static class Funcitons {
+            public static class Functions {
                 public static final FunctionDescription resetToDefaults
                         = new FunctionDescriptionNoArg(functionsSerializers, 2100, "Reset device to default");
             }
@@ -888,12 +935,14 @@ public class RCSProtocol {
                 public static final ParameterDescription selfShotCoeff
                         = new FloatParameter(parametersDescriptions, 1016, "Self shot coefficient", true, 0.0f, 1.0f);
 
-
                 public static final ParameterDescription playerLat
                         = new FloatParameter(parametersDescriptions, 1033, "Player's latitude", true, -90.0f, 90.0f);
                 public static final ParameterDescription playerLon
                         = new FloatParameter(parametersDescriptions, 1034, "Player's longitude", true, -180.0f, 180.0f);
 
+
+                public static final ParameterDescription markerColor
+                        = new ColorParameter(parametersDescriptions, 1035, "On-map marker color", -2147483648, -2147483648);
             }
 
             public static class Functions {

@@ -48,11 +48,26 @@ public class MemoryUtils {
         memory[position+3] = (byte) (uint32 % 256);
     }
 
+    public static void int32ToByteArray(byte[] memory, int position, long int32) {
+        if (int32 < 0) {
+            int32 += 4294967295L;
+        }
+        uint32ToByteArray(memory, position, int32);
+    }
+
     public static int bytesArrayToInt16(byte[] memory, int position) {
         int result = bytesArrayToUint16(memory, position);
         if (result > 32767)
             result -= 65535;
         return result;
+    }
+
+    public static int bytesArrayToInt32(byte[] memory, int position) {
+        long result = bytesArrayToUint32(memory, position);
+        if (result > 2147483647)
+            result -= 4294967295L;
+        int iResult = (int) result;
+        return iResult;
     }
 
     public static void int16ToByteArray(byte[] memory, int position, int int16) {

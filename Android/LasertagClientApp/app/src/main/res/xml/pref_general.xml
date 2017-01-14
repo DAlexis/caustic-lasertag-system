@@ -21,7 +21,7 @@
 
 
     <Preference
-        android:defaultValue="#FF0000"
+        android:defaultValue="#FFB0B0B0"
         android:key="marker_color_key"
         android:summary="Color of your marker on HUD"
         android:title="Marker color"

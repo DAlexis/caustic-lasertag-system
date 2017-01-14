@@ -29,6 +29,7 @@
 using UintParameter = uint16_t;
 using IntParameter = int16_t;
 using TimeInterval = uint32_t;
+using ColorParameter = int32_t;
 using FloatParameter = float;
 using BoolParameter = bool;
 

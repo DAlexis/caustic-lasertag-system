@@ -1,6 +1,9 @@
 package ru.caustic.lasertagclientapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -25,7 +28,7 @@ import android.widget.Toast;
 import ru.caustic.rcspcore.BluetoothManager;
 import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.GameStatistics;
+import ru.caustic.rcspcore.RCSProtocol;
 
 public class MainActivity extends AppCompatActivity implements BluetoothManager.ConnectionDoneListener {
 
@@ -60,19 +63,32 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
             Log.d(TAG, "BTConnMon: btStatus " + isBtConnected() + ", btStatusChanged " + btStatusChanged);
             if (btStatusChanged)
             {
-                //Update fragment view if BT status changed
-                selectMode(currentMode, false);
+
                 //Show notification
                 if (isBtConnected())
                 {
                     Toast.makeText(MainActivity.this, "Bluetooth connection established", Toast.LENGTH_SHORT).show();
-                    CausticController.getInstance().getDevicesManager().associateWithHeadSensor();
+                    DevicesManager devMan = CausticController.getInstance().getDevicesManager();
+                    boolean success = devMan.associateWithHeadSensor();
+                    if (success == true) {
+                        devMan.setDeviceListUpdatedListener(new DevicesManager.DeviceListUpdatedListener() {
+                            @Override
+                            public void onDevicesListUpdated() {
+                                DeviceUtils.pushLocalSettingsToAssociatedHeadSensor(MainActivity.this);
+                                //Update fragment view if BT status changed
+                                selectMode(currentMode, false);
+                            }
+                        });
+                       devMan.updateDevicesList();
 
+                    }
                 }
                 else {
                     Toast.makeText(MainActivity.this, "Bluetooth connection failed", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, HeadSensorLocationUpdateService.class);
                     stopService(intent);
+                    //Update fragment view if BT status changed
+                    selectMode(currentMode, false);
                 }
 
                 //Redraw action bar to show/hide disconnect option
@@ -81,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
             btConnectionMonitorHandler.postDelayed(this, BT_CONNECTION_MONITOR_PERIODICITY);
         }
     };
+
 
     public boolean isBtConnected() {
         return btConnected;
@@ -101,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         CausticController.getInstance().systemInit();
 
@@ -124,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
             currentMode = 0;
             selectMode(currentMode, false);
             setActionBarTitle(currentMode);
-            drawerList.setItemChecked(currentMode, true);
         }
 
 
@@ -145,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
                 android.R.layout.simple_list_item_activated_1,
                 modeTitles);
         drawerList.setAdapter(adapter);
+        drawerList.setItemChecked(currentMode, true);
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer)
         {
@@ -162,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
             }
         };
         drawerLayout.addDrawerListener(drawerToggle);
+
 
         getSupportFragmentManager().addOnBackStackChangedListener(
                 new FragmentManager.OnBackStackChangedListener() {

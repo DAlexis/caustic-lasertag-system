@@ -75,6 +75,7 @@ public:
 	/// @todo Move to PlayerState
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLat);
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLon);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, markerColor);
 
 };
 
