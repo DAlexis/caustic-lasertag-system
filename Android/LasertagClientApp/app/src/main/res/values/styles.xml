@@ -4,7 +4,110 @@
 
         <item name="colorAccent">@color/lasertag_accent</item>
 
+        <item name="android:editTextBackground">@drawable/lasertagapptheme_edit_text_holo_dark</item>
 
+        <item name="android:textColorHighlight">#99bf360c</item>
+        <item name="android:textSelectHandleLeft">@drawable/lasertagapptheme_text_select_handle_left</item>
+        <item name="android:textSelectHandleRight">@drawable/lasertagapptheme_text_select_handle_right</item>
+        <item name="android:textSelectHandle">@drawable/lasertagapptheme_text_select_handle_middle</item>
+
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewLasertagAppTheme</item>
+
+        <item name="android:listChoiceIndicatorMultiple">@drawable/lasertagapptheme_btn_check_holo_dark</item>
+
+        <item name="android:listChoiceIndicatorSingle">@drawable/lasertagapptheme_btn_radio_holo_dark</item>
+
+        <item name="android:buttonStyle">@style/ButtonLasertagAppTheme</item>
+
+        <item name="android:imageButtonStyle">@style/ImageButtonLasertagAppTheme</item>
+
+        <item name="android:dropDownSpinnerStyle">@style/SpinnerLasertagAppTheme</item>
+
+        <item name="android:progressBarStyleHorizontal">@style/ProgressBarLasertagAppTheme</item>
+
+        <item name="android:seekBarStyle">@style/SeekBarLasertagAppTheme</item>
+
+        <item name="android:ratingBarStyle">@style/RatingBarLasertagAppTheme</item>
+
+        <item name="android:ratingBarStyleIndicator">@style/RatingBarBigLasertagAppTheme</item>
+
+        <item name="android:ratingBarStyleSmall">@style/RatingBarSmallLasertagAppTheme</item>
+
+        <item name="android:buttonStyleToggle">@style/ToggleLasertagAppTheme</item>
+
+        <item name="android:listChoiceBackgroundIndicator">@drawable/lasertagapptheme_list_selector_holo_dark</item>
+
+        <item name="android:activatedBackgroundIndicator">@drawable/lasertagapptheme_activated_background_holo_dark</item>
+
+        <item name="android:fastScrollThumbDrawable">@drawable/lasertagapptheme_fastscroll_thumb_holo</item>
+
+    </style>
+    <style name="AutoCompleteTextViewLasertagAppTheme" parent="android:Widget.Holo.AutoCompleteTextView">
+        <item name="android:dropDownSelector">@drawable/lasertagapptheme_list_selector_holo_dark</item>
+        <item name="android:background">@drawable/lasertagapptheme_edit_text_holo_dark</item>
+    </style>
+
+    <style name="ButtonLasertagAppTheme" parent="android:Widget.Holo.Button">
+        <item name="android:background">@drawable/lasertagapptheme_btn_default_holo_dark</item>
+    </style>
+
+    <style name="ImageButtonLasertagAppTheme" parent="android:Widget.Holo.ImageButton">
+        <item name="android:background">@drawable/lasertagapptheme_btn_default_holo_dark</item>
+    </style>
+
+    <style name="SpinnerLasertagAppTheme" parent="android:Widget.Holo.Spinner">
+        <item name="android:background">@drawable/lasertagapptheme_spinner_background_holo_dark</item>
+        <item name="android:dropDownSelector">@drawable/lasertagapptheme_list_selector_holo_dark</item>
+    </style>
+
+    <style name="TabLasertagAppTheme">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingLeft">16dip</item>
+        <item name="android:paddingRight">16dip</item>
+        <item name="android:background">@drawable/lasertagapptheme_tab_indicator_holo</item>
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:minWidth">80dip</item>
+    </style>
+
+    <style name="TabTextLasertagAppTheme">
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <!-- v14 <item name="android:textAllCaps">true</item> -->
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:maxWidth">180dip</item>
+    </style>
+
+    <style name="ProgressBarLasertagAppTheme" parent="android:Widget.Holo.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/lasertagapptheme_progress_horizontal_holo_dark</item>
+        <item name="android:indeterminateDrawable">@drawable/lasertagapptheme_progress_indeterminate_horizontal_holo_dark</item>
+    </style>
+
+    <style name="SeekBarLasertagAppTheme" parent="android:Widget.Holo.SeekBar">
+        <item name="android:progressDrawable">@drawable/lasertagapptheme_scrubber_progress_horizontal_holo_dark</item>
+        <item name="android:indeterminateDrawable">@drawable/lasertagapptheme_scrubber_progress_horizontal_holo_dark</item>
+        <item name="android:thumb">@drawable/lasertagapptheme_scrubber_control_selector_holo_dark</item>
+    </style>
+
+    <style name="RatingBarLasertagAppTheme" parent="android:Widget.Holo.RatingBar">
+        <item name="android:progressDrawable">@drawable/lasertagapptheme_ratingbar_full_holo_dark</item>
+        <item name="android:indeterminateDrawable">@drawable/lasertagapptheme_ratingbar_full_holo_dark</item>
+    </style>
+
+    <style name="RatingBarBigLasertagAppTheme" parent="android:Widget.Holo.RatingBar.Indicator">
+        <item name="android:progressDrawable">@drawable/lasertagapptheme_ratingbar_holo_dark</item>
+        <item name="android:indeterminateDrawable">@drawable/lasertagapptheme_ratingbar_holo_dark</item>
+    </style>
+
+    <style name="RatingBarSmallLasertagAppTheme" parent="android:Widget.Holo.RatingBar.Small">
+        <item name="android:progressDrawable">@drawable/lasertagapptheme_ratingbar_small_holo_dark</item>
+        <item name="android:indeterminateDrawable">@drawable/lasertagapptheme_ratingbar_small_holo_dark</item>
+    </style>
+
+    <style name="ToggleLasertagAppTheme" parent="android:Widget.Holo.Button.Toggle">
+        <item name="android:background">@drawable/lasertagapptheme_btn_toggle_holo_dark</item>
     </style>
 
 </resources>
