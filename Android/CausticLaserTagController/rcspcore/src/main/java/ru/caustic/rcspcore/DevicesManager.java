@@ -198,6 +198,37 @@ public class DevicesManager {
 
         }
 
+        public void invalidateMapParameters() {
+            if (!parametersAreAdded)
+                return;
+            for (RCSProtocol.AnyParameterSerializer param : parameters.allParameters.values())
+            {
+                int id = param.getDescription().getId();
+                if (id == RCSProtocol.Operations.AnyDevice.Configuration.deviceName.getId()) {
+                    param.invalidate();
+                }
+                if (id == RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId()) {
+                    param.invalidate();
+                }
+                if (id == RCSProtocol.Operations.HeadSensor.Configuration.markerColor.getId()) {
+                    param.invalidate();
+                }
+                if (id == RCSProtocol.Operations.HeadSensor.Configuration.playerLat.getId()) {
+                    param.invalidate();
+                }
+                if (id == RCSProtocol.Operations.HeadSensor.Configuration.playerLon.getId()) {
+                    param.invalidate();
+                }
+                if (id == RCSProtocol.Operations.HeadSensor.Configuration.currentHealth.getId()) {
+                    param.invalidate();
+                }
+                if (id == RCSProtocol.Operations.HeadSensor.Configuration.deathCount.getId()) {
+                    param.invalidate();
+                }
+            }
+
+        }
+
         public void pushToDevice() {
             RCSPMultiStream stream = new RCSPMultiStream();
             for (Map.Entry<Integer, RCSProtocol.AnyParameterSerializer> entry : parameters.entrySet()) {
@@ -366,6 +397,14 @@ public class DevicesManager {
         for (CausticDevice dev : devices)
         {
             dev.invalidateParameters();
+        }
+    }
+
+    public void invalidateDevsMapParams(final Collection<CausticDevice> devices)
+    {
+        for (CausticDevice dev : devices)
+        {
+            dev.invalidateMapParameters();
         }
     }
 

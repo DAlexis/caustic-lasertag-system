@@ -942,7 +942,13 @@ public class RCSProtocol {
 
 
                 public static final ParameterDescription markerColor
-                        = new ColorParameter(parametersDescriptions, 1035, "On-map marker color", -2147483648, -2147483648);
+                        = new ColorParameter(parametersDescriptions, 1035, "On-map marker color", -2147483648, 2147483647);
+
+                public static final ParameterDescription currentHealth
+                        = new UintParameter(parametersDescriptions, 1100, "Player's current health", 0, 200);
+                public static final ParameterDescription deathCount
+                        = new UintParameter(parametersDescriptions, 1112, "Player's death count", 0, 200);
+
             }
 
             public static class Functions {

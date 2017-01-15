@@ -59,6 +59,11 @@ public class DeviceUtils {
         return result;
     }
 
+    public static int getCurrentHealth(DevicesManager.CausticDevice device) {
+        int result = Integer.parseInt(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.currentHealth.getId()).getValue());
+        return result;
+    }
+
 
     public static void pushLocalSettingsToAssociatedHeadSensor(Context context) {
         DevicesManager devMan = CausticController.getInstance().getDevicesManager();

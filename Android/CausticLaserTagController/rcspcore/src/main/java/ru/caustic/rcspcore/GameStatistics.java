@@ -81,6 +81,29 @@ public class GameStatistics {
         return result;
     }
 
+    public int getStatForPlayerID(int playerID, int statParType) {
+        int result = 0;
+        TreeMap<Integer, PvPStats> ownRegister = pvpStatsMap.get(playerID);
+        if (ownRegister!=null)
+        {
+            for (TreeMap.Entry<Integer, PvPStats> victim : ownRegister.entrySet())
+            {
+                    switch (statParType) {
+                        case KILLS_COUNT:
+                            result += victim.getValue().kills;
+                            break;
+                        case DAMAGE:
+                            result += victim.getValue().damage;
+                            break;
+                        case HITS_COUNT:
+                            result += victim.getValue().hits;
+                            break;
+                    }
+            }
+        }
+        return result;
+    }
+
     // Private
     private class PvPDamageResultsMessageDispatcher implements DevicesManager.RCSPOperationDispatcher {
         @Override

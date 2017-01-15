@@ -66,6 +66,7 @@
                     android:text="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="30sp"
+                    android:id='@+id/kill_count'
                     />
                 <TextView
                     android:layout_width="0dp"
@@ -75,6 +76,7 @@
                     android:text="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="30sp"
+                    android:id='@+id/score_count'
                     />
                 <TextView
                     android:layout_width="0dp"
@@ -84,6 +86,7 @@
                     android:text="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="30sp"
+                    android:id='@+id/death_count'
                     />
             </TableRow>
         </TableLayout>

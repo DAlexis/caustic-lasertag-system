@@ -28,6 +28,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -36,8 +38,10 @@ import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DeviceUtils;
 import ru.caustic.rcspcore.DevicesManager;
+import ru.caustic.rcspcore.GameStatistics;
 import ru.caustic.rcspcore.RCSProtocol;
 
+import static ru.caustic.rcspcore.DeviceUtils.getCurrentHealth;
 import static ru.caustic.rcspcore.DeviceUtils.getDeviceName;
 import static ru.caustic.rcspcore.DeviceUtils.getDeviceTeam;
 import static ru.caustic.rcspcore.DeviceUtils.getMarkerColor;
@@ -55,9 +59,11 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
 
 
     private static DevicesManager devMan = CausticController.getInstance().getDevicesManager();
+    private static GameStatistics gameStats = CausticController.getInstance().getGameStatistics();
     private static ArrayList<PlayerOnMap> playerOnMapList = new ArrayList<>();
     private static GoogleMap map;
     private static final String TAG = "HUDFragment";
+    private DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
 
     private static final int MARKER_BORDER_WIDTH_SP = 4;
     private static final int MARKER_RADIUS_SP = 20;
@@ -70,8 +76,9 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
     private static Runnable devStateUpdater = new Runnable(){
         @Override
         public void run() {
-            devMan.invalidateDevsParams(DeviceUtils.getHeadSensorsMap(devMan.devices).values());
+            devMan.invalidateDevsMapParams(DeviceUtils.getHeadSensorsMap(devMan.devices).values());
             devMan.asyncPopParametersFromDevices(mListener, DeviceUtils.getHeadSensorsMap(devMan.devices).keySet());
+            gameStats.updateStats();
         }
     };
 
@@ -89,12 +96,13 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
                     @Override
                     public void run() {
 
+
                         TextView locs = (TextView) getActivity().findViewById(R.id.locs_test);
                         String testDisplay = "";
                         for (PlayerOnMap player : playerOnMapList) {
                             testDisplay = testDisplay + player.name + " - team " + player.team + ", lat: " + player.lat +
                                     ", lon: " + player.lon + " , marker:" + player.markerColor + "\n";
-                            DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
+
                             if (headSensor!=null) {
                                 testDisplay += "Associated head sensor: " + headSensor.getName();
                             }
@@ -114,6 +122,40 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
 
     };
 
+    private GameStatistics.StatsChangeListener statsUpdatedListener = new GameStatistics.StatsChangeListener() {
+
+        @Override
+        public void onStatsChange(int victimId, int damagerId)
+        {
+            final FragmentActivity activity=getActivity();
+            if (activity!=null) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView kills = (TextView) activity.findViewById(R.id.kill_count);
+                        TextView score = (TextView) activity.findViewById(R.id.score_count);
+                        TextView deaths = (TextView) activity.findViewById(R.id.death_count);
+                        int killCount = 0;
+                        int scoreCount = 0;
+                        int deathCount = 0;
+                        int hitCount = 0;
+                        if (headSensor!=null) {
+                            int ownId = Integer.parseInt(headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
+                            killCount = gameStats.getStatForPlayerID(ownId, GameStatistics.KILLS_COUNT);
+                            hitCount = gameStats.getStatForPlayerID(ownId, GameStatistics.HITS_COUNT);
+                            deathCount = Integer.parseInt(headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.deathCount.getId()).getValue());
+                            scoreCount = 2*killCount - deathCount + hitCount;
+                            if (kills!=null) kills.setText(Integer.toString(killCount));
+                            if (score!=null) score.setText(Integer.toString(scoreCount));
+                            if (deaths!=null) deaths.setText(Integer.toString(deathCount));
+                            Log.d(TAG, "Updating stats");
+                        }
+                    }
+                });
+            }
+        }
+    };
+
     private void refreshMarkersOnMap() {
         if (map!=null) {
             map.clear();
@@ -121,7 +163,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
                 Log.d(TAG, "Setting marker at " + player.lat + ", " + player.lon);
                 LatLng latLng = new LatLng(player.lat, player.lon);
                 //map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                Bitmap icon = createMarkerIcon(player.markerColor, player.team);
+                Bitmap icon = createMarkerIcon(player.markerColor, player.team, player.isAlive);
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng).title(player.name).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap(icon));
                 map.addMarker(options);
@@ -137,6 +179,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
 
         Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devsToLocate = DeviceUtils.getHeadSensorsMap(devMan.devices);
         playerOnMapList = populatePlayerOnMapList(devsToLocate);
+        gameStats.setStatsChangeListener(statsUpdatedListener);
 
         Fragment mMapFragment = SupportMapFragment.newInstance();
         FragmentTransaction fragmentTransaction =
@@ -183,7 +226,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         }
     }
 
-    private Bitmap createMarkerIcon(int markerColor, String team) {
+    private Bitmap createMarkerIcon(int markerColor, String team, boolean isAlive) {
 
         int pxRadius = MARKER_RADIUS_SP * Math.round(getActivity().getResources().getDisplayMetrics().scaledDensity);
         int pxBorderWidth = MARKER_BORDER_WIDTH_SP * Math.round(getActivity().getResources().getDisplayMetrics().scaledDensity);
@@ -193,11 +236,14 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         Canvas c = new Canvas(b);
         ShapeDrawable mDrawable = new ShapeDrawable(new OvalShape());
 
-        //Drawing circle with team color first and then a smaller circle with marker color second
-        int teamColor = getTeamColor(team);
-        mDrawable.getPaint().setColor(teamColor);
-        mDrawable.setBounds(0, 0, c.getWidth(), c.getHeight());
-        mDrawable.draw(c);
+        //Drawing circle with team color first (if alive) and then a smaller circle with marker color second
+
+        if (isAlive) {
+            int teamColor = getTeamColor(team);
+            mDrawable.getPaint().setColor(teamColor);
+            mDrawable.setBounds(0, 0, c.getWidth(), c.getHeight());
+            mDrawable.draw(c);
+        }
 
         mDrawable.getPaint().setColor(markerColor);
         mDrawable.setBounds(pxBorderWidth, pxBorderWidth, c.getWidth()-pxBorderWidth, c.getHeight()-pxBorderWidth);
@@ -231,6 +277,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         String team = "Unknown";
         int markerColor = 0xFFFFFFFF;
         boolean isVisible = true;
+        boolean isAlive = true;
         public PlayerOnMap(DevicesManager.CausticDevice device)
         {
 
@@ -242,6 +289,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
                 team = getDeviceTeam(device);
                 name = getDeviceName(device);
                 markerColor = getMarkerColor(device);
+                if (getCurrentHealth(device)==0) isAlive = false;
             }
         }
     }

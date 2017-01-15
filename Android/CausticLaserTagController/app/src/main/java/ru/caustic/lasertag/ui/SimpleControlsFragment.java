@@ -23,6 +23,7 @@ public class SimpleControlsFragment extends Fragment {
     private CheckBox checkBoxControlYellow;
     private CheckBox checkBoxControlGreen;
     private CheckBox checkBoxControlAllTeams;
+    private Button buttonNewGame;
 
     public SimpleControlsFragment()
     {
@@ -37,6 +38,7 @@ public class SimpleControlsFragment extends Fragment {
 
         buttonRespawn = (Button) view.findViewById(R.id.buttonRespawn);
         buttonKill = (Button) view.findViewById(R.id.buttonKill);
+        buttonNewGame = (Button) view.findViewById(R.id.buttonNewGame);
 
         checkBoxControlRed = (CheckBox) view.findViewById(R.id.checkBoxControlRed);
         checkBoxControlBlue = (CheckBox) view.findViewById(R.id.checkBoxControlBlue);
@@ -72,6 +74,13 @@ public class SimpleControlsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 checkBoxAnyTeamClick(v);
+            }
+        });
+
+        buttonNewGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CausticController.getInstance().getBroadcastCalls().newRound();
             }
         });
 
