@@ -8,10 +8,12 @@ import java.util.TreeMap;
 
 public class GameStatistics {
 
-    public static final int KILLS_COUNT = 0;
+    public static final int ENEMY_KILLS_COUNT = 0;
     public static final int DAMAGE      = 1;
     public static final int HITS_COUNT  = 2;
+    public static final int FRIENDLY_KILLS_COUNT = 3;
     public static final int OP_CODE_GET_PVP_RESULTS = 3001;
+
 
     public static class PvPStats {
         public long damage = 0;
@@ -70,7 +72,7 @@ public class GameStatistics {
             {
                 result += "to " + Integer.toString(victim.getKey()) + " <- ";
                 switch (statParType) {
-                    case KILLS_COUNT: result += Integer.toString(victim.getValue().kills); break;
+                    case ENEMY_KILLS_COUNT: result += Integer.toString(victim.getValue().kills); break;
                     case DAMAGE: result += Long.toString(victim.getValue().damage); break;
                     case HITS_COUNT: result += Integer.toString(victim.getValue().hits); break;
                 }
@@ -89,20 +91,32 @@ public class GameStatistics {
             for (TreeMap.Entry<Integer, PvPStats> victim : ownRegister.entrySet())
             {
                     switch (statParType) {
-                        case KILLS_COUNT:
-                            result += victim.getValue().kills;
+                        case ENEMY_KILLS_COUNT:
+                            if (!DeviceUtils.onSameTeam(playerID, victim.getKey())) {
+                                result += victim.getValue().kills;
+                            }
                             break;
                         case DAMAGE:
-                            result += victim.getValue().damage;
+                            if (!DeviceUtils.onSameTeam(playerID, victim.getKey())) {
+                                result += victim.getValue().damage;
+                            }
                             break;
                         case HITS_COUNT:
-                            result += victim.getValue().hits;
+                            if (!DeviceUtils.onSameTeam(playerID, victim.getKey())) {
+                                result += victim.getValue().hits;
+                            }
+                            break;
+                        case FRIENDLY_KILLS_COUNT:
+                            if (DeviceUtils.onSameTeam(playerID, victim.getKey())) {
+                                result += victim.getValue().kills;
+                            }
                             break;
                     }
             }
         }
         return result;
     }
+
 
     // Private
     private class PvPDamageResultsMessageDispatcher implements DevicesManager.RCSPOperationDispatcher {

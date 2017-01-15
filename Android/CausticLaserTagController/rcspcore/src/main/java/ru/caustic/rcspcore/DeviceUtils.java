@@ -88,4 +88,34 @@ public class DeviceUtils {
         }
     }
 
+
+
+    public static boolean onSameTeam(int id1, int id2)
+    {
+        String team1="-1";
+        String team2="-2";
+        Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> headSensors = getHeadSensorsMap(CausticController.getInstance().getDevicesManager().devices);
+        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : headSensors.entrySet())
+        {
+            DevicesManager.CausticDevice device = entry.getValue();
+            if (device.areDeviceRelatedParametersAdded())
+            {
+                int id = Integer.parseInt(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
+                if (id == id1)
+                {
+                    team1 = device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId()).getValue();
+                }
+                if (id == id2)
+                {
+                    team2 = device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.teamMT2Id.getId()).getValue();
+                }
+            }
+
+        }
+        if (team1.equals(team2))
+        {
+            return true;
+        }
+        return false;
+    }
 }

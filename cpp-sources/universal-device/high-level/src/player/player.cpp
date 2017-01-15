@@ -83,7 +83,7 @@ bool PlayerState::damage(uint8_t damage)
 	if (healthCurrent == 0)
 		return true;
 
-	if (totalDamage > healthCurrent)
+	if (totalDamage >= healthCurrent)
 	{
 		kill();
 		return true;

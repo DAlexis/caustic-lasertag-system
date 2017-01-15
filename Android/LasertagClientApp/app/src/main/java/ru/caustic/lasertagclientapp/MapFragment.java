@@ -28,8 +28,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -136,15 +134,17 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
                         TextView score = (TextView) activity.findViewById(R.id.score_count);
                         TextView deaths = (TextView) activity.findViewById(R.id.death_count);
                         int killCount = 0;
+                        int friendlyKills = 0;
                         int scoreCount = 0;
                         int deathCount = 0;
                         int hitCount = 0;
                         if (headSensor!=null) {
                             int ownId = Integer.parseInt(headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
-                            killCount = gameStats.getStatForPlayerID(ownId, GameStatistics.KILLS_COUNT);
+                            killCount = gameStats.getStatForPlayerID(ownId, GameStatistics.ENEMY_KILLS_COUNT);
                             hitCount = gameStats.getStatForPlayerID(ownId, GameStatistics.HITS_COUNT);
                             deathCount = Integer.parseInt(headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.deathCount.getId()).getValue());
-                            scoreCount = 2*killCount - deathCount + hitCount;
+                            friendlyKills = gameStats.getStatForPlayerID(ownId, GameStatistics.FRIENDLY_KILLS_COUNT);
+                            scoreCount = 2*killCount + hitCount - deathCount - 2*friendlyKills;
                             if (kills!=null) kills.setText(Integer.toString(killCount));
                             if (score!=null) score.setText(Integer.toString(scoreCount));
                             if (deaths!=null) deaths.setText(Integer.toString(deathCount));
