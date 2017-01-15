@@ -1,6 +1,7 @@
 package ru.caustic.lasertagclientapp;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -61,7 +62,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
     private static ArrayList<PlayerOnMap> playerOnMapList = new ArrayList<>();
     private static GoogleMap map;
     private static final String TAG = "HUDFragment";
-    private DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
+    private static DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
 
     private static final int MARKER_BORDER_WIDTH_SP = 4;
     private static final int MARKER_RADIUS_SP = 20;
@@ -93,28 +94,11 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-
-                        TextView locs = (TextView) getActivity().findViewById(R.id.locs_test);
-                        String testDisplay = "";
-                        for (PlayerOnMap player : playerOnMapList) {
-                            testDisplay = testDisplay + player.name + " - team " + player.team + ", lat: " + player.lat +
-                                    ", lon: " + player.lon + " , marker:" + player.markerColor + "\n";
-
-                            if (headSensor!=null) {
-                                testDisplay += "Associated head sensor: " + headSensor.getName();
-                            }
-                            Log.d(TAG, "Updating text");
-                        }
-                        if (locs != null) {
-                            locs.setText(testDisplay);
-                        }
                         refreshMarkersOnMap();
                         Log.d(TAG, "Updating markers");
                     }
                 });
             }
-
             devStateUpdateHandler.postDelayed(devStateUpdater, STATE_UPDATE_DELAY_MS);
         }
 
@@ -163,7 +147,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
                 Log.d(TAG, "Setting marker at " + player.lat + ", " + player.lon);
                 LatLng latLng = new LatLng(player.lat, player.lon);
                 //map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                Bitmap icon = createMarkerIcon(player.markerColor, player.team, player.isAlive);
+                Bitmap icon = createMarkerIcon(getActivity(), player.markerColor, player.team, player.isAlive);
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng).title(player.name).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap(icon));
                 map.addMarker(options);
@@ -179,7 +163,6 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
 
         Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devsToLocate = DeviceUtils.getHeadSensorsMap(devMan.devices);
         playerOnMapList = populatePlayerOnMapList(devsToLocate);
-        gameStats.setStatsChangeListener(statsUpdatedListener);
 
         Fragment mMapFragment = SupportMapFragment.newInstance();
         FragmentTransaction fragmentTransaction =
@@ -226,10 +209,10 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         }
     }
 
-    private Bitmap createMarkerIcon(int markerColor, String team, boolean isAlive) {
+    public static Bitmap createMarkerIcon(Context context, int markerColor, String team, boolean isAlive) {
 
-        int pxRadius = MARKER_RADIUS_SP * Math.round(getActivity().getResources().getDisplayMetrics().scaledDensity);
-        int pxBorderWidth = MARKER_BORDER_WIDTH_SP * Math.round(getActivity().getResources().getDisplayMetrics().scaledDensity);
+        int pxRadius = MARKER_RADIUS_SP * Math.round(context.getResources().getDisplayMetrics().scaledDensity);
+        int pxBorderWidth = MARKER_BORDER_WIDTH_SP * Math.round(context.getResources().getDisplayMetrics().scaledDensity);
 
 
         Bitmap b = Bitmap.createBitmap(pxRadius, pxRadius, Bitmap.Config.ARGB_8888);
@@ -239,7 +222,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         //Drawing circle with team color first (if alive) and then a smaller circle with marker color second
 
         if (isAlive) {
-            int teamColor = getTeamColor(team);
+            int teamColor = getTeamColor(context, team);
             mDrawable.getPaint().setColor(teamColor);
             mDrawable.setBounds(0, 0, c.getWidth(), c.getHeight());
             mDrawable.draw(c);
@@ -252,19 +235,19 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         return b;
     }
 
-    private int getTeamColor(String team) {
+    private static int getTeamColor(Context context, String team) {
         switch (team)
         {
             case "Red":
-                return ContextCompat.getColor(getContext(), R.color.red);
+                return ContextCompat.getColor(context, R.color.red);
             case "Blue":
-                return ContextCompat.getColor(getContext(), R.color.blue);
+                return ContextCompat.getColor(context, R.color.blue);
             case "Green":
-                return ContextCompat.getColor(getContext(), R.color.green);
+                return ContextCompat.getColor(context, R.color.green);
             case "Yellow":
-                return ContextCompat.getColor(getContext(), R.color.yellow);
+                return ContextCompat.getColor(context, R.color.yellow);
             default:
-                return ContextCompat.getColor(getContext(), R.color.grey);
+                return ContextCompat.getColor(context, R.color.grey);
         }
 
     }

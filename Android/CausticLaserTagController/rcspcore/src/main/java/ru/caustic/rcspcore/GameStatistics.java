@@ -131,7 +131,9 @@ public class GameStatistics {
             pvpRawResults.deserialize(operation.argument, 0);
 
             addPvPRawResult(pvpRawResults);
-            statsChangeListener.onStatsChange(pvpRawResults.victimId, pvpRawResults.enemyId);
+            if (statsChangeListener != null) {
+                statsChangeListener.onStatsChange(pvpRawResults.victimId, pvpRawResults.enemyId);
+            }
         }
     }
     /**
