@@ -1,9 +1,6 @@
 package ru.caustic.lasertagclientapp;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -27,8 +24,8 @@ import android.widget.Toast;
 
 import ru.caustic.rcspcore.BluetoothManager;
 import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.DeviceUtils;
 import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.RCSProtocol;
 
 public class MainActivity extends AppCompatActivity implements BluetoothManager.ConnectionDoneListener {
 

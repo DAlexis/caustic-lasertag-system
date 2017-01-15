@@ -54,7 +54,8 @@
         <activity
             android:name=".MainControlsActivity"
             android:label="@string/title_activity_main_controls" />
-        <activity android:name=".GameStatsActivity"></activity>
+        <activity android:name=".GameStatsActivity" />
+        <activity android:name=".StressTestActivity"></activity>
     </application>
 
 </manifest>

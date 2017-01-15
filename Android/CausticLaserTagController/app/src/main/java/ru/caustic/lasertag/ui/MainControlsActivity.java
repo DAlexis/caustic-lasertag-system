@@ -104,4 +104,9 @@ public class MainControlsActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void buttonStressTestClick(View view) {
+        Intent intent = new Intent(this, StressTestActivity.class);
+        startActivity(intent);
+    }
 }

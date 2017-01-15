@@ -1,4 +1,4 @@
-package ru.caustic.lasertagclientapp;
+package ru.caustic.rcspcore;
 
 import android.content.Context;
 import android.content.SharedPreferences;

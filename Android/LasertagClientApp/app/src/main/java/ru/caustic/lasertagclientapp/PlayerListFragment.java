@@ -29,9 +29,9 @@ import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DevicesManager;
 import ru.caustic.rcspcore.RCSProtocol;
 
-import static ru.caustic.lasertagclientapp.DeviceUtils.allDevsSynced;
-import static ru.caustic.lasertagclientapp.DeviceUtils.getDeviceTeam;
-import static ru.caustic.lasertagclientapp.DeviceUtils.getHeadSensorsMap;
+import static ru.caustic.rcspcore.DeviceUtils.allDevsSynced;
+import static ru.caustic.rcspcore.DeviceUtils.getDeviceTeam;
+import static ru.caustic.rcspcore.DeviceUtils.getHeadSensorsMap;
 
 
 /**

@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.ShapeDrawable;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +18,7 @@ import android.widget.TextView;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Handler;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -30,21 +26,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import ru.caustic.rcspcore.BluetoothManager;
 import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.DeviceUtils;
 import ru.caustic.rcspcore.DevicesManager;
 import ru.caustic.rcspcore.RCSProtocol;
 
-import static ru.caustic.lasertagclientapp.DeviceUtils.getDeviceName;
-import static ru.caustic.lasertagclientapp.DeviceUtils.getDeviceTeam;
-import static ru.caustic.lasertagclientapp.DeviceUtils.getMarkerColor;
+import static ru.caustic.rcspcore.DeviceUtils.getDeviceName;
+import static ru.caustic.rcspcore.DeviceUtils.getDeviceTeam;
+import static ru.caustic.rcspcore.DeviceUtils.getMarkerColor;
 
 
 /**
