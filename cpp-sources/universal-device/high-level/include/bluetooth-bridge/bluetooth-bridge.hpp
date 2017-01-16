@@ -33,6 +33,7 @@
 struct AnyBuffer
 {
 	AnyBuffer(uint16_t _size, const void *_data = nullptr);
+	~AnyBuffer();
 	uint8_t* data;
 	const uint16_t size;
 };
