@@ -5,6 +5,8 @@
 #include <sys/time.h>
 #include <usbd_cdc_if.h>
 
+#include "newlib-driver.h"
+
 #if defined STM32F1
 # include <stm32f1xx_hal.h>
 #elif defined STM32F2
@@ -24,6 +26,8 @@
 
 #undef errno
 extern int errno;
+
+int freeHeap = 0;
 
 char *__env[1] = { 0 };
 char **environ = __env;
@@ -104,27 +108,10 @@ int _lseek(int file, int ptr, int dir)
 
 caddr_t _sbrk(int incr)
 {
-    /*
-    extern char _ebss;
-    static char *heap_end= &_ebss;
-    char *prev_heap_end;
+    extern char __bss_end__;
+    extern char _estack;
+    char* heapLimit = &_estack - 0x200;
 
-    prev_heap_end = heap_end;
-
-    char * stack = (char*) __get_MSP();
-    if (heap_end + incr > stack)
-    {
-        _write(STDERR_FILENO, "Heap and stack collision\n", 25);
-        errno = ENOMEM;
-        return (caddr_t) - 1;
-        //abort ();
-    }
-
-    heap_end += incr;
-    return (caddr_t) prev_heap_end;
-*/
-    extern char _Heap_Begin; // Defined by the linker.
-    extern char _Heap_Limit; // Defined by the linker.
     //extern char isMemoryCorrupted;
 
     static char* current_heap_end;
@@ -132,7 +119,7 @@ caddr_t _sbrk(int incr)
 
     if (current_heap_end == 0)
     {
-      current_heap_end = &_Heap_Begin;
+      current_heap_end = &__bss_end__;
     }
 
     current_block_address = current_heap_end;
@@ -142,7 +129,7 @@ caddr_t _sbrk(int incr)
     // word boundary, hence make sure we always add a multiple of
     // 4 to it.
     incr = (incr + 3) & (~3); // align value to 4
-    if (current_heap_end + incr > &_Heap_Limit)
+    if (current_heap_end + incr > heapLimit)
     {
       // Some of the libstdc++-v3 tests rely upon detecting
       // out of memory errors, so do not abort here.
@@ -162,6 +149,7 @@ caddr_t _sbrk(int incr)
     }
 
     current_heap_end += incr;
+    freeHeap = heapLimit - current_heap_end;
 
     return (caddr_t) current_block_address;
 }

@@ -39,16 +39,20 @@ BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 AnyBuffer::AnyBuffer(uint16_t _size, const void *_data) :
 	size(_size)
 {
-	data = nullptr;
-	data = new uint8_t[size];
-	if (data != nullptr && _data != nullptr)
+	this->data = nullptr;
+	this->data = new uint8_t[size];
+	if (this->data != nullptr && _data != nullptr)
 		memcpy(data, _data, size);
 }
 
+AnyBuffer::~AnyBuffer()
+{
+    if (data)
+        delete[] data;
+}
 
 BluetoothBridge::BluetoothBridge()
 {
-    debug << "Bluetooth bridge constructor";
 }
 
 void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardOk)
@@ -78,7 +82,7 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
     m_workerToNetwork.setStackSize(512);
     m_workerToNetwork.run();
 
-    m_workerToBluetooth.setStackSize(512); // This worker causes hard fault
+    m_workerToBluetooth.setStackSize(200);
     m_workerToBluetooth.run();
 
     configureBluetooth();
@@ -201,8 +205,7 @@ void BluetoothBridge::sendBluetoothMessage(AnyBuffer* buffer)
 	debug << "Sending bluetooth message";
 	// Transmitting to bluetooth module and waiting while transmit is done
 	m_bluetoothPort->transmit(buffer->data, buffer->size);
-	while (m_bluetoothPort->txBusy())
-		Kernel::yield();
+	while (m_bluetoothPort->txBusy()) { }
 }
 
 void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)

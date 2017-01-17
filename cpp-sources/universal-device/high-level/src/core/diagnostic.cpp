@@ -27,7 +27,9 @@
 #include "core/power-monitor.hpp"
 #include "core/debug-settings.hpp"
 #include "hal/rtc.hpp"
-#include "string.h"
+#include "newlib-driver.h"
+
+#include <string.h>
 
 SINGLETON_IN_CPP(SystemMonitor)
 
@@ -137,6 +139,7 @@ void SystemMonitor::printStagers() const
 
 void SystemMonitor::printOSDetails()
 {
+    debug << "Free heap (this value is strange for unknown reason): " << (int) freeHeap << " b";
 	debug << "OS info:";/*
 	int count = Kernel::instance().getTasksCount();
 	debug << "Running tasks: " << count;

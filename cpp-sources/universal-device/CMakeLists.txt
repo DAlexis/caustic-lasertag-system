@@ -29,6 +29,7 @@ include_directories(
     low-level/Middlewares/Third_Party/FatFs/src/drivers
     low-level/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
     low-level/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+    low-level/newlib
     low-level/Inc
     low-level/test
     high-level/include
