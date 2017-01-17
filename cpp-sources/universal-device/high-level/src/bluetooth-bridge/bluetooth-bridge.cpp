@@ -237,7 +237,3 @@ void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
 	    );
 	}
 }
-
-void BluetoothBridge::bluetoothBridgeTask()
-{
-}
