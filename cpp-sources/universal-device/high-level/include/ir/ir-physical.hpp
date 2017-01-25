@@ -32,7 +32,7 @@
 #include <functional>
 #include <stdint.h>
 
-using IRReceiverCallback = std::function<void(const uint8_t*, uint16_t)>;
+using IRReceiverCallback = std::function<void(const uint8_t* data, uint16_t size)>;
 
 class IIRTransmitter
 {
@@ -51,11 +51,9 @@ public:
 	virtual ~IIRPhysicalReceiver() {}
 
 	virtual void setCallback(IRReceiverCallback callback) = 0;
-	virtual void setIOPin(IIOPin* input) = 0;
 	virtual void setEnabled(bool enabled) = 0;
 
 	virtual void init() = 0;
-	/// Callback will be called from this function if needed
 };
 
 class IRTransmitterBase : public IIRTransmitter
@@ -73,12 +71,10 @@ protected:
 class IRReceiverBase : public IIRPhysicalReceiver
 {
 public:
-	void setCallback(IRReceiverCallback callback) { m_callback = callback; }
-	void setIOPin(IIOPin* input) { m_input = input; }
+	void setCallback(IRReceiverCallback callback) override { m_callback = callback; }
 
 protected:
 	IRReceiverCallback m_callback = nullptr;
-	IIOPin* m_input = nullptr;
 };
 
 #endif /* INCLUDE_IR_IR_PHYSICAL_HPP_ */

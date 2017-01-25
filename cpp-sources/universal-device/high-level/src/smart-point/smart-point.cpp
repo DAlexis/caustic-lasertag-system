@@ -67,8 +67,7 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 
 	m_MT2Interogator.setStackSize(512);
 
-	m_irPhysicalReceiver = new IRReceiverTV;
-	m_irPhysicalReceiver->setIOPin(IOPins->getIOPin(0, 0));
+	m_irPhysicalReceiver = new IRReceiverTV(IOPins->getIOPin(0, 0));
 	m_irPhysicalReceiver->init();
 	m_irPhysicalReceiver->setEnabled(true);
 

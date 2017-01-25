@@ -1,5 +1,5 @@
 /*
-*    Copyright (C) 2016 by Aleksey Bulatov
+*    Copyright (C) 2016-2017 by Aleksey Bulatov
 *
 *    This file is part of Caustic Lasertag System project.
 *
@@ -26,6 +26,15 @@
 
 #include <string.h>
 #include <stdint.h>
+
+struct AnyBuffer
+{
+    AnyBuffer(uint16_t size, const void *data = nullptr);
+    ~AnyBuffer();
+    uint8_t* data;
+    const uint16_t size;
+};
+
 
 template <typename T>
 void zerify(T& object)

@@ -1,3 +1,6 @@
 [submodule "usb-bootloader"]
 	path = cpp-sources/bootloader-usb
 	url = https://github.com/DAlexis/stm32-usb-bootloader.git
+[submodule "cpp-sources/universal-device/high-level/lasertag-ssp"]
+	path = cpp-sources/universal-device/high-level/lasertag-ssp
+	url = https://github.com/DAlexis/lasertag-ssp.git

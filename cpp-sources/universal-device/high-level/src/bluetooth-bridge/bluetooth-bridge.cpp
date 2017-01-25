@@ -36,21 +36,6 @@ using namespace Bluetooth;
 
 BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 
-AnyBuffer::AnyBuffer(uint16_t _size, const void *_data) :
-	size(_size)
-{
-	this->data = nullptr;
-	this->data = new uint8_t[size];
-	if (this->data != nullptr && _data != nullptr)
-		memcpy(data, _data, size);
-}
-
-AnyBuffer::~AnyBuffer()
-{
-    if (data)
-        delete[] data;
-}
-
 BluetoothBridge::BluetoothBridge()
 {
 }

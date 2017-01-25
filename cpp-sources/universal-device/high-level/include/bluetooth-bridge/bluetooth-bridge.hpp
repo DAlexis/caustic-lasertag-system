@@ -29,14 +29,7 @@
 #include "hal/uart.hpp"
 #include "core/os-wrappers.hpp"
 #include "network/network-client.hpp"
-
-struct AnyBuffer
-{
-	AnyBuffer(uint16_t _size, const void *_data = nullptr);
-	~AnyBuffer();
-	uint8_t* data;
-	const uint16_t size;
-};
+#include "utils/memory.hpp"
 
 class BluetoothBridgePackageTimings
 {

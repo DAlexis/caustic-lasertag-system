@@ -23,6 +23,21 @@
 
 #include "utils/memory.hpp"
 
+AnyBuffer::AnyBuffer(uint16_t size, const void *data) :
+    size(size)
+{
+    this->data = nullptr;
+    this->data = new uint8_t[size];
+    if (this->data != nullptr && data != nullptr)
+        memcpy(this->data, data, this->size);
+}
+
+AnyBuffer::~AnyBuffer()
+{
+    if (data)
+        delete[] data;
+}
+
 uint32_t hashLyC(uint32_t hash, const uint8_t * buf, uint32_t size)
 {
 	for(uint32_t i=0; i<size; i++)

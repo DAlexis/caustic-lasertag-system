@@ -33,6 +33,7 @@ class IPresentationReceiversGroup;
 class IIRPresentationReceiver : public IInterrogatable
 {
 public:
+    using FactoryMethod = std::function<IIRPresentationReceiver*(IIRPhysicalReceiver*)>;
 	virtual ~IIRPresentationReceiver() {}
 	virtual void init() = 0;
 	virtual void setPhysicalReceiver(IIRPhysicalReceiver* receiver) = 0;

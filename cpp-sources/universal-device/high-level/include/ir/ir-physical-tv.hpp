@@ -62,6 +62,7 @@ private:
 class IRReceiverTV : public IRReceiverBase
 {
 public:
+    IRReceiverTV(IIOPin* input);
 	~IRReceiverTV() {}
 
 	void init();
@@ -93,10 +94,10 @@ private:
 	constexpr static int bitWaitPeriodMax   = 900;
 
 	uint8_t m_data[bufferMaxSize];
-	uint8_t *m_pCurrentByte;
-	uint8_t m_currentBit;
-	bool m_falseImpulse;
-	ReceivingState m_state;
+	uint8_t *m_pCurrentByte = nullptr;
+	uint8_t m_currentBit = 7;
+	bool m_falseImpulse = false;
+	ReceivingState m_state = RS_WAITING_HEADER;
 
 	Time m_lastTime = 0;
 	uint32_t m_dtime = 0;
@@ -106,6 +107,7 @@ private:
 
 	bool m_debug = false;
 
+	IIOPin* m_input = nullptr;
 
 	void resetReceiver();
 	bool isCorrect(unsigned int value, unsigned int min, unsigned int max);

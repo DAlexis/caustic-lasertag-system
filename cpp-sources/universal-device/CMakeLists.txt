@@ -5,6 +5,9 @@ project(universal-device C CXX ASM)
 FILE(GLOB_RECURSE ASM_SOURCES *.s)
 FILE(GLOB_RECURSE C_SOURCES *.c)
 FILE(GLOB_RECURSE CPP_SOURCES *.cpp)
+
+list(FILTER CPP_SOURCES EXCLUDE REGEX "\\S*unit-tests\\S*")
+
 FILE(GLOB_RECURSE H_HEADERS *.h)
 FILE(GLOB_RECURSE HPP_HEADERS *.hpp)
 
@@ -37,6 +40,8 @@ include_directories(
     high-level/glcd/controllers
     high-level/glcd/fonts
     high-level/glcd
+    high-level/lasertag-ssp/ssp
+    high-level/lasertag-ssp/ssp/Inc
 )
 
 set(ELF_NAME ${PROJECT_NAME}.elf)

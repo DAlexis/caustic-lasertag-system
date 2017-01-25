@@ -115,6 +115,12 @@ void IRTransmitterTV::emitterCallback(bool wasOnState)
 //////////////////////////
 /// Receiver
 
+IRReceiverTV::IRReceiverTV(IIOPin* input) :
+    m_input(input)
+{
+
+}
+
 void IRReceiverTV::init()
 {
 	resetReceiver();

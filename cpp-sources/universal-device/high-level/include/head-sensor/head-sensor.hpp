@@ -37,6 +37,7 @@
 #include "head-sensor/resources.hpp"
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
+#include "ir/smart-sensors.hpp"
 #include "network/broadcast.hpp"
 #include "network/network-client.hpp"
 #include "rcsp/operation-codes.hpp"
@@ -103,6 +104,9 @@ private:
 	constexpr static uint8_t killZonesCount = 6;
 	constexpr static uint16_t RFIDWriteBufferSize = 16;
 
+	void initSimpleZones(const Pinout &_pinout);
+	void initSmartZones(const Pinout &pinout);
+
 	// Test functions
 	void testDie(const char*);
 
@@ -139,6 +143,8 @@ private:
 	IIRPhysicalReceiver* m_irPhysicalReceivers[killZonesCount];
 	IIRPresentationReceiver* m_irPresentationReceivers[killZonesCount];
 	IPresentationReceiversGroup* m_irPresentationReceiversGroup = nullptr;
+
+	SmartSensorsManager m_smartSensorsManager;
 
 	Interrogator m_killZonesInterogator;
 
