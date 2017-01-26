@@ -35,9 +35,9 @@
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "head-sensor/player-config-and-state.hpp"
 #include "head-sensor/resources.hpp"
-#include "ir/ir-physical.hpp"
-#include "ir/ir-presentation.hpp"
 #include "ir/smart-sensors.hpp"
+#include "ir2/ir-physical-receiver.hpp"
+#include "ir2/ir-presentation-receiver.hpp"
 #include "network/broadcast.hpp"
 #include "network/network-client.hpp"
 #include "rcsp/operation-codes.hpp"
@@ -140,9 +140,9 @@ private:
 		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)* m_pId;
 	};
 
-	IIRPhysicalReceiver* m_irPhysicalReceivers[killZonesCount];
-	IIRPresentationReceiver* m_irPresentationReceivers[killZonesCount];
-	IPresentationReceiversGroup* m_irPresentationReceiversGroup = nullptr;
+	std::list<IIRReceiverPhysical*> m_receiversPhysical;
+	IIRProtocolParser *m_irProtocolParser = nullptr;
+	IRReceiversManager m_receiverMgr;
 
 	SmartSensorsManager m_smartSensorsManager;
 

@@ -31,8 +31,8 @@
 #include "bluetooth-bridge/bluetooth-bridge.hpp"
 #include "head-sensor/head-sensor.hpp"
 #include "head-sensor/resources.hpp"
-#include "ir/ir-physical-tv.hpp"
-#include "ir/ir-presentation-mt2.hpp"
+#include "ir2/ir-protocol-parser-MT2-ex.hpp"
+#include "ir2/ir-physical-receiver-io-pin.hpp"
 #include "rcsp/stream.hpp"
 #include "hal/system-controls.hpp"
 
@@ -106,9 +106,10 @@ IWeaponObserver *WeaponManagerFactory::create() const
 
 HeadSensor::HeadSensor()
 {
-	m_tasksPool.setStackSize(512);
 	deviceConfig.deviceType = DeviceTypes::headSensor;
 	playerState.weaponsList.setWeaponObserverFactory(&weaponManagerFactory);
+	m_tasksPool.setStackSize(512);
+	m_killZonesInterogator.setStackSize(512);
 	//m_weapons.insert({1,1,1});
 }
 
@@ -123,15 +124,15 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	info << "Configuring power monitor";
 	PowerMonitor::instance().interrogate();
 
-	info << "Configuring kill zones";
-	// Receiver group
-	m_irPresentationReceiversGroup = new PresentationReceiversGroupMT2;
-    m_killZonesInterogator.setStackSize(512);
-    m_killZonesInterogator.setName("KZintrg");
+	info << "Configuring sensors";
+	m_receiverMgr.connectRCSPAggregator(*m_aggregator);
+	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(*m_aggregator);
+	m_receiverMgr.setParser(m_irProtocolParser);
 
-    m_killZonesInterogator.registerObject(m_irPresentationReceiversGroup);
 	initSimpleZones(_pinout);
-	initSmartZones(_pinout);
+	//initSmartZones(_pinout);
+
+	m_killZonesInterogator.registerObject(&m_receiverMgr);
 
 
 	// Power monitor should be initialized before configuration reading
@@ -243,35 +244,20 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 
 void HeadSensor::initSimpleZones(const Pinout &_pinout)
 {
-    auto initKillZone = [this](uint8_t index, IIOPin* pin, IIOPin* vibroPin, FloatParameter* damageCoefficient) {
-        m_irPhysicalReceivers[index] = new IRReceiverTV(pin);
-        m_irPhysicalReceivers[index]->init();
-        m_irPhysicalReceivers[index]->setEnabled(true);
-
-        m_irPresentationReceivers[index] = new IRPresentationReceiverMT2(*m_aggregator);
-        m_irPresentationReceivers[index]->setPhysicalReceiver(m_irPhysicalReceivers[index]);
-        m_irPresentationReceivers[index]->setDamageCoefficient(damageCoefficient);
-        m_irPresentationReceivers[index]->setVibroEngine(vibroPin);
-        m_irPresentationReceivers[index]->init();
-
-        m_irPresentationReceiversGroup->connectReceiver(*(m_irPresentationReceivers[index]));
-    };
-
     for (int i=0; i<6; i++)
     {
         char zoneName[10];
-        char vibroName[20];
+        //char vibroName[20];
         sprintf(zoneName, "zone%d", i+1);
-        sprintf(vibroName, "zone%d_vibro", i+1);
+        //sprintf(vibroName, "zone%d_vibro", i+1);
         const Pinout::PinDescr& zone = _pinout[zoneName];
-        const Pinout::PinDescr& zoneVibro = _pinout[vibroName];
+        //const Pinout::PinDescr& zoneVibro = _pinout[vibroName];
         if (zone)
         {
-            initKillZone(i,
-                    IOPins->getIOPin(zone.port, zone.pin),
-                    IOPins->getIOPin(zoneVibro.port, zoneVibro.pin),
-                    &playerConfig.zone1DamageCoeff
-                );
+        	IRReceiverPhysicalIOPin* receiver = new IRReceiverPhysicalIOPin(IOPins->getIOPin(zone.port, zone.pin), i);
+			receiver->init();
+			m_receiverMgr.addPhysicalReceiver(receiver);
+			m_receiverMgr.assignReceiverToZone(i, i);
         }
     }
 }

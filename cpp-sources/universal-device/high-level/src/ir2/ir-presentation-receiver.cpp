@@ -1,32 +1,56 @@
+/*
+*    Copyright (C) 2017 by Aleksey Bulatov
+*
+*    This file is part of Caustic Lasertag System project.
+*
+*    Caustic Lasertag System is free software:
+*    you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    Caustic Lasertag System is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with Caustic Lasertag System.
+*    If not, see <http://www.gnu.org/licenses/>.
+*
+*    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*/
+
 #include "ir2/ir-presentation-receiver.hpp"
 #include "rcsp/operation-codes.hpp"
+#include "core/logging.hpp"
 
-void IRReceiverPresentationBase::connectRCSPAggregator(RCSPAggregator& aggregator)
+void IRReceiversManager::connectRCSPAggregator(RCSPAggregator& aggregator)
 {
 	m_rcspAggregator = &aggregator;
 }
 
-void IRReceiverPresentationBase::setParser(IIRProtocolParser* parser)
+void IRReceiversManager::setParser(IIRProtocolParser* parser)
 {
 	m_parser = parser;
 }
 
-void IRReceiverPresentationBase::addPhysicalReceiver(IIRReceiverPhysical* receiver)
+void IRReceiversManager::addPhysicalReceiver(IIRReceiverPhysical* receiver)
 {
 	m_receivers.push_back(receiver);
 }
 
-void IRReceiverPresentationBase::assignReceiverToZone(UintParameter physicalReceiverId, UintParameter zoneId)
+void IRReceiversManager::assignReceiverToZone(UintParameter physicalReceiverId, UintParameter zoneId)
 {
 	m_receiverToZone[physicalReceiverId] = zoneId;
 }
 
-void IRReceiverPresentationBase::assignZoneDamageCoefficient(UintParameter zoneId, FloatParameter& damageCoefficient)
+void IRReceiversManager::assignZoneDamageCoefficient(UintParameter zoneId, FloatParameter& damageCoefficient)
 {
 	m_damageCoefficient[zoneId] = &damageCoefficient;
 }
 
-void IRReceiverPresentationBase::interrogate()
+void IRReceiversManager::interrogate()
 {
 	for (auto it : m_receivers)
 	{
@@ -44,7 +68,7 @@ void IRReceiverPresentationBase::interrogate()
 	checkTimeout();
 }
 
-void IRReceiverPresentationBase::processReceivedResults(UintParameter receiverId)
+void IRReceiversManager::processReceivedResults(UintParameter receiverId)
 {
 	switch(m_state)
 	{
@@ -85,7 +109,7 @@ void IRReceiverPresentationBase::processReceivedResults(UintParameter receiverId
 	}
 }
 
-void IRReceiverPresentationBase::applyCoefficient(ShotMessage& shot, UintParameter receiverId)
+void IRReceiversManager::applyCoefficient(ShotMessage& shot, UintParameter receiverId)
 {
 	auto it = m_receiverToZone.find(receiverId);
 	if (it == m_receiverToZone.end())
@@ -97,7 +121,7 @@ void IRReceiverPresentationBase::applyCoefficient(ShotMessage& shot, UintParamet
 	shot.damage *= *(jt->second);
 }
 
-void IRReceiverPresentationBase::checkTimeout()
+void IRReceiversManager::checkTimeout()
 {
 	if (m_state == State::empty)
 		return;
