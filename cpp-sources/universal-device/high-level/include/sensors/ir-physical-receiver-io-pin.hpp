@@ -24,7 +24,7 @@
 #ifndef UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_IR2_IR_PHYSICAL_RECEIVER_IO_PIN_HPP_
 #define UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_IR2_IR_PHYSICAL_RECEIVER_IO_PIN_HPP_
 
-#include "ir-physical-receiver.hpp"
+#include "sensors/ir-physical-receiver.hpp"
 #include "hal/io-pins.hpp"
 #include "hal/system-clock.hpp"
 

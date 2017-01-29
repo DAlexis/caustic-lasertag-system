@@ -21,7 +21,7 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#include "ir2/ir-protocol-parser-MT2-ex.hpp"
+#include "sensors/ir-protocol-parser-MT2-ex.hpp"
 #include "ir/MT2-details.hpp"
 #include "core/logging.hpp"
 #include "rcsp/operation-codes.hpp"

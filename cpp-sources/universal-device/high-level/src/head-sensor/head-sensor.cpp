@@ -31,8 +31,8 @@
 #include "bluetooth-bridge/bluetooth-bridge.hpp"
 #include "head-sensor/head-sensor.hpp"
 #include "head-sensor/resources.hpp"
-#include "ir2/ir-protocol-parser-MT2-ex.hpp"
-#include "ir2/ir-physical-receiver-io-pin.hpp"
+#include "sensors/ir-protocol-parser-MT2-ex.hpp"
+#include "sensors/ir-physical-receiver-io-pin.hpp"
 #include "rcsp/stream.hpp"
 #include "hal/system-controls.hpp"
 
@@ -244,12 +244,12 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 
 void HeadSensor::initSimpleZones(const Pinout &_pinout)
 {
-    for (int i=0; i<6; i++)
+    for (int i=1; i<6; i++)
     {
         char zoneName[10];
         //char vibroName[20];
-        sprintf(zoneName, "zone%d", i+1);
-        //sprintf(vibroName, "zone%d_vibro", i+1);
+        sprintf(zoneName, "zone%d", i);
+        //sprintf(vibroName, "zone%d_vibro", i);
         const Pinout::PinDescr& zone = _pinout[zoneName];
         //const Pinout::PinDescr& zoneVibro = _pinout[vibroName];
         if (zone)
@@ -257,9 +257,14 @@ void HeadSensor::initSimpleZones(const Pinout &_pinout)
         	IRReceiverPhysicalIOPin* receiver = new IRReceiverPhysicalIOPin(IOPins->getIOPin(zone.port, zone.pin), i);
 			receiver->init();
 			m_receiverMgr.addPhysicalReceiver(receiver);
-			m_receiverMgr.assignReceiverToZone(i, i);
+			m_killZonesManager.assignSensorToZone(i, i);
         }
     }
+    m_killZonesManager.setDamageCoefficient(1, playerConfig.zone1DamageCoeff);
+    m_killZonesManager.setDamageCoefficient(2, playerConfig.zone2DamageCoeff);
+    m_killZonesManager.setDamageCoefficient(3, playerConfig.zone3DamageCoeff);
+    m_killZonesManager.setDamageCoefficient(4, playerConfig.zone4DamageCoeff);
+    m_killZonesManager.setDamageCoefficient(5, playerConfig.zone5DamageCoeff);
 }
 
 void HeadSensor::initSmartZones(const Pinout &pinout)

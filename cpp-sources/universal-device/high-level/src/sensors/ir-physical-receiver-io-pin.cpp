@@ -21,7 +21,7 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#include "ir2/ir-physical-receiver-io-pin.hpp"
+#include "sensors/ir-physical-receiver-io-pin.hpp"
 
 #include <string.h>
 

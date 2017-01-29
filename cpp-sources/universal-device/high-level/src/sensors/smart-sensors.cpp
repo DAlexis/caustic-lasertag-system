@@ -5,7 +5,7 @@
  *      Author: dalexies
  */
 
-#include "ir/smart-sensors.hpp"
+#include "sensors/smart-sensors.hpp"
 #include "ssp-master.h"
 #include "ssp-master-driver.h"
 #include "hal/system-clock.hpp"

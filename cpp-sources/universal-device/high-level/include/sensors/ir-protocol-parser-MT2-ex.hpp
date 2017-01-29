@@ -24,7 +24,7 @@
 #ifndef UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_IR2_IR_PROTOCOL_PARSER_MT2_EX_HPP_
 #define UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_IR2_IR_PROTOCOL_PARSER_MT2_EX_HPP_
 
-#include "ir2/ir-presentation-receiver.hpp"
+#include "sensors/ir-presentation-receiver.hpp"
 #include "rcsp/aggregator.hpp"
 
 class IRProtocolParserMilesTag2Ex : public IIRProtocolParser

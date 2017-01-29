@@ -24,7 +24,8 @@
 #ifndef UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_IR2_IR_PRESENTATION_RECEIVER_HPP_
 #define UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_IR2_IR_PRESENTATION_RECEIVER_HPP_
 
-#include "ir2/ir-physical-receiver.hpp"
+#include "sensors/ir-physical-receiver.hpp"
+#include "sensors/kill-zones-manager.hpp"
 #include "rcsp/base-types.hpp"
 #include "game/game-base-types.hpp"
 #include "hal/system-clock.hpp"
@@ -55,11 +56,10 @@ public:
 class IRReceiversManager : public IInterrogatable
 {
 public:
+	IRReceiversManager(KillZonesManager& mgr);
 	void connectRCSPAggregator(RCSPAggregator& aggregator);
 	void setParser(IIRProtocolParser* parser);
 	void addPhysicalReceiver(IIRReceiverPhysical* receiver);
-	void assignReceiverToZone(UintParameter physicalReceiverId, UintParameter zoneId);
-	void assignZoneDamageCoefficient(UintParameter zoneId, FloatParameter& damageCoefficient);
 	void interrogate() override;
 
 private:
@@ -75,12 +75,10 @@ private:
 	void checkTimeout();
 
 	std::list<IIRReceiverPhysical*> m_receivers;
-	std::map<UintParameter, UintParameter> m_receiverToZone;
-	std::map<UintParameter, FloatParameter*> m_damageCoefficient;
 
 	IIRProtocolParser* m_parser = nullptr;
 
-	Time m_lastMessageTime;
+	Time m_lastMessageTime = 0;
 	State m_state = State::empty;
 
 	ShotMessage m_currentShotMessage;
@@ -89,6 +87,8 @@ private:
 	IRProtocolParseResult m_parseRusult;
 
 	RCSPAggregator* m_rcspAggregator = nullptr;
+
+	KillZonesManager &m_killZonesManager;
 };
 
 

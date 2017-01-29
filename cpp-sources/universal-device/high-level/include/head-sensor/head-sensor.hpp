@@ -35,9 +35,10 @@
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "head-sensor/player-config-and-state.hpp"
 #include "head-sensor/resources.hpp"
-#include "ir/smart-sensors.hpp"
-#include "ir2/ir-physical-receiver.hpp"
-#include "ir2/ir-presentation-receiver.hpp"
+#include "sensors/smart-sensors.hpp"
+#include "sensors/ir-physical-receiver.hpp"
+#include "sensors/ir-presentation-receiver.hpp"
+#include "sensors/kill-zones-manager.hpp"
 #include "network/broadcast.hpp"
 #include "network/network-client.hpp"
 #include "rcsp/operation-codes.hpp"
@@ -142,7 +143,8 @@ private:
 
 	std::list<IIRReceiverPhysical*> m_receiversPhysical;
 	IIRProtocolParser *m_irProtocolParser = nullptr;
-	IRReceiversManager m_receiverMgr;
+	KillZonesManager m_killZonesManager;
+	IRReceiversManager m_receiverMgr{m_killZonesManager};
 
 	SmartSensorsManager m_smartSensorsManager;
 

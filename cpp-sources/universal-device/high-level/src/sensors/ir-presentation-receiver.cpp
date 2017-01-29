@@ -21,9 +21,14 @@
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#include "ir2/ir-presentation-receiver.hpp"
+#include "sensors/ir-presentation-receiver.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "core/logging.hpp"
+
+IRReceiversManager::IRReceiversManager(KillZonesManager& mgr) :
+	m_killZonesManager(mgr)
+{
+}
 
 void IRReceiversManager::connectRCSPAggregator(RCSPAggregator& aggregator)
 {
@@ -38,16 +43,6 @@ void IRReceiversManager::setParser(IIRProtocolParser* parser)
 void IRReceiversManager::addPhysicalReceiver(IIRReceiverPhysical* receiver)
 {
 	m_receivers.push_back(receiver);
-}
-
-void IRReceiversManager::assignReceiverToZone(UintParameter physicalReceiverId, UintParameter zoneId)
-{
-	m_receiverToZone[physicalReceiverId] = zoneId;
-}
-
-void IRReceiversManager::assignZoneDamageCoefficient(UintParameter zoneId, FloatParameter& damageCoefficient)
-{
-	m_damageCoefficient[zoneId] = &damageCoefficient;
 }
 
 void IRReceiversManager::interrogate()
@@ -111,14 +106,7 @@ void IRReceiversManager::processReceivedResults(UintParameter receiverId)
 
 void IRReceiversManager::applyCoefficient(ShotMessage& shot, UintParameter receiverId)
 {
-	auto it = m_receiverToZone.find(receiverId);
-	if (it == m_receiverToZone.end())
-		return;
-	auto jt = m_damageCoefficient.find(it->second);
-	if (jt == m_damageCoefficient.end())
-		return;
-
-	shot.damage *= *(jt->second);
+	shot.damage *= m_killZonesManager.getDamageCoefficient(receiverId);
 }
 
 void IRReceiversManager::checkTimeout()
