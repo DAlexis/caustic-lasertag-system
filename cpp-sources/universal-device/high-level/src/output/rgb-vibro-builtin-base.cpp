@@ -1,4 +1,5 @@
 #include "output/rgb-vibro-builtin-base.hpp"
+#include "core/logging.hpp"
 
 RGBVibroLocalBase::RGBVibroLocalBase(UintParameter id) :
 	m_id(id)
@@ -37,6 +38,7 @@ void RGBVibroLocalBase::updateState()
 		m_currentIndex++;
 		dt = 0;
 		m_currentState = m_currentScheme->tasks[m_currentIndex].state;
+		m_lastAnimationTime = systemClock->getTime();
 		if (m_currentIndex == m_currentScheme->tasks.size()-1)
 			return;
 	}

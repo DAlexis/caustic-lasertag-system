@@ -39,6 +39,7 @@
 #include "sensors/ir-physical-receiver.hpp"
 #include "sensors/ir-presentation-receiver.hpp"
 #include "sensors/kill-zones-manager.hpp"
+#include "output/illumination.hpp"
 #include "network/broadcast.hpp"
 #include "network/network-client.hpp"
 #include "rcsp/operation-codes.hpp"
@@ -122,7 +123,7 @@ private:
 
 	WeaponManagerFactory weaponManagerFactory;
 
-	RGBLeds m_leds{playerConfig.teamId};
+	//RGBLeds m_leds{playerConfig.teamId};
 
 
 	Time m_shockDelayBegin = 0;
@@ -145,10 +146,11 @@ private:
 	IIRProtocolParser *m_irProtocolParser = nullptr;
 	KillZonesManager m_killZonesManager;
 	IRReceiversManager m_receiverMgr{m_killZonesManager};
+	LedVibroManager m_ledVibroMgr{m_killZonesManager};
 
 	SmartSensorsManager m_smartSensorsManager;
 
-	Interrogator m_killZonesInterogator;
+	Interrogator m_sensorsInterogator;
 
 	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, &m_networkClient};
 	Stager m_taskPoolStager{"HS task pool"};

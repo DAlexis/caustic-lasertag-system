@@ -33,6 +33,7 @@
 #include "head-sensor/resources.hpp"
 #include "sensors/ir-protocol-parser-MT2-ex.hpp"
 #include "sensors/ir-physical-receiver-io-pin.hpp"
+#include "output/rgb-vibro-io-pins.hpp"
 #include "rcsp/stream.hpp"
 #include "hal/system-controls.hpp"
 
@@ -109,7 +110,7 @@ HeadSensor::HeadSensor()
 	deviceConfig.deviceType = DeviceTypes::headSensor;
 	playerState.weaponsList.setWeaponObserverFactory(&weaponManagerFactory);
 	m_tasksPool.setStackSize(512);
-	m_killZonesInterogator.setStackSize(512);
+	m_sensorsInterogator.setStackSize(512);
 	//m_weapons.insert({1,1,1});
 }
 
@@ -132,7 +133,8 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	initSimpleZones(_pinout);
 	//initSmartZones(_pinout);
 
-	m_killZonesInterogator.registerObject(&m_receiverMgr);
+	m_sensorsInterogator.registerObject(&m_receiverMgr);
+	m_sensorsInterogator.registerObject(&m_ledVibroMgr);
 
 
 	// Power monitor should be initialized before configuration reading
@@ -160,12 +162,20 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 
 	info << "Initializing visual effects";
 	/// @todo Add support for only red (and LED-less) devices
+	IRGBVibroPointPhysical *rgbv = new RBGVibroIOPins(1,
+			IOPins->getIOPin(_pinout["red"].port, _pinout["red"].pin),
+			IOPins->getIOPin(_pinout["green"].port, _pinout["green"].pin),
+			IOPins->getIOPin(_pinout["blue"].port, _pinout["blue"].pin),
+			nullptr
+	);
+	m_ledVibroMgr.addPoint(rgbv, 1);
+/*
 	m_leds.init(
 			IOPins->getIOPin(_pinout["red"].port, _pinout["red"].pin),
 			IOPins->getIOPin(_pinout["green"].port, _pinout["green"].pin),
 			IOPins->getIOPin(_pinout["blue"].port, _pinout["blue"].pin)
 			);
-	m_leds.blink(blinkPatterns.init);
+	m_leds.blink(blinkPatterns.init);*/
 
 	info << "Network initialization";
 	initNetworkClient();
@@ -221,7 +231,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	m_tasksPool.run();
 	m_stateSaver.runSaver(8000);
 
-	m_killZonesInterogator.run();
+	m_sensorsInterogator.run();
 	info << "Head sensor ready to use";
 
 
@@ -336,7 +346,7 @@ void HeadSensor::catchShot(ShotMessage msg)
 				m_statsCounter.registerHit(msg.playerId);
 				m_statsCounter.registerDamage(msg.playerId, msg.damage);
 			}
-			m_leds.blink(blinkPatterns.wound);
+			//m_leds.blink(blinkPatterns.wound);
 			if (msg.playerId != playerConfig.playerId)
 			{
 				notifyDamager(msg.playerId, msg.teamId, DamageNotification::injured);
@@ -351,7 +361,7 @@ void HeadSensor::catchShot(ShotMessage msg)
 			}
 			m_statsCounter.registerKill(msg.playerId);
 			m_statsCounter.registerDamage(msg.playerId, healthBeforeDamage);
-			m_leds.blink(blinkPatterns.death);
+			//m_leds.blink(blinkPatterns.death);
 			/// @todo reenable
 			//Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
 		}
@@ -365,12 +375,14 @@ void HeadSensor::playerRespawn()
 	{
 		info << "Respawn limit is over!";
 		// @todo Add any notification that respawn limit is over
-		m_leds.blink(blinkPatterns.respawnLimitIsOver);
+		//m_leds.blink(blinkPatterns.respawnLimitIsOver);
 		return;
 	}
-	m_leds.blink(blinkPatterns.respawn);
+	//m_leds.blink(blinkPatterns.respawn);
 	respawnWeapons();
 	info << "Player spawned";
+	m_ledVibroMgr.applyIlluminationSchemeAtPoint(&defaultIlluminationSchemes.anyCommand, 1);
+
 /*
 	std::function<void(void)> respawnFunction = [this] {
 		playerState.respawn();
@@ -393,7 +405,7 @@ void HeadSensor::playerKill()
 	if (!playerState.isAlive())
 		return;
 	playerState.kill();
-	m_leds.blink(blinkPatterns.death);
+	//m_leds.blink(blinkPatterns.death);
 	dieWeapons();
 	info << "Player killed with kill command";
 }
@@ -513,7 +525,7 @@ void HeadSensor::setTeam(uint8_t teamId)
 {
 	info << "Setting team id";
 	playerConfig.teamId = teamId;
-	m_leds.blink(blinkPatterns.anyCommand);
+	//m_leds.blink(blinkPatterns.anyCommand);
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Changing weapon team id to" << teamId;
@@ -541,7 +553,7 @@ void HeadSensor::addMaxHealth(int16_t delta)
 		return;
 	}
 	playerConfig.healthStart += delta;
-	m_leds.blink(blinkPatterns.anyCommand);
+	//m_leds.blink(blinkPatterns.anyCommand);
 }
 
 void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_t state)
@@ -608,7 +620,7 @@ void HeadSensor::setFRIDToWriteAddr()
 			[this](uint8_t* data, uint16_t size)
 			{
 				UNUSED_ARG(data); UNUSED_ARG(size);
-				m_leds.blink(blinkPatterns.anyCommand);
+				//m_leds.blink(blinkPatterns.anyCommand);
 			}
 		);
 }

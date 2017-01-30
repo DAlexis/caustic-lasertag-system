@@ -12,9 +12,8 @@
 
 #include "hal/io-pins.hpp"
 #include "hal/system-clock.hpp"
-#include "utils/interfaces.hpp"
 
-class RGBVibroLocalBase : public IRGBVibroPointPhysical, public IInterrogatable
+class RGBVibroLocalBase : public IRGBVibroPointPhysical
 {
 public:
 	RGBVibroLocalBase(UintParameter id);

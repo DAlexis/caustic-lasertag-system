@@ -1,4 +1,7 @@
 #include "output/illumination.hpp"
+#include "core/logging.hpp"
+
+DefaultIlluminationSchemes defaultIlluminationSchemes;
 
 LedVibroManager::LedVibroManager(KillZonesManager& mgr) :
 	m_killZonesManager(mgr)
@@ -69,6 +72,12 @@ void LedVibroManager::applyIlluminationSchemeAtZoneByPointId(IllumitationScheme*
 	tryApplySystemWide(scheme);
 }
 
+void LedVibroManager::interrogate()
+{
+	for (auto it : m_pointsById)
+		it.second->interrogate();
+}
+
 bool LedVibroManager::tryApplyById(IllumitationScheme* scheme, UintParameter pointId)
 {
 	auto it = m_pointsById.find(pointId);
@@ -100,4 +109,13 @@ bool LedVibroManager::tryApplySystemWide(IllumitationScheme* scheme)
 		return true;
 	}
 	return false;
+}
+
+DefaultIlluminationSchemes::DefaultIlluminationSchemes()
+{
+	anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 0, 0));
+	anyCommand.tasks.push_back(IllumitationScheme::Task(255, 255, 255, 0, 500));
+	anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 0, 500));
+	anyCommand.tasks.push_back(IllumitationScheme::Task(255, 255, 255, 0, 500));
+	anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 0, 500));
 }
