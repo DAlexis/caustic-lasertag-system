@@ -14,8 +14,20 @@
 #include <stdint.h>
 #include <vector>
 
-struct IllumitationScheme
+class IllumitationScheme
 {
+public:
+	enum class Color {
+		red, green, blue, yellow, empty
+	};
+
+	struct StateTemplate
+	{
+		uint8_t teamColor = 0;
+		uint8_t otherColors = 0;
+	};
+
+
 	struct State
 	{
 		uint8_t r = 0;
@@ -26,28 +38,40 @@ struct IllumitationScheme
 
 	struct Task
 	{
-		Task(uint8_t r, uint8_t g, uint8_t b, uint8_t v, uint32_t delay) :
+		Task(uint8_t teamColor, uint8_t otherColors, uint8_t vibro, uint32_t delay) :
 			delayFromPrev(delay)
-		{ state.r = r; state.g = g; state.b = b; state.vibro = v; }
+		{ templ.teamColor = teamColor; templ.otherColors = otherColors; state.vibro = vibro; }
 		State state;
+		StateTemplate templ;
 		uint32_t delayFromPrev; // ms
 	};
 
+	void changeStatesToColor(Color c);
+
 	std::vector<Task> tasks;
+private:
+	Color m_currentColor = Color::empty;
 };
 
 class IRGBVibroPointPhysical : public IInterrogatable
 {
 public:
 	virtual ~IRGBVibroPointPhysical() {}
-	virtual void applyIlluminationScheme(IllumitationScheme* scheme) = 0;
+	virtual void applyIlluminationScheme(const IllumitationScheme* scheme) = 0;
 	virtual UintParameter getId() = 0;
 };
 
-struct DefaultIlluminationSchemes
+class IlluminationSchemesManager
 {
-	DefaultIlluminationSchemes();
-	IllumitationScheme anyCommand;
+public:
+	IlluminationSchemesManager(TeamGameId& id);
+	const IllumitationScheme& anyCommand();
+
+private:
+	IllumitationScheme::Color getCurrentColor();
+	TeamGameId& m_teamId;
+
+	IllumitationScheme m_anyCommand;
 };
 
 class LedVibroManager : public IInterrogatable
@@ -55,21 +79,19 @@ class LedVibroManager : public IInterrogatable
 public:
 	LedVibroManager(KillZonesManager& mgr);
 	void addPoint(IRGBVibroPointPhysical* m_point, UintParameter zoneId = 0, bool zoneWide = false, bool systemWide = false);
-	void applyIlluminationSchemeAtPoint(IllumitationScheme* scheme, UintParameter pointId);
+	void applyIlluminationSchemeAtPoint(const IllumitationScheme* scheme, UintParameter pointId);
 	void applyIlluminationSchemeAtZoneByPointId(IllumitationScheme* scheme, UintParameter pointId);
 	void interrogate() override;
 
 private:
-	bool tryApplyById(IllumitationScheme* scheme, UintParameter pointId);
-	bool tryApplyZoneWide(IllumitationScheme* scheme, UintParameter zoneId);
-	bool tryApplySystemWide(IllumitationScheme* scheme);
+	bool tryApplyById(const IllumitationScheme* scheme, UintParameter pointId);
+	bool tryApplyZoneWide(const IllumitationScheme* scheme, UintParameter zoneId);
+	bool tryApplySystemWide(const IllumitationScheme* scheme);
 
 	KillZonesManager& m_killZonesManager;
 	IRGBVibroPointPhysical* m_systemWide = nullptr;
 	std::map<UintParameter, IRGBVibroPointPhysical*> m_zoneWides;
 	std::map<UintParameter, IRGBVibroPointPhysical*> m_pointsById;
 };
-
-extern DefaultIlluminationSchemes defaultIlluminationSchemes;
 
 #endif /* UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_OUTPUT_ILLUMINATION_HPP_ */

@@ -25,12 +25,13 @@
 #define UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_IR2_IR_PROTOCOL_PARSER_MT2_EX_HPP_
 
 #include "sensors/ir-presentation-receiver.hpp"
+#include "output/illumination.hpp"
 #include "rcsp/aggregator.hpp"
 
 class IRProtocolParserMilesTag2Ex : public IIRProtocolParser
 {
 public:
-	IRProtocolParserMilesTag2Ex(RCSPAggregator& rcspAggregator);
+	IRProtocolParserMilesTag2Ex(RCSPAggregator& rcspAggregator, IlluminationSchemesManager& schemes);
 	void parse(IRProtocolParseResult& result, uint8_t* data, uint16_t bitsCount, UintParameter sensorId);
 
 private:
@@ -45,6 +46,7 @@ private:
 	uint8_t m_bufferForArgument[argumentBufferSize];
 
 	RCSPAggregator& m_rcspAggregator;
+	IlluminationSchemesManager& m_schemes;
 };
 
 

@@ -127,7 +127,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 
 	info << "Configuring sensors";
 	m_receiverMgr.connectRCSPAggregator(*m_aggregator);
-	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(*m_aggregator);
+	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(*m_aggregator, m_illuminationSchemes);
 	m_receiverMgr.setParser(m_irProtocolParser);
 
 	initSimpleZones(_pinout);
@@ -381,7 +381,7 @@ void HeadSensor::playerRespawn()
 	//m_leds.blink(blinkPatterns.respawn);
 	respawnWeapons();
 	info << "Player spawned";
-	m_ledVibroMgr.applyIlluminationSchemeAtPoint(&defaultIlluminationSchemes.anyCommand, 1);
+	m_ledVibroMgr.applyIlluminationSchemeAtPoint(&(m_illuminationSchemes.anyCommand()), 1);
 
 /*
 	std::function<void(void)> respawnFunction = [this] {

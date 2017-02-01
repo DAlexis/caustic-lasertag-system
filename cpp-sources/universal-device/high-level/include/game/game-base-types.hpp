@@ -31,6 +31,10 @@
 using PlayerGameId = uint8_t;
 /// Team identifier. May be 1,2,3,4
 using TeamGameId = uint8_t;
+constexpr TeamGameId teamRed    = 0x00;
+constexpr TeamGameId teamBlue   = 0x01;
+constexpr TeamGameId teamYellow = 0x02;
+constexpr TeamGameId teamGreen  = 0x03;
 constexpr TeamGameId teamGameIdNotATeam = 5;
 
 struct ShotMessage {

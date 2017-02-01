@@ -18,7 +18,7 @@ class RGBVibroLocalBase : public IRGBVibroPointPhysical
 public:
 	RGBVibroLocalBase(UintParameter id);
 
-	void applyIlluminationScheme(IllumitationScheme* scheme) override;
+	void applyIlluminationScheme(const IllumitationScheme* scheme) override;
 	UintParameter getId() override;
 	void interrogate() override;
 
@@ -29,7 +29,7 @@ protected:
 private:
 	void updateState();
 
-	IllumitationScheme* m_currentScheme = nullptr;
+	const IllumitationScheme* m_currentScheme = nullptr;
 	IllumitationScheme::State m_currentState;
 	Time m_lastAnimationTime = 0;
 	unsigned int m_currentIndex = 0;

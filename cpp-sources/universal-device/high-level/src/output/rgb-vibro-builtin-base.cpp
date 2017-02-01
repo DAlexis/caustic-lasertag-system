@@ -6,7 +6,7 @@ RGBVibroLocalBase::RGBVibroLocalBase(UintParameter id) :
 {
 }
 
-void RGBVibroLocalBase::applyIlluminationScheme(IllumitationScheme* scheme)
+void RGBVibroLocalBase::applyIlluminationScheme(const IllumitationScheme* scheme)
 {
 	m_currentScheme = scheme;
 	m_currentIndex = 0;
@@ -43,8 +43,8 @@ void RGBVibroLocalBase::updateState()
 			return;
 	}
 	float p = dt / m_currentScheme->tasks[m_currentIndex].delayFromPrev;
-	IllumitationScheme::State &current = m_currentScheme->tasks[m_currentIndex].state;
-	IllumitationScheme::State &next = m_currentScheme->tasks[m_currentIndex+1].state;
+	const IllumitationScheme::State &current = m_currentScheme->tasks[m_currentIndex].state;
+	const IllumitationScheme::State &next = m_currentScheme->tasks[m_currentIndex+1].state;
 	m_currentState.r = current.r * (1.0-p) + next.r*p;
 	m_currentState.g = current.g * (1.0-p) + next.g*p;
 	m_currentState.b = current.b * (1.0-p) + next.b*p;

@@ -26,8 +26,9 @@
 #include "core/logging.hpp"
 #include "rcsp/operation-codes.hpp"
 
-IRProtocolParserMilesTag2Ex::IRProtocolParserMilesTag2Ex(RCSPAggregator& rcspAggregator) :
-	m_rcspAggregator(rcspAggregator)
+IRProtocolParserMilesTag2Ex::IRProtocolParserMilesTag2Ex(RCSPAggregator& rcspAggregator, IlluminationSchemesManager& schemes) :
+	m_rcspAggregator(rcspAggregator),
+	m_schemes(schemes)
 {
 }
 

@@ -147,6 +147,7 @@ private:
 	KillZonesManager m_killZonesManager;
 	IRReceiversManager m_receiverMgr{m_killZonesManager};
 	LedVibroManager m_ledVibroMgr{m_killZonesManager};
+	IlluminationSchemesManager m_illuminationSchemes{playerConfig.teamId};
 
 	SmartSensorsManager m_smartSensorsManager;
 

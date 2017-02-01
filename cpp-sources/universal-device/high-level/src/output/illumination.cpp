@@ -1,7 +1,49 @@
 #include "output/illumination.hpp"
 #include "core/logging.hpp"
 
-DefaultIlluminationSchemes defaultIlluminationSchemes;
+void IllumitationScheme::changeStatesToColor(Color c)
+{
+	if (c == m_currentColor)
+		return; // Do nothing if color was noth changed
+
+	switch(c)
+	{
+	case Color::red:
+		for (auto &it : tasks)
+		{
+			it.state.r = it.templ.teamColor;
+			it.state.g = it.templ.otherColors;
+			it.state.b = it.templ.otherColors;
+		}
+		break;
+	case Color::green:
+		for (auto &it : tasks)
+		{
+			it.state.r = it.templ.otherColors;
+			it.state.g = it.templ.teamColor;
+			it.state.b = it.templ.otherColors;
+		}
+		break;
+	case Color::blue:
+		for (auto &it : tasks)
+		{
+			it.state.r = it.templ.otherColors;
+			it.state.g = it.templ.otherColors;
+			it.state.b = it.templ.teamColor;
+		}
+		break;
+	case Color::yellow:
+		for (auto &it : tasks)
+		{
+			it.state.r = it.templ.teamColor;
+			it.state.g = it.templ.teamColor;
+			it.state.b = it.templ.otherColors;
+		}
+		break;
+	default:
+		break;
+	}
+}
 
 LedVibroManager::LedVibroManager(KillZonesManager& mgr) :
 	m_killZonesManager(mgr)
@@ -24,7 +66,7 @@ void LedVibroManager::addPoint(IRGBVibroPointPhysical* m_point, UintParameter zo
 	}
 }
 
-void LedVibroManager::applyIlluminationSchemeAtPoint(IllumitationScheme* scheme, UintParameter pointId)
+void LedVibroManager::applyIlluminationSchemeAtPoint(const IllumitationScheme* scheme, UintParameter pointId)
 {
 	if (tryApplyById(scheme, pointId))
 		return;
@@ -78,7 +120,7 @@ void LedVibroManager::interrogate()
 		it.second->interrogate();
 }
 
-bool LedVibroManager::tryApplyById(IllumitationScheme* scheme, UintParameter pointId)
+bool LedVibroManager::tryApplyById(const IllumitationScheme* scheme, UintParameter pointId)
 {
 	auto it = m_pointsById.find(pointId);
 	if (it != m_pointsById.end())
@@ -89,7 +131,7 @@ bool LedVibroManager::tryApplyById(IllumitationScheme* scheme, UintParameter poi
 	return false;
 }
 
-bool LedVibroManager::tryApplyZoneWide(IllumitationScheme* scheme, UintParameter zoneId)
+bool LedVibroManager::tryApplyZoneWide(const IllumitationScheme* scheme, UintParameter zoneId)
 {
 	auto it = m_zoneWides.find(zoneId);
 	if (it != m_zoneWides.end())
@@ -101,7 +143,7 @@ bool LedVibroManager::tryApplyZoneWide(IllumitationScheme* scheme, UintParameter
 	return false;
 }
 
-bool LedVibroManager::tryApplySystemWide(IllumitationScheme* scheme)
+bool LedVibroManager::tryApplySystemWide(const IllumitationScheme* scheme)
 {
 	if (m_systemWide != nullptr)
 	{
@@ -111,11 +153,35 @@ bool LedVibroManager::tryApplySystemWide(IllumitationScheme* scheme)
 	return false;
 }
 
-DefaultIlluminationSchemes::DefaultIlluminationSchemes()
+IlluminationSchemesManager::IlluminationSchemesManager(TeamGameId& id) :
+		m_teamId(id)
 {
-	anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 0, 0));
-	anyCommand.tasks.push_back(IllumitationScheme::Task(255, 255, 255, 0, 500));
-	anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 0, 500));
-	anyCommand.tasks.push_back(IllumitationScheme::Task(255, 255, 255, 0, 500));
-	anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 0, 500));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 0));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(255, 0, 0, 200));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 200));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(255, 0, 0, 200));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 200));
+}
+
+IllumitationScheme::Color IlluminationSchemesManager::getCurrentColor()
+{
+	switch(m_teamId)
+	{
+	case teamRed:
+		return IllumitationScheme::Color::red;
+	case teamBlue:
+		return IllumitationScheme::Color::blue;
+	case teamYellow:
+		return IllumitationScheme::Color::yellow;
+	case teamGreen:
+		return IllumitationScheme::Color::green;
+	default:
+		return IllumitationScheme::Color::empty;
+	}
+}
+
+const IllumitationScheme& IlluminationSchemesManager::anyCommand()
+{
+	m_anyCommand.changeStatesToColor(getCurrentColor());
+	return m_anyCommand;
 }
