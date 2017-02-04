@@ -26,6 +26,11 @@
 #include "core/logging.hpp"
 #include "cmsis_os.h"
 
+uint32_t Kernel::heapAllocatedNow = 0;
+uint32_t Kernel::heapAllocatedTotal = 0;
+
+Mutex Kernel::heapMutex;
+
 SINGLETON_IN_CPP(Kernel)
 
 void Kernel::run()
@@ -424,4 +429,32 @@ void Worker::mainLoop()
 		else
 			m_nextTask();
 	}
+}
+
+///////////////////////////////////////
+/// new/delete wrappers
+
+void * operator new(std::size_t n)
+{
+	ScopedLock<Mutex> lck(Kernel::heapMutex);
+	Kernel::heapAllocatedTotal += n;
+    return malloc(n);
+}
+void operator delete(void * p)
+{
+	ScopedLock<Mutex> lck(Kernel::heapMutex);
+    free(p);
+}
+
+void *operator new[](std::size_t n)
+{
+	ScopedLock<Mutex> lck(Kernel::heapMutex);
+	Kernel::heapAllocatedTotal += n;
+	return malloc(n);
+}
+
+void operator delete[](void *p) throw()
+{
+	ScopedLock<Mutex> lck(Kernel::heapMutex);
+    free(p);
 }

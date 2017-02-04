@@ -36,24 +36,6 @@ using STask = std::function<void(void)>;
 using STime = uint32_t;
 using STaskId = osThreadId;
 
-class Kernel
-{
-public:
-	static void yield();
-
-	void run();
-	inline bool isRunning() const { return m_isRunning; }
-	int getTasksCount();
-
-	void assert(bool shouldBeTrue, const char* message);
-
-	SINGLETON_IN_CLASS(Kernel);
-
-private:
-	Kernel() {}
-	bool m_isRunning = false;
-};
-
 class TaskBase
 {
 public:
@@ -347,6 +329,30 @@ private:
 	TaskOnce m_workerThread;
 	Queue<WTask> m_queue;
 	WTask m_nextTask = nullptr;
+};
+
+class Kernel
+{
+public:
+	static void yield();
+
+	void run();
+	inline bool isRunning() const { return m_isRunning; }
+	int getTasksCount();
+
+	void assert(bool shouldBeTrue, const char* message);
+
+	SINGLETON_IN_CLASS(Kernel);
+
+	static uint32_t heapAllocatedNow;
+	static uint32_t heapAllocatedTotal;
+
+	static Mutex heapMutex;
+
+
+private:
+	Kernel() {}
+	bool m_isRunning = false;
 };
 
 #endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_CORE_SHEDULER_HPP_ */

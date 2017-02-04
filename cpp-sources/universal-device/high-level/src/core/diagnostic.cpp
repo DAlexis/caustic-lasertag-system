@@ -139,7 +139,8 @@ void SystemMonitor::printStagers() const
 
 void SystemMonitor::printOSDetails()
 {
-    debug << "Free heap (this value is strange for unknown reason): " << (int) freeHeap << " b";
+    debug << "Free heap from _sbrk (this value is strange for unknown reason): " << (int) freeHeap << " b";
+    debug << "Heap ever allocated with new: " << Kernel::heapAllocatedTotal << " b";
 	debug << "OS info:";/*
 	int count = Kernel::instance().getTasksCount();
 	debug << "Running tasks: " << count;

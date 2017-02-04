@@ -221,14 +221,14 @@ IlluminationSchemesManager::IlluminationSchemesManager(TeamGameId& id) :
 	m_death.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   1000));
 
 	m_wound.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   0));
-	m_death.tasks.push_back(IllumitationScheme::Task(128,   0,   0,   100));
-	m_death.tasks.push_back(IllumitationScheme::Task( 64,   0,   0,   100));
-	m_death.tasks.push_back(IllumitationScheme::Task( 32,   0,   0,   100));
-	m_death.tasks.push_back(IllumitationScheme::Task( 16,   0,   0,   100));
-	m_death.tasks.push_back(IllumitationScheme::Task(  8,   0,   0,   100));
-	m_death.tasks.push_back(IllumitationScheme::Task(  4,   0,   0,   100));
-	m_death.tasks.push_back(IllumitationScheme::Task(  2,   0,   0,   100));
-	m_death.tasks.push_back(IllumitationScheme::Task(  1,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task(128,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task( 64,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task( 32,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task( 16,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task(  8,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task(  4,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task(  2,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task(  1,   0,   0,   100));
 }
 
 IllumitationScheme::Color IlluminationSchemesManager::getCurrentColor()
