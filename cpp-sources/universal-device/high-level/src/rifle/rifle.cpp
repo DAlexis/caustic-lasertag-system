@@ -470,7 +470,7 @@ void Rifle::detectRifleState()
 void Rifle::loadConfig()
 {
 	IniParser *parcer = new IniParser;
-	parcer->setCallback([](const char* key, const char* val) { printf("k = %s, v = %s\n", key, val); });
+	parcer->setCallback([](const char* group, const char* key, const char* val) { UNUSED_ARG(group); printf("k = %s, v = %s\n", key, val); });
 	Result res = parcer->parseFile("default-config.ini");
 	if (!res.isSuccess)
 		printf("Error: %s\n", res.errorText);

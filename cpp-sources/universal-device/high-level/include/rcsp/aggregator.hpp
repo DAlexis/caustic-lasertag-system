@@ -351,7 +351,7 @@ template<typename T>
 inline void deserializeAndInc(void*& cursor, T& target)
 {
 	memcpy(&target, cursor, sizeof(T));
-	cursor += sizeof(T);
+	reinterpret_cast<uint8_t*&>(cursor) += sizeof(T);
 }
 
 /// Realization of IOperationAccessor for function

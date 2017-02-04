@@ -35,6 +35,7 @@
 #include "head-sensor/head-sensor.hpp"
 #include "rifle/rifle.hpp"
 #include "smart-point/smart-point.hpp"
+#include "utils/macro.hpp"
 #include <stdio.h>
 
 SINGLETON_IN_CPP(DeviceInitializer)
@@ -68,8 +69,9 @@ IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 		// We can read device type from config file
 		IniParser* parser = new IniParser;
 		parser->setCallback(
-			[this] (const char* key, const char* value)
+			[this] (const char* group, const char* key, const char* value)
 			{
+				UNUSED_ARG(group);
 				if (m_device != nullptr)
 				{
 					warning << "Config file should contain only ONE device_type record!";

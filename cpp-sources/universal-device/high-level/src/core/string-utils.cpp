@@ -47,7 +47,7 @@ void formatTime(char* buffer, uint16_t min, uint16_t sec)
 			buffer[i++] = min % 10 + '0';
 		}
 
-		for (int j=0; j<i/2; j++)
+		for (unsigned int j=0; j<i/2; j++)
 		{
 			std::swap(buffer[j], buffer[i-1-j]);
 		}
@@ -142,6 +142,19 @@ bool checkSuffix(const char* where, const char* what)
 	return true;
 }
 
+bool checkPrefix(const char* where, const char* what)
+{
+	int whereLen = strlen(where);
+	int whatLen = strlen(what);
+	if (whereLen < whatLen)
+		return false;
+
+	for (int i=0; i<whatLen; i++)
+		if (what[i] != where[i])
+			return false;
+	return true;
+}
+
 
 void IniParser::setCallback(AcceptKeyValueCallback callback)
 {
@@ -152,6 +165,8 @@ Result IniParser::parseFile(const char* filename)
 {
 	if (!m_acceptKeyValueCallback)
 		return Result("Callback not set");
+
+	group[0] = '\0';
 
 	FIL* m_file = new FIL;
 
@@ -307,7 +322,7 @@ Result IniParser::parseFile(const char* filename)
 							value[valueCursor] = '\0';
 							cursor++;
 							line++;
-							m_acceptKeyValueCallback(key, value);
+							m_acceptKeyValueCallback(group, key, value);
 							valueCursor = 0;
 							keyCursor = 0;
 							break;

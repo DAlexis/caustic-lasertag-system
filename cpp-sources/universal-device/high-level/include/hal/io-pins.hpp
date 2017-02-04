@@ -36,6 +36,10 @@ public:
 	constexpr static uint8_t PORTB = 1;
 	constexpr static uint8_t PORTC = 2;
 	constexpr static uint8_t PORTD = 3;
+	constexpr static uint8_t notAPort = 0xFF;
+
+	static uint8_t parsePort(const char* port);
+
 	virtual ~IIOPin() {}
 	virtual bool state() = 0;
 	/// Switch to state "1"

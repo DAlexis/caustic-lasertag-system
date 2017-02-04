@@ -32,8 +32,9 @@ Result Pinout::readIni(const char* filename)
 {
 	IniParser* parser = new IniParser;
 	parser->setCallback(
-			[this](const char* key, const char* value)
+			[this](const char* group, const char* key, const char* value)
 			{
+				UNUSED_ARG(group);
 				static const char portText[] = "_port";
 				static const char pinText[] = "_pin";
 				static const char invertedText[] = "_inverted";

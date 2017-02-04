@@ -131,8 +131,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(*m_aggregator, m_illuminationSchemes);
 	m_receiverMgr.setParser(m_irProtocolParser);
 
-	initSimpleZones(_pinout);
-	//initSmartZones(_pinout);
+	m_sensorsInitializer.read("sensors.ini");
 
 	m_sensorsInterogator.registerObject(&m_receiverMgr);
 	m_sensorsInterogator.registerObject(&m_ledVibroMgr);
@@ -170,18 +169,14 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 			IOPins->getIOPin(_pinout["blue"].port, _pinout["blue"].pin),
 			nullptr
 	);*/
-	IRGBVibroPointPhysical *rgbv = new RBGVibroPWM(1,
+
+	/*IRGBVibroPointPhysical *rgbv = new RBGVibroPWM(1,
 			PWMs->getPWM(3),
 			nullptr
 	);
-	m_ledVibroMgr.addPoint(rgbv, 1);
-/*
-	m_leds.init(
-			IOPins->getIOPin(_pinout["red"].port, _pinout["red"].pin),
-			IOPins->getIOPin(_pinout["green"].port, _pinout["green"].pin),
-			IOPins->getIOPin(_pinout["blue"].port, _pinout["blue"].pin)
-			);
-	m_leds.blink(blinkPatterns.init);*/
+	m_ledVibroMgr.addPoint(rgbv);*/
+
+	//m_leds.blink(blinkPatterns.init);
 
 	info << "Network initialization";
 	initNetworkClient();

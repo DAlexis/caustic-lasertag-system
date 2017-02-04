@@ -62,11 +62,13 @@ inline bool isNumber(char c)
 
 void printBar(int barLength, int filled);
 bool checkSuffix(const char* where, const char* what);
+bool checkPrefix(const char* where, const char* what);
 
 class IniParser
 {
 public:
-	using AcceptKeyValueCallback = std::function<void(const char* key, const char* value)>;
+	/// Warning! Groups are not supported yet!
+	using AcceptKeyValueCallback = std::function<void(const char* group, const char* key, const char* value)>;
 	void setCallback(AcceptKeyValueCallback callback);
 
 	Result parseFile(const char* filename);
@@ -80,6 +82,7 @@ private:
 	    PS_WAITING_EQ,
 	    PS_WAITING_VALUE,
 	    PS_READING_VALUE,
+		PS_READING_GROUP
 	};
 
 	constexpr static unsigned int blockSize = 100;
@@ -88,6 +91,7 @@ private:
 	char buffer[blockSize];
 	char key[keyValMaxLength];
 	char value[keyValMaxLength];
+	char group[keyValMaxLength];
 
 	AcceptKeyValueCallback m_acceptKeyValueCallback = nullptr;
 	char m_errorMessage[128];

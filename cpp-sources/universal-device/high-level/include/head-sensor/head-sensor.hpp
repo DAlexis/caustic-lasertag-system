@@ -35,6 +35,7 @@
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "head-sensor/player-config-and-state.hpp"
 #include "head-sensor/resources.hpp"
+#include "head-sensor/sensors-initializer.hpp"
 #include "sensors/smart-sensors.hpp"
 #include "sensors/ir-physical-receiver.hpp"
 #include "sensors/ir-presentation-receiver.hpp"
@@ -150,6 +151,8 @@ private:
 	IlluminationSchemesManager m_illuminationSchemes{playerConfig.teamId};
 
 	SmartSensorsManager m_smartSensorsManager;
+
+	SensorsInitializer m_sensorsInitializer{m_receiverMgr, m_ledVibroMgr, m_killZonesManager};
 
 	Interrogator m_sensorsInterogator;
 

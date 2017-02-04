@@ -84,7 +84,7 @@ class LedVibroManager : public IInterrogatable
 {
 public:
 	LedVibroManager(KillZonesManager& mgr);
-	void addPoint(IRGBVibroPointPhysical* m_point, UintParameter zoneId = 0, bool zoneWide = false, bool systemWide = false);
+	void addPoint(IRGBVibroPointPhysical* m_point, bool zoneWide = false, bool systemWide = false);
 	void applyIlluminationSchemeAtPoint(const IllumitationScheme* scheme, UintParameter pointId);
 	void applyIlluminationSchemeAtZoneByPointId(IllumitationScheme* scheme, UintParameter pointId);
 	void interrogate() override;

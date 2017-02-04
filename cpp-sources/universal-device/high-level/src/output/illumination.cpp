@@ -55,9 +55,18 @@ LedVibroManager::LedVibroManager(KillZonesManager& mgr) :
 {
 }
 
-void LedVibroManager::addPoint(IRGBVibroPointPhysical* m_point, UintParameter zoneId, bool zoneWide, bool systemWide)
+void LedVibroManager::addPoint(IRGBVibroPointPhysical* m_point, bool zoneWide, bool systemWide)
 {
 	m_pointsById[m_point->getId()] = m_point;
+
+	UintParameter zoneId = 1;
+	auto jt = m_killZonesManager.sensorToZone().find(m_point->getId());
+	if (jt != m_killZonesManager.sensorToZone().end())
+	{
+		zoneId = jt->second;
+	} else {
+		error << "LedVibroManager::addPoint: point with id " << m_point->getId() << "was not assigned to any zone";
+	}
 
 	auto it = m_zoneWides.find(zoneId);
 	if (zoneWide || it == m_zoneWides.end())
