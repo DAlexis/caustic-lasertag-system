@@ -44,7 +44,7 @@ public:
 
 		Task(uint8_t r, uint8_t g, uint8_t b, uint8_t vibro, uint32_t delay) :
 			delayFromPrev(delay)
-		{ state.r = r; state.g = g; state.b = b; state.vibro = vibro; setAutoColor(false); }
+		{ state.r = r; state.g = g; state.b = b; state.vibro = vibro; }
 		State state;
 		StateTemplate templ;
 		uint32_t delayFromPrev; // ms
