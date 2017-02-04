@@ -19,7 +19,7 @@ class KillZonesManager
 public:
 	using ZoneVisitor = std::function<void(UintParameter)>;
 	void assignSensorToZone(UintParameter sensorId, UintParameter zoneId);
-	void setDamageCoefficient(UintParameter zoneId, FloatParameter& damageCoefficient);
+	void setDamageCoefficient(UintParameter zoneId, FloatParameter damageCoefficient);
 
 	const std::map<UintParameter, UintParameter>& sensorToZone();
 	FloatParameter getDamageCoefficient(UintParameter sensorId);
@@ -27,7 +27,7 @@ public:
 
 private:
 	std::map<UintParameter, UintParameter> m_sensorToZone;
-	std::map<UintParameter, FloatParameter*> m_damageCoefficient;
+	std::map<UintParameter, FloatParameter> m_damageCoefficient;
 
 };
 

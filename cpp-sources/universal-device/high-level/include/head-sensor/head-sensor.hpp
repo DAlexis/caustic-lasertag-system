@@ -107,7 +107,6 @@ private:
 	constexpr static uint8_t killZonesCount = 6;
 	constexpr static uint16_t RFIDWriteBufferSize = 16;
 
-	void initSimpleZones(const Pinout &_pinout);
 	void initSmartZones(const Pinout &pinout);
 
 	// Test functions

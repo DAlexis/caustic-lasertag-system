@@ -80,6 +80,14 @@ void LedVibroManager::addPoint(IRGBVibroPointPhysical* m_point, bool zoneWide, b
 	}
 }
 
+void LedVibroManager::applyIlluminationSchemeAllPoints(const IllumitationScheme* scheme)
+{
+	for(auto it=m_pointsById.begin(); it!=m_pointsById.end(); ++it)
+	{
+		it->second->applyIlluminationScheme(scheme);
+	}
+}
+
 void LedVibroManager::applyIlluminationSchemeAtPoint(const IllumitationScheme* scheme, UintParameter pointId)
 {
 	if (tryApplyById(scheme, pointId))
@@ -170,11 +178,57 @@ bool LedVibroManager::tryApplySystemWide(const IllumitationScheme* scheme)
 IlluminationSchemesManager::IlluminationSchemesManager(TeamGameId& id) :
 		m_teamId(id)
 {
-	m_anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 0));
-	m_anyCommand.tasks.push_back(IllumitationScheme::Task(255, 0, 0, 200));
-	m_anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 200));
-	m_anyCommand.tasks.push_back(IllumitationScheme::Task(255, 0, 0, 200));
-	m_anyCommand.tasks.push_back(IllumitationScheme::Task(0, 0, 0, 200));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(  0,   0,   0, 0));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(255,   0,   0, 100));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(  0,   0,   0, 200));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(255,   0,   0, 200));
+	m_anyCommand.tasks.push_back(IllumitationScheme::Task(  0,   0,   0, 200));
+
+	m_init.setAutoColor(false);
+	m_init.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   0, 0));
+	m_init.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   0, 200));
+	m_init.tasks.push_back(IllumitationScheme::Task(  0,   0,  20,   0, 200));
+	m_init.tasks.push_back(IllumitationScheme::Task(  0,   0, 255,   0, 200));
+	m_init.tasks.push_back(IllumitationScheme::Task( 20,  20,   0,   0, 200));
+	m_init.tasks.push_back(IllumitationScheme::Task(255, 255,   0,   0, 200));
+	m_init.tasks.push_back(IllumitationScheme::Task(  0,  20,   0,   0, 200));
+	m_init.tasks.push_back(IllumitationScheme::Task(  0, 255,   0,   0, 200));
+	m_init.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   0, 200));
+
+	m_death.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   0));
+	m_death.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   500));
+	m_death.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   0));
+	m_death.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   500));
+
+	m_death.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   0));
+	m_death.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   500));
+	m_death.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   0));
+	m_death.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   500));
+
+	m_death.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   0));
+	m_death.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   500));
+	m_death.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   0));
+	m_death.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   500));
+
+	m_death.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   0));
+	m_death.tasks.push_back(IllumitationScheme::Task(128,   0,   0,   1000));
+	m_death.tasks.push_back(IllumitationScheme::Task( 64,   0,   0,   1000));
+	m_death.tasks.push_back(IllumitationScheme::Task( 32,   0,   0,   1000));
+	m_death.tasks.push_back(IllumitationScheme::Task( 16,   0,   0,   1000));
+	m_death.tasks.push_back(IllumitationScheme::Task(  8,   0,   0,   1000));
+	m_death.tasks.push_back(IllumitationScheme::Task(  4,   0,   0,   1000));
+	m_death.tasks.push_back(IllumitationScheme::Task(  2,   0,   0,   1000));
+	m_death.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   1000));
+
+	m_wound.tasks.push_back(IllumitationScheme::Task(255,   0,   0,   0));
+	m_death.tasks.push_back(IllumitationScheme::Task(128,   0,   0,   100));
+	m_death.tasks.push_back(IllumitationScheme::Task( 64,   0,   0,   100));
+	m_death.tasks.push_back(IllumitationScheme::Task( 32,   0,   0,   100));
+	m_death.tasks.push_back(IllumitationScheme::Task( 16,   0,   0,   100));
+	m_death.tasks.push_back(IllumitationScheme::Task(  8,   0,   0,   100));
+	m_death.tasks.push_back(IllumitationScheme::Task(  4,   0,   0,   100));
+	m_death.tasks.push_back(IllumitationScheme::Task(  2,   0,   0,   100));
+	m_death.tasks.push_back(IllumitationScheme::Task(  1,   0,   0,   100));
 }
 
 IllumitationScheme::Color IlluminationSchemesManager::getCurrentColor()
@@ -198,4 +252,22 @@ const IllumitationScheme& IlluminationSchemesManager::anyCommand()
 {
 	m_anyCommand.changeStatesToColor(getCurrentColor());
 	return m_anyCommand;
+}
+
+const IllumitationScheme& IlluminationSchemesManager::init()
+{
+	m_init.changeStatesToColor(getCurrentColor());
+	return m_init;
+}
+
+const IllumitationScheme& IlluminationSchemesManager::death()
+{
+	m_death.changeStatesToColor(getCurrentColor());
+	return m_death;
+}
+
+const IllumitationScheme& IlluminationSchemesManager::wound()
+{
+	m_wound.changeStatesToColor(getCurrentColor());
+	return m_wound;
 }

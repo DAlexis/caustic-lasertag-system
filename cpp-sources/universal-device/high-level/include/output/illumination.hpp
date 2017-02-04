@@ -72,12 +72,21 @@ class IlluminationSchemesManager
 public:
 	IlluminationSchemesManager(TeamGameId& id);
 	const IllumitationScheme& anyCommand();
+	const IllumitationScheme& init();
+	const IllumitationScheme& death();
+	const IllumitationScheme& wound();
+
 
 private:
 	IllumitationScheme::Color getCurrentColor();
 	TeamGameId& m_teamId;
 
 	IllumitationScheme m_anyCommand;
+	IllumitationScheme m_init;
+	IllumitationScheme m_death;
+	IllumitationScheme m_wound;
+	IllumitationScheme m_respawn;
+	IllumitationScheme m_respawnLimitIsOver;
 };
 
 class LedVibroManager : public IInterrogatable
@@ -85,6 +94,7 @@ class LedVibroManager : public IInterrogatable
 public:
 	LedVibroManager(KillZonesManager& mgr);
 	void addPoint(IRGBVibroPointPhysical* m_point, bool zoneWide = false, bool systemWide = false);
+	void applyIlluminationSchemeAllPoints(const IllumitationScheme* scheme);
 	void applyIlluminationSchemeAtPoint(const IllumitationScheme* scheme, UintParameter pointId);
 	void applyIlluminationSchemeAtZoneByPointId(IllumitationScheme* scheme, UintParameter pointId);
 	void interrogate() override;

@@ -251,31 +251,8 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	m_statsCounter.registerKill(27);
 
 	m_smartSensorsManager.run();
-}
 
-void HeadSensor::initSimpleZones(const Pinout &_pinout)
-{
-    for (int i=1; i<6; i++)
-    {
-        char zoneName[10];
-        //char vibroName[20];
-        sprintf(zoneName, "zone%d", i);
-        //sprintf(vibroName, "zone%d_vibro", i);
-        const Pinout::PinDescr& zone = _pinout[zoneName];
-        //const Pinout::PinDescr& zoneVibro = _pinout[vibroName];
-        if (zone)
-        {
-        	IRReceiverPhysicalIOPin* receiver = new IRReceiverPhysicalIOPin(IOPins->getIOPin(zone.port, zone.pin), i);
-			receiver->init();
-			m_receiverMgr.addPhysicalReceiver(receiver);
-			m_killZonesManager.assignSensorToZone(i, i);
-        }
-    }
-    m_killZonesManager.setDamageCoefficient(1, playerConfig.zone1DamageCoeff);
-    m_killZonesManager.setDamageCoefficient(2, playerConfig.zone2DamageCoeff);
-    m_killZonesManager.setDamageCoefficient(3, playerConfig.zone3DamageCoeff);
-    m_killZonesManager.setDamageCoefficient(4, playerConfig.zone4DamageCoeff);
-    m_killZonesManager.setDamageCoefficient(5, playerConfig.zone5DamageCoeff);
+	m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.init()));
 }
 
 void HeadSensor::initSmartZones(const Pinout &pinout)
@@ -347,6 +324,7 @@ void HeadSensor::catchShot(ShotMessage msg)
 				m_statsCounter.registerHit(msg.playerId);
 				m_statsCounter.registerDamage(msg.playerId, msg.damage);
 			}
+			m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.wound()));
 			//m_leds.blink(blinkPatterns.wound);
 			if (msg.playerId != playerConfig.playerId)
 			{
@@ -362,6 +340,8 @@ void HeadSensor::catchShot(ShotMessage msg)
 			}
 			m_statsCounter.registerKill(msg.playerId);
 			m_statsCounter.registerDamage(msg.playerId, healthBeforeDamage);
+
+			m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.death()));
 			//m_leds.blink(blinkPatterns.death);
 			/// @todo reenable
 			//Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
@@ -379,10 +359,10 @@ void HeadSensor::playerRespawn()
 		//m_leds.blink(blinkPatterns.respawnLimitIsOver);
 		return;
 	}
-	//m_leds.blink(blinkPatterns.respawn);
+
 	respawnWeapons();
 	info << "Player spawned";
-	m_ledVibroMgr.applyIlluminationSchemeAtPoint(&(m_illuminationSchemes.anyCommand()), 1);
+	m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.anyCommand()));
 
 /*
 	std::function<void(void)> respawnFunction = [this] {
@@ -406,7 +386,8 @@ void HeadSensor::playerKill()
 	if (!playerState.isAlive())
 		return;
 	playerState.kill();
-	//m_leds.blink(blinkPatterns.death);
+	m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.death()));
+
 	dieWeapons();
 	info << "Player killed with kill command";
 }
@@ -526,7 +507,7 @@ void HeadSensor::setTeam(uint8_t teamId)
 {
 	info << "Setting team id";
 	playerConfig.teamId = teamId;
-	//m_leds.blink(blinkPatterns.anyCommand);
+	m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.anyCommand()));
 	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
 	{
 		info << "Changing weapon team id to" << teamId;
@@ -554,7 +535,7 @@ void HeadSensor::addMaxHealth(int16_t delta)
 		return;
 	}
 	playerConfig.healthStart += delta;
-	//m_leds.blink(blinkPatterns.anyCommand);
+	m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.anyCommand()));
 }
 
 void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_t state)
@@ -621,7 +602,7 @@ void HeadSensor::setFRIDToWriteAddr()
 			[this](uint8_t* data, uint16_t size)
 			{
 				UNUSED_ARG(data); UNUSED_ARG(size);
-				//m_leds.blink(blinkPatterns.anyCommand);
+				m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.anyCommand()));
 			}
 		);
 }

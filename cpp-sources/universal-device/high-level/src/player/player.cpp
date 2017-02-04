@@ -60,13 +60,6 @@ void PlayerConfiguration::setDefault()
 	slot4MaxWeight = UINT16_MAX;
 	slot5MaxWeight = UINT16_MAX;
 
-	zone1DamageCoeff = 1.0;
-	zone2DamageCoeff = 1.0;
-	zone3DamageCoeff = 1.0;
-	zone4DamageCoeff = 1.0;
-	zone5DamageCoeff = 1.0;
-	zone6DamageCoeff = 1.0;
-
 
 	//Default values do not point to valid location,
 	//signaling that this head sensor doesn't have an Android device connected yet

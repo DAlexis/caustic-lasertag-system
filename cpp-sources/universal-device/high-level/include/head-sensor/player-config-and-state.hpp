@@ -65,13 +65,6 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot4MaxWeight);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot5MaxWeight);
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone1DamageCoeff);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone2DamageCoeff);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone3DamageCoeff);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone4DamageCoeff);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone5DamageCoeff);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, zone6DamageCoeff);
-
 	/// @todo Move to PlayerState
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLat);
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLon);
