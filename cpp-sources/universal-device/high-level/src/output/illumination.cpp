@@ -3,8 +3,8 @@
 
 void IllumitationScheme::changeStatesToColor(Color c)
 {
-	if (c == m_currentColor)
-		return; // Do nothing if color was noth changed
+	if (!m_autoColor || c == m_currentColor)
+		return;
 
 	switch(c)
 	{
@@ -43,6 +43,11 @@ void IllumitationScheme::changeStatesToColor(Color c)
 	default:
 		break;
 	}
+}
+
+void IllumitationScheme::setAutoColor(bool enabled)
+{
+	m_autoColor = enabled;
 }
 
 LedVibroManager::LedVibroManager(KillZonesManager& mgr) :

@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:hs-mono-g431-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -583,7 +584,7 @@ USBDP
 Text GLabel 5500 2350 2    60   Input ~ 0
 UART_DBG_TX
 $Comp
-L USB_A P5
+L USB_A-RESCUE-hs-mono-g431 P5
 U 1 1 57F1DA65
 P 7150 4150
 F 0 "P5" H 7350 3950 50  0000 C CNN
@@ -971,7 +972,7 @@ $EndComp
 Text GLabel 5150 5950 0    60   Input ~ 0
 UART_DBG_TX
 $Comp
-L LED D2
+L LED-RESCUE-hs-mono-g431 D2
 U 1 1 57F7E967
 P 4950 5750
 F 0 "D2" H 4950 5850 50  0000 C CNN
@@ -1054,7 +1055,7 @@ $EndComp
 Text GLabel 11000 3050 0    60   Input ~ 0
 BT_KEY
 $Comp
-L LED D3
+L LED-RESCUE-hs-mono-g431 D3
 U 1 1 57FA8572
 P 10150 3250
 F 0 "D3" H 10150 3350 50  0000 C CNN
@@ -1087,7 +1088,7 @@ F 3 "" H 9650 3500 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L LED D4
+L LED-RESCUE-hs-mono-g431 D4
 U 1 1 57FA908C
 P 10150 3500
 F 0 "D4" H 10150 3600 50  0000 C CNN

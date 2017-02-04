@@ -42,7 +42,7 @@ void RGBVibroLocalBase::updateState()
 		if (m_currentIndex == m_currentScheme->tasks.size()-1)
 			return;
 	}
-	float p = dt / m_currentScheme->tasks[m_currentIndex].delayFromPrev;
+	float p = float(dt) / m_currentScheme->tasks[m_currentIndex].delayFromPrev;
 	const IllumitationScheme::State &current = m_currentScheme->tasks[m_currentIndex].state;
 	const IllumitationScheme::State &next = m_currentScheme->tasks[m_currentIndex+1].state;
 	m_currentState.r = current.r * (1.0-p) + next.r*p;

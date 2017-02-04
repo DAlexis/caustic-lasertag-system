@@ -34,6 +34,7 @@
 #include "sensors/ir-protocol-parser-MT2-ex.hpp"
 #include "sensors/ir-physical-receiver-io-pin.hpp"
 #include "output/rgb-vibro-io-pins.hpp"
+#include "output/rgb-vibro-pwm.hpp"
 #include "rcsp/stream.hpp"
 #include "hal/system-controls.hpp"
 
@@ -162,10 +163,15 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 
 	info << "Initializing visual effects";
 	/// @todo Add support for only red (and LED-less) devices
+	/*
 	IRGBVibroPointPhysical *rgbv = new RBGVibroIOPins(1,
 			IOPins->getIOPin(_pinout["red"].port, _pinout["red"].pin),
 			IOPins->getIOPin(_pinout["green"].port, _pinout["green"].pin),
 			IOPins->getIOPin(_pinout["blue"].port, _pinout["blue"].pin),
+			nullptr
+	);*/
+	IRGBVibroPointPhysical *rgbv = new RBGVibroPWM(1,
+			PWMs->getPWM(3),
 			nullptr
 	);
 	m_ledVibroMgr.addPoint(rgbv, 1);

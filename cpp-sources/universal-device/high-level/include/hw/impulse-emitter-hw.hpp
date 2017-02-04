@@ -32,7 +32,6 @@ class PwmIsrImpulseEmitter : public ImpulseEmitterBase
 {
 public:
 	PwmIsrImpulseEmitter();
-	//~LEDFireEmitter() {}
 	void init(const Pinout& pinout);
 	void startImpulsePack(bool isLedOn, unsigned int delayMs);
 	void setPower(UintParameter powerPercent);

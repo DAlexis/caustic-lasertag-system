@@ -29,7 +29,6 @@
 #include <string.h>
 #include "ff_gen_drv.h"
 
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Block Size in Bytes */

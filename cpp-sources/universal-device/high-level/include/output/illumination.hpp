@@ -41,16 +41,22 @@ public:
 		Task(uint8_t teamColor, uint8_t otherColors, uint8_t vibro, uint32_t delay) :
 			delayFromPrev(delay)
 		{ templ.teamColor = teamColor; templ.otherColors = otherColors; state.vibro = vibro; }
+
+		Task(uint8_t r, uint8_t g, uint8_t b, uint8_t vibro, uint32_t delay) :
+			delayFromPrev(delay)
+		{ state.r = r; state.g = g; state.b = b; state.vibro = vibro; setAutoColor(false); }
 		State state;
 		StateTemplate templ;
 		uint32_t delayFromPrev; // ms
 	};
 
 	void changeStatesToColor(Color c);
+	void setAutoColor(bool enabled);
 
 	std::vector<Task> tasks;
 private:
 	Color m_currentColor = Color::empty;
+	bool m_autoColor = true;
 };
 
 class IRGBVibroPointPhysical : public IInterrogatable
