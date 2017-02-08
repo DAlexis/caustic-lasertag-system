@@ -41,8 +41,8 @@ public:
     void DrawPixel(uint16_t x, uint16_t y, uint8_t color);
     void GotoXY(uint16_t x, uint16_t y);
 
-    char Putc(char ch, FontDef_t* Font, uint8_t color);
-    char Puts(char* str, FontDef_t* Font, uint8_t color);
+    char Putc(const char ch, FontDef_t* Font, uint8_t color);
+    char Puts(const char* str, FontDef_t* Font, uint8_t color);
     void DrawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t c);
     void DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t c);
     void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t c);

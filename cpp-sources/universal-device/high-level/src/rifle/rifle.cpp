@@ -397,7 +397,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	);
 
 	m_tasksPool.add(
-			[this] { m_mfrcWrapper.interrogate(); },
+			[this] { m_rfidController.interrogate(); },
 			100000
 	);
 
@@ -410,11 +410,13 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	m_tasksPool.run();
 
 	m_mfrcWrapper.init();
-	m_mfrcWrapper.readBlock(
-		[this](uint8_t* data, uint16_t size)
-			{ onCardReaded(data, size); },
-		18
-	);
+	m_rfidController.setCallback([this](RifleRFIDController::Mode mode){ cardOperationDoneCallback(mode); });
+
+	m_rfidController.readCommands();
+	state.rfidState = RifleState::RFIDSate::reading;
+
+	//m_rfidController.writeServiceCard();
+	//state.rfidState = RifleState::RFIDSate::programMasterCard;
 
 	info << "Display initialization";
 	auto pinoutRes = pinout.getParameter("display");
@@ -496,6 +498,7 @@ void Rifle::initSounds()
 	m_noHeartbeat.readVariants("sound/no-heartbeat-", ".wav", 1);
 	m_noShockedShooting.readVariants("sound/shocked-shooting", ".wav", 0);
 	m_hsSwitchRejected.readVariants("sound/hs-switch-rejected", ".wav", 0);
+	m_rfidProgrammingInProcess.readVariants("sound/rfid-programming", ".wav", 0);
 }
 
 void Rifle::makeShot(bool isFirst)
@@ -621,6 +624,7 @@ void Rifle::distortBolt(bool)
 
 void Rifle::magazineSensor(bool isConnected, uint8_t sensorNumber, bool isFirst)
 {
+	UNUSED_ARG(isFirst);
 	info << "Sensor cb for  " << sensorNumber;
 	if (!isConnected)
 	{
@@ -781,6 +785,22 @@ void Rifle::rifleWound()
 	m_woundSound.play();
 }
 
+void Rifle::rifleRFIDProgramHSAddr()
+{
+	debug << "rifleRFIDProgramHSAddr()";
+	m_rfidProgrammingInProcess.play();
+	state.rfidState = RifleState::RFIDSate::programHSAddr;
+	m_rfidController.writeHSAddress(config.headSensorAddr);
+}
+
+void Rifle::rifleRFIDProgramServiceCard()
+{
+	debug << "rifleRFIDProgramServiceCard()";
+	m_rfidProgrammingInProcess.play();
+	state.rfidState = RifleState::RFIDSate::programMasterCard;
+	m_rfidController.writeServiceCard();
+}
+
 void Rifle::playDamagerNotification(uint8_t state)
 {
 	switch (state)
@@ -845,25 +865,21 @@ bool Rifle::isHSConnected()
 	return systemClock->getTime() - m_lastHSHeartBeat < maxNoHeartbeatDelay;
 }
 
-void Rifle::onCardReaded(uint8_t* buffer, uint16_t size)
+void Rifle::cardOperationDoneCallback(RifleRFIDController::Mode mode)
 {
-	info << "RFID card detected";
-	if (size < sizeof(DeviceAddress))
-		return;
-/*
-	if (!state.isHSConnected)
-	{
-		info << "Cannot tell head sensor to deregister weapon, skipping";
-		m_noHeartbeat.play();
-		return;
-	}*/
-
+	debug << "Card operation done";
 	m_RFIDCardReaded.play();
-
-	printHex(buffer, size);
-
-	m_aggregator->dispatchStream(buffer, size);
-
+	switch(mode)
+	{
+	case RifleRFIDController::Mode::readCommandFromCard:
+		break;
+	case RifleRFIDController::Mode::nothing:
+	case RifleRFIDController::Mode::writeHSAddressToCard:
+	case RifleRFIDController::Mode::writeServiceCard:
+		state.rfidState = RifleState::RFIDSate::reading;
+		m_rfidController.readCommands();
+		break;
+	}
 }
 
 void Rifle::riflePlayEnemyDamaged(uint8_t state)

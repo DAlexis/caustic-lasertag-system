@@ -25,20 +25,22 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_
 
 #include <any-device/device.hpp>
+#include <dev/RC522-wrapper.hpp>
 #include "any-device/any-device-base.hpp"
 #include "core/device-initializer.hpp"
 #include "core/os-wrappers.hpp"
 #include "dev/buttons.hpp"
-#include "dev/MFRC522-wrapper.hpp"
 #include "dev/wav-player.hpp"
 #include "dev/ssd1306-display.hpp"
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
 #include "rcsp/operation-codes.hpp"
+#include "rifle/rifle-config.hpp"
+#include "rifle/rifle-state.hpp"
 #include "rifle/resources.hpp"
 #include "rifle/rifle-base-types.hpp"
-#include "rifle/rifle-config-and-state.hpp"
 #include "rifle/rifle-display.hpp"
+#include "rifle/rifle-rfid-controller.hpp"
 #include "network/network-client.hpp"
 
 #include <stdint.h>
@@ -63,6 +65,8 @@ public:
 	/// Heartbeat head sensor -> rifle
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramHSAddr);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramServiceCard);
 
 	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged);      ///< Play enemy damaged sound
 	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);
@@ -124,7 +128,8 @@ private:
 	void scheduleDamageNotification(uint8_t state);
 	void checkHeartBeat();
 
-	void onCardReaded(uint8_t* buffer, uint16_t size);
+	void cardOperationDoneCallback(RifleRFIDController::Mode mode);
+
 	/// This function could be called any time when head sensor is connected. Double calling does not hurt anything
 	void onHSConnected();
 	void onHSDisconnected();
@@ -158,6 +163,8 @@ private:
 	SoundPlayer m_noShockedShooting;
 	SoundPlayer m_hsSwitchRejected;
 
+	SoundPlayer m_rfidProgrammingInProcess;
+
 	PackageId m_registerWeaponPAckageId = 0;
 
 	uint8_t m_state = WeaponState::ready;
@@ -171,7 +178,8 @@ private:
 	Time m_unshockTime = 0;
 	RifleDisplayBase* m_display = nullptr;
 
-	RC552Wrapper m_mfrcWrapper;
+	RC552Frontend m_mfrcWrapper;
+	RifleRFIDController m_rfidController{m_mfrcWrapper, *m_aggregator};
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

@@ -22,13 +22,13 @@
 */
 
 
-#include "dev/MFRC522-wrapper.hpp"
+#include <dev/RC522-wrapper.hpp>
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
 
 #include <algorithm>
 
-RC552Wrapper::RC552Wrapper()
+RC552Frontend::RC552Frontend()
 {
 	// Prepare the key (used both as key A and as key B)
 	// using FFFFFFFFFFFFh which is the default at chip delivery from the factory
@@ -37,7 +37,7 @@ RC552Wrapper::RC552Wrapper()
 	}
 }
 
-void RC552Wrapper::init()
+void RC552Frontend::init()
 {
 	MFRC522::RC522IO io;
 	io.spi = SPIs->getSPI(3);
@@ -49,7 +49,7 @@ void RC552Wrapper::init()
 	m_mfrc.PCD_SetAntennaGain(0x07<<4);
 }
 
-void RC552Wrapper::interrogate()
+void RC552Frontend::interrogate()
 {
 	if (m_initResult == false)
 		return;
@@ -69,14 +69,14 @@ void RC552Wrapper::interrogate()
 	}
 }
 
-void RC552Wrapper::readBlock(RWDoneCallback callback, byte size)
+void RC552Frontend::readBlock(RWDoneCallback callback, byte size)
 {
 	m_readCallback = callback;
 	m_inputBufferSize = size;
 	m_currentLoop = [this] { readBlockLoop(); };
 }
 
-void RC552Wrapper::writeBlock(uint8_t* data, uint16_t size, RWDoneCallback callback)
+void RC552Frontend::writeBlock(uint8_t* data, uint16_t size, RWDoneCallback callback)
 {
 	m_dataToWrite = data;
 	m_dataToWriteSize = size;
@@ -84,7 +84,7 @@ void RC552Wrapper::writeBlock(uint8_t* data, uint16_t size, RWDoneCallback callb
 	m_currentLoop = [this] { writeBlockLoop(); };
 }
 
-void RC552Wrapper::readBlockLoop()
+void RC552Frontend::readBlockLoop()
 {
 	if (!cardReadyToOperate())
 		return;
@@ -118,7 +118,7 @@ void RC552Wrapper::readBlockLoop()
 	}
 }
 
-void RC552Wrapper::writeBlockLoop()
+void RC552Frontend::writeBlockLoop()
 {
 	if (!cardReadyToOperate())
 		return;
@@ -176,7 +176,7 @@ void RC552Wrapper::writeBlockLoop()
 	}
 }
 
-bool RC552Wrapper::cardReadyToOperate()
+bool RC552Frontend::cardReadyToOperate()
 {
 	// Look for new cards
 	if ( ! m_mfrc.PICC_IsNewCardPresent())

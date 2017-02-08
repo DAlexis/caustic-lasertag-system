@@ -25,7 +25,8 @@
 #ifndef INCLUDE_RIFLE_RIFLE_DISPLAY_HPP_
 #define INCLUDE_RIFLE_RIFLE_DISPLAY_HPP_
 
-#include "rifle-config-and-state.hpp"
+#include "rifle/rifle-config.hpp"
+#include "rifle/rifle-state.hpp"
 
 class RifleDisplayBase
 {
@@ -34,12 +35,18 @@ public:
     virtual bool init() = 0;
     virtual void update() = 0;
 
-    void setData(const RifleOwnerConfiguration *owner, const RifleState *state, const PlayerPartialState *playerState);
+    void setData(
+    		const RifleOwnerConfiguration *owner,
+			const RifleState *state,
+			const PlayerPartialState *playerState
+	);
+
+    virtual void toast(const char* message) {} /// todo implement this
 
 protected:
-    const RifleOwnerConfiguration *m_owner;
-    const RifleState *m_state;
-    const PlayerPartialState *m_playerState;
+    const RifleOwnerConfiguration *m_owner = nullptr;
+    const RifleState *m_state = nullptr;
+    const PlayerPartialState *m_playerState = nullptr;
 };
 
 

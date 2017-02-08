@@ -22,8 +22,9 @@
 */
 
 
+#include "head-sensor/player-config.hpp"
+#include "head-sensor/player-state.hpp"
 #include "head-sensor/resources.hpp"
-#include "head-sensor/player-config-and-state.hpp"
 #include "core/logging.hpp"
 
 PlayerConfiguration::PlayerConfiguration()

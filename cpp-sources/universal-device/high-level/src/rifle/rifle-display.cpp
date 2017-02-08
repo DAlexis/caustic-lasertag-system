@@ -24,7 +24,11 @@
 #include "rifle/rifle-display.hpp"
 
 
-void RifleDisplayBase::setData(const RifleOwnerConfiguration *owner, const RifleState *state, const PlayerPartialState *playerState)
+void RifleDisplayBase::setData(
+		const RifleOwnerConfiguration *owner,
+		const RifleState *state,
+		const PlayerPartialState *playerState
+)
 {
     m_owner = owner;
     m_state = state;

@@ -24,16 +24,17 @@
 #ifndef LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_HEAD_SENSOR_HPP_
 
+#include <dev/RC522-wrapper.hpp>
 #include "any-device/device.hpp"
 #include "any-device/any-device-base.hpp"
 #include "rcsp/state-saver.hpp"
 #include "core/device-initializer.hpp"
-#include "dev/MFRC522-wrapper.hpp"
 #include "dev/RC522.hpp"
 #include "dev/rgb-leds.hpp"
 #include "game/game-log.hpp"
+#include "head-sensor/player-config.hpp"
+#include "head-sensor/player-state.hpp"
 #include "head-sensor/head-sensor-base-types.hpp"
-#include "head-sensor/player-config-and-state.hpp"
 #include "head-sensor/resources.hpp"
 #include "head-sensor/sensors-initializer.hpp"
 #include "sensors/smart-sensors.hpp"
@@ -158,7 +159,7 @@ private:
 	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, &m_networkClient};
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
-	RC552Wrapper m_mfrcWrapper;
+	RC552Frontend m_mfrcWrapper;
 
 	uint8_t m_RFIDWriteBuffer[RFIDWriteBufferSize];
 

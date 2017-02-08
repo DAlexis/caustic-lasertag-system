@@ -25,4 +25,3 @@
 #include "head-sensor/resources.hpp"
 
 HeadSensorPackageTimings headSensorPackageTimings;
-BlinkPatterns blinkPatterns;

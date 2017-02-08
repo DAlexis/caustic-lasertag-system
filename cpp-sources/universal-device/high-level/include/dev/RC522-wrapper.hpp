@@ -28,10 +28,13 @@
 #include "core/os-wrappers.hpp"
 #include <functional>
 
-class RC552Wrapper : public IInterrogatable
+/**
+ * This class is to simplify IO with RC552 card. It supports simply writing and reading data
+ */
+class RC552Frontend : public IInterrogatable
 {
 public:
-	RC552Wrapper();
+	RC552Frontend();
 	using RWDoneCallback = std::function<void(uint8_t*, uint16_t)>;
 	void init();
 

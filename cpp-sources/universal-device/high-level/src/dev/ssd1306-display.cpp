@@ -147,7 +147,7 @@ void SSD1306Display::GotoXY(uint16_t x, uint16_t y)
 }
 
 
-char SSD1306Display::Putc(char ch, FontDef_t* Font, uint8_t color)
+char SSD1306Display::Putc(const char ch, FontDef_t* Font, uint8_t color)
 {
     uint32_t i, b, j;
 
@@ -171,7 +171,7 @@ char SSD1306Display::Putc(char ch, FontDef_t* Font, uint8_t color)
     return ch;
 }
 
-char SSD1306Display::Puts(char* str, FontDef_t* Font, uint8_t color)
+char SSD1306Display::Puts(const char* str, FontDef_t* Font, uint8_t color)
 {
     // Write characters
     while (*str) {
