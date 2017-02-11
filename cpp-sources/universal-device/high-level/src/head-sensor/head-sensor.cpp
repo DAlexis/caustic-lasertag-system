@@ -126,16 +126,6 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	info << "Configuring power monitor";
 	PowerMonitor::instance().interrogate();
 
-	info << "Configuring sensors";
-	m_receiverMgr.connectRCSPAggregator(*m_aggregator);
-	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(*m_aggregator, m_illuminationSchemes);
-	m_receiverMgr.setParser(m_irProtocolParser);
-
-	m_sensorsInitializer.read("sensors.ini");
-
-	m_sensorsInterogator.registerObject(&m_receiverMgr);
-	m_sensorsInterogator.registerObject(&m_ledVibroMgr);
-
 
 	// Power monitor should be initialized before configuration reading
 	PowerMonitor::instance().init();
@@ -223,6 +213,16 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	} else {
 	    info << "Bluetooth module not installed, running without it";
 	}
+
+	info << "Configuring sensors";
+	m_receiverMgr.connectRCSPAggregator(*m_aggregator);
+	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(*m_aggregator, m_illuminationSchemes);
+	m_receiverMgr.setParser(m_irProtocolParser);
+
+	m_sensorsInitializer.read("sensors.ini");
+
+	m_sensorsInterogator.registerObject(&m_receiverMgr);
+	m_sensorsInterogator.registerObject(&m_ledVibroMgr);
 
 	info << "Stats restoring";
 	m_statsCounter.restoreFromFile();

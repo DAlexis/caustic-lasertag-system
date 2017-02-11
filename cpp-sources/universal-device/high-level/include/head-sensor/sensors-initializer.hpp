@@ -34,6 +34,11 @@ private:
 	void finishBuiltInSensorProcessing();
 	void finishBuiltInPointProcessing();
 	void finishZoneProcessing();
+
+	bool isSensorParamsReady();
+	bool isPointParamsReady();
+	bool isZoneParamsReady();
+
 	void resetVariables();
 
 	IRReceiversManager& m_irMgr;

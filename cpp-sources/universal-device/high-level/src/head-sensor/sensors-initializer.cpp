@@ -61,6 +61,9 @@ void SensorsInitializer::processKeyValue(const char* group, const char* key, con
 		}
 		if (strcmp(key, "sensor_id") == 0)
 		{
+			// May be we have next sensor in a row
+			if (isSensorParamsReady())
+				finishBuiltInSensorProcessing();
 			m_currentId = atoi(value);
 		} else if (strcmp(key, "sensor_port") == 0)
 		{
@@ -80,6 +83,9 @@ void SensorsInitializer::processKeyValue(const char* group, const char* key, con
 		}
 		if (strcmp(key, "point_id") == 0)
 		{
+			// May be we have next point in a row
+			if (isPointParamsReady())
+				finishBuiltInPointProcessing();
 			m_currentId = atoi(value);
 		} else if (strcmp(key, "point_type") == 0)
 		{
@@ -120,6 +126,9 @@ void SensorsInitializer::processKeyValue(const char* group, const char* key, con
 
 		if (strcmp(key, "zone_id") == 0)
 		{
+			// May be we have next point in a row
+			if (isZoneParamsReady())
+				finishZoneProcessing();
 			m_currentId = atoi(value);
 		} else if (strcmp(key, "zone_sensors") == 0)
 		{
@@ -134,17 +143,20 @@ void SensorsInitializer::processKeyValue(const char* group, const char* key, con
 
 void SensorsInitializer::finishBuiltInSensorProcessing()
 {
-	if (m_currentId != -1 && m_currentPin != -1 && m_currentPort != -1)
-	{
-		IRReceiverPhysicalIOPin* receiver = new IRReceiverPhysicalIOPin(IOPins->getIOPin(m_currentPort, m_currentPin), m_currentId);
-		receiver->init();
-		m_irMgr.addPhysicalReceiver(receiver);
-	}
+	if (!isSensorParamsReady())
+		return;
+
+	IRReceiverPhysicalIOPin* receiver = new IRReceiverPhysicalIOPin(IOPins->getIOPin(m_currentPort, m_currentPin), m_currentId);
+	receiver->init();
+	m_irMgr.addPhysicalReceiver(receiver);
+
 	resetVariables();
 }
 
 void SensorsInitializer::finishBuiltInPointProcessing()
 {
+	if (!isPointParamsReady())
+		return;
 	if (strcmp(m_str, "pwm") == 0)
 	{
 		if (m_currentId != -1 && m_currentTimer != -1)
@@ -174,27 +186,42 @@ void SensorsInitializer::finishBuiltInPointProcessing()
 
 void SensorsInitializer::finishZoneProcessing()
 {
-	if (m_currentId != -1 && m_str[0] != '\0')
+	if (!isZoneParamsReady())
+		return;
+
+	m_kzMgr.setDamageCoefficient(m_currentId, m_damage);
+	UintParameter sensorId = 0;
+	for (int i=0; i < strMaxLen-1 && m_str[i] != '\0'; i++)
 	{
-		m_kzMgr.setDamageCoefficient(m_currentId, m_damage);
-		UintParameter sensorId = 0;
-		for (int i=0; i < strMaxLen-1 && m_str[i] != '\0'; i++)
+		if (isNumber(m_str[i]))
 		{
-			if (isNumber(m_str[i]))
+			sensorId = 10*sensorId + (m_str[i] - '0');
+		}
+		if (!isNumber(m_str[i+1]))
+		{
+			if (sensorId != 0)
 			{
-				sensorId = 10*sensorId + (m_str[i] - '0');
+				m_kzMgr.assignSensorToZone(sensorId, m_currentId);
 			}
-			if (!isNumber(m_str[i+1]))
-			{
-				if (sensorId != 0)
-				{
-					m_kzMgr.assignSensorToZone(sensorId, m_currentId);
-				}
-				sensorId = 0;
-			}
+			sensorId = 0;
 		}
 	}
 	resetVariables();
+}
+
+bool SensorsInitializer::isSensorParamsReady()
+{
+	return m_currentId != -1 && m_currentPin != -1 && m_currentPort != -1;
+}
+
+bool SensorsInitializer::isPointParamsReady()
+{
+	return m_currentId != -1 && m_str[0] != '\0';
+}
+
+bool SensorsInitializer::isZoneParamsReady()
+{
+	return m_currentId != -1 && m_str[0] != '\0';
 }
 
 void SensorsInitializer::resetVariables()

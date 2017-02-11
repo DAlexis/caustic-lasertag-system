@@ -35,8 +35,6 @@ IRProtocolParserMilesTag2Ex::IRProtocolParserMilesTag2Ex(RCSPAggregator& rcspAgg
 void IRProtocolParserMilesTag2Ex::parse(IRProtocolParseResult& result, uint8_t* data, uint16_t bitsCount, UintParameter sensorId)
 {
 	UNUSED_ARG(sensorId);
-	debug << "IR receiver has data: ";
-	printHex(data, bitsCount / 8 + 1);
 	// If shot
 	if ((data[0] & ~MT2Extended::Byte1::shotMask) == 0)
 	{
