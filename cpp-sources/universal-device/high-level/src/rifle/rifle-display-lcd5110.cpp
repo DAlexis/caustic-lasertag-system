@@ -59,22 +59,44 @@ void RifleLCD5110Display::update()
 	m_lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
 	m_lcd.stringXY(10, 0, "Caustic LTS");
 
-	if (m_state->isHSConnected)
+	char buffer[20];
+
+	if (m_state->rfidState == RifleState::RFIDSate::programHSAddr)
 	{
 		m_lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
-		char buffer[15];
+		m_lcd.stringXY(0, 2, "Bring the RFID");
+		m_lcd.stringXY(0, 3, "to program HS");
+		sprintf(buffer, "to %d:%d:%d",
+				(int) m_state->config().headSensorAddr.address[0],
+				(int) m_state->config().headSensorAddr.address[1],
+				(int) m_state->config().headSensorAddr.address[2]
+		);
+		m_lcd.stringXY(0, 4, buffer);
+	} else if (m_state->rfidState == RifleState::RFIDSate::programMasterCard)
+	{
+		m_lcd.stringXY(0, 2, "Bring the RFID");
+		m_lcd.stringXY(0, 3, "to program");
+		m_lcd.stringXY(0, 4, "master card");
+	} else if (m_state->isHSConnected)
+	{
+		m_lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
 		sprintf(buffer, "H: %u/%u", m_playerState->healthCurrent, m_playerState->healthMax);
 		m_lcd.stringXY(0, 2, buffer);
 		sprintf(buffer, "A: %u, M: %u", m_state->bulletsInMagazineCurrent, m_state->magazinesCountCurrent);
 		m_lcd.stringXY(0, 3, buffer);
 		sprintf(buffer, "Team: %d", (int)m_owner->teamId);
-        m_lcd.stringXY(0, 4, buffer);
+		m_lcd.stringXY(0, 4, buffer);
 		sprintf(buffer, "Player: %d", (int)m_owner->playerId);
-        m_lcd.stringXY(0, 5, buffer);
+		m_lcd.stringXY(0, 5, buffer);
 	} else {
-		m_lcd.setFont(LCD5110Controller::fontStandardAscii5x7);
 		m_lcd.stringXY(0, 2, "Head sensor");
-		m_lcd.stringXY(0, 3, "not connected");
+		sprintf(buffer, " by %d:%d:%d",
+				(int) m_state->config().headSensorAddr.address[0],
+				(int) m_state->config().headSensorAddr.address[1],
+				(int) m_state->config().headSensorAddr.address[2]
+		);
+		m_lcd.stringXY(0, 3, buffer);
+		m_lcd.stringXY(0, 4, "not connected");
 	}
 
 	m_lcd.write();

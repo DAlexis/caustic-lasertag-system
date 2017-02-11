@@ -32,6 +32,7 @@
 #include "dev/buttons.hpp"
 #include "dev/wav-player.hpp"
 #include "dev/ssd1306-display.hpp"
+#include "dev/key-sequence.hpp"
 #include "ir/ir-physical.hpp"
 #include "ir/ir-presentation.hpp"
 #include "rcsp/operation-codes.hpp"
@@ -108,6 +109,10 @@ private:
 
 	void loadConfig();
 	void initSounds();
+	void initSequenceDetectors();
+
+	void rfidSwitchToRead();
+
 	void makeShot(bool isFirst);
 	void prepareAndSendShotMsg();
 	void distortBolt(bool isFirst);
@@ -143,6 +148,8 @@ private:
 	IIOPin* m_vibroEngine = nullptr;
 	IIOPin* m_fireFlash = nullptr;
 
+	KeySequenceDetector m_writeCardSeqDetector;
+
 	IIRTransmitter *m_irPhysicalTransmitter = nullptr;
 	IIRPresentationTransmitter *m_irPresentationTransmitter = nullptr;
 
@@ -162,7 +169,6 @@ private:
 	SoundPlayer m_noHeartbeat;
 	SoundPlayer m_noShockedShooting;
 	SoundPlayer m_hsSwitchRejected;
-
 	SoundPlayer m_rfidProgrammingInProcess;
 
 	PackageId m_registerWeaponPAckageId = 0;

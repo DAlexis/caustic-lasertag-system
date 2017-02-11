@@ -277,8 +277,8 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	);
 
 	info << "Configuring buttons";
-	info << "Current pinout:";
-	pinout.printPinout();
+	//info << "Current pinout:";
+	//pinout.printPinout();
 	m_fireButton = ButtonsPool::instance().getButtonManager(
 			pinout[PinoutTexts::trigger].port,
 			pinout[PinoutTexts::trigger].pin
@@ -359,7 +359,9 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	}
 	detectRifleState();
 
-	m_buttonsInterrogator.setStackSize(256);
+	//initSequenceDetectors();
+
+	m_buttonsInterrogator.setStackSize(512);
 	m_buttonsInterrogator.run(10);
 
 
@@ -412,8 +414,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	m_mfrcWrapper.init();
 	m_rfidController.setCallback([this](RifleRFIDController::Mode mode){ cardOperationDoneCallback(mode); });
 
-	m_rfidController.readCommands();
-	state.rfidState = RifleState::RFIDSate::reading;
+	rfidSwitchToRead();
 
 	//m_rfidController.writeServiceCard();
 	//state.rfidState = RifleState::RFIDSate::programMasterCard;
@@ -479,7 +480,6 @@ void Rifle::loadConfig()
 	delete parcer;
 }
 
-
 void Rifle::initSounds()
 {
 	m_systemReadySound.readVariants("sound/startup-", ".wav", 1);
@@ -499,6 +499,21 @@ void Rifle::initSounds()
 	m_noShockedShooting.readVariants("sound/shocked-shooting", ".wav", 0);
 	m_hsSwitchRejected.readVariants("sound/hs-switch-rejected", ".wav", 0);
 	m_rfidProgrammingInProcess.readVariants("sound/rfid-programming", ".wav", 0);
+}
+
+void Rifle::initSequenceDetectors()
+{
+	m_writeCardSeqDetector.addKeyToSequence(m_reloadButton);
+	m_writeCardSeqDetector.addKeyToSequence(m_reloadButton);
+	m_writeCardSeqDetector.addKeyToSequence(m_reloadButton);
+	m_writeCardSeqDetector.setCallback([this]() { rifleRFIDProgramHSAddr(); } );
+	m_buttonsInterrogator.registerObject(&m_writeCardSeqDetector);
+}
+
+void Rifle::rfidSwitchToRead()
+{
+	m_rfidController.readCommands();
+	state.rfidState = RifleState::RFIDSate::reading;
 }
 
 void Rifle::makeShot(bool isFirst)
@@ -787,7 +802,6 @@ void Rifle::rifleWound()
 
 void Rifle::rifleRFIDProgramHSAddr()
 {
-	debug << "rifleRFIDProgramHSAddr()";
 	m_rfidProgrammingInProcess.play();
 	state.rfidState = RifleState::RFIDSate::programHSAddr;
 	m_rfidController.writeHSAddress(config.headSensorAddr);
@@ -795,7 +809,6 @@ void Rifle::rifleRFIDProgramHSAddr()
 
 void Rifle::rifleRFIDProgramServiceCard()
 {
-	debug << "rifleRFIDProgramServiceCard()";
 	m_rfidProgrammingInProcess.play();
 	state.rfidState = RifleState::RFIDSate::programMasterCard;
 	m_rfidController.writeServiceCard();

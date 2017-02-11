@@ -257,7 +257,10 @@ Result RCSPAggregator::readIni(const char* filename)
 {
 	IniParser* parcer = new IniParser;
 	//parcer->setCallback([this](const char* key, const char* value){ parseSring(key, value); });
-	parcer->setCallback(std::bind(&RCSPAggregator::parseSring, this, std::placeholders::_1, std::placeholders::_2));
+	parcer->setCallback(
+			[this] (const char* group, const char* key, const char* value)
+			{ UNUSED_ARG(group), parseSring(key, value); }
+	);
 	Result res = parcer->parseFile(filename);
 	delete parcer;
 	return res;

@@ -262,8 +262,9 @@ void HeadSensor::initSmartZones(const Pinout &pinout)
 
 void HeadSensor::resetToDefaults()
 {
-    m_callbackStager.stage("reset");
+    taskENTER_CRITICAL();
     m_stateSaver.resetSaves();
+    taskEXIT_CRITICAL();
     systemControls->rebootMCU();
     /*
     // Important!! Code below makes hard fault usually. And I dont know why.

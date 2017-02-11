@@ -30,7 +30,6 @@
 #include "rcsp/state-saver.hpp"
 #include "core/device-initializer.hpp"
 #include "dev/RC522.hpp"
-#include "dev/rgb-leds.hpp"
 #include "game/game-log.hpp"
 #include "head-sensor/player-config.hpp"
 #include "head-sensor/player-state.hpp"
