@@ -39,17 +39,19 @@ void KeySequenceDetector::interrogate()
 	if (now - m_lastChange < minDelay) // Anti-shock
 		return;
 
-	if (m_lastButtonState == false && (*m_it)->state() == true)
+	bool buttonState = (*m_it)->state();
+
+	if (m_lastButtonState == false && buttonState == true)
 	{
-		debug << "n->p";
+		//debug << "n->p";
 		// user pressed key
 		m_lastButtonState = true;
 		m_lastChange = now;
 		return;
 	}
-	if (m_lastButtonState == true && (*m_it)->state() == false)
+	if (m_lastButtonState == true && buttonState == false)
 	{
-		debug << "p->n";
+		//debug << "p->n";
 		// user released key
 		m_lastButtonState = false;
 		m_lastChange = now;

@@ -359,7 +359,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	}
 	detectRifleState();
 
-	//initSequenceDetectors();
+	initSequenceDetectors();
 
 	m_buttonsInterrogator.setStackSize(512);
 	m_buttonsInterrogator.run(10);

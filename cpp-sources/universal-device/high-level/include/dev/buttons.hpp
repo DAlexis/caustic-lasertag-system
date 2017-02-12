@@ -38,7 +38,7 @@ using ButtonDepressCallback = std::function<void(void)>;
 class ButtonManager : public IInterrogatable
 {
 public:
-	ButtonManager(IIOPin* inputInterrogator);
+	ButtonManager(IIOPin* pin);
 	~ButtonManager() {}
 	ButtonManager& setCallback(ButtonPressCallback callback) { m_callback = callback; return *this; }
 	ButtonManager& setDepressCallback(ButtonDepressCallback callback) { m_depressCallback = callback; return *this; }
@@ -49,7 +49,7 @@ public:
 	void turnOff();
 	void setPressedState(bool pressedState = false);
 	//bool useExti() { return m_extiManager ? true : false; }
-	bool state();   /// @return true if pressed, false if depressed
+	bool state() const;   /// @return true if pressed, false if depressed
 
 	void interrogate();
 
@@ -62,7 +62,7 @@ private:
 
 	ButtonPressCallback m_callback = nullptr;
 	ButtonDepressCallback m_depressCallback = nullptr;
-	IIOPin* m_inputInterrogator = nullptr;
+	IIOPin* m_pin = nullptr;
 
 	uint32_t* m_repeatPeriod = nullptr;
 	uint32_t m_lastPressTime = 0;

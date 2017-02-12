@@ -29,14 +29,14 @@
 SINGLETON_IN_CPP(ButtonsPool)
 
 ButtonManager::ButtonManager(IIOPin* inputInterrogator) :
-    m_inputInterrogator(inputInterrogator)
+    m_pin(inputInterrogator)
 {
 	if (!inputInterrogator)
 	{
 		error << "Cannot initialize button: input interrogator is nullptr!";
 		return;
 	}
-	m_inputInterrogator->setExtiCallback(std::bind(&ButtonManager::extiCallback, this, std::placeholders::_1), true);
+	m_pin->setExtiCallback([this] (bool arg) { extiCallback(arg); }, true);
 }
 
 ButtonManager& ButtonManager::setAutoRepeat(bool autoRepeat)
@@ -63,7 +63,7 @@ void ButtonManager::turnOff()
 
 void ButtonManager::useEXTI(bool enabled)
 {
-	m_inputInterrogator->enableExti(enabled);
+	m_pin->enableExti(enabled);
 }
 
 void ButtonManager::setPressedState(bool pressedState)
@@ -71,14 +71,14 @@ void ButtonManager::setPressedState(bool pressedState)
 	m_pressedState = pressedState;
 }
 
-bool ButtonManager::state()
+bool ButtonManager::state() const
 {
-	if (!m_inputInterrogator)
+	if (!m_pin)
 	{
 		error << "Cannot check buttons state: m_inputInterrogator == nullptr";
 		return false;
 	}
-	return m_pressedState ? m_inputInterrogator->state() : !m_inputInterrogator->state();
+	return m_pressedState ? m_pin->state() : !m_pin->state();
 }
 
 void ButtonManager::extiCallback(bool state)
@@ -96,7 +96,7 @@ void ButtonManager::extiCallback(bool state)
 
 void ButtonManager::interrogate()
 {
-	if (!m_inputInterrogator)
+	if (!m_pin)
 	{
 		error << "Cannot interrogate button: m_inputInterrogator == nullptr";
 		return;
@@ -105,7 +105,7 @@ void ButtonManager::interrogate()
 	if (!m_isEnabled) return;
 	if (wasBounce()) return;
 
-	if (m_inputInterrogator->state() == m_pressedState || m_extiDetected == true)
+	if (m_pin->state() == m_pressedState || m_extiDetected == true)
 	{
 		// Button is pressed
 		uint32_t time = systemClock->getTime();
@@ -134,7 +134,7 @@ void ButtonManager::interrogate()
 			}
 		}
 	}
-	if (m_inputInterrogator->state() == !m_pressedState) {
+	if (m_pin->state() == !m_pressedState) {
 		// Button depressed
 		m_isFirst = true;
 		if (m_pressedAndNotDepressed) {
