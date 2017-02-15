@@ -41,78 +41,11 @@
 #include <stdio.h>
 #include <math.h>
 
-WeaponManager::~WeaponManager()
-{
-	dropAllPackages();
-}
-
-void WeaponManager::assign(const DeviceAddress& addr)
-{
-	m_addr = addr;
-}
-
-void WeaponManager::dropAllPackages()
-{
-	auto checkAndDrop = [](PackageId& id) {
-		if (id != 0)
-		{
-			NetworkLayer::instance().stopSending(id);
-			id = 0;
-		}
-	};
-
-	checkAndDrop(m_respawnPackage);
-	checkAndDrop(m_diePackage);
-}
-
-void WeaponManager::respawn(INetworkClient* client)
-{
-	if (m_respawnPackage != 0)
-	{
-		NetworkLayer::instance().updateTimeout(m_respawnPackage);
-	} else {
-		info << "WeaponManager::respawn() sending package";
-		m_respawnPackage = RCSPStream::remoteCall
-			(
-                client,
-				m_addr,
-				ConfigCodes::Rifle::Functions::rifleRespawn,
-				true,
-				[this](PackageId, bool){ m_respawnPackage = 0; }
-			);
-	}
-}
-
-void WeaponManager::die(INetworkClient* client)
-{
-	if (m_diePackage != 0)
-	{
-		NetworkLayer::instance().updateTimeout(m_diePackage);
-	} else {
-		m_diePackage = RCSPStream::remoteCall
-			(
-                client,
-                m_addr,
-				ConfigCodes::Rifle::Functions::rifleDie,
-				true,
-				[this](PackageId, bool){ m_diePackage = 0; },
-				std::move(headSensorPackageTimings.killPlayer)
-			);
-	}
-}
-
-IWeaponObserver *WeaponManagerFactory::create() const
-{
-	return new WeaponManager();
-}
-
 HeadSensor::HeadSensor()
 {
 	deviceConfig.deviceType = DeviceTypes::headSensor;
-	playerState.weaponsList.setWeaponObserverFactory(&weaponManagerFactory);
 	m_tasksPool.setStackSize(512);
-	m_sensorsInterogator.setStackSize(512);
-	//m_weapons.insert({1,1,1});
+	m_interrogator.setStackSize(512);
 }
 
 void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
@@ -150,24 +83,6 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 		m_stateSaver.saveState();
 	}
 
-	info << "Initializing visual effects";
-	/// @todo Add support for only red (and LED-less) devices
-	/*
-	IRGBVibroPointPhysical *rgbv = new RBGVibroIOPins(1,
-			IOPins->getIOPin(_pinout["red"].port, _pinout["red"].pin),
-			IOPins->getIOPin(_pinout["green"].port, _pinout["green"].pin),
-			IOPins->getIOPin(_pinout["blue"].port, _pinout["blue"].pin),
-			nullptr
-	);*/
-
-	/*IRGBVibroPointPhysical *rgbv = new RBGVibroPWM(1,
-			PWMs->getPWM(3),
-			nullptr
-	);
-	m_ledVibroMgr.addPoint(rgbv);*/
-
-	//m_leds.blink(blinkPatterns.init);
-
 	info << "Network initialization";
 	initNetworkClient();
 	initNetwork();
@@ -180,11 +95,6 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 #endif
 
 	info << "Other initialization";
-	m_tasksPool.add(
-			[this] { m_taskPoolStager.stage("sendHeartbeat()"); sendHeartbeat(); },
-			heartbeatPeriod
-	);
-
 	m_tasksPool.add(
 			[this] { m_taskPoolStager.stage("m_statsCounter.interrogate()"); m_statsCounter.interrogate(); },
 			200000
@@ -199,6 +109,8 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 			[this] { m_mfrcWrapper.interrogate(); },
 			10000
 	);
+
+	m_interrogator.registerObject(&m_weaponsManager);
 
 	info << "Discovering bluetooth module";
 	// First, configuring HC-05 bluetooth module to have proper name, UART speed and password
@@ -221,8 +133,8 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 
 	m_sensorsInitializer.read("sensors.ini");
 
-	m_sensorsInterogator.registerObject(&m_receiverMgr);
-	m_sensorsInterogator.registerObject(&m_ledVibroMgr);
+	m_interrogator.registerObject(&m_receiverMgr);
+	m_interrogator.registerObject(&m_ledVibroMgr);
 
 	info << "Stats restoring";
 	m_statsCounter.restoreFromFile();
@@ -232,7 +144,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	m_tasksPool.run();
 	m_stateSaver.runSaver(8000);
 
-	m_sensorsInterogator.run();
+	m_interrogator.run();
 	info << "Head sensor ready to use";
 
 
@@ -285,6 +197,15 @@ void HeadSensor::resetToDefaults()
 	 */
 }
 
+void HeadSensor::rifleToHeadSensorHeartbeat()
+{
+	if (!m_networkPackagesListener.hasSender())
+		return;
+
+	m_weaponsManager.updateWeapon(m_networkPackagesListener.sender());
+	sendHeartbeat(m_networkPackagesListener.sender());
+}
+
 
 void HeadSensor::catchShot(ShotMessage msg)
 {
@@ -326,7 +247,7 @@ void HeadSensor::catchShot(ShotMessage msg)
 				m_statsCounter.registerDamage(msg.playerId, msg.damage);
 			}
 			m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.wound()));
-			//m_leds.blink(blinkPatterns.wound);
+
 			if (msg.playerId != playerConfig.playerId)
 			{
 				notifyDamager(msg.playerId, msg.teamId, DamageNotification::injured);
@@ -343,7 +264,6 @@ void HeadSensor::catchShot(ShotMessage msg)
 			m_statsCounter.registerDamage(msg.playerId, healthBeforeDamage);
 
 			m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.death()));
-			//m_leds.blink(blinkPatterns.death);
 			/// @todo reenable
 			//Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
 		}
@@ -357,7 +277,6 @@ void HeadSensor::playerRespawn()
 	{
 		info << "Respawn limit is over!";
 		// @todo Add any notification that respawn limit is over
-		//m_leds.blink(blinkPatterns.respawnLimitIsOver);
 		return;
 	}
 
@@ -365,14 +284,7 @@ void HeadSensor::playerRespawn()
 	info << "Player spawned";
 	m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.anyCommand()));
 
-/*
-	std::function<void(void)> respawnFunction = [this] {
-		playerState.respawn();
-		respawnWeapons();
-		printf("Player spawned");
-	};
-	Scheduler::instance().addTask(respawnFunction, true, 0, 0, systemClock->getTime() + playerConfig.postRespawnDelay);
-*/
+	// @todo add delayed respawn
 }
 
 void HeadSensor::playerReset()
@@ -411,97 +323,26 @@ void HeadSensor::readStats()
 void HeadSensor::dieWeapons()
 {
 	m_callbackStager.stage("die weapons");
-	/// Notifying weapons
-	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
-	{
-		info << "Sending kill signal to weapon...";
-		static_cast<WeaponManager*>(it->second)->die(&m_networkClient);
-		//RCSPStream::remoteCall(it->first, ConfigCodes::Rifle::Functions::rifleDie, true, nullptr, std::move(headSensorPackageTimings.killPlayer));
-	}
+	m_weaponCommunicator.sendDie();
 }
 
 void HeadSensor::respawnWeapons()
 {
 	m_callbackStager.stage("respawn weapons");
-	/// Notifying weapons
-	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
-	{
-		info << "Resetting weapon...";
-		static_cast<WeaponManager*>(it->second)->respawn(&m_networkClient);
-		//RCSPStream::remoteCall(it->first, ConfigCodes::Rifle::Functions::rifleRespawn);
-	}
-}
-
-void HeadSensor::turnOffWeapons()
-{
-	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
-	{
-		info << "Turning off weapon...";
-		RCSPStream::remoteCall(&m_networkClient, it->first, ConfigCodes::Rifle::Functions::rifleTurnOff);
-	}
+	m_weaponCommunicator.sendRespawn();
 }
 
 void HeadSensor::weaponWoundAndShock()
 {
 	m_callbackStager.stage("weaponWoundAndShock");
 	info << "Weapons shock delay notification";
-	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
-	{
-		RCSPMultiStream stream(m_aggregator);
-		// We have 23 bytes free in one stream (and should try to use only one)
-		stream.addCall(ConfigCodes::Rifle::Functions::rifleShock, playerConfig.shockDelayInactive); // 3b + 4b (16 free)
-		stream.addCall(ConfigCodes::Rifle::Functions::rifleWound); // 3b (13 free)
-		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent); // 3b + 2b (8 free)
-		stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent); // 3b + 2b (3 free)
-		stream.send(&m_networkClient, it->first, true, std::move(headSensorPackageTimings.woundPlayer));
-	}
+	m_weaponCommunicator.sendWeaponAndShock(playerConfig.shockDelayInactive);
 }
 
-void HeadSensor::sendHeartbeat()
+void HeadSensor::sendHeartbeat(DeviceAddress target)
 {
 	trace << "Sending heartbeat";
-	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
-	{
-		RCSPStream stream(m_aggregator);
-		// This line is temporary solution if team was changed by value, not by setter func call
-		stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId); // 3b+1b
-		stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent); // 3b+2b
-		stream.addValue(ConfigCodes::HeadSensor::Configuration::playerId); // 3b+1b
-		stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat); // 3b
-		stream.send(&m_networkClient, it->first, false);
-	}
-}
-
-void HeadSensor::registerWeapon(DeviceAddress weaponAddress)
-{
-	info << "Registering weapon " << ADDRESS_TO_STREAM(weaponAddress);
-	auto it = playerState.weaponsList.weapons().find(weaponAddress);
-	if (it == playerState.weaponsList.weapons().end())
-	{
-		playerState.weaponsList.insert(weaponAddress);
-	}
-
-	RCSPStream stream(m_aggregator);
-	stream.addValue(ConfigCodes::HeadSensor::Configuration::playerId);
-	stream.addValue(ConfigCodes::HeadSensor::Configuration::teamId);
-	stream.addCall(ConfigCodes::Rifle::Functions::headSensorToRifleHeartbeat);
-
-	if (playerState.isAlive())
-	{
-		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOn);
-	} else {
-		stream.addCall(ConfigCodes::Rifle::Functions::rifleTurnOff);
-	}
-	stream.send(&m_networkClient, weaponAddress, true);
-}
-
-void HeadSensor::deregisterWeapon(DeviceAddress weaponAddress)
-{
-	info << "Deregistering weapon " << ADDRESS_TO_STREAM(weaponAddress);
-	auto it = playerState.weaponsList.weapons().find(weaponAddress);
-	if (it != playerState.weaponsList.weapons().end())
-		playerState.weaponsList.remove(weaponAddress);
-	NetworkLayer::instance().dropAllForAddress(weaponAddress);
+	m_weaponCommunicator.sendHeartbeat(target, &playerConfig, &playerState);
 }
 
 void HeadSensor::setTeam(uint8_t teamId)
@@ -509,16 +350,7 @@ void HeadSensor::setTeam(uint8_t teamId)
 	info << "Setting team id";
 	playerConfig.teamId = teamId;
 	m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.anyCommand()));
-	for (auto it = playerState.weaponsList.weapons().begin(); it != playerState.weaponsList.weapons().end(); it++)
-	{
-		info << "Changing weapon team id to" << teamId;
-		RCSPStream::remotePullValue(
-		        m_aggregator,
-		        &m_networkClient,
-		        it->first,
-		        ConfigCodes::HeadSensor::Configuration::teamId
-		);
-	}
+	m_weaponCommunicator.sendSetTeam();
 }
 
 void HeadSensor::addMaxHealth(int16_t delta)
@@ -568,21 +400,11 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 		return;
 	}
 
-	if (!playerState.weaponsList.weapons().empty())
-	{
-		uint8_t sound =
-			(notification.damagedTeam == playerConfig.teamId) ? // testing for friendly fire
-				NotificationSoundCase::friendInjured :
-				notification.state;
-		// Now notifying over first attached weapon
-		RCSPStream::remoteCall(
-		        &m_networkClient,
-		        playerState.weaponsList.weapons().begin()->first,
-		        ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged,
-		        sound
-		);
-	}
+	uint8_t sound =	(notification.damagedTeam == playerConfig.teamId) ? // testing for friendly fire
+					NotificationSoundCase::friendInjured :
+					notification.state;
 
+	m_weaponCommunicator.sendPlayEnemyDamaged(sound);
 }
 
 void HeadSensor::setFRIDToWriteAddr()
@@ -610,16 +432,7 @@ void HeadSensor::setFRIDToWriteAddr()
 
 void HeadSensor::setDefaultPinout(Pinout& pinout)
 {
-	pinout.set("zone1", 0, 0);
-	pinout.set("zone1Vibro", 2, 0);
-	pinout.unset("zone2");
-	pinout.unset("zone3");
-	pinout.unset("zone4");
-	pinout.unset("zone5");
-	pinout.unset("zone6");
-	pinout.set("red", 0, 6);
-	pinout.set("green", 0, 7);
-	pinout.set("blue", 1, 0);
+	UNUSED_ARG(pinout);
 }
 
 bool HeadSensor::checkPinout(const Pinout& pinout)

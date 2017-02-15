@@ -60,7 +60,7 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalProb);
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalCoeff);
 
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration,semiAutomaticAllowed);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, semiAutomaticAllowed);
 	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, automaticAllowed);
 	
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadIsMagazineSmart);

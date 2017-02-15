@@ -137,9 +137,9 @@ namespace ConfigCodes
 			FUNC_CODE_NP(rifleWound,         206)
 			FUNC_CODE_1P(rifleShock, TimeInterval,        207)
 
-			FUNC_CODE_1P(riflePlayEnemyDamaged, uint8_t,  210)
-			FUNC_CODE_NP(headSensorToRifleHeartbeat,      220)
-			FUNC_CODE_1P(rifleChangeHS, DeviceAddress,    225)
+			FUNC_CODE_1P(riflePlayEnemyDamaged,      uint8_t,            210)
+			FUNC_CODE_1P(headSensorToRifleHeartbeat, HSToRifleHeartbeat, 220)
+			FUNC_CODE_1P(rifleChangeHS,              DeviceAddress,      225)
 
 			FUNC_CODE_NP(rifleRFIDProgramHSAddr,        230)
 			FUNC_CODE_NP(rifleRFIDProgramServiceCard,   231)
@@ -198,16 +198,6 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, slot3MaxWeight,    1043)
 			PAR_CODE(UintParameter, slot4MaxWeight,    1044)
 			PAR_CODE(UintParameter, slot5MaxWeight,    1045)
-
-
-			PAR_CODE(FloatParameter, zone1DamageCoeff,    1051)
-			PAR_CODE(FloatParameter, zone2DamageCoeff,    1052)
-			PAR_CODE(FloatParameter, zone3DamageCoeff,    1053)
-			PAR_CODE(FloatParameter, zone4DamageCoeff,    1054)
-			PAR_CODE(FloatParameter, zone5DamageCoeff,    1055)
-			PAR_CODE(FloatParameter, zone6DamageCoeff,    1056)
-
-
 		}
 
 		namespace State
@@ -223,10 +213,6 @@ namespace ConfigCodes
 			PAR_CODE(UintParameter, pointsCount, 1110)
 			PAR_CODE(UintParameter, killsCount,  1111)
 			PAR_CODE(UintParameter, deathsCount, 1112)
-
-			PAR_CODE(ConnectedWeaponsList, weaponsList, 1200)
-
-
 		}
 
 		namespace Functions

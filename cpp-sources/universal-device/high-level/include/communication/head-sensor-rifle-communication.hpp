@@ -26,6 +26,7 @@
 
 #include "game/game-base-types.hpp"
 
+#pragma pack(push, 1)
 struct DamageNotification
 {
 	constexpr static uint8_t injured = 0;
@@ -44,6 +45,33 @@ struct NotificationSoundCase
 	constexpr static uint8_t friendInjured = 2;
 
 };
+
+struct HSToRifleHeartbeat
+{
+	constexpr static uint8_t enabled = 0x01;
+
+	uint8_t state;
+	TeamGameId team;
+	PlayerGameId player;
+	UintParameter healthCurrent;
+	UintParameter healthMax;
+
+	void setEnabled(bool enabled)
+	{
+		if (enabled)
+			ADD_BITS(state, enabled);
+		else
+			REMOVE_BITS(state, enabled);
+	}
+
+	bool isEnabled()
+	{
+		return state & enabled;
+	}
+};
+static_assert(sizeof(HSToRifleHeartbeat) < 21, "HSToRifleHeartbeat size is too big!");
+
+#pragma pack(pop)
 
 
 

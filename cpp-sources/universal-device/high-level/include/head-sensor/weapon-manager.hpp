@@ -15,19 +15,46 @@
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with Caustic Lasertag System. 
+*    along with Caustic Lasertag System.
 *    If not, see <http://www.gnu.org/licenses/>.
 *
 *    @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 */
 
-#ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_HEAD_SENSOR_HEAD_SENSOR_BASE_TYPES_HPP_
-#define RTOS_STM32F103RET6_DEVICE_INCLUDE_HEAD_SENSOR_HEAD_SENSOR_BASE_TYPES_HPP_
+#ifndef UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_HEAD_SENSOR_WEAPON_MANAGER_HPP_
+#define UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_HEAD_SENSOR_WEAPON_MANAGER_HPP_
 
-#include "rcsp/RCSP-base-types.hpp"
 #include "network/network-base-types.hpp"
-#include "communication/head-sensor-rifle-communication.hpp"
+#include "hal/system-clock.hpp"
+#include "utils/interfaces.hpp"
+
 #include <map>
 
+#include <functional>
 
-#endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_HEAD_SENSOR_HEAD_SENSOR_BASE_TYPES_HPP_ */
+class WeaponsManager2 : public IInterrogatable
+{
+public:
+	using WeaponVisitor = std::function<void(DeviceAddress)>;
+	constexpr static uint32_t timeout = 2000000;
+
+	void updateWeapon(DeviceAddress addr);
+	void applyToAny(WeaponVisitor visitor) const;
+	void applyToOne(WeaponVisitor visitor) const;
+
+	void interrogate() override;
+private:
+	struct WeaponRecord
+	{
+		Time lastHeartbeat = 0;
+	};
+
+	std::map<DeviceAddress, WeaponRecord> m_weapons;
+};
+
+
+
+
+
+
+#endif /* UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_HEAD_SENSOR_WEAPON_MANAGER_HPP_ */

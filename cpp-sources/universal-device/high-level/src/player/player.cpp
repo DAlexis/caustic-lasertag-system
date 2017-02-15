@@ -104,8 +104,6 @@ void PlayerState::reset()
 	pointsCount = 0;
 	killsCount = 0;
 	deathsCount = 0;
-	weaponsList.clear();
-
 }
 
 bool PlayerState::respawn()

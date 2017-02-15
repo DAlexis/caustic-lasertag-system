@@ -29,8 +29,8 @@
 class RiflePackageTimings
 {
 public:
-	PackageTimings deregistration{false, 20000000, 500000, 500000};
-	PackageTimings registration{true};
+
+	PackageTimings heartbeat{false, 500000, 200000, 200000};
 };
 
 extern RiflePackageTimings riflePackageTimings;

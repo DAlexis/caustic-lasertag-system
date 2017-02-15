@@ -33,6 +33,7 @@ public:
 	PackageTimings killPlayer {false, 20000000, 100000, 100000};
 	PackageTimings woundPlayer{false, 20000000, 100000, 100000};
 	PackageTimings damagerNotificationBroadcast{false, 1000000, 100000, 100000};
+	PackageTimings heartbeatToRifle{false, 1000000, 300000, 300000};
 };
 
 extern HeadSensorPackageTimings headSensorPackageTimings;

@@ -36,6 +36,8 @@
 #include "head-sensor/head-sensor-base-types.hpp"
 #include "head-sensor/resources.hpp"
 #include "head-sensor/sensors-initializer.hpp"
+#include "head-sensor/weapon-manager.hpp"
+#include "head-sensor/hs-rifles-comunicator.hpp"
 #include "sensors/smart-sensors.hpp"
 #include "sensors/ir-physical-receiver.hpp"
 #include "sensors/ir-presentation-receiver.hpp"
@@ -45,29 +47,6 @@
 #include "network/network-client.hpp"
 #include "rcsp/operation-codes.hpp"
 #include <set>
-
-class WeaponManager : public IWeaponObserver
-{
-public:
-	~WeaponManager();
-	void assign(const DeviceAddress& addr);
-
-	void dropAllPackages();
-
-	void respawn(INetworkClient* client);
-	void die(INetworkClient* client);
-private:
-	PackageId m_respawnPackage = 0;
-	PackageId m_diePackage = 0;
-
-	DeviceAddress m_addr;
-};
-
-class WeaponManagerFactory : public IWeaponObserverFactory
-{
-public:
-	IWeaponObserver *create() const;
-};
 
 class HeadSensor : public AnyRCSPClientDeviceBase
 {
@@ -87,9 +66,8 @@ public:
 	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats);
 	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats);
 	FUNCTION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, rifleToHeadSensorHeartbeat);
 
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, registerWeapon);
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, deregisterWeapon);
 	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam);
 
 	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth);
@@ -114,14 +92,12 @@ private:
 
 	void dieWeapons();
 	void respawnWeapons();
-	void turnOffWeapons();
 	void notifyDamager(PlayerGameId player, uint8_t damagerTeam, uint8_t state = 0);
 	void weaponWoundAndShock();
 	void setFRIDToWriteAddr();
 
-	void sendHeartbeat();
+	void sendHeartbeat(DeviceAddress target);
 
-	WeaponManagerFactory weaponManagerFactory;
 
 	//RGBLeds m_leds{playerConfig.teamId};
 
@@ -153,7 +129,10 @@ private:
 
 	SensorsInitializer m_sensorsInitializer{m_receiverMgr, m_ledVibroMgr, m_killZonesManager};
 
-	Interrogator m_sensorsInterogator;
+	Interrogator m_interrogator;
+
+	WeaponsManager2 m_weaponsManager;
+	WeaponCommunicator m_weaponCommunicator{&m_weaponsManager, &m_networkClient, m_aggregator};
 
 	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, &m_networkClient};
 	Stager m_taskPoolStager{"HS task pool"};

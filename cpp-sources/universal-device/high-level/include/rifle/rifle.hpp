@@ -52,7 +52,6 @@ class Rifle : public AnyRCSPClientDeviceBase
 public:
 	Rifle();
 
-	void registerWeapon();
 	void init(const Pinout& pinout, bool isSdcardOk) override;
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
@@ -64,7 +63,7 @@ public:
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);      ///< Say to rifle that player was killed
 
 	/// Heartbeat head sensor -> rifle
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound);
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramHSAddr);
 	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramServiceCard);
@@ -80,10 +79,9 @@ public:
 
 	PlayerPartialState playerState{config.headSensorAddr, &m_networkClient, &RCSPAggregator::getActiveAggregator()};
 
-
 private:
 
-	constexpr static uint32_t maxNoHeartbeatDelay = 6500000;
+	constexpr static uint32_t maxNoHeartbeatDelay = 2500000;
 
 	struct PinoutTexts
 	{
@@ -122,6 +120,11 @@ private:
 	void reloadAndPlay();
 	void detectRifleState();
 
+	/**
+	 * To use inside HS-to-rifle commands to check that command is from actual head sensor
+	 */
+	bool isCommandFromActualHS();
+
 	bool isReloading();
 	bool isSafeSwitchSelected();
 	bool isShocked();
@@ -134,6 +137,8 @@ private:
 	void checkHeartBeat();
 
 	void cardOperationDoneCallback(RifleRFIDController::Mode mode);
+
+	void sendHeartbeatToHS();
 
 	/// This function could be called any time when head sensor is connected. Double calling does not hurt anything
 	void onHSConnected();

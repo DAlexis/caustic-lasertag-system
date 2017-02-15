@@ -270,6 +270,11 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	);
 
 	m_tasksPool.add(
+			[this] { sendHeartbeatToHS(); },
+			1000000
+	);
+
+	m_tasksPool.add(
 			[this] { m_systemReadySound.play(); },
 			100000,
 			100000,
@@ -403,10 +408,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 			100000
 	);
 
-	// Registering at head sensor's weapons list
-	registerWeapon();
-
-	updatePlayerState();
+	//updatePlayerState();
 
 	m_stateSaver.runSaver(8000);
 	m_tasksPool.run();
@@ -468,6 +470,11 @@ void Rifle::detectRifleState()
 			m_fireButton->setAutoRepeat(false);
 		}
 	}
+}
+
+bool Rifle::isCommandFromActualHS()
+{
+	return !m_networkPackagesListener.hasSender() || m_networkPackagesListener.sender() == config.headSensorAddr;
 }
 
 void Rifle::loadConfig()
@@ -736,19 +743,11 @@ bool Rifle::isReloading()
 void Rifle::updatePlayerState()
 {
 	playerState.syncAll();
-	/*
-	if (isEnabled && playerState.healthCurrent == 0)
-		rifleTurnOff();
-
-	if (!isEnabled && playerState.healthCurrent != 0)
-		rifleTurnOn();
-*/
-	//playerState.print();
 }
 
 void Rifle::rifleTurnOff()
 {
-	info << "Rifle turned OFF\n";
+	info << "Rifle turned OFF";
 	state.isEnabled = false;
 	m_fireButton->turnOff();
 	m_reloadButton->turnOff();
@@ -756,7 +755,7 @@ void Rifle::rifleTurnOff()
 
 void Rifle::rifleTurnOn()
 {
-	info << "Rifle turned ON\n";
+	info << "Rifle turned ON";
 	state.isEnabled = true;
 	m_fireButton->turnOn();
 	m_reloadButton->turnOn();
@@ -767,7 +766,7 @@ void Rifle::rifleReset()
 {
 	state.reset();
 	detectRifleState();
-	info << "Rifle resetted\n";
+	info << "Rifle resetted";
 }
 
 void Rifle::rifleRespawn()
@@ -776,12 +775,12 @@ void Rifle::rifleRespawn()
 	rifleTurnOn();
 	updatePlayerState();
 	m_respawnSound.play();
-	info << "Rifle respawned\n";
+	info << "Rifle respawned";
 }
 
 void Rifle::rifleDie()
 {
-	info << "\'Rifle die\' activated\n";
+	info << "Rifle told that player dead";
 	if (!state.isEnabled)
 		return;
 
@@ -789,9 +788,19 @@ void Rifle::rifleDie()
 	m_dieSound.play();
 }
 
-void Rifle::headSensorToRifleHeartbeat()
+void Rifle::headSensorToRifleHeartbeat(HSToRifleHeartbeat heartbeatMsg)
 {
 	m_lastHSHeartBeat = systemClock->getTime();
+
+	if (heartbeatMsg.isEnabled() && !state.isEnabled)
+		rifleTurnOn();
+	else if (!heartbeatMsg.isEnabled() && state.isEnabled)
+		rifleTurnOff();
+	rifleOwner.teamId = heartbeatMsg.team;
+	rifleOwner.playerId = heartbeatMsg.player;
+	playerState.healthCurrent = heartbeatMsg.healthCurrent;
+	playerState.healthMax = heartbeatMsg.healthMax;
+
 	onHSConnected();
 }
 
@@ -833,7 +842,7 @@ void Rifle::playDamagerNotification(uint8_t state)
 
 void Rifle::checkHeartBeat()
 {
-	if (systemClock->getTime() - m_lastHSHeartBeat > maxNoHeartbeatDelay)
+	if (!isHSConnected())
 	{
 		// If heartbeat timeout
 		info << "No heartbeat! Turning off";
@@ -850,10 +859,8 @@ void Rifle::onHSConnected()
 	if (!state.isHSConnected)
 	{
 		state.isHSConnected = true;
-		info << "I listen heartbeat again!";
+		info << "Head sensor connecter just now!";
 		m_connectedToHeadSensorSound.play();
-		if (playerState.isAlive())
-			rifleTurnOn();
 	}
 }
 
@@ -895,12 +902,26 @@ void Rifle::cardOperationDoneCallback(RifleRFIDController::Mode mode)
 	}
 }
 
+void Rifle::sendHeartbeatToHS()
+{
+	RCSPStream stream(m_aggregator);
+
+	// @todo use RemoteCall
+	stream.addCall(ConfigCodes::HeadSensor::Functions::rifleToHeadSensorHeartbeat);
+	stream.send(
+			&m_networkClient,
+			config.headSensorAddr,
+			false,
+			nullptr,
+			std::forward<PackageTimings>(riflePackageTimings.heartbeat)
+	);
+}
+
 void Rifle::riflePlayEnemyDamaged(uint8_t state)
 {
 	info << "Player damaged with state: " << state;
 	playDamagerNotification(state);
 }
-
 
 void Rifle::rifleShock(uint32_t delay)
 {
@@ -912,57 +933,6 @@ void Rifle::rifleShock(uint32_t delay)
 
 void Rifle::rifleChangeHS(DeviceAddress newAddr)
 {
-	if (!isHSConnected())
-	{
-		// We cannot change head sensor without notifying current, so rejecting
-		m_hsSwitchRejected.play();
-		return;
-	}
-	if (newAddr == config.headSensorAddr)
-	{
-		debug << "Head sensor switch not needed";
-		return;
-	}
-
-	// Adress was changed
-	info << "Switching HS to " << ADDRESS_TO_STREAM(newAddr);
-
-	NetworkLayer::instance().dropAllForAddress(config.headSensorAddr);
-
-	RCSPStream::remoteCall(
-	        &m_networkClient,
-			config.headSensorAddr,
-			ConfigCodes::HeadSensor::Functions::deregisterWeapon,
-			deviceConfig.devAddr
-	);
-	config.headSensorAddr = newAddr;
 	onHSDisconnected();
-	if (m_registerWeaponPAckageId != 0)
-	{
-		NetworkLayer::instance().stopSending(m_registerWeaponPAckageId);
-		m_registerWeaponPAckageId = 0;
-	}
-	registerWeapon();
-}
-
-void Rifle::registerWeapon()
-{
-	if (m_registerWeaponPAckageId != 0)
-		return;
-
-	info << "Registering weapon...\n";
-	//config.headSensorAddr.print();
-	m_registerWeaponPAckageId = RCSPStream::remoteCall(
-	        &m_networkClient,
-			config.headSensorAddr,
-			ConfigCodes::HeadSensor::Functions::registerWeapon,
-			deviceConfig.devAddr,
-			true,
-			[this](PackageId packageId, bool result) -> void
-			{
-				UNUSED_ARG(packageId); UNUSED_ARG(result);
-				m_registerWeaponPAckageId = 0;
-			},
-			std::forward<PackageTimings>(riflePackageTimings.registration)
-	);
+	config.headSensorAddr = newAddr;
 }

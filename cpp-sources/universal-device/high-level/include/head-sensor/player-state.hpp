@@ -30,8 +30,6 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, killsCount);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount);
 
-	PAR_CL_SS(RESTORABLE, ConfigCodes::HeadSensor::State, weaponsList);
-
 
 
 	/**
