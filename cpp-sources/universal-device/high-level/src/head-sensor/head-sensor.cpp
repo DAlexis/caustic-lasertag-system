@@ -437,23 +437,7 @@ void HeadSensor::setDefaultPinout(Pinout& pinout)
 
 bool HeadSensor::checkPinout(const Pinout& pinout)
 {
-	if (!pinout["zone1"].exists()
-		&& !pinout["zone2"].exists()
-		&& !pinout["zone3"].exists()
-		&& !pinout["zone4"].exists()
-		&& !pinout["zone5"].exists()
-	)
-	{
-		error << "No killzones are specified in pinout";
-		return false;
-	}
-	if (!pinout["red"].exists()
-		|| !pinout["green"].exists()
-		|| !pinout["blue"].exists())
-	{
-		error << "RGB leds are not fully specified in pinout";
-		return false;
-	}
+	UNUSED_ARG(pinout);
 
 	return true;
 }

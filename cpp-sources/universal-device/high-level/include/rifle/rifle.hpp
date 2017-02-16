@@ -81,7 +81,8 @@ public:
 
 private:
 
-	constexpr static uint32_t maxNoHeartbeatDelay = 2500000;
+	constexpr static TimeInterval maxNoHeartbeatDelay = 2500000;
+	constexpr static TimeInterval heartbeatPeriod = 400000;
 
 	struct PinoutTexts
 	{

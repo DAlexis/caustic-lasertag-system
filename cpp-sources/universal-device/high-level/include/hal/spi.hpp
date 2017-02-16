@@ -45,7 +45,6 @@ public:
 	virtual ~ISPIManager() {}
 	virtual void init(uint32_t prescaler, IIOPin* NSSPin, uint8_t SPIPhase = SPIPhase1edge) = 0;
 
-	/// @Todo add overloadings for one byte
 	virtual bool Transmit(uint8_t *pData, uint16_t Size, uint32_t Timeout = DefaultTimeout) = 0;
 	virtual bool Receive(uint8_t *pData, uint16_t Size, uint32_t Timeout = DefaultTimeout) = 0;
 	virtual bool TransmitReceive(uint8_t *pTxData, uint8_t *pRxData, uint16_t Size, uint32_t Timeout = DefaultTimeout) = 0;

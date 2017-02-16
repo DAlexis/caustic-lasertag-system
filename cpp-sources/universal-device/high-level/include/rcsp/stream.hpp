@@ -71,7 +71,7 @@ public:
 		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
-	static PackageId remotePullValue(
+	static PackageId remotePushValue(
 	        RCSPAggregator* aggregator,
 	        INetworkClient* client,
 			DeviceAddress target,

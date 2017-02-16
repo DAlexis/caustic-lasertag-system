@@ -137,24 +137,13 @@ private:
 class Mutex
 {
 public:
-	Mutex()		{ handle = xSemaphoreCreateMutex(); }
-	~Mutex() 	{ if (handle) vSemaphoreDelete(handle); }
+	Mutex();
+	~Mutex();
 
-	inline bool lock(uint32_t timeout = portMAX_DELAY)
-		{ return (xSemaphoreTake( handle, timeout ) == pdTRUE); }
+	bool lock(uint32_t timeout = portMAX_DELAY);
+	void unlock();
 
-	inline void unlock()
-		{ xSemaphoreGive( handle ); }
-
-	inline bool isLocked()
-	{
-		bool wasNotLocked = lock(0);
-		if (wasNotLocked) {
-			unlock();
-			return false;
-		}
-		return true;
-	}
+	bool isLocked();
 private:
 	xSemaphoreHandle handle = nullptr;
 };

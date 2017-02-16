@@ -25,6 +25,7 @@
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
 #include "cmsis_os.h"
+#include "mcu-status.h"
 
 uint32_t Kernel::heapAllocatedNow = 0;
 uint32_t Kernel::heapAllocatedTotal = 0;
@@ -254,6 +255,44 @@ void TaskDeferredFromISR::taskBody(void* arg, uint32_t argSize)
 	//info << "Deferred task running";
 	object->m_task();
 	object->m_task = 0;
+}
+
+///////////////////////////////////
+/// Mutex
+Mutex::Mutex()
+{
+	handle = xSemaphoreCreateMutex();
+}
+
+Mutex::~Mutex()
+{
+	if (handle) vSemaphoreDelete(handle);
+}
+
+bool Mutex::lock(uint32_t timeout)
+{
+	if (isInsideInterrupt())
+		return (xSemaphoreTakeFromISR(handle, NULL) == pdTRUE);
+	else
+		return (xSemaphoreTake(handle, timeout) == pdTRUE);
+}
+
+void Mutex::unlock()
+{
+	if (isInsideInterrupt())
+		xSemaphoreGiveFromISR(handle, NULL);
+	else
+		xSemaphoreGive(handle);
+}
+
+bool Mutex::isLocked()
+{
+	bool wasNotLocked = lock(0);
+	if (wasNotLocked) {
+		unlock();
+		return false;
+	}
+	return true;
 }
 
 Interrogator::Interrogator(const char* name)

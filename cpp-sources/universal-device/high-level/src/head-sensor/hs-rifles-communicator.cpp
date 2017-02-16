@@ -80,7 +80,7 @@ void WeaponCommunicator::sendSetTeam()
 	m_weaponManager->applyToAny(
 		[this](DeviceAddress addr)
 		{
-			RCSPStream::remotePullValue(
+			RCSPStream::remotePushValue(
 					m_aggregator,
 					m_networkClient,
 					addr,
