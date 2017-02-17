@@ -151,9 +151,10 @@ private:
 class CritialSection
 {
 public:
-	void lock() { taskENTER_CRITICAL(); m_isLocked = true; }
-	void unlock() { taskEXIT_CRITICAL(); m_isLocked = false; }
-	bool isLocked() { return m_isLocked; }
+	~CritialSection();
+	void lock();
+	void unlock();
+	bool isLocked();
 
 private:
 	bool m_isLocked = false;
@@ -311,6 +312,8 @@ public:
 		m_queue.pushBackFromISR(std::forward<WTask>(task));
 	}
 	void setName(const char* name) { m_workerThread.setName(name); }
+
+	unsigned int size() { return m_queue.size(); }
 
 private:
 	void mainLoop();

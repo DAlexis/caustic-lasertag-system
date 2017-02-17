@@ -295,6 +295,40 @@ bool Mutex::isLocked()
 	return true;
 }
 
+///////////////////////////////////
+/// CritialSection
+
+CritialSection::~CritialSection()
+{
+	if (isLocked())
+		unlock();
+}
+
+void CritialSection::lock()
+{
+	if (isInsideInterrupt())
+		taskENTER_CRITICAL_FROM_ISR();
+	else
+		taskENTER_CRITICAL();
+	m_isLocked = true;
+}
+
+void CritialSection::unlock()
+{
+	if (!m_isLocked)
+		return;
+	if (isInsideInterrupt())
+		taskEXIT_CRITICAL_FROM_ISR(0);
+	else
+		taskEXIT_CRITICAL();
+	m_isLocked = false;
+}
+
+bool CritialSection::isLocked()
+{
+	return m_isLocked;
+}
+
 Interrogator::Interrogator(const char* name)
 {
 	m_task.setName(name);
@@ -475,25 +509,25 @@ void Worker::mainLoop()
 
 void * operator new(std::size_t n)
 {
-	ScopedLock<Mutex> lck(Kernel::heapMutex);
+	CritialSection cs; cs.lock();
 	Kernel::heapAllocatedTotal += n;
     return malloc(n);
 }
 void operator delete(void * p)
 {
-	ScopedLock<Mutex> lck(Kernel::heapMutex);
+	CritialSection cs; cs.lock();
     free(p);
 }
 
 void *operator new[](std::size_t n)
 {
-	ScopedLock<Mutex> lck(Kernel::heapMutex);
+	CritialSection cs; cs.lock();
 	Kernel::heapAllocatedTotal += n;
 	return malloc(n);
 }
 
 void operator delete[](void *p) throw()
 {
-	ScopedLock<Mutex> lck(Kernel::heapMutex);
+	CritialSection cs; cs.lock();
     free(p);
 }
