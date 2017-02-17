@@ -59,10 +59,10 @@ private:
 	void configureBluetooth();
 	void receiveNetworkPackage(const DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);
 	void receiveBluetoothOneByteISR(uint8_t byte);
-	void receiveBluetoothPackageISR(uint8_t* buffer, uint16_t size);
+	void receiveBluetoothPackageISR(Bluetooth::Message* msg);
 
-	void sendBluetoothMessage(AnyBuffer* buffer);
-	void sendNetworkPackage(AnyBuffer* buffer);
+	void sendBluetoothMessage(Bluetooth::Message* msg);
+	void sendNetworkPackage(DeviceAddress addr, uint8_t* payload, uint16_t size);
 
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
 	HC05Configurator m_configurator{deviceConfig.deviceName, config.bluetoothPin};

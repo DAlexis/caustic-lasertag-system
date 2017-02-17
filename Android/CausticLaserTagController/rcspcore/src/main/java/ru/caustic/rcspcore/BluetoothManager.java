@@ -10,6 +10,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,37 +28,9 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
 
     public static final int REQUEST_ENABLE_BT = 1;
 
-    private static BluetoothManager ourInstance = new BluetoothManager();
-    private static final String TAG = "CC.BluetoothManager";
-
-    private BluetoothAdapter btAdapter = null;
-    private BluetoothSocket btSocket = null;
-    private ConnectedThread mConnectedThread;
-
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-
-    private String address = "";
-    private String deviceName = "";
-
     public static final int BT_NOT_CONNECTED = 0;
     public static final int BT_ESTABLISHING  = 1;
     public static final int BT_CONNECTED     = 2;
-
-    private int status = BT_NOT_CONNECTED;
-
-    private Handler handler = null;
-
-    private BluetoothManager() {
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-        onConnectionClosed();
-    }
-
-    private void onConnectionClosed()
-    {
-        address = "";
-        deviceName = "Bridge not connected";
-        status = BT_NOT_CONNECTED;
-    }
 
     public static BluetoothManager getInstance() {
         return ourInstance;
@@ -68,8 +41,17 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
     }
 
     @Override
-    public void setRXHandler(Handler handler) {
-        this.handler = handler;
+    public void setListener(BridgeConnector.IBluetoothListener listener) {
+        incomingMsgListener = listener;
+    }
+    @Override
+    public boolean sendData(byte[] message) {
+        if (!isConnected()) {
+            Log.e(TAG, "Attempt to send data without a connection!");
+            return false;
+        }
+        mConnectedThread.write(message);
+        return true;
     }
 
     public Intent getIntentEnable() {
@@ -140,16 +122,6 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
         }
     }
 
-    @Override
-    public boolean sendData(byte[] message) {
-        if (!isConnected()) {
-            Log.e(TAG, "Attempt to send data without a connection!");
-            return false;
-        }
-        mConnectedThread.write(message);
-        return true;
-    }
-
     /* Call this from the main activity to shutdown the connection */
     public void cancel() {
         try {
@@ -161,11 +133,11 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
         return deviceName;
     }
 
-
     public interface ConnectionDoneListener {
         void onConnectionDone(boolean result);
     }
 
+    // Private
     private class AsyncConnect extends Thread {
 
         private final ConnectionDoneListener listener;
@@ -282,19 +254,24 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
 
         public void run() {
             byte[] buffer = new byte[256];  // buffer store for the stream
-            int bytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs
             for (;;) {
                 try {
                     // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
+                    int size = mmInStream.read(buffer);
                     byte toReceiver[] = buffer.clone();
+                    if (incomingMsgListener != null) {
+                        incomingMsgListener.receiveBluetoothMessage(toReceiver, size);
+                    } else {
+                        Log.e(TAG, "Incoming listener is not set!");
+                    }
+                    /*
                     if (handler != null) {
                         handler.obtainMessage(RECEIVE_MESSAGE, bytes, -1, toReceiver).sendToTarget();
                     } else {
                         Log.e(TAG, "Handler is not set!");
-                    }
+                    }*/
 
                 } catch (IOException e) {
                     Log.d(TAG, "run died due to exception!");
@@ -323,4 +300,34 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
             } catch (IOException e) { }
         }
     }
+
+    private BluetoothManager() {
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        onConnectionClosed();
+    }
+
+    private void onConnectionClosed()
+    {
+        address = "";
+        deviceName = "Bridge not connected";
+        status = BT_NOT_CONNECTED;
+    }
+
+    // Private variables
+
+    private static BluetoothManager ourInstance = new BluetoothManager();
+    private static final String TAG = "CC.BluetoothManager";
+
+    private int status = BT_NOT_CONNECTED;
+
+    private BluetoothAdapter btAdapter = null;
+    private BluetoothSocket btSocket = null;
+    private ConnectedThread mConnectedThread;
+
+    private BridgeConnector.IBluetoothListener incomingMsgListener = null;
+
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+
+    private String address = "";
+    private String deviceName = "";
 }

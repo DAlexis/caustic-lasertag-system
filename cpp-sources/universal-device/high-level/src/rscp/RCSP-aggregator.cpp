@@ -61,7 +61,14 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 {
 	uint8_t* position = stream;
 	uint32_t unsupported = 0;
-	while ( (uint32_t) (position - stream) <= size - (sizeof(OperationSize)+sizeof(OperationCode)) )
+	constexpr uint32_t minimalSize = sizeof(OperationSize)+sizeof(OperationCode);
+	if (size < minimalSize)
+	{
+		warning << "Cannot dispatch stream of with size " << size
+				<< "(minimal non-trivial size is " << minimalSize << ")";
+		return 0;
+	}
+	while ( (uint32_t) (position - stream) <= size - minimalSize)
 	{
 		OperationSize *pOperationSize = reinterpret_cast<OperationSize*> (position);
 		position += sizeof(OperationSize);

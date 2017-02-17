@@ -798,7 +798,7 @@ public class RCSProtocol {
             AnyParameterSerializer par = allParameters.get(operation.id);
             if (par != null) {
                 if (operation.argumentSize != par.size()) {
-                    Log.e(TAG, "Invalid argument length " + operation.argumentSize + " instead of " + par.size() + " for operation id " + operation.id);
+                    Log.e(TAG, "Invalid argument totalLength " + operation.argumentSize + " instead of " + par.size() + " for operation id " + operation.id);
                     return 0;
                 }
                 par.deserialize(operation.argument, 0);

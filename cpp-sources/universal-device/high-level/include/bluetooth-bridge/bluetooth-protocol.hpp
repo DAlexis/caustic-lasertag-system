@@ -25,6 +25,9 @@
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_BLUETOOTH_PROTOCOL_HPP_
 
 #include "network/network-base-types.hpp"
+#include "rcsp/RCSP-base-types.hpp"
+#include "core/logging.hpp"
+#include "core/string-utils.hpp"
 
 namespace Bluetooth
 {
@@ -34,14 +37,28 @@ namespace Bluetooth
 	#pragma pack(push, 1)
 		struct Message
 		{
-			constexpr static uint8_t headerLength = sizeof(uint8_t) + sizeof(DeviceAddress);
+			constexpr static uint8_t headerLength =
+					sizeof(uint8_t) + sizeof(uint8_t) + sizeof(DeviceAddress);
+
 			uint8_t length = headerLength;
+			uint8_t checksum = 0;
 			DeviceAddress address;
-			uint8_t data[maxMessageLen - sizeof(length)];
+
+			uint8_t data[maxMessageLen - headerLength];
 
 			uint8_t payloadLength()
 			{
 				return length - headerLength;
+			}
+
+			void print()
+			{
+				debug << "+- BBB Bluetooth message:";
+				debug << "|- target: " << ADDRESS_TO_STREAM(address);
+				debug << "|- length: " << length;
+				debug << "|- checksum: " << checksum;
+				debug << "`- payload: ";
+				printHex(data, length-headerLength);
 			}
 		};
 	#pragma pack(pop)
@@ -55,6 +72,7 @@ namespace Bluetooth
 
 		uint8_t size() { return m_message.length; }
 		void* data() { return &m_message; }
+		Message& msg() {return m_message; }
 
 	private:
 		Message m_message;

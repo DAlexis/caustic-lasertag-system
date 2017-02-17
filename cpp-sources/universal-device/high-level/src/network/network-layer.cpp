@@ -166,6 +166,11 @@ PackageId NetworkLayer::send(
     )
 {
     m_stager.stage("send()");
+    if (size == 0)
+    {
+    	warning << "Sending package with zero size is impossible";
+    	return 0;
+    }
     if (size > Package::payloadLength)
     {
         error << "Error: too long payload!";

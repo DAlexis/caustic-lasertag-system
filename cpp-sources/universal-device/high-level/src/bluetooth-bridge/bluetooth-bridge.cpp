@@ -110,15 +110,16 @@ void BluetoothBridge::receivePackage(DeviceAddress sender, uint8_t* payload, uin
     m_bluetoothMsgCreator.clear();
     m_bluetoothMsgCreator.setSender(std::move(sender));
     m_bluetoothMsgCreator.addData(payloadLength, payload);
-    AnyBuffer* msgBuffer = new AnyBuffer(m_bluetoothMsgCreator.size(), m_bluetoothMsgCreator.data());
+    Bluetooth::Message *msg = new Bluetooth::Message();
+    *msg = m_bluetoothMsgCreator.msg();
     trace << "Bluetooth message to be sent: ";
-    printHex(msgBuffer->data, msgBuffer->size);
+    msg->print();
     m_workerToBluetooth.add(
-        [this, msgBuffer] ()
+        [this, msg] ()
         {
-            sendBluetoothMessage(msgBuffer);
+            sendBluetoothMessage(msg);
             systemClock->wait_us(1000);
-            delete msgBuffer;
+            delete msg;
         }
     );
 }
@@ -166,48 +167,48 @@ void BluetoothBridge::receiveBluetoothOneByteISR(uint8_t byte)
 	if (m_receiver.ready())
 	{
 		//printf("R\n");
-		receiveBluetoothPackageISR(reinterpret_cast<uint8_t*>(&m_receiver.get()), m_receiver.get().length);
+		receiveBluetoothPackageISR(&m_receiver.get());
 		m_receiver.reset();
 	}
 }
 
-void BluetoothBridge::receiveBluetoothPackageISR(uint8_t* buffer, uint16_t size)
+void BluetoothBridge::receiveBluetoothPackageISR(Bluetooth::Message* msg)
 {
-	AnyBuffer* msgBuffer = new AnyBuffer(size, buffer);
+	Bluetooth::Message *msgToSend = new Bluetooth::Message();
+	*msgToSend = *msg;
 	m_workerToNetwork.addFromISR(
-		[this, msgBuffer] ()
+		[this, msgToSend] ()
 		{
 			info << "Incoming bluetooth: ";
-			printHex(msgBuffer->data, msgBuffer->size);
-			sendNetworkPackage(msgBuffer);
-			delete msgBuffer;
+			msgToSend->print();
+			//printHex(m->data, msgBuffer->size);
+			sendNetworkPackage(msgToSend->address, msgToSend->data, msgToSend->payloadLength());
+			delete msgToSend;
 		}
 	);
 }
 
-void BluetoothBridge::sendBluetoothMessage(AnyBuffer* buffer)
+void BluetoothBridge::sendBluetoothMessage(Bluetooth::Message* msg)
 {
 	debug << "Sending bluetooth message";
 	// Transmitting to bluetooth module and waiting while transmit is done
-	m_bluetoothPort->transmit(buffer->data, buffer->size);
+	m_bluetoothPort->transmit(reinterpret_cast<uint8_t*>(msg), msg->length);
 	while (m_bluetoothPort->txBusy()) { }
 }
 
-void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
+void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, uint16_t size)
 {
 	debug << "Sending package to network";
-	// Dispatching bluetooth message
-	Message *bluetoothMessage = reinterpret_cast<Message *>(buffer->data);
-
-	debug << "Bluetooth message for " << ADDRESS_TO_STREAM(bluetoothMessage->address);
+	debug << "target: " << ADDRESS_TO_STREAM(addr);
+	debug << "payload size: " << size;
 	// Sending message body as is
-	if (Broadcast::isBroadcast(bluetoothMessage->address))
+	if (Broadcast::isBroadcast(addr))
 	{
 		// We need special timings for broadcasts
 	    m_networkClient.send(
-                bluetoothMessage->address,
-                bluetoothMessage->data,
-                bluetoothMessage->payloadLength(),
+	    		addr,
+                payload,
+				size,
                 true,
                 nullptr,
                 bluetoothBridgePackageTimings.broadcast
@@ -215,9 +216,9 @@ void BluetoothBridge::sendNetworkPackage(AnyBuffer* buffer)
 	} else {
 	    // Not broadcast packages are with default timings
 	    m_networkClient.send(
-	            bluetoothMessage->address,
-	            bluetoothMessage->data,
-	            bluetoothMessage->payloadLength(),
+	    		addr,
+				payload,
+				size,
 	            true
 	    );
 	}
