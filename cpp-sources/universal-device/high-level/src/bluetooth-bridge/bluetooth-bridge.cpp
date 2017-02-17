@@ -43,6 +43,7 @@ BluetoothBridge::BluetoothBridge()
 void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardOk)
 {
     UNUSED_ARG(pinout);
+    m_bbStager.stage("Init");
     debug << "Bluetooth bridge initialization";
 
     // default address for bluetooth bridge without SD-card
@@ -104,32 +105,6 @@ bool BluetoothBridge::checkPinout(const Pinout& pinout)
 	return true;
 }
 
-void BluetoothBridge::receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
-{
-    debug << "Processing incoming network package";
-    m_bluetoothMsgCreator.clear();
-    m_bluetoothMsgCreator.setSender(std::move(sender));
-    m_bluetoothMsgCreator.addData(payloadLength, payload);
-    Bluetooth::Message *msg = new Bluetooth::Message();
-    *msg = m_bluetoothMsgCreator.msg();
-    trace << "Bluetooth message to be sent: ";
-    msg->print();
-    m_workerToBluetooth.add(
-        [this, msg] ()
-        {
-            sendBluetoothMessage(msg);
-            systemClock->wait_us(1000);
-            delete msg;
-        }
-    );
-}
-
-void BluetoothBridge::connectClient(INetworkClient* client)
-{
-    UNUSED_ARG(client);
-}
-
-
 void BluetoothBridge::configureBluetooth()
 {
 	m_bluetoothPort = UARTs->get(IUARTSPool::UART2);
@@ -161,12 +136,38 @@ void BluetoothBridge::configureBluetooth()
 	m_bluetoothPort->init(HC05Configurator::uartTargetSpeed);
 }
 
+void BluetoothBridge::receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+{
+	m_bbStager.stage("receivePackage");
+    debug << "Processing incoming network package";
+    m_bluetoothMsgCreator.clear();
+    m_bluetoothMsgCreator.setSender(std::move(sender));
+    m_bluetoothMsgCreator.addData(payloadLength, payload);
+    Bluetooth::Message *msg = new Bluetooth::Message();
+    *msg = m_bluetoothMsgCreator.msg();
+    trace << "Bluetooth message to be sent: ";
+    msg->print();
+    m_workerToBluetooth.add(
+        [this, msg] ()
+        {
+    		ScopedLock<Mutex> lck(m_processingMutex);
+            sendBluetoothMessage(msg);
+            systemClock->wait_us(1000);
+            delete msg;
+        }
+    );
+}
+
+void BluetoothBridge::connectClient(INetworkClient* client)
+{
+    UNUSED_ARG(client);
+}
+
 void BluetoothBridge::receiveBluetoothOneByteISR(uint8_t byte)
 {
 	m_receiver.readByte(byte);
 	if (m_receiver.ready())
 	{
-		//printf("R\n");
 		receiveBluetoothPackageISR(&m_receiver.get());
 		m_receiver.reset();
 	}
@@ -179,9 +180,7 @@ void BluetoothBridge::receiveBluetoothPackageISR(Bluetooth::Message* msg)
 	m_workerToNetwork.addFromISR(
 		[this, msgToSend] ()
 		{
-			info << "Incoming bluetooth: ";
-			msgToSend->print();
-			//printHex(m->data, msgBuffer->size);
+			ScopedLock<Mutex> lck(m_processingMutex);
 			sendNetworkPackage(msgToSend->address, msgToSend->data, msgToSend->payloadLength());
 			delete msgToSend;
 		}
@@ -190,7 +189,9 @@ void BluetoothBridge::receiveBluetoothPackageISR(Bluetooth::Message* msg)
 
 void BluetoothBridge::sendBluetoothMessage(Bluetooth::Message* msg)
 {
+	m_bbStager.stage("sendBluetoothMessage");
 	debug << "Sending bluetooth message";
+	msg->print();
 	// Transmitting to bluetooth module and waiting while transmit is done
 	m_bluetoothPort->transmit(reinterpret_cast<uint8_t*>(msg), msg->length);
 	while (m_bluetoothPort->txBusy()) { }
@@ -198,6 +199,7 @@ void BluetoothBridge::sendBluetoothMessage(Bluetooth::Message* msg)
 
 void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, uint16_t size)
 {
+	m_bbStager.stage("sendNetworkPackage");
 	debug << "Sending package to network";
 	debug << "target: " << ADDRESS_TO_STREAM(addr);
 	debug << "payload size: " << size;

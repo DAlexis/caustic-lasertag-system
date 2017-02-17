@@ -186,9 +186,13 @@ void NRF24L01Manager::init(
     m_chipEnablePin = chipEnablePin;
     m_chipSelectPin = chipSelectPin;
     m_IRQPin = IRQPin;
+    m_SPIIndex = SPIIndex;
+	m_useInterrupts = useInterrupts;
+	m_radioChannel = radioChannel;
+
     m_RFChannel = radioChannel;
     m_spi = SPIs->getSPI(SPIIndex);
-    m_spi->init(ISPIManager::BaudRatePrescaler32, chipSelectPin);
+    m_spi->init(ISPIManager::BaudRatePrescaler256, chipSelectPin);
 
     //////////////////////
     // Chip enable line init
@@ -644,13 +648,16 @@ void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 		printHex(data, size);
 	}
     switchToTX();
-    systemClock->wait_us(200); // Strange workaround to prevent hard fault about here. 
+    systemClock->wait_us(200); // Strange workaround to prevent hard fault about here.
                                // If you think that is bad - go and investigate just now.
+                               // It is something near hardware: big spi prescaler decrease fault prob.
     chipSelect();
     m_status = m_spi->TransmitReceive(W_TX_PAYLOAD);
     m_spi->Transmit(data, size);
     chipDeselect();
     CEImpulse();
+    systemClock->wait_us(200);
+    updateStatus();
     m_lastTransmissionTime = systemClock->getTime();
     m_waitingForTransmissionEnd = true;
 }
@@ -742,7 +749,10 @@ void NRF24L01Manager::interrogate()
 	);
 
 	if (!softwareDetectionOfTXDataSent && m_IRQPin->state() == true)
+	{
+		reinitIfNeeded();
 		return;
+	}
 
 	m_stager.stage("IRQ detected");
 
@@ -827,6 +837,24 @@ void NRF24L01Manager::onMaxRetriesReached()
 	resetMaxRetriesReached();
 }
 
+void NRF24L01Manager::reinitIfNeeded()
+{/*
+	Time now = systemClock->getTime();
+	if (now - m_lastReinitTime > reinitPeriod)
+	{
+		m_lastReinitTime = now;
+		radio << "Regular NRF reinit";
+		init(
+			m_chipEnablePin,
+			m_chipSelectPin,
+			m_IRQPin,
+			m_SPIIndex,
+			m_useInterrupts,
+			m_radioChannel
+			);
+		radio << "Regular NRF reinit done";
+	}*/
+}
 
 ////////////////////
 // Interrupts handling

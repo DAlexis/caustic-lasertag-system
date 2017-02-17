@@ -82,7 +82,12 @@ public class DevicesListFragment extends Fragment {
                     adapter.addItem(new DevicesListElementHolder(entry.getValue()));
                 }
 
-                adapter.notifyDataSetChanged();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
         devicesManager.updateDevicesList();

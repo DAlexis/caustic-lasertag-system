@@ -197,8 +197,16 @@ PackageId NetworkLayer::send(
     {
         Time time = systemClock->getTime();
         details.needAck = 1;
+		uint32_t s = m_packages.size();
+	    radio << "Ack-needed packages map size = " << s;
+	    if (s >= maxPackagesQueueSize)
+	    {
+	    	error << "Packages queue is full! Skipping package!";
+	    	return 0;
+	    }
         ScopedLock<Mutex> lock(m_packagesQueueMutex);
         m_stager.stage("send(): +ack lock");
+
         m_packages[details.packageId] = WaitingPackage();
         WaitingPackage& waitingPackage = m_packages[details.packageId];
         waitingPackage.wasCreated = time;
@@ -221,6 +229,13 @@ PackageId NetworkLayer::send(
         m_stager.stage("send(): +ack queued");
         return details.packageId;
     } else {
+		uint32_t s = m_packagesNoAck.size();
+		radio << "No ack packages queue size = " << s;
+		if (s >= maxPackagesQueueSize)
+		{
+			error << "Packages queue is full! Skipping package!";
+			return 0;
+		}
         ScopedLock<Mutex> lock(m_packagesQueueMutex);
         m_stager.stage("send(): -ack lock");
         m_packagesNoAck.push_back(Package());

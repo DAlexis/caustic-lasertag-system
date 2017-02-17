@@ -26,8 +26,10 @@
 
 #include "network/network-base-types.hpp"
 #include "rcsp/RCSP-base-types.hpp"
+#include "rcsp/base-types.hpp"
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
+#include "hal/system-clock.hpp"
 
 namespace Bluetooth
 {
@@ -81,6 +83,7 @@ namespace Bluetooth
 	class MessageReceiver
 	{
 	public:
+		constexpr static TimeInterval timeout = 10000;
 		MessageReceiver();
 		void reset();
 		void readByte(uint8_t byte);
@@ -90,6 +93,7 @@ namespace Bluetooth
 	private:
 		Message m_message;
 		uint16_t m_offset = 0;
+		Time m_lastReceive = 0;
 	};
 }
 

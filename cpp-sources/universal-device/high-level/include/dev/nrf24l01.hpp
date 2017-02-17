@@ -82,6 +82,8 @@ public:
     void enableDebug(bool debug = true);
 
 private:
+    constexpr static Time reinitPeriod = 10000000;
+
     enum Power
 	{
 		POWER_OFF = 0,
@@ -225,10 +227,15 @@ private:
 	void onTXDataSent();
 	void onMaxRetriesReached();
 
+	void reinitIfNeeded();
+
 	IIOPin* m_chipEnablePin = nullptr;
 	IIOPin* m_chipSelectPin = nullptr;
 	IIOPin* m_IRQPin = nullptr;
-	IIOPin* m_NSSPin = nullptr;
+
+	uint8_t m_SPIIndex = 0;
+	uint8_t m_radioChannel = 1;
+
 	ISPIManager* m_spi = nullptr;
 
 	bool m_useInterrupts = false;
@@ -254,6 +261,8 @@ private:
 	bool m_waitingForTransmissionEnd = false;
 
 	bool m_debug = false;
+
+	Time m_lastReinitTime = 0;
 
 	Stager m_stager{"NRF24L01Manager", 1000000};
 };

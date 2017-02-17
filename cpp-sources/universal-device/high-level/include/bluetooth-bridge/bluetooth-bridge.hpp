@@ -26,6 +26,7 @@
 #include "bluetooth-bridge/bluetooth-protocol.hpp"
 #include "bluetooth-bridge/hc05-configurator.hpp"
 #include "core/device-initializer.hpp"
+#include "core/diagnostic.hpp"
 #include "hal/uart.hpp"
 #include "core/os-wrappers.hpp"
 #include "network/network-client.hpp"
@@ -74,4 +75,7 @@ private:
 	Worker m_workerToNetwork{30};
 	Bluetooth::MessageReceiver m_receiver;
 	TasksPool m_tasksPool{"BtBrPool"};
+	Mutex m_processingMutex;
+
+	Stager m_bbStager{"BBStager"};
 };

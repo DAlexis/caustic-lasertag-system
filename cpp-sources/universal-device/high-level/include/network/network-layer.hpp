@@ -158,6 +158,7 @@ private:
 
 	constexpr static uint32_t lastReceivedIdsBufferSize = 30;
 	constexpr static uint32_t NRFReinitPeriod = 5000000;
+	constexpr static uint32_t maxPackagesQueueSize = 40;
 
 	void interrogate();
 	uint16_t generatePackageId();

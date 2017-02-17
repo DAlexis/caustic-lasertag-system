@@ -56,6 +56,21 @@ MessageReceiver::MessageReceiver()
 void MessageReceiver::readByte(uint8_t byte)
 {
 	uint8_t* p = reinterpret_cast<uint8_t*>(&m_message);
+
+	Time now = systemClock->getTime();
+
+	if (m_offset == sizeof(Message))
+	{
+		m_lastReceive = now;
+		return;
+	}
+
+	if (now - m_lastReceive > timeout)
+	{
+		reset();
+	}
+
+	m_lastReceive = now;
 	p[m_offset++] = byte;
 }
 
