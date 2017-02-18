@@ -68,8 +68,7 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
     m_workerToNetwork.setStackSize(512);
     m_workerToNetwork.run();
 
-    m_workerToBluetooth.setStackSize(200);
-    m_workerToBluetooth.run();
+    m_toBluetoothTask.run();
 
     configureBluetooth();
 }
@@ -143,19 +142,15 @@ void BluetoothBridge::receivePackage(DeviceAddress sender, uint8_t* payload, uin
     m_bluetoothMsgCreator.clear();
     m_bluetoothMsgCreator.setSender(std::move(sender));
     m_bluetoothMsgCreator.addData(payloadLength, payload);
+    m_bluetoothMsgCreator.msg().setChecksum();
     Bluetooth::Message *msg = new Bluetooth::Message();
     *msg = m_bluetoothMsgCreator.msg();
-    trace << "Bluetooth message to be sent: ";
-    msg->print();
-    m_workerToBluetooth.add(
-        [this, msg] ()
-        {
-    		ScopedLock<Mutex> lck(m_processingMutex);
-            sendBluetoothMessage(msg);
-            systemClock->wait_us(1000);
-            delete msg;
-        }
-    );
+
+
+    ScopedLock<Mutex> lck(m_messagesToBluetoothMutex);
+    m_messagesToBluetooth.push(msg);
+	lck.unlock();
+	debug << "To bluetooth queue size = " << m_messagesToBluetooth.size();
 }
 
 void BluetoothBridge::connectClient(INetworkClient* client)
@@ -168,6 +163,7 @@ void BluetoothBridge::receiveBluetoothOneByteISR(uint8_t byte)
 	m_receiver.readByte(byte);
 	if (m_receiver.ready())
 	{
+		m_bbStager.stage("receiver ready");
 		receiveBluetoothPackageISR(&m_receiver.get());
 		m_receiver.reset();
 	}
@@ -175,13 +171,16 @@ void BluetoothBridge::receiveBluetoothOneByteISR(uint8_t byte)
 
 void BluetoothBridge::receiveBluetoothPackageISR(Bluetooth::Message* msg)
 {
+	if (!msg->isChecksumCorrect())
+		return;
+
 	Bluetooth::Message *msgToSend = new Bluetooth::Message();
 	*msgToSend = *msg;
 	m_workerToNetwork.addFromISR(
 		[this, msgToSend] ()
 		{
-			ScopedLock<Mutex> lck(m_processingMutex);
-			sendNetworkPackage(msgToSend->address, msgToSend->data, msgToSend->payloadLength());
+			//ScopedLock<Mutex> lck(m_processingMutex);
+			sendNetworkPackage(msgToSend->address, msgToSend->payload, msgToSend->payloadLength());
 			delete msgToSend;
 		}
 	);
@@ -224,4 +223,29 @@ void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, u
 	            true
 	    );
 	}
+}
+
+void BluetoothBridge::toBluetoothTask()
+{
+	for (;;)
+	{
+		if (m_messagesToBluetooth.empty())
+		{
+			Kernel::yield();
+			continue;
+		}
+
+		ScopedLock<Mutex> lck(m_messagesToBluetoothMutex);
+		Bluetooth::Message* msg = m_messagesToBluetooth.front();
+		m_messagesToBluetooth.pop();
+		lck.unlock();
+
+		sendBluetoothMessage(msg);
+		delete msg;
+	}
+}
+
+void BluetoothBridge::toNetworkTask()
+{
+
 }

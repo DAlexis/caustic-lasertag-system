@@ -182,8 +182,7 @@ void IRPresentationReceiverMT2::setDamageCoefficient(const FloatParameter* coeff
 
 void IRPresentationReceiverMT2::receiverCallback(const uint8_t* data, uint16_t size)
 {
-	debug << "IR receiver has data: ";
-	printHex(data, size);
+	debug << "IR receiver has data: " << hexStr(data, size);
 	enableVibro();
 	// If shot
 	if ((data[0] & ~MT2Extended::Byte1::shotMask) == 0)

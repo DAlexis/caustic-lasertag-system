@@ -196,24 +196,46 @@ int _write(int file, char *ptr, int len)
     switch (file)
     {
     case STDOUT_FILENO: /*stdout*/
+
+    	lockOutputPort();
+
 #ifdef USE_USB_DEBUG_OUTPUT
     	CDC_Transmit_FS(ptr, len);
 #endif
 #ifdef USE_UART_DEBUG_OUTPUT
         HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, HAL_MAX_DELAY);
 #endif
+
+        unlockOutputPort();
+
         break;
     case STDERR_FILENO: /* stderr */
+
+    	lockOutputPort();
+
 #ifdef USE_USB_DEBUG_OUTPUT
     	CDC_Transmit_FS(ptr, len);
 #endif
 #ifdef USE_UART_DEBUG_OUTPUT
         HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, HAL_MAX_DELAY);
 #endif
+
+        unlockOutputPort();
+
         break;
     default:
         errno = EBADF;
         return -1;
     }
     return len;
+}
+
+void __attribute__((weak)) lockOutputPort()
+{
+	// This function may be implemented anywhere
+}
+
+void __attribute__((weak)) unlockOutputPort()
+{
+	// This function may be implemented anywhere
 }

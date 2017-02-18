@@ -192,7 +192,7 @@ void NRF24L01Manager::init(
 
     m_RFChannel = radioChannel;
     m_spi = SPIs->getSPI(SPIIndex);
-    m_spi->init(ISPIManager::BaudRatePrescaler256, chipSelectPin);
+    m_spi->init(ISPIManager::BaudRatePrescaler32, chipSelectPin);
 
     //////////////////////
     // Chip enable line init
@@ -330,7 +330,6 @@ void NRF24L01Manager::CEImpulse()
 void NRF24L01Manager::writeReg(unsigned char reg, unsigned char size, unsigned char *data)
 {
     chipSelect();
-	//HAL_SPI_TransmitReceive
     m_status = m_spi->TransmitReceive(W_REGISTER(reg));
     if (size != 0) m_spi->Transmit(data, size);
     chipDeselect();
@@ -643,9 +642,7 @@ void NRF24L01Manager::sendData(unsigned char size, unsigned char* data)
 {
 	if (m_debug)
 	{
-		trace << "nrf24l01 package >>>\n";
-		printf("\t");
-		printHex(data, size);
+		trace << "nrf24l01 package >> " << hexStr(data, size);
 	}
     switchToTX();
     systemClock->wait_us(200); // Strange workaround to prevent hard fault about here.
@@ -808,8 +805,7 @@ void NRF24L01Manager::onRXDataReady()
 		receiveData(payloadSize, data); // This updates m_status value
 		if (m_debug)
 		{
-			trace << "nrf24l01 package <<<\n";
-			printHex(data, payloadSize);
+			trace << "nrf24l01 package << " << hexStr(data, payloadSize);
 		}
 		if (m_RXcallback == nullptr) {
 			printf("Warning: Callback is not set! RX data from pipe %d: \n", pipe);

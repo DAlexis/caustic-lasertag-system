@@ -26,13 +26,16 @@
 #include "fatfs.h"
 #include <string.h>
 
-void printHex(const uint8_t* buffer, size_t size)
+const std::string hexStr(const uint8_t* buffer, size_t size)
 {
+	std::string result;
+	char buf[7];
 	for (size_t i=0; i<size; i++)
 	{
-		printf("%x ", buffer[i]);
+		sprintf(buf, "%x ", buffer[i]);
+		result += buf;
 	}
-	printf("\n");
+	return result;
 }
 
 void formatTime(char* buffer, uint16_t min, uint16_t sec)

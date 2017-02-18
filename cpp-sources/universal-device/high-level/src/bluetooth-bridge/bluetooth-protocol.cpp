@@ -27,6 +27,53 @@
 
 using namespace Bluetooth;
 
+/////////////////////
+// Message
+Message::Message()
+{
+	memset(payload, 0, sizeof(payload[0])*payloadMaxLen);
+}
+
+uint8_t Message::payloadLength()
+{
+	return length - headerLength;
+}
+
+void Message::print()
+{
+	trace << "+- BBB Bluetooth message:";
+	trace << "|- target: " << ADDRESS_TO_STREAM(address);
+	trace << "|- length: " << length;
+	trace << "|- checksum: " << checksum;
+	trace << "`- payload: ";
+	trace << hexStr(payload, length-headerLength);
+}
+
+void Message::setChecksum()
+{
+	checksum = getChecksum();
+}
+
+uint8_t Message::getChecksum()
+{
+	uint8_t result = 0;
+	result += length;
+	result += address.address[0];
+	result += address.address[1];
+	result += address.address[2];
+	for (int i=0; i<payloadLength(); i++)
+		result += payload[i];
+	return result;
+}
+
+bool Message::isChecksumCorrect()
+{
+	return checksum == getChecksum();
+}
+
+
+/////////////////////
+// MessageCreator
 void MessageCreator::setSender(const DeviceAddress&& sender)
 {
 	m_message.address = sender;
@@ -37,7 +84,7 @@ bool MessageCreator::addData(uint8_t size, const uint8_t* data)
 	if (maxMessageLen - m_message.length < size)
 		return false;
 
-	memcpy(&(m_message.data[m_message.length-m_message.headerLength]), data, size);
+	memcpy(&(m_message.payload[m_message.length-m_message.headerLength]), data, size);
 	m_message.length += size;
 
 	return true;
@@ -59,15 +106,15 @@ void MessageReceiver::readByte(uint8_t byte)
 
 	Time now = systemClock->getTime();
 
+	if (now - m_lastReceive > timeout)
+	{
+		reset();
+	}
+
 	if (m_offset == sizeof(Message))
 	{
 		m_lastReceive = now;
 		return;
-	}
-
-	if (now - m_lastReceive > timeout)
-	{
-		reset();
 	}
 
 	m_lastReceive = now;

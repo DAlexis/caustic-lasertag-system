@@ -29,8 +29,12 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stddef.h>
 
-void printHex(const uint8_t* buffer, size_t size);
+#include <string>
+
+const std::string hexStr(const uint8_t* buffer, size_t size);
+
 void formatTime(char* buffer, uint16_t min, uint16_t sec);
 const char* parseFRESULT(int res);
 

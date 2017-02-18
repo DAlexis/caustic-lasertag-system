@@ -24,6 +24,7 @@
 
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
+#include "newlib-driver.h"
 #include <stdio.h>
 #include <string.h>
 #include <algorithm>
@@ -153,4 +154,19 @@ void Logger::enable(bool enabled)
 bool Logger::isEnabled()
 {
 	return m_enabled;
+}
+
+extern "C" {
+	void lockOutputPort()
+	{
+		/// @todo implement it
+		/*if (Loggers::isInitialized())
+			Loggers::loggersMutex.lock();*/
+	}
+
+	void unlockOutputPort()
+	{
+		/*if (Loggers::isInitialized())
+			Loggers::loggersMutex.unlock();*/
+	}
 }

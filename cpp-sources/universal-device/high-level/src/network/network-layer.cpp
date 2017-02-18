@@ -280,8 +280,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 
 	if (trace.isEnabled() && radio.isEnabled())
 	{
-		trace << "<== incoming package: ";
-		printHex((const uint8_t*) &received, sizeof(received));
+		trace << "<== incoming package: " << hexStr((const uint8_t*) &received, sizeof(received));
 	}
 	// Dispatching if this is acknoledgement
 	AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(received.payload);
@@ -357,7 +356,7 @@ void NetworkLayer::interrogate()
 	sendNext();
 	m_rfPhysicalDevice->interrogate();
 	receiveIncoming();
-
+/*
 	if ((systemClock->getTime() - m_lastNRFReinitializationTime) > NRFReinitPeriod)
 	{
 		if (m_debug)
@@ -371,7 +370,7 @@ void NetworkLayer::interrogate()
 		}
 		m_lastNRFReinitializationTime = systemClock->getTime();
 	}
-
+*/
 
 	/// @todo Remove comment below after some time
 	/*
@@ -523,8 +522,7 @@ void NetworkLayer::printAndSend(Package& package)
 	m_stager.stage("printAndSend()");
 	if (trace.isEnabled() && radio.isEnabled())
 	{
-		trace << "payload: ";
-		printHex((const uint8_t*) &package, Package::packageLength);
+		trace << "payload to physical: " << hexStr((const uint8_t*) &package, Package::packageLength);
 	}
 	m_rfPhysicalDevice->sendData(Package::packageLength, (uint8_t*) &package);
 }

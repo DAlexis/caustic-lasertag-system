@@ -211,7 +211,29 @@ public class BridgeConnector {
             return message;
         }
 
-        void setProperChecksum() {}
+        void setProperChecksum() {
+            checksum = getChecksum();
+        }
+
+        int getChecksum()
+        {
+            int result = 0;
+            result += totalLength;
+            result += address.address[0];
+            result += address.address[1];
+            result += address.address[2];
+            result %= 256;
+            for (int i=0; i<payloadLength(); i++) {
+                result += payload[i];
+            }
+            result %= 256;
+            return result;
+        }
+
+        boolean isChecksumCorrect()
+        {
+            return checksum == getChecksum();
+        }
 
         void setPayload(byte[] data, int size) {
             totalLength = headerSize + size;
@@ -239,7 +261,8 @@ public class BridgeConnector {
         for (int i = 0; i < size; i++) {
             incoming.add(buffer[i]);
             if (msg.parse(incoming)) {
-                packagesReceiver.getData(msg.address, msg.payload, 0, msg.payloadLength());
+                if (msg.isChecksumCorrect())
+                    packagesReceiver.getData(msg.address, msg.payload, 0, msg.payloadLength());
                 resetReceiver();
             }
         }

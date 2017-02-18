@@ -41,27 +41,19 @@ namespace Bluetooth
 		{
 			constexpr static uint8_t headerLength =
 					sizeof(uint8_t) + sizeof(uint8_t) + sizeof(DeviceAddress);
+			constexpr static uint8_t payloadMaxLen = maxMessageLen - headerLength;
+
+			Message();
+			uint8_t payloadLength();
+			void print();
+			void setChecksum();
+			uint8_t getChecksum();
+			bool isChecksumCorrect();
 
 			uint8_t length = headerLength;
 			uint8_t checksum = 0;
 			DeviceAddress address;
-
-			uint8_t data[maxMessageLen - headerLength];
-
-			uint8_t payloadLength()
-			{
-				return length - headerLength;
-			}
-
-			void print()
-			{
-				debug << "+- BBB Bluetooth message:";
-				debug << "|- target: " << ADDRESS_TO_STREAM(address);
-				debug << "|- length: " << length;
-				debug << "|- checksum: " << checksum;
-				debug << "`- payload: ";
-				printHex(data, length-headerLength);
-			}
+			uint8_t payload[payloadMaxLen];
 		};
 	#pragma pack(pop)
 
@@ -83,7 +75,7 @@ namespace Bluetooth
 	class MessageReceiver
 	{
 	public:
-		constexpr static TimeInterval timeout = 10000;
+		constexpr static TimeInterval timeout = 1000;
 		MessageReceiver();
 		void reset();
 		void readByte(uint8_t byte);

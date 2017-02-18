@@ -16,6 +16,9 @@
 
 extern int freeHeap;
 
+void lockOutputPort();
+void unlockOutputPort();
+
 #ifdef __cplusplus
     }
 #endif

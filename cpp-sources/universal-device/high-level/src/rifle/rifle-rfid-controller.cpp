@@ -112,8 +112,7 @@ void RifleRFIDController::onCardReaded(uint8_t* buffer, uint16_t size)
 		return;
 
 	info << "Processing data from RFID card...";
-	if (debug.isEnabled())
-		printHex(buffer, size);
+	debug << "data: " << hexStr(buffer, size);
 
 	m_callback(m_mode);
 	m_aggregator.dispatchStream(buffer, size);

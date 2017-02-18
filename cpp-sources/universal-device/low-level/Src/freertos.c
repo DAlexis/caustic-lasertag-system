@@ -118,7 +118,7 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   osDelay(1000);
-  printf("Hello from new caustic device (in the future...)\n");
+  printf("\n\nHello from caustic device\n");
   highLevelEntryPoint();
   vTaskDelete(NULL);
 /*

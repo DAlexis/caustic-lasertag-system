@@ -86,9 +86,11 @@ protected:
 class TaskOnce : public TaskBase
 {
 public:
-	TaskOnce(const STask& task = nullptr) :
+	TaskOnce(const STask& task = nullptr, uint16_t stackSize = 128) :
 		TaskBase(task)
-	{ }
+	{
+		setStackSize(stackSize);
+	}
 	bool run(STime delay = 0, osPriority priority = osPriorityNormal);
 
 private:

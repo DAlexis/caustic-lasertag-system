@@ -32,6 +32,8 @@
 #include "network/network-client.hpp"
 #include "utils/memory.hpp"
 
+#include <queue>
+
 class BluetoothBridgePackageTimings
 {
 public:
@@ -64,16 +66,23 @@ private:
 
 	void sendBluetoothMessage(Bluetooth::Message* msg);
 	void sendNetworkPackage(DeviceAddress addr, uint8_t* payload, uint16_t size);
+	void toBluetoothTask();
+	void toNetworkTask();
 
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
 	HC05Configurator m_configurator{deviceConfig.deviceName, config.bluetoothPin};
 
 	IUARTManager* m_bluetoothPort = nullptr;
 
+	Mutex m_messagesToBluetoothMutex;
+	std::queue<Bluetooth::Message*> m_messagesToBluetooth;
+	TaskOnce m_toBluetoothTask{ [this](){ toBluetoothTask(); }, 256 };
+	//TaskOnce m_toNetworkTask{ [this](){ toNetworkTask(); }, 512 };
+
 	/// @todo Queues should be as large as possible, so need to increase its size
- 	Worker m_workerToBluetooth{30};
 	Worker m_workerToNetwork{30};
 	Bluetooth::MessageReceiver m_receiver;
+
 	TasksPool m_tasksPool{"BtBrPool"};
 	Mutex m_processingMutex;
 
