@@ -859,7 +859,7 @@ void NRF24L01Manager::extiHandler(bool state)
 	//info << "NRF24l01 IRQ! state: " << state;
 	if (true == state)
 		return;
-
+/*
 	updateStatus();
 	/// @todo Create function with code below
 	if (isTXDataSent())
@@ -871,7 +871,7 @@ void NRF24L01Manager::extiHandler(bool state)
 			printf("TX done; no cb\n");
 		} else
 			m_TXDoneCallback();
-	}
+	}*/
 	m_needInterrogation = true;
 }
 

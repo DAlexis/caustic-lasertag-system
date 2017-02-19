@@ -70,22 +70,14 @@ public:
 	{
 		if (m_enabled)
 		{
-			ScopedLock<Mutex> lock(Loggers::loggersMutex);
-			_write(STDOUT_FILENO, (char*)"\n[", 2);
-			_write(STDOUT_FILENO, (char*)m_loggerName, strlen(m_loggerName));
-			_write(STDOUT_FILENO, (char*)"] ", 2);
-			for (auto it = Loggers::tags.begin(); it != Loggers::tags.end(); it++)
-			{
-			    _write(STDOUT_FILENO, (char*)*it, strlen(*it));
-			    _write(STDOUT_FILENO, (char*)"|", 1);
-			}
-			_write(STDOUT_FILENO, (char*)" ", 1);
+			writePrefix();
 		}
 
 		return m_unnamedLogger << data;
 	}
 
 private:
+	void writePrefix();
 	struct LoggerUnnamed
 	{
 		constexpr static unsigned int numbersBufferSize = 30;

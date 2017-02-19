@@ -148,6 +148,7 @@ public:
 	bool isLocked();
 private:
 	xSemaphoreHandle handle = nullptr;
+	bool m_locked = false;
 };
 
 class CritialSection
@@ -180,7 +181,7 @@ public:
 	inline void unlock()
 	{
 		if (m_mutex.isLocked())
-		m_mutex.unlock();
+			m_mutex.unlock();
 	}
 
 private:
@@ -335,6 +336,7 @@ public:
 	int getTasksCount();
 
 	void assert(bool shouldBeTrue, const char* message);
+	uint32_t getCurrentTaskId();
 
 	SINGLETON_IN_CLASS(Kernel);
 

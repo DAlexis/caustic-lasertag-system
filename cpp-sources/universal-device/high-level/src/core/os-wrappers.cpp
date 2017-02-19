@@ -32,6 +32,8 @@ uint32_t Kernel::heapAllocatedTotal = 0;
 
 Mutex Kernel::heapMutex;
 
+extern "C" void *pxCurrentTCB;
+
 SINGLETON_IN_CPP(Kernel)
 
 void Kernel::run()
@@ -64,6 +66,11 @@ void Kernel::assert(bool shouldBeTrue, const char* message)
 		/// @todo Add here code to stop FreeRTOS
 	}
 	for (;;) ;
+}
+
+uint32_t Kernel::getCurrentTaskId()
+{
+	return reinterpret_cast<uint32_t>(pxCurrentTCB);
 }
 
 void TaskOnce::runTaskOnce(void const* pTask)
@@ -275,6 +282,7 @@ bool Mutex::lock(uint32_t timeout)
 		return (xSemaphoreTakeFromISR(handle, NULL) == pdTRUE);
 	else
 		return (xSemaphoreTake(handle, timeout) == pdTRUE);
+	m_locked = true;
 }
 
 void Mutex::unlock()
@@ -283,6 +291,7 @@ void Mutex::unlock()
 		xSemaphoreGiveFromISR(handle, NULL);
 	else
 		xSemaphoreGive(handle);
+	m_locked = false;
 }
 
 bool Mutex::isLocked()

@@ -65,8 +65,9 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
     initNetworkClient();
     m_networkClient.connectPackageReceiver(this);
 
+    /*
     m_workerToNetwork.setStackSize(512);
-    m_workerToNetwork.run();
+    m_workerToNetwork.run();*/
 
     m_toBluetoothTask.run();
 
@@ -146,11 +147,16 @@ void BluetoothBridge::receivePackage(DeviceAddress sender, uint8_t* payload, uin
     Bluetooth::Message *msg = new Bluetooth::Message();
     *msg = m_bluetoothMsgCreator.msg();
 
+    debug << "To bluetooth queue size = " << m_messagesToBluetooth.size();
+    {
+    	ScopedLock<Mutex> lck(m_messagesToBluetoothMutex);
+    	m_messagesToBluetooth.push(msg);
+    	//debug << "To bluetooth queue size = " << m_messagesToBluetooth.size();
+    }
 
-    ScopedLock<Mutex> lck(m_messagesToBluetoothMutex);
-    m_messagesToBluetooth.push(msg);
-	lck.unlock();
-	debug << "To bluetooth queue size = " << m_messagesToBluetooth.size();
+	//delete msg;
+
+
 }
 
 void BluetoothBridge::connectClient(INetworkClient* client)
@@ -176,6 +182,10 @@ void BluetoothBridge::receiveBluetoothPackageISR(Bluetooth::Message* msg)
 
 	Bluetooth::Message *msgToSend = new Bluetooth::Message();
 	*msgToSend = *msg;
+	// No need in synchronization primitive: we are in interrupt
+	m_messagesToNetwork.push(msgToSend);
+
+	/*
 	m_workerToNetwork.addFromISR(
 		[this, msgToSend] ()
 		{
@@ -183,7 +193,7 @@ void BluetoothBridge::receiveBluetoothPackageISR(Bluetooth::Message* msg)
 			sendNetworkPackage(msgToSend->address, msgToSend->payload, msgToSend->payloadLength());
 			delete msgToSend;
 		}
-	);
+	);*/
 }
 
 void BluetoothBridge::sendBluetoothMessage(Bluetooth::Message* msg)
@@ -229,19 +239,38 @@ void BluetoothBridge::toBluetoothTask()
 {
 	for (;;)
 	{
-		if (m_messagesToBluetooth.empty())
+		if (m_messagesToBluetooth.empty() && m_messagesToNetwork.empty())
 		{
 			Kernel::yield();
 			continue;
 		}
 
-		ScopedLock<Mutex> lck(m_messagesToBluetoothMutex);
-		Bluetooth::Message* msg = m_messagesToBluetooth.front();
-		m_messagesToBluetooth.pop();
-		lck.unlock();
+		// Sending to bluetooth
+		if (!m_messagesToBluetooth.empty())
+		{
+			Bluetooth::Message* msg = nullptr;
+			{
+				ScopedLock<Mutex> lck(m_messagesToBluetoothMutex);
+				msg = m_messagesToBluetooth.front();
+				m_messagesToBluetooth.pop();
+			}
 
-		sendBluetoothMessage(msg);
-		delete msg;
+			sendBluetoothMessage(msg);
+			delete msg;
+		}
+
+		// Sending to network
+		if (!m_messagesToNetwork.empty())
+		{
+			// Critical section to prevent entering interrupt here
+			CritialSection cs; cs.lock();
+				Bluetooth::Message* msg = m_messagesToNetwork.front();
+				m_messagesToNetwork.pop();
+			cs.unlock();
+
+			sendNetworkPackage(msg->address, msg->payload, msg->payloadLength());
+			delete msg;
+		}
 	}
 }
 

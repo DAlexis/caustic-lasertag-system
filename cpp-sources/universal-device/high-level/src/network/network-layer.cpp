@@ -180,6 +180,8 @@ PackageId NetworkLayer::send(
     INetworkClient* localReceiverClient = findClient(target);
     if (localReceiverClient && localReceiverClient != doNotReceiveBy)
     {
+    	if (radio.isEnabled())
+    		trace << "Forwarding to local receiver client, target = " << ADDRESS_TO_STREAM(target);
         localReceiverClient->getReceiver()
                 (sender, data, size);
 
@@ -190,6 +192,12 @@ PackageId NetworkLayer::send(
         }
     }
 
+    if (!hasFreeSpaceInQueues())
+	{
+		error << "Packages queue is full! Skipping package!";
+		return 0;
+	}
+
     PackageDetails details;
     details.packageId = generatePackageId();
 
@@ -197,18 +205,12 @@ PackageId NetworkLayer::send(
     {
         Time time = systemClock->getTime();
         details.needAck = 1;
-		uint32_t s = m_packages.size();
-	    radio << "Ack-needed packages map size = " << s;
-	    if (s >= maxPackagesQueueSize)
-	    {
-	    	error << "Packages queue is full! Skipping package!";
-	    	return 0;
-	    }
+
         ScopedLock<Mutex> lock(m_packagesQueueMutex);
         m_stager.stage("send(): +ack lock");
 
-        m_packages[details.packageId] = WaitingPackage();
-        WaitingPackage& waitingPackage = m_packages[details.packageId];
+        m_waitingPackagesWithAck[details.packageId] = WaitingPackage();
+        WaitingPackage& waitingPackage = m_waitingPackagesWithAck[details.packageId];
         waitingPackage.wasCreated = time;
         waitingPackage.nextTransmission = time;
         waitingPackage.isBroadcast = Broadcast::isBroadcast(target);
@@ -229,23 +231,16 @@ PackageId NetworkLayer::send(
         m_stager.stage("send(): +ack queued");
         return details.packageId;
     } else {
-		uint32_t s = m_packagesNoAck.size();
-		radio << "No ack packages queue size = " << s;
-		if (s >= maxPackagesQueueSize)
-		{
-			error << "Packages queue is full! Skipping package!";
-			return 0;
-		}
         ScopedLock<Mutex> lock(m_packagesQueueMutex);
         m_stager.stage("send(): -ack lock");
-        m_packagesNoAck.push_back(Package());
-        m_packagesNoAck.back().sender = sender;
-        m_packagesNoAck.back().target = target;
-        m_packagesNoAck.back().details = details;
-        memcpy(m_packagesNoAck.back().payload, data, size);
+        m_waitingPackagesNoAck.push_back(Package());
+        m_waitingPackagesNoAck.back().sender = sender;
+        m_waitingPackagesNoAck.back().target = target;
+        m_waitingPackagesNoAck.back().details = details;
+        memcpy(m_waitingPackagesNoAck.back().payload, data, size);
         if (size<Package::payloadLength)
         {
-            memset(m_packagesNoAck.back().payload+size, 0, Package::payloadLength-size); //< fixed third argument
+            memset(m_waitingPackagesNoAck.back().payload+size, 0, Package::payloadLength-size); //< fixed third argument
         }
         m_stager.stage("send(): -ack queued");
         //trace << "No-ack package queued";
@@ -288,8 +283,8 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 	{
 		radio << "<== Ack for " << ackDispatcher->packageId << " from " << ADDRESS_TO_STREAM(received.sender);
 		ScopedLock<Mutex> lock(m_packagesQueueMutex);
-		auto it = m_packages.find(ackDispatcher->packageId);
-		if (it == m_packages.end())
+		auto it = m_waitingPackagesWithAck.find(ackDispatcher->packageId);
+		if (it == m_waitingPackagesWithAck.end())
 		{
 			radio << "?=? No package with id " << ackDispatcher->packageId << " waiting ack";
 			// No packages waiting this ack
@@ -299,7 +294,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 		if (!it->second.isBroadcast)
 		{
 			PackageSendingDoneCallback callback = it->second.callback;
-			m_packages.erase(it);
+			m_waitingPackagesWithAck.erase(it);
 			if (callback)
 				callback(ackDispatcher->packageId, true);
 		} else {
@@ -324,7 +319,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 		memset(ack.payload+sizeof(ackPayload), 0, ack.payloadLength - sizeof(ackPayload));
 		ScopedLock<Mutex> lock(m_packagesQueueMutex);
 		// Adding ack package to list for sending
-		m_packagesNoAck.push_back(ack);
+		m_waitingPackagesNoAck.push_back(ack);
 	}
 
 	if (checkIfIdStoredAndStore(received.details.packageId))
@@ -398,21 +393,21 @@ void NetworkLayer::sendNext()
 	}
 	ScopedLock<Mutex> lock(m_packagesQueueMutex);
 	// First, sending packages without response
-	if (!m_packagesNoAck.empty())
+	if (!m_waitingPackagesNoAck.empty())
 	{
 		m_stager.stage("sendNext(): sending no ack");
 		// If it is ack (only for output, may be removed by #ifdef DEBUG later)
-		AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(m_packagesNoAck.front().payload);
+		AckPayload *ackDispatcher = reinterpret_cast<AckPayload *>(m_waitingPackagesNoAck.front().payload);
 		if (ackDispatcher->isAck())
 		{
-			radio << "==> Ack to " << ackDispatcher->packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target) << " ";
+			radio << "==> Ack to " << ackDispatcher->packageId << " for " << ADDRESS_TO_STREAM(m_waitingPackagesNoAck.front().target) << " ";
 		} else {
-			radio << "==> No-ack package " << m_packagesNoAck.front().details.packageId << " for " << ADDRESS_TO_STREAM(m_packagesNoAck.front().target) << " ";
+			radio << "==> No-ack package " << m_waitingPackagesNoAck.front().details.packageId << " for " << ADDRESS_TO_STREAM(m_waitingPackagesNoAck.front().target) << " ";
 		}
 
-		printAndSend(m_packagesNoAck.front());
+		printAndSend(m_waitingPackagesNoAck.front());
 
-		m_packagesNoAck.pop_front();
+		m_waitingPackagesNoAck.pop_front();
 		isSendingNow = true;
 		// Tell that now we are sending no-response package
 		currentlySendingPackageId = 0;
@@ -420,7 +415,7 @@ void NetworkLayer::sendNext()
 	}
 
 	Time time = systemClock->getTime();
-	for (auto it=m_packages.begin(); it!=m_packages.end(); )
+	for (auto it=m_waitingPackagesWithAck.begin(); it!=m_waitingPackagesWithAck.end(); )
 		// ++it in the end of cycle body for case when we removing outdated packages
 	{
 		// If timeout
@@ -429,7 +424,7 @@ void NetworkLayer::sendNext()
 			PackageSendingDoneCallback callback = it->second.callback;
 			uint16_t timeoutedPackageId = it->second.package.details.packageId;
 			radio << "==| Package " << timeoutedPackageId << " timeouted";
-			m_packages.erase(it++); // We can increment iterator
+			m_waitingPackagesWithAck.erase(it++); // We can increment iterator
 			if (callback)
 				callback(timeoutedPackageId, false);
 			continue; // we alredy did ++it so go to next iteration
@@ -530,10 +525,10 @@ void NetworkLayer::printAndSend(Package& package)
 bool NetworkLayer::stopSending(PackageId packageId)
 {
 	ScopedLock<Mutex> lock(m_packagesQueueMutex);
-	auto it = m_packages.find(packageId);
-	if (it != m_packages.end())
+	auto it = m_waitingPackagesWithAck.find(packageId);
+	if (it != m_waitingPackagesWithAck.end())
 	{
-		m_packages.erase(it);
+		m_waitingPackagesWithAck.erase(it);
 		return true;
 	}
 	return false;
@@ -542,10 +537,10 @@ bool NetworkLayer::stopSending(PackageId packageId)
 void NetworkLayer::dropAllForAddress(const DeviceAddress& address)
 {
 	ScopedLock<Mutex> lock(m_packagesQueueMutex);
-	for(auto it = m_packages.begin(); it != m_packages.end(); )
+	for(auto it = m_waitingPackagesWithAck.begin(); it != m_waitingPackagesWithAck.end(); )
 	{
 		if (it->second.package.target == address) {
-			m_packages.erase(it++);
+			m_waitingPackagesWithAck.erase(it++);
 		} else {
 			++it;
 	}
@@ -555,8 +550,8 @@ void NetworkLayer::dropAllForAddress(const DeviceAddress& address)
 bool NetworkLayer::updateTimeout(PackageId packageId)
 {
 	ScopedLock<Mutex> lock(m_packagesQueueMutex);
-	auto it = m_packages.find(packageId);
-	if (it != m_packages.end())
+	auto it = m_waitingPackagesWithAck.find(packageId);
+	if (it != m_waitingPackagesWithAck.end())
 	{
 		it->second.wasCreated = systemClock->getTime();
 		return true;
@@ -564,6 +559,16 @@ bool NetworkLayer::updateTimeout(PackageId packageId)
 	return false;
 }
 
+
+bool NetworkLayer::hasFreeSpaceInQueues()
+{
+	uint32_t na = m_waitingPackagesNoAck.size();
+	trace << "No ack packages queue size = " << na;
+	uint32_t wa = m_waitingPackagesWithAck.size();
+	trace << "Need ack packages queue size = " << wa;
+
+	return na + wa < maxPackagesQueueSize;
+}
 /// @todo Remove this code after some time
 
 void NetworkLayer::reinitNRF()

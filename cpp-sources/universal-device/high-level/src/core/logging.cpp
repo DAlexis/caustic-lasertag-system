@@ -24,6 +24,7 @@
 
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
+#include "core/diagnostic.hpp"
 #include "newlib-driver.h"
 #include <stdio.h>
 #include <string.h>
@@ -37,12 +38,12 @@ uint16_t Loggers::m_tmpBufferCurrent = 0;
 
 Mutex Loggers::loggersMutex;
 
-Logger error  ("ERROR");
-Logger warning("warn ");
-Logger info   ("info ");
-Logger debug  ("debug");
-Logger radio  ("radio");
-Logger trace  ("trace");
+Logger error  ("E  ERROR");
+Logger warning(" W warn ");
+Logger info   ("   info ");
+Logger debug  ("   debug");
+Logger radio  ("   radio");
+Logger trace  ("   trace");
 
 void Loggers::initLoggers()
 {
@@ -69,7 +70,6 @@ Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(const char* str)
 {
 	if (enabled)
 	{
-		ScopedLock<Mutex> lock(Loggers::loggersMutex);
 		_write(STDOUT_FILENO, (char*)str, strlen(str));
 	}
 	return *this;
@@ -156,17 +156,34 @@ bool Logger::isEnabled()
 	return m_enabled;
 }
 
+void Logger::writePrefix()
+{
+	char buffer[50];
+	sprintf(buffer,
+			"\n[%s heap=%d task=%x]",
+			m_loggerName,
+			(int)SystemMonitor::instance().getFreeheap(),
+			(unsigned int) (Kernel::instance().getCurrentTaskId() & 0xFFFFF)
+	);
+	_write(STDOUT_FILENO, buffer, strlen(buffer));
+	for (auto it = Loggers::tags.begin(); it != Loggers::tags.end(); it++)
+	{
+		_write(STDOUT_FILENO, (char*)*it, strlen(*it));
+		_write(STDOUT_FILENO, (char*)"|", 1);
+	}
+	_write(STDOUT_FILENO, (char*)" ", 1);
+}
+
 extern "C" {
 	void lockOutputPort()
 	{
-		/// @todo implement it
-		/*if (Loggers::isInitialized())
-			Loggers::loggersMutex.lock();*/
+		if (Loggers::isInitialized())
+			Loggers::loggersMutex.lock();
 	}
 
 	void unlockOutputPort()
 	{
-		/*if (Loggers::isInitialized())
-			Loggers::loggersMutex.unlock();*/
+		if (Loggers::isInitialized())
+			Loggers::loggersMutex.unlock();
 	}
 }

@@ -76,6 +76,7 @@ public:
 	void registerStager(const Stager* stager);
 	void printSummary();
 	void run();
+	uint32_t getFreeheap();
 
 	SINGLETON_IN_CLASS(SystemMonitor)
 private:

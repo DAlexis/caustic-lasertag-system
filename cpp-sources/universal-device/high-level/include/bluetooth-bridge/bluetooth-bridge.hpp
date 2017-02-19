@@ -76,7 +76,8 @@ private:
 
 	Mutex m_messagesToBluetoothMutex;
 	std::queue<Bluetooth::Message*> m_messagesToBluetooth;
-	TaskOnce m_toBluetoothTask{ [this](){ toBluetoothTask(); }, 256 };
+	std::queue<Bluetooth::Message*> m_messagesToNetwork;
+	TaskOnce m_toBluetoothTask{ [this](){ toBluetoothTask(); }, 512 };
 	//TaskOnce m_toNetworkTask{ [this](){ toNetworkTask(); }, 512 };
 
 	/// @todo Queues should be as large as possible, so need to increase its size

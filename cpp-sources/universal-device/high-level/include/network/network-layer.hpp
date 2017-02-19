@@ -158,7 +158,7 @@ private:
 
 	constexpr static uint32_t lastReceivedIdsBufferSize = 30;
 	constexpr static uint32_t NRFReinitPeriod = 5000000;
-	constexpr static uint32_t maxPackagesQueueSize = 40;
+	constexpr static uint32_t maxPackagesQueueSize = 25;
 
 	void interrogate();
 	uint16_t generatePackageId();
@@ -173,6 +173,8 @@ private:
 	bool isBroadcast(const DeviceAddress& addr);
 	void printAndSend(Package& package);
 
+	bool hasFreeSpaceInQueues();
+
 	/// @todo Remove this function after some time
 	void reinitNRF();
 
@@ -182,11 +184,12 @@ private:
 	uint16_t currentlySendingPackageId = 0;
 	bool isSendingNow = false;
 	Mutex m_packagesQueueMutex;
-	std::list<Package> m_packagesNoAck;
+
 
 	IRadioPhysicalDevice* m_rfPhysicalDevice = nullptr;
 
-	std::map<PackageId, WaitingPackage> m_packages;
+	std::list<Package> m_waitingPackagesNoAck;
+	std::map<PackageId, WaitingPackage> m_waitingPackagesWithAck;
 
 	std::list<Package> m_incoming;
 
