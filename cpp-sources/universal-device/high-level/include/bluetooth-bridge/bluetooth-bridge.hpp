@@ -54,7 +54,7 @@ public:
 	BluetoothBridgeConfiguration config;
 
 private:
-	constexpr static uint16_t bluetoothIncommingBufferSize = 200;
+	constexpr static uint16_t queuesSizeMax = 30;
 
 	void receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength) override;
     void connectClient(INetworkClient* client) override;
@@ -68,6 +68,7 @@ private:
 	void sendNetworkPackage(DeviceAddress addr, uint8_t* payload, uint16_t size);
 	void toBluetoothTask();
 	void toNetworkTask();
+	bool hasFreeSpaceInQueues();
 
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
 	HC05Configurator m_configurator{deviceConfig.deviceName, config.bluetoothPin};

@@ -147,12 +147,14 @@ void BluetoothBridge::receivePackage(DeviceAddress sender, uint8_t* payload, uin
     Bluetooth::Message *msg = new Bluetooth::Message();
     *msg = m_bluetoothMsgCreator.msg();
 
-    debug << "To bluetooth queue size = " << m_messagesToBluetooth.size();
+
+    if (hasFreeSpaceInQueues())
     {
+    	trace << "To bluetooth queue size = " << m_messagesToBluetooth.size();
     	ScopedLock<Mutex> lck(m_messagesToBluetoothMutex);
     	m_messagesToBluetooth.push(msg);
     	//debug << "To bluetooth queue size = " << m_messagesToBluetooth.size();
-    }
+    } // else drop :(
 
 	//delete msg;
 
@@ -179,6 +181,9 @@ void BluetoothBridge::receiveBluetoothPackageISR(Bluetooth::Message* msg)
 {
 	if (!msg->isChecksumCorrect())
 		return;
+
+	if (!hasFreeSpaceInQueues())
+		return; // Drop package :(
 
 	Bluetooth::Message *msgToSend = new Bluetooth::Message();
 	*msgToSend = *msg;
@@ -277,4 +282,13 @@ void BluetoothBridge::toBluetoothTask()
 void BluetoothBridge::toNetworkTask()
 {
 
+}
+
+bool BluetoothBridge::hasFreeSpaceInQueues()
+{
+	uint32_t tn = m_messagesToNetwork.size();
+	//trace << "To network queue size = " << tn;
+	uint32_t tb = m_messagesToBluetooth.size();
+	//trace << "To bluetooth queue size = " << tb;
+	return tn+tb < queuesSizeMax;
 }

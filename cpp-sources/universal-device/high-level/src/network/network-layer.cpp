@@ -105,7 +105,7 @@ void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
 	m_rfPhysicalDevice->setTXDoneCallback(std::bind(&NetworkLayer::TXDoneCallback, this));
 	m_rfPhysicalDevice->setDataReceiveCallback(std::bind(&NetworkLayer::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
 	info << "Starting m_modemTask";
-	m_modemTask.run(0, 1, 1);
+	m_modemTask.run(0, 0, 0);
 }
 
 void NetworkLayer::connectClient(INetworkClient* client)
@@ -326,8 +326,13 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 	{
 		radio << "?=? Package with id " << received.details.packageId << " repetition detected";
 	} else {
-		// Putting received package to list
-		m_incoming.push_back(received);
+		if (hasFreeSpaceInQueues())
+		{
+			// Putting received package to list
+			m_incoming.push_back(received);
+		} else {
+			error << "No free space in queues to receive incoming package!";
+		}
 	}
 }
 
@@ -566,8 +571,9 @@ bool NetworkLayer::hasFreeSpaceInQueues()
 	trace << "No ack packages queue size = " << na;
 	uint32_t wa = m_waitingPackagesWithAck.size();
 	trace << "Need ack packages queue size = " << wa;
-
-	return na + wa < maxPackagesQueueSize;
+	uint32_t ni = m_incoming.size();
+	trace << "Incoming packages queue size = " << ni;
+	return na + wa + ni < maxPackagesQueueSize;
 }
 /// @todo Remove this code after some time
 
