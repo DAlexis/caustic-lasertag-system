@@ -107,11 +107,13 @@ void UARTManager::rxDoneISR(uint8_t* buffer, uint16_t size)
 	rxCount++;
 	if (m_stopCharEnabled && rxBuffer[rxCount-1] == m_stopChar)
 	{
-		m_rxCallback(rxBuffer, rxCount);
+		if (m_rxCallback)
+			m_rxCallback(rxBuffer, rxCount);
 		rxCount = 0;
 	} else if (rxCount == rxBufferMaxSize || rxCount == m_blockSize)
 	{
-		m_rxCallback(rxBuffer, rxCount);
+		if (m_rxCallback)
+			m_rxCallback(rxBuffer, rxCount);
 		rxCount = 0;
 	}
 

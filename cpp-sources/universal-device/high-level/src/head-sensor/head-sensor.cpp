@@ -133,6 +133,8 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 
 	m_sensorsInitializer.read("sensors.ini");
 
+	m_smartSensorsManager.init(UARTs->get(IUARTSPool::UART3));
+
 	m_interrogator.registerObject(&m_receiverMgr);
 	m_interrogator.registerObject(&m_ledVibroMgr);
 

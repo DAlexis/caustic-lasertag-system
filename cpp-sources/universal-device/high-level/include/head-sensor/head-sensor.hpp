@@ -125,7 +125,7 @@ private:
 	LedVibroManager m_ledVibroMgr{m_killZonesManager};
 	IlluminationSchemesManager m_illuminationSchemes{playerConfig.teamId};
 
-	SmartSensorsManager m_smartSensorsManager;
+	SmartSensorsManager m_smartSensorsManager{m_ledVibroMgr, m_receiverMgr};
 
 	SensorsInitializer m_sensorsInitializer{m_receiverMgr, m_ledVibroMgr, m_killZonesManager};
 
