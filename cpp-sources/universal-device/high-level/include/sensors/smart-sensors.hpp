@@ -48,7 +48,11 @@ public:
 	UintParameter getId() override;
 	void interrogate() override;
 
+	bool sendScheme();
+
 private:
+	const IllumitationScheme* m_currentScheme = nullptr;
+	uint8_t m_currentTaskIndex = 0;
 	UintParameter m_id;
 };
 
@@ -64,6 +68,10 @@ public:
 private:
 
     void task();
+    void discoveringTask();
+    void irReqTask();
+    bool sendRgbVibroTask();
+
     void startDiscovering();
     void onDiscoveringFinished();
 
@@ -74,7 +82,9 @@ private:
 
     std::map<UintParameter, SmartSensorReceiver> m_sensorReceivers;
     std::map<UintParameter, SmartSensorReceiver>::iterator m_nextToAsk;
+
     std::list<SmartSensorRGBVibro> m_sensorRgbVibros;
+    std::list<SmartSensorRGBVibro>::iterator m_nextRgbVibro;
 
     TaskCycled m_smartSensorTask;
 };

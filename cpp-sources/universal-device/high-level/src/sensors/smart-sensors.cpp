@@ -61,7 +61,8 @@ SmartSensorRGBVibro::SmartSensorRGBVibro(UintParameter id) :
 
 void SmartSensorRGBVibro::applyIlluminationScheme(const IllumitationScheme* scheme)
 {
-	// @todo convert to SSP format and call ssp_push_animation_task
+	m_currentScheme = scheme;
+	m_currentTaskIndex = 0;
 }
 
 UintParameter SmartSensorRGBVibro::getId()
@@ -71,7 +72,30 @@ UintParameter SmartSensorRGBVibro::getId()
 
 void SmartSensorRGBVibro::interrogate()
 {
-	// Send while busy
+	// Do nothing
+}
+
+bool SmartSensorRGBVibro::sendScheme()
+{
+	if (m_currentScheme == nullptr)
+		return false;
+
+	const IllumitationScheme::Task &c = m_currentScheme->tasks[m_currentTaskIndex];
+
+	SSP_Sensor_Animation_Task t;
+	t.ms_from_last_state = c.delayFromPrev;
+	t.state.red = c.state.r;
+	t.state.green = c.state.g;
+	t.state.blue = c.state.b;
+	t.state.vibro = c.state.vibro;
+	ssp_push_animation_task(m_id, &t);
+
+	if (++m_currentTaskIndex == m_currentScheme->tasks.size())
+	{
+		m_currentScheme = nullptr;
+		m_currentTaskIndex = 0;
+	}
+	return true;
 }
 
 /////////////////////////////////////
@@ -109,35 +133,58 @@ void SmartSensorsManager::task()
 {
     ssp_master_task_tick();
 
-    if (m_discoveringBeginned)
-    {
-        if (ssp_is_address_discovering_now() == 0)
-        {
-            // Discovering done
-        	m_discoveringBeginned = false;
-            onDiscoveringFinished();
-        }
-    }
+    discoveringTask();
 
-    // Sending request for ir data
-    if (ssp_is_busy() == 0 && !m_sensorReceivers.empty())
-    {
+    if (!sendRgbVibroTask())
+    	irReqTask();
+}
+
+void SmartSensorsManager::discoveringTask()
+{
+	if (m_discoveringBeginned)
+	{
+		if (ssp_is_address_discovering_now() == 0)
+		{
+			// Discovering done
+			m_discoveringBeginned = false;
+			onDiscoveringFinished();
+		}
+	}
+}
+
+void SmartSensorsManager::irReqTask()
+{
+	// Sending request for ir data
+	if (ssp_is_busy() == 0 && !m_sensorReceivers.empty())
+	{
 		ssp_push_ir_request(m_nextToAsk->first);
 		++m_nextToAsk;
 		if (m_nextToAsk == m_sensorReceivers.end())
 			m_nextToAsk = m_sensorReceivers.begin();
-    }
+	}
+	// Processing received data
+	SSP_IR_Message* msg = ssp_get_next_ir_buffer();
+	if (msg)
+	{
+		auto it = m_sensorReceivers.find(msg->sensor_address);
+		if (it != m_sensorReceivers.end())
+		{
+			it->second.addMessage(msg->buffer);
+		}
+	}
+}
 
-    // Processing received data
-    SSP_IR_Message* msg = ssp_get_next_ir_buffer();
-    if (msg)
-    {
-    	auto it = m_sensorReceivers.find(msg->sensor_address);
-    	if (it != m_sensorReceivers.end())
-    	{
-    		it->second.addMessage(msg->buffer);
-    	}
-    }
+bool SmartSensorsManager::sendRgbVibroTask()
+{
+	if (ssp_is_busy() == 0 && !m_sensorRgbVibros.empty())
+	{
+		m_nextRgbVibro->sendScheme();
+
+		++m_nextRgbVibro;
+		if (m_nextRgbVibro == m_sensorRgbVibros.end())
+			m_nextRgbVibro = m_sensorRgbVibros.begin();
+	}
+	return false;
 }
 
 void SmartSensorsManager::startDiscovering()
@@ -169,6 +216,8 @@ void SmartSensorsManager::onDiscoveringFinished()
     debug << "`- end of discovering";
     if (!m_sensorReceivers.empty())
     	m_nextToAsk = m_sensorReceivers.begin();
+    if (!m_sensorRgbVibros.empty())
+    	m_nextRgbVibro = m_sensorRgbVibros.begin();
 }
 
 ///////////////////////////////////////////////////
