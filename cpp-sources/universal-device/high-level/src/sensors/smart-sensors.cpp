@@ -85,7 +85,7 @@ void SmartSensorsManager::init(IUARTManager* uart)
 {
     debug << "Smart sensors manager initialization";
     m_uart = uart;
-    m_uart->init(SSP_UART_SPEED);
+    m_uart->init(SSP_UART_SPEED, true);
     m_uart->setBlockSize(1);
     m_uart->setRXDoneCallback([](uint8_t *buffer, uint16_t size) { UNUSED_ARG(size); ssp_receive_byte(*buffer); });
     debug << "UART init done";

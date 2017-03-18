@@ -56,8 +56,9 @@ UARTManager::UARTManager(uint8_t portNumber)
 	}
 }
 
-void UARTManager::init(uint32_t baudrate)
+void UARTManager::init(uint32_t baudrate, bool useHalfDuplex)
 {
+	m_halfDuplex = useHalfDuplex;
 	m_huart->Instance = m_instance;
 	m_huart->Init.BaudRate = baudrate;
 	m_huart->Init.WordLength = UART_WORDLENGTH_8B;
@@ -66,20 +67,38 @@ void UARTManager::init(uint32_t baudrate)
 	m_huart->Init.Mode = UART_MODE_TX_RX;
 	m_huart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	m_huart->Init.OverSampling = UART_OVERSAMPLING_16;
-	HAL_UART_Init(m_huart);
+
+	if (m_halfDuplex)
+	{
+		HAL_HalfDuplex_Init(m_huart);
+	} else {
+		HAL_UART_Init(m_huart);
+	}
+
+	if (m_halfDuplex)
+		HAL_HalfDuplex_EnableReceiver(m_huart);
 	HAL_UART_Receive_IT(m_huart, &(rxBuffer[rxCount]), 1);
 }
 
 void UARTManager::transmit(uint8_t* buffer, uint16_t size)
 {
 	m_txBusy = true;
+	if (m_halfDuplex)
+		HAL_HalfDuplex_EnableTransmitter(m_huart);
 	HAL_UART_Transmit_IT(m_huart, buffer, size);
 }
 
 void UARTManager::transmitSync(uint8_t* buffer, uint16_t size, uint32_t timeout)
 {
 	m_txBusy = true;
+	if (m_halfDuplex)
+		HAL_HalfDuplex_EnableTransmitter(m_huart);
 	HAL_UART_Transmit(m_huart, buffer, size, timeout);
+	if (m_halfDuplex)
+	{
+		HAL_HalfDuplex_EnableReceiver(m_huart);
+		HAL_UART_Receive_IT(m_huart, &(rxBuffer[rxCount]), 1);
+	}
 	m_txBusy = false;
 }
 
@@ -98,6 +117,12 @@ void UARTManager::txDoneISR()
 	m_txBusy = false;
 	if (m_txCallback)
 		m_txCallback();
+
+	if (m_halfDuplex)
+	{
+		HAL_HalfDuplex_EnableReceiver(m_huart);
+		HAL_UART_Receive_IT(m_huart, &(rxBuffer[rxCount]), 1);
+	}
 }
 
 void UARTManager::rxDoneISR(uint8_t* buffer, uint16_t size)
@@ -117,6 +142,8 @@ void UARTManager::rxDoneISR(uint8_t* buffer, uint16_t size)
 		rxCount = 0;
 	}
 
+	if (m_halfDuplex)
+		HAL_HalfDuplex_EnableReceiver(m_huart);
 	HAL_UART_Receive_IT(m_huart, &(rxBuffer[rxCount]), 1);
 }
 

@@ -34,7 +34,7 @@ public:
 	constexpr static uint16_t rxBufferMaxSize = 200;
 
 	UARTManager(uint8_t portNumber);
-	void init(uint32_t baudrate) override;
+	void init(uint32_t baudrate, bool useHalfDuplex = false) override;
 	void transmit(uint8_t* buffer, uint16_t size) override;
 	void transmitSync(uint8_t* buffer, uint16_t size, uint32_t timeout = 10000) override;
 	bool txBusy() override;
@@ -47,6 +47,7 @@ private:
 	UART_HandleTypeDef* m_huart = nullptr;
 	bool m_rxBusy = false;
 	bool m_txBusy = false;
+	bool m_halfDuplex = false;
 	uint8_t rxBuffer[200];
 	uint16_t rxCount = 0;
 };

@@ -34,7 +34,7 @@ public:
 	using TXDoneCallback = std::function<void(void)>;
 	using RXDoneCallback = std::function<void(uint8_t*, uint16_t)>;
 
-	virtual void init(uint32_t baudrate) = 0;
+	virtual void init(uint32_t baudrate, bool useHalfDuplex = false) = 0;
 	virtual void setTXDoneCallback(TXDoneCallback callback) = 0;
 	virtual void setRXDoneCallback(RXDoneCallback callback) = 0;
 	virtual void setStopChar(uint8_t stopChar) = 0;
