@@ -56,7 +56,7 @@ void IRReceiversManager::interrogate()
 			uint16_t bitsCount;
 			it->getData(data, bitsCount);
 			debug << "IR receiver with id = " << it->getId()
-					<< " has data: " << hexStr(data, bitsCount / 8 + 1);
+					<< " has data: " << hexStr(data, bitsCount%8 == 0 ? bitsCount/8 : bitsCount/8 + 1);
 			m_parser->parse(m_parseRusult, data, bitsCount, it->getId());
 			processReceivedResults(it->getId());
 			m_lastMessageTime = systemClock->getTime();

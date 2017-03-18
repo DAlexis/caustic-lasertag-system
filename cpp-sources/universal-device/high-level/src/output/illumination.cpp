@@ -65,7 +65,7 @@ void LedVibroManager::addPoint(IRGBVibroPointPhysical* m_point, bool zoneWide, b
 	{
 		zoneId = jt->second;
 	} else {
-		error << "LedVibroManager::addPoint: point with id " << m_point->getId() << "was not assigned to any zone";
+		warning << "LedVibroManager::addPoint: point with id " << m_point->getId() << " was not assigned to any zone";
 	}
 
 	auto it = m_zoneWides.find(zoneId);

@@ -122,11 +122,10 @@ void SmartSensorsManager::task()
     // Sending request for ir data
     if (ssp_is_busy() == 0 && !m_sensorReceivers.empty())
     {
-    	debug << "Sending IR request";
-    	ssp_push_ir_request(m_nextToAsk->first);
-    	++m_nextToAsk;
-    	if (m_nextToAsk == m_sensorReceivers.end())
-    		m_nextToAsk = m_sensorReceivers.begin();
+		ssp_push_ir_request(m_nextToAsk->first);
+		++m_nextToAsk;
+		if (m_nextToAsk == m_sensorReceivers.end())
+			m_nextToAsk = m_sensorReceivers.begin();
     }
 
     // Processing received data
@@ -187,8 +186,10 @@ void ssp_send_data(uint8_t* data, uint16_t size)
 {
     if (activeManager)
     {
+    	if (size == 0)
+    		return;
         activeManager->uart()->transmit(data, size);
-        while (activeManager->uart()->txBusy()) {  }
+        while (activeManager->uart()->txBusy()) { }
     }
 
 }
