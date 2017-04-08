@@ -63,6 +63,7 @@ void SmartSensorRGBVibro::applyIlluminationScheme(const IllumitationScheme* sche
 {
 	m_currentScheme = scheme;
 	m_currentTaskIndex = 0;
+	m_resetWasSent = false;
 }
 
 UintParameter SmartSensorRGBVibro::getId()
@@ -82,6 +83,13 @@ bool SmartSensorRGBVibro::sendScheme()
 
 	const IllumitationScheme::Task &c = m_currentScheme->tasks[m_currentTaskIndex];
 
+	if (!m_resetWasSent)
+	{
+		ssp_push_animation_reset(m_id);
+		m_resetWasSent = true;
+		return true;
+	}
+
 	SSP_Sensor_Animation_Task t;
 	t.ms_from_last_state = c.delayFromPrev;
 	t.state.red = c.state.r;
@@ -93,7 +101,6 @@ bool SmartSensorRGBVibro::sendScheme()
 	if (++m_currentTaskIndex == m_currentScheme->tasks.size())
 	{
 		m_currentScheme = nullptr;
-		m_currentTaskIndex = 0;
 	}
 	return true;
 }
@@ -135,8 +142,13 @@ void SmartSensorsManager::task()
 
     discoveringTask();
 
-    if (!sendRgbVibroTask())
-    	irReqTask();
+    ssp_master_task_tick();
+
+    sendRgbVibroTask();
+
+    ssp_master_task_tick();
+
+    irReqTask();
 }
 
 void SmartSensorsManager::discoveringTask()
@@ -154,14 +166,14 @@ void SmartSensorsManager::discoveringTask()
 
 void SmartSensorsManager::irReqTask()
 {
+	if (ssp_is_busy() == 1 || m_sensorReceivers.empty())
+		return;
 	// Sending request for ir data
-	if (ssp_is_busy() == 0 && !m_sensorReceivers.empty())
-	{
-		ssp_push_ir_request(m_nextToAsk->first);
-		++m_nextToAsk;
-		if (m_nextToAsk == m_sensorReceivers.end())
-			m_nextToAsk = m_sensorReceivers.begin();
-	}
+	ssp_push_ir_request(m_nextToAsk->first);
+	++m_nextToAsk;
+	if (m_nextToAsk == m_sensorReceivers.end())
+		m_nextToAsk = m_sensorReceivers.begin();
+
 	// Processing received data
 	SSP_IR_Message* msg = ssp_get_next_ir_buffer();
 	if (msg)
@@ -176,15 +188,16 @@ void SmartSensorsManager::irReqTask()
 
 bool SmartSensorsManager::sendRgbVibroTask()
 {
-	if (ssp_is_busy() == 0 && !m_sensorRgbVibros.empty())
-	{
-		m_nextRgbVibro->sendScheme();
+	if (ssp_is_busy() == 1 || m_sensorRgbVibros.empty())
+		return false;
 
-		++m_nextRgbVibro;
-		if (m_nextRgbVibro == m_sensorRgbVibros.end())
-			m_nextRgbVibro = m_sensorRgbVibros.begin();
-	}
-	return false;
+	m_nextRgbVibro->sendScheme();
+
+	++m_nextRgbVibro;
+	if (m_nextRgbVibro == m_sensorRgbVibros.end())
+		m_nextRgbVibro = m_sensorRgbVibros.begin();
+
+	return true;
 }
 
 void SmartSensorsManager::startDiscovering()
@@ -226,7 +239,7 @@ void SmartSensorsManager::onDiscoveringFinished()
 void ssp_drivers_init(void) { }
 
 
-uint32_t ssp_get_time_ms()
+uint32_t ssp_get_ticks()
 {
     return systemClock->getTime() / 1000;
 }

@@ -54,6 +54,7 @@ private:
 	const IllumitationScheme* m_currentScheme = nullptr;
 	uint8_t m_currentTaskIndex = 0;
 	UintParameter m_id;
+	bool m_resetWasSent = false;
 };
 
 class SmartSensorsManager
