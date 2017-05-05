@@ -63,7 +63,7 @@ public:
 	void interrogate() override;
 
 private:
-	constexpr static uint32_t timeout = 5000;
+	constexpr static uint32_t timeout = 10000;
 	enum class State {
 		empty,
 		hasShot,
