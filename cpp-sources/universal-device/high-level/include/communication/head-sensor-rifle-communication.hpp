@@ -50,11 +50,11 @@ struct HSToRifleHeartbeat
 {
 	constexpr static uint8_t enabled = 0x01;
 
-	uint8_t state;
-	TeamGameId team;
-	PlayerGameId player;
-	UintParameter healthCurrent;
-	UintParameter healthMax;
+	uint8_t state = 0;
+	TeamGameId team = 0;
+	PlayerGameId player = 0;
+	UintParameter healthCurrent = 0;
+	UintParameter healthMax = 0;
 
 	void setEnabled(bool enabled)
 	{

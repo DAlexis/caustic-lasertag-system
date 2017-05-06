@@ -164,9 +164,9 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	m_statsCounter.registerKill(25);
 	m_statsCounter.registerKill(27);
 
-	m_smartSensorsManager.run();
-
-	m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.init()));
+	m_smartSensorsManager.run(
+			[this](){ m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.init())); }
+	);
 }
 
 void HeadSensor::initSmartZones(const Pinout &pinout)

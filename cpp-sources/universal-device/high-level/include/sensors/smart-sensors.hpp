@@ -60,9 +60,11 @@ private:
 class SmartSensorsManager
 {
 public:
+	using DiscoveringDoneCallback = std::function<void(void)>;
+
 	SmartSensorsManager(LedVibroManager& lv, IRReceiversManager& ir);
     void init(IUARTManager* uart);
-    void run();
+    void run(DiscoveringDoneCallback onDone = nullptr);
 
     IUARTManager* uart() { return m_uart; }
 
@@ -88,6 +90,7 @@ private:
     std::list<SmartSensorRGBVibro>::iterator m_nextRgbVibro;
 
     TaskCycled m_smartSensorTask;
+    DiscoveringDoneCallback m_discDoneCb = nullptr;
 };
 
 

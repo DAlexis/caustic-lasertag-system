@@ -225,7 +225,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 		m_magazine2Sensor->turnOn();
 		m_buttonsInterrogator.registerObject(m_magazine2Sensor);
 	}
-	detectRifleState();
+	detectReloadAndMagsState();
 
 	initSequenceDetectors();
 
@@ -317,7 +317,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	info << "Rifle ready to use\n";
 }
 
-void Rifle::detectRifleState()
+void Rifle::detectReloadAndMagsState()
 {
 	if (config.isAutoReloading() || config.isReloadingByDistortingTheBolt())
 	{
@@ -622,13 +622,13 @@ void Rifle::rifleTurnOn()
 	state.isEnabled = true;
 	m_fireButton->turnOn();
 	m_reloadButton->turnOn();
-	detectRifleState();
+	detectReloadAndMagsState();
 }
 
 void Rifle::rifleReset()
 {
 	state.reset();
-	detectRifleState();
+	detectReloadAndMagsState();
 	info << "Rifle resetted";
 }
 
@@ -643,7 +643,7 @@ void Rifle::rifleRespawn()
 
 void Rifle::rifleDie()
 {
-	info << "Rifle told that player dead";
+	info << "Rifle was told that player dead";
 	if (!state.isEnabled)
 		return;
 

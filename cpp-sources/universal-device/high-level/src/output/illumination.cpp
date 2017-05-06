@@ -229,6 +229,7 @@ IlluminationSchemesManager::IlluminationSchemesManager(TeamGameId& id) :
 	m_wound.tasks.push_back(IllumitationScheme::Task(  4,   0,   0,   100));
 	m_wound.tasks.push_back(IllumitationScheme::Task(  2,   0,   0,   100));
 	m_wound.tasks.push_back(IllumitationScheme::Task(  1,   0,   0,   100));
+	m_wound.tasks.push_back(IllumitationScheme::Task(  0,   0,   0,   100));
 }
 
 IllumitationScheme::Color IlluminationSchemesManager::getCurrentColor()

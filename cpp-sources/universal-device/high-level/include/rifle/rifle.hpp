@@ -119,7 +119,7 @@ private:
 	uint8_t getCurrentMagazineNumber();
 
 	void reloadAndPlay();
-	void detectRifleState();
+	void detectReloadAndMagsState();
 
 	/**
 	 * To use inside HS-to-rifle commands to check that command is from actual head sensor

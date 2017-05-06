@@ -128,8 +128,9 @@ void SmartSensorsManager::init(IUARTManager* uart)
     m_smartSensorTask.setTask([this] { task(); });
 }
 
-void SmartSensorsManager::run()
+void SmartSensorsManager::run(DiscoveringDoneCallback onDone)
 {
+	m_discDoneCb = onDone;
 	debug << "Discovering...";
 	startDiscovering();
 	debug << "Discovering started";
@@ -226,11 +227,14 @@ void SmartSensorsManager::onDiscoveringFinished()
     	m_sensorRgbVibros.emplace_back(ssp_registered_addrs.address[i]);
     	m_lv->addPoint(&m_sensorRgbVibros.back());
     }
-    debug << "`- end of discovering";
+    debug << "`-------";
     if (!m_sensorReceivers.empty())
     	m_nextToAsk = m_sensorReceivers.begin();
     if (!m_sensorRgbVibros.empty())
     	m_nextRgbVibro = m_sensorRgbVibros.begin();
+
+    if (m_discDoneCb)
+    	m_discDoneCb();
 }
 
 ///////////////////////////////////////////////////
