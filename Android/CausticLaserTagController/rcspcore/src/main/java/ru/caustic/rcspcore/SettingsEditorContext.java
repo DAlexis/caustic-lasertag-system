@@ -36,7 +36,7 @@ public class SettingsEditorContext {
      * Abstract factory to build realizations of UIDataPicker
      */
     public interface IUIDataPickerFactory {
-        UIDataPicker create(RCSProtocol.ParameterDescription description);
+        UIDataPicker create(RCSP.ParameterDescription description);
     }
 
     /**
@@ -46,7 +46,7 @@ public class SettingsEditorContext {
      */
     public class ParameterEntry {
         public SettingsEditorContext context;
-        public RCSProtocol.ParameterDescription description;
+        public RCSP.ParameterDescription description;
         // If all the devices has the same parameters value, it should be shown. Otherwise "Different" will be shown
         public boolean hasInitialValue = false;
         public boolean wasChanged = false;
@@ -65,7 +65,7 @@ public class SettingsEditorContext {
             return initialValue;
         }
 
-        public ParameterEntry(SettingsEditorContext context, RCSProtocol.ParameterDescription description) {
+        public ParameterEntry(SettingsEditorContext context, RCSP.ParameterDescription description) {
             this.context = context;
             this.description = description;
         }
@@ -77,7 +77,7 @@ public class SettingsEditorContext {
         public void init(IUIDataPickerFactory factory) {
             boolean valueInitialized = false;
             hasInitialValue = true; // We suppose that all values are the same
-            for (BridgeConnector.DeviceAddress addr : context.devices) {
+            for (RCSP.DeviceAddress addr : context.devices) {
                 String thisDeviceValue
                         = devicesManager.devices
                         .get(addr).parameters
@@ -117,8 +117,8 @@ public class SettingsEditorContext {
             if (!wasChanged)
                 return;
 
-            for (BridgeConnector.DeviceAddress addr : context.devices) {
-                RCSProtocol.AnyParameterSerializer par
+            for (RCSP.DeviceAddress addr : context.devices) {
+                RCSP.AnyParameterSerializer par
                         = devicesManager.devices
                         .get(addr).parameters
                         .get(description.getId());
@@ -131,7 +131,7 @@ public class SettingsEditorContext {
     /**
      * Set of devices selected to editing
      */
-    private Set<BridgeConnector.DeviceAddress> devices = new HashSet<>();
+    private Set<RCSP.DeviceAddress> devices = new HashSet<>();
 
     /**
      * Set of parameters avaliable to edit
@@ -141,27 +141,43 @@ public class SettingsEditorContext {
     private boolean entriesCreated = false;
 
     /**
-     * Accessors for devices, selected to edit
+     * Remove all devices from list to edit
      */
     public void clearSelectedToEdit() {
         devices.clear();
     }
-    public void selectForEditing(BridgeConnector.DeviceAddress addr) {
+
+    /**
+     * Add device to list for editing. Changed parameters will be pulled/pushed to/from device
+     * @param addr device address to edit
+     */
+    public void selectForEditing(RCSP.DeviceAddress addr) {
         devices.add(addr);
         entriesCreated = false;
     }
-    public void deselectForEditing(BridgeConnector.DeviceAddress addr) {
-        devices.remove(addr);
+
+    /**
+     * Remove from list to edit
+     * @param addr device address should not be edited
+     */
+    public void deselectForEditing(RCSP.DeviceAddress addr) {
+        if (devices.contains(addr))
+            devices.remove(addr);
     }
+
+    /**
+     * Check containment of list for editing
+     * @return true if list for editing not empty
+     */
     public boolean isSomethingSelectedToEdit() {
         return !devices.isEmpty();
     }
-    public final Set<BridgeConnector.DeviceAddress> getDevicesSelectedToEdit() {
+    public final Set<RCSP.DeviceAddress> getDevicesSelectedToEdit() {
         return devices;
     }
     public void asyncPopParametersFromSelectedDevices(DevicesManager.SynchronizationEndListener endHandler)
     {
-        devicesManager.asyncPopParametersFromDevices(endHandler, devices);
+        devicesManager.asyncPullAllParameters(endHandler, devices);
     }
     // End of accessors for devices
 
@@ -169,8 +185,8 @@ public class SettingsEditorContext {
      * Get any one of addresses of devices seslected to edit
      * @return device address
      */
-    public BridgeConnector.DeviceAddress getAnyAddress() {
-        for (BridgeConnector.DeviceAddress addr : devices) {
+    public RCSP.DeviceAddress getAnyAddress() {
+        for (RCSP.DeviceAddress addr : devices) {
             return addr;
         }
         return null;
@@ -178,16 +194,16 @@ public class SettingsEditorContext {
 
     /**
      * Get type of devices that are selected to edit to the present momentum
-     * @return See RCSProtocol.Operations.AnyDevice.Configuration: DEV_TYPE_UNDEFINED, DEV_TYPE_RIFLE, DEV_TYPE_HEAD_SENSOR, ...
+     * @return See RCSP.Operations.AnyDevice.Configuration: DEV_TYPE_UNDEFINED, DEV_TYPE_RIFLE, DEV_TYPE_HEAD_SENSOR, ...
      */
     public int getDeviceType() {
         if (devices.isEmpty()) {
-            return RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED;
+            return RCSP.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED;
         }
 
         return Integer.parseInt(
                 devicesManager.devices.get(getAnyAddress()).parameters.get(
-                        RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
+                        RCSP.Operations.AnyDevice.Configuration.deviceType.getId()
                 ).getValue()
         );
     }
@@ -206,13 +222,13 @@ public class SettingsEditorContext {
                 return;*/
         parameters.clear();
 
-        BridgeConnector.DeviceAddress someAddress = getAnyAddress();
+        RCSP.DeviceAddress someAddress = getAnyAddress();
 
         DevicesManager.CausticDevice dev = devicesManager.devices.get(someAddress);
 
         // We need to output parameters sorted by original order
         for (int id : dev.parameters.orderedIds) {
-            RCSProtocol.ParameterDescription descr = dev.parameters.allParameters.get(id).getDescription();
+            RCSP.ParameterDescription descr = dev.parameters.allParameters.get(id).getDescription();
 
             if (!descr.isEditable())
                 continue;
@@ -236,7 +252,7 @@ public class SettingsEditorContext {
             entry.pushValue();
         }
         // Sending values to devices
-        for (BridgeConnector.DeviceAddress address : devices) {
+        for (RCSP.DeviceAddress address : devices) {
             devicesManager.devices.get(address).pushToDevice();
         }
     }

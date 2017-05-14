@@ -4,13 +4,11 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,7 +16,7 @@ import java.util.UUID;
 /**
  * Created by alexey on 15.09.15.
  */
-public class BluetoothManager implements BridgeConnector.IBluetoothManager {
+public class BluetoothManager implements BridgeDriver.IBluetoothManager {
 
     public static final int BLUETOOTH_ENABLED = 0;
     public static final int BLUETOOTH_DISABLED = 1;
@@ -41,7 +39,7 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
     }
 
     @Override
-    public void setListener(BridgeConnector.IBluetoothListener listener) {
+    public void setListener(BridgeDriver.IBluetoothListener listener) {
         incomingMsgListener = listener;
     }
     @Override
@@ -324,7 +322,7 @@ public class BluetoothManager implements BridgeConnector.IBluetoothManager {
     private BluetoothSocket btSocket = null;
     private ConnectedThread mConnectedThread;
 
-    private BridgeConnector.IBluetoothListener incomingMsgListener = null;
+    private BridgeDriver.IBluetoothListener incomingMsgListener = null;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 

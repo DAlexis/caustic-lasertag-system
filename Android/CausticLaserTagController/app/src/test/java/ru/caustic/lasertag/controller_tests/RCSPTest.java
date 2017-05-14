@@ -5,14 +5,14 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.RCSP;
 
 /**
  * Created by alexey on 19.09.15.
  */
-public class RCSProtocolTest extends TestCase {
+public class RCSPTest extends TestCase {
 
-    private void testAnyParameterSerDeser(RCSProtocol.AnyParameterSerializer par, String originalValue, String otherValue, int bufferLength, int offset) {
+    private void testAnyParameterSerDeser(RCSP.AnyParameterSerializer par, String originalValue, String otherValue, int bufferLength, int offset) {
         byte buffer[] = new byte[bufferLength];
         par.setValue(originalValue);
         par.serialize(buffer, offset);
@@ -26,31 +26,31 @@ public class RCSProtocolTest extends TestCase {
     {
         int code = 2005;
         Assert.assertEquals(
-                RCSProtocol.removeOperationTypeBits(RCSProtocol.makeOperationCodeType(code, RCSProtocol.OperationCodeType.SET_OBJECT)),
+                RCSP.removeOperationTypeBits(RCSP.makeOperationCodeType(code, RCSP.OperationCodeType.SET_OBJECT)),
                 code
         );
         Assert.assertEquals(
-                RCSProtocol.dispatchOperationCodeType(RCSProtocol.makeOperationCodeType(code, RCSProtocol.OperationCodeType.SET_OBJECT)),
-                RCSProtocol.OperationCodeType.SET_OBJECT
+                RCSP.dispatchOperationCodeType(RCSP.makeOperationCodeType(code, RCSP.OperationCodeType.SET_OBJECT)),
+                RCSP.OperationCodeType.SET_OBJECT
         );
         Assert.assertEquals(
-                RCSProtocol.dispatchOperationCodeType(RCSProtocol.makeOperationCodeType(code, RCSProtocol.OperationCodeType.OBJECT_REQUEST)),
-                RCSProtocol.OperationCodeType.OBJECT_REQUEST
+                RCSP.dispatchOperationCodeType(RCSP.makeOperationCodeType(code, RCSP.OperationCodeType.OBJECT_REQUEST)),
+                RCSP.OperationCodeType.OBJECT_REQUEST
         );
         Assert.assertEquals(
-                RCSProtocol.dispatchOperationCodeType(RCSProtocol.makeOperationCodeType(code, RCSProtocol.OperationCodeType.CALL_REQUEST)),
-                RCSProtocol.OperationCodeType.CALL_REQUEST
+                RCSP.dispatchOperationCodeType(RCSP.makeOperationCodeType(code, RCSP.OperationCodeType.CALL_REQUEST)),
+                RCSP.OperationCodeType.CALL_REQUEST
         );
         Assert.assertEquals(
-                RCSProtocol.dispatchOperationCodeType(RCSProtocol.makeOperationCodeType(code, RCSProtocol.OperationCodeType.RESERVED)),
-                RCSProtocol.OperationCodeType.RESERVED
+                RCSP.dispatchOperationCodeType(RCSP.makeOperationCodeType(code, RCSP.OperationCodeType.RESERVED)),
+                RCSP.OperationCodeType.RESERVED
         );
     }
 
     @Test
     public void testUint16SerializationDeserialization()
     {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.UintParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.UintParameter.Serializer(null);
         testAnyParameterSerDeser(par, "1", "0", 10, 0);
         testAnyParameterSerDeser(par, "129", "0", 10, 1);
         testAnyParameterSerDeser(par, "160", "0", 10, 2);
@@ -61,8 +61,8 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testDeviceNameSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.DevNameParameter.Serializer(null);
-        //RCSProtocol.Parameter par = new RCSProtocol.Parameter("Test", RCSProtocol.Parameter.TYPE_DEVICE_NAME, 123);
+        RCSP.AnyParameterSerializer par = new RCSP.DevNameParameter.Serializer(null);
+        //RCSP.Parameter par = new RCSP.Parameter("Test", RCSP.Parameter.TYPE_DEVICE_NAME, 123);
         testAnyParameterSerDeser(par, "Test name 1", "", 40, 20);
         testAnyParameterSerDeser(par, "The device ASCII na", "", 20, 0);
 
@@ -77,7 +77,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testMT2idSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.MT2IdParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.MT2IdParameter.Serializer(null);
         testAnyParameterSerDeser(par, "1", "0", 2, 0);
         testAnyParameterSerDeser(par, "80", "0", 2, 1);
         testAnyParameterSerDeser(par, "127", "0", 10, 5);
@@ -87,7 +87,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testIntSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.IntParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.IntParameter.Serializer(null);
         testAnyParameterSerDeser(par, "1", "0", 2, 0);
         testAnyParameterSerDeser(par, "23767", "0", 10, 5);
         testAnyParameterSerDeser(par, "-1", "0", 4, 1);
@@ -97,7 +97,7 @@ public class RCSProtocolTest extends TestCase {
     @Test
     public void testFloatSerializationDeserialization() {
 
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.FloatParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.FloatParameter.Serializer(null);
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("1.0")), "0.0", 4, 0);
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("3.1415926")), "0.0", 4, 0);
         testAnyParameterSerDeser(par, Float.toString(Float.parseFloat("-243.6124123")), "0.0", 4, 0);
@@ -105,7 +105,7 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testDevAddrSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.DevAddrParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.DevAddrParameter.Serializer(null);
         testAnyParameterSerDeser(par, "123.43.8", "0.0.0", 4, 0);
         testAnyParameterSerDeser(par, "255.240.1", "0.0.0", 4, 0);
         testAnyParameterSerDeser(par, "0.0.0", "1.2.3", 4, 0);
@@ -114,14 +114,14 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testBoolSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.BooleanParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.BooleanParameter.Serializer(null);
         testAnyParameterSerDeser(par, "true", "false", 1, 0);
         testAnyParameterSerDeser(par, "false", "true", 4, 0);
     }
 
     @Test
     public void timeIntervalSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.TimeIntervalParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.TimeIntervalParameter.Serializer(null);
         testAnyParameterSerDeser(par, "2345", "0", 4, 0);
         testAnyParameterSerDeser(par, "1", "0", 4, 0);
         testAnyParameterSerDeser(par, "0", "24", 4, 0);
@@ -130,25 +130,25 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testMT2IdSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.MT2IdParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.MT2IdParameter.Serializer(null);
         testAnyParameterSerDeser(par, "24", "0", 1, 0);
         testAnyParameterSerDeser(par, "127", "4", 4, 0);
     }
 
     @Test
     public void testUByteSerializationDeserialization() {
-        RCSProtocol.AnyParameterSerializer par = new RCSProtocol.UByteParameter.Serializer(null);
+        RCSP.AnyParameterSerializer par = new RCSP.UByteParameter.Serializer(null);
         testAnyParameterSerDeser(par, "24", "0", 1, 0);
         testAnyParameterSerDeser(par, "255", "4", 4, 0);
     }
 
     @Test
     public void testStreamReadWriteOneParameter() {
-        RCSProtocol.ParametersDescriptionsContainer description = new RCSProtocol.ParametersDescriptionsContainer();
-        RCSProtocol.ParametersContainer container = new RCSProtocol.ParametersContainer();
+        RCSP.ParametersDescriptionsContainer description = new RCSP.ParametersDescriptionsContainer();
+        RCSP.ParametersContainer container = new RCSP.ParametersContainer();
         int paramId = 321;
-        RCSProtocol.ParameterDescription testParam
-            = new RCSProtocol.UintParameter(description, paramId, "Test parameter description", 1, 200);
+        RCSP.ParameterDescription testParam
+            = new RCSP.UintParameter(description, paramId, "Test parameter description", 1, 200);
         description.addParameters(container);
 
         byte arr[] = new byte[20];
@@ -159,7 +159,7 @@ public class RCSProtocolTest extends TestCase {
         Assert.assertTrue(size != 0);
         container.get(paramId).setValue("0");
 
-        RCSProtocol.RCSPOperation operation = RCSProtocol.RCSPOperation.parse(arr, 0, 20);
+        RCSP.RCSPOperation operation = RCSP.RCSPOperation.parse(arr, 0, 20);
         Assert.assertNotNull(operation);
 
         container.deserializeOneParamter(operation);
@@ -168,26 +168,26 @@ public class RCSProtocolTest extends TestCase {
 
     @Test
     public void testAllTypesSerDeserStream() {
-        RCSProtocol.ParametersDescriptionsContainer description = new RCSProtocol.ParametersDescriptionsContainer();
-        RCSProtocol.ParametersContainer container = new RCSProtocol.ParametersContainer();
-        RCSProtocol.ParameterDescription testParam1
-                = new RCSProtocol.UintParameter(description, 1, "Test uintparameter description", 1, 200);
-        RCSProtocol.ParameterDescription testParam2
-                = new RCSProtocol.IntParameter(description, 2, "Test int parameter description", -150, 200);
-        RCSProtocol.ParameterDescription testParam3
-                = new RCSProtocol.FloatParameter(description, 3, "Test float parameter description", true, 0.0f, 1.1f);
-        RCSProtocol.ParameterDescription testParam4
-                = new RCSProtocol.DevNameParameter(description, 4, "Test device name parameter description", false);
-        RCSProtocol.ParameterDescription testParam5
-                = new RCSProtocol.BooleanParameter(description, 5, "Test bool parameter description", true);
-        RCSProtocol.ParameterDescription testParam6
-                = new RCSProtocol.MT2IdParameter(description, 6, "Test MT2 id parameter description", true);
-        RCSProtocol.ParameterDescription testParam7
-                = new RCSProtocol.DevAddrParameter(description, 7, "Test dev address parameter description", true);
-        RCSProtocol.ParameterDescription testParam8
-                = new RCSProtocol.TimeIntervalParameter(description, 8, "Test time interval parameter description", 0, 1_000_000);
-        RCSProtocol.ParameterDescription testParam9
-                = new RCSProtocol.UByteParameter(description, 9, "Test unsigned byte parameter description", 0, 255);
+        RCSP.ParametersDescriptionsContainer description = new RCSP.ParametersDescriptionsContainer();
+        RCSP.ParametersContainer container = new RCSP.ParametersContainer();
+        RCSP.ParameterDescription testParam1
+                = new RCSP.UintParameter(description, 1, "Test uintparameter description", 1, 200);
+        RCSP.ParameterDescription testParam2
+                = new RCSP.IntParameter(description, 2, "Test int parameter description", -150, 200);
+        RCSP.ParameterDescription testParam3
+                = new RCSP.FloatParameter(description, 3, "Test float parameter description", true, 0.0f, 1.1f);
+        RCSP.ParameterDescription testParam4
+                = new RCSP.DevNameParameter(description, 4, "Test device name parameter description", false);
+        RCSP.ParameterDescription testParam5
+                = new RCSP.BooleanParameter(description, 5, "Test bool parameter description", true);
+        RCSP.ParameterDescription testParam6
+                = new RCSP.MT2IdParameter(description, 6, "Test MT2 id parameter description", true);
+        RCSP.ParameterDescription testParam7
+                = new RCSP.DevAddrParameter(description, 7, "Test dev address parameter description", true);
+        RCSP.ParameterDescription testParam8
+                = new RCSP.TimeIntervalParameter(description, 8, "Test time interval parameter description", 0, 1_000_000);
+        RCSP.ParameterDescription testParam9
+                = new RCSP.UByteParameter(description, 9, "Test unsigned byte parameter description", 0, 255);
 
         description.addParameters(container);
 

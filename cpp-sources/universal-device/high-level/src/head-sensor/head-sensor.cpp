@@ -217,9 +217,10 @@ void HeadSensor::catchShot(ShotMessage msg)
 	if (currentTime - m_shockDelayBegin < playerConfig.shockDelayImmortal)
 	{
 		info << "!! Shock time";
+		return;
 	}
-	else if (playerState.isAlive()) {
-
+	if (playerState.isAlive())
+	{
 		if (msg.playerId == playerConfig.playerId)
 		{
 			debug << "self-shot";

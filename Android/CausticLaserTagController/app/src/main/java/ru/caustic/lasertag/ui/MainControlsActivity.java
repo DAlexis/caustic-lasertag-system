@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DevicesManager;
 

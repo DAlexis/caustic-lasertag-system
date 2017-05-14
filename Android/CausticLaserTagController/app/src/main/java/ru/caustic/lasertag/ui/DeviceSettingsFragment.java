@@ -24,10 +24,10 @@ import android.widget.TextView;
 
 import java.util.Set;
 
-import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.BridgeDriver;
 import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.RCSP;
 import ru.caustic.rcspcore.SettingsEditorContext;
 
 public class DeviceSettingsFragment extends Fragment {
@@ -63,7 +63,7 @@ public class DeviceSettingsFragment extends Fragment {
         ImageButton revert = null;
 
         boolean workaroundIgnoreInput = false;
-        RCSProtocol.ParameterDescription descr = null;
+        RCSP.ParameterDescription descr = null;
 
         protected abstract String progressToValue(int progress);
         protected abstract int valueToProgress(String value);
@@ -202,11 +202,11 @@ public class DeviceSettingsFragment extends Fragment {
 
     private static class UIListElementInteger extends UIListElementSeekBar {
         protected int min() {
-            return ((RCSProtocol.UintParameter) descr).minValue;
+            return ((RCSP.UintParameter) descr).minValue;
         }
 
         protected int max() {
-            return ((RCSProtocol.UintParameter) descr).maxValue;
+            return ((RCSP.UintParameter) descr).maxValue;
         }
 
         @Override
@@ -261,22 +261,22 @@ public class DeviceSettingsFragment extends Fragment {
     private static class UIListElementUByte extends UIListElementInteger {
         @Override
         protected int min() {
-            return ((RCSProtocol.UByteParameter) descr).minValue;
+            return ((RCSP.UByteParameter) descr).minValue;
         }
 
         @Override
         protected int max() {
-            return ((RCSProtocol.UByteParameter) descr).maxValue;
+            return ((RCSP.UByteParameter) descr).maxValue;
         }
     }
     private static class UIListElementTimeInterval extends UIListElementSeekBar {
         private static int k = 1000;
         private long min() {
-            return ((RCSProtocol.TimeIntervalParameter) descr).minValue;
+            return ((RCSP.TimeIntervalParameter) descr).minValue;
         }
 
         private long max() {
-            return ((RCSProtocol.TimeIntervalParameter) descr).maxValue;
+            return ((RCSP.TimeIntervalParameter) descr).maxValue;
         }
 
         @Override
@@ -314,11 +314,11 @@ public class DeviceSettingsFragment extends Fragment {
     private static class UIListElementFloat extends UIListElementSeekBar {
         private static int progressElements = 1000;
         private float min() {
-            return ((RCSProtocol.FloatParameter) descr).minValue;
+            return ((RCSP.FloatParameter) descr).minValue;
         }
 
         private float max() {
-            return ((RCSProtocol.FloatParameter) descr).maxValue;
+            return ((RCSP.FloatParameter) descr).maxValue;
         }
 
         @Override
@@ -359,7 +359,7 @@ public class DeviceSettingsFragment extends Fragment {
         TextView notEqual = null;
         ImageButton revert = null;
 
-        RCSProtocol.BooleanParameter descr = null;
+        RCSP.BooleanParameter descr = null;
 
         @Override
         public void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry _parameterEntry) {
@@ -407,7 +407,7 @@ public class DeviceSettingsFragment extends Fragment {
         TextView notEqual = null;
         ImageButton revert = null;
 
-        RCSProtocol.EnumParameter descr = null;
+        RCSP.EnumParameter descr = null;
 
         ArrayAdapter<String> itemsAdapter = null;
 
@@ -416,7 +416,7 @@ public class DeviceSettingsFragment extends Fragment {
         @Override
         public void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry _parameterEntry) {
             this.parameterEntry = _parameterEntry;
-            descr = (RCSProtocol.EnumParameter) parameterEntry.description;
+            descr = (RCSP.EnumParameter) parameterEntry.description;
 
             this.convertView = inflater.inflate(R.layout.parameters_list_enum_item, null);
             parameterName = (TextView) convertView.findViewById(R.id.parameterName);
@@ -481,7 +481,7 @@ public class DeviceSettingsFragment extends Fragment {
         TextView parameterName = null;
         TextView parameterSummary = null;
 
-        RCSProtocol.BooleanParameter descr = null;
+        RCSP.BooleanParameter descr = null;
 
         @Override
         public void init(LayoutInflater inflater, final SettingsEditorContext.ParameterEntry parameterEntry) {
@@ -501,19 +501,19 @@ public class DeviceSettingsFragment extends Fragment {
 
     private static class UIDataPickerFactory implements SettingsEditorContext.IUIDataPickerFactory {
         @Override
-        public SettingsEditorContext.UIDataPicker create(RCSProtocol.ParameterDescription description)
+        public SettingsEditorContext.UIDataPicker create(RCSP.ParameterDescription description)
         {
-            if (description instanceof RCSProtocol.UintParameter) {
+            if (description instanceof RCSP.UintParameter) {
                 return new UIListElementInteger();
-            } else if (description instanceof RCSProtocol.BooleanParameter) {
+            } else if (description instanceof RCSP.BooleanParameter) {
                 return new UIListElementBoolean();
-            } else if (description instanceof RCSProtocol.TimeIntervalParameter) {
+            } else if (description instanceof RCSP.TimeIntervalParameter) {
                 return new UIListElementTimeInterval();
-            } else if (description instanceof RCSProtocol.EnumParameter) {
+            } else if (description instanceof RCSP.EnumParameter) {
                 return new UIListElementEnum();
-            } else if (description instanceof RCSProtocol.FloatParameter) {
+            } else if (description instanceof RCSP.FloatParameter) {
                 return new UIListElementFloat();
-            } else if (description instanceof RCSProtocol.UByteParameter) {
+            } else if (description instanceof RCSP.UByteParameter) {
                 return new UIListElementUByte();
             }
             return new UIListElementUnsupported();
@@ -537,7 +537,7 @@ public class DeviceSettingsFragment extends Fragment {
      */
     private class ParametersListUpdater implements DevicesManager.SynchronizationEndListener {
         @Override
-        public void onSynchronizationEnd(boolean isSuccess, final Set<BridgeConnector.DeviceAddress> notSynchronized) {
+        public void onSynchronizationEnd(boolean isSuccess, final Set<RCSP.DeviceAddress> notSynchronized) {
             if (isSuccess) {
                 getActivity().runOnUiThread(new ListEntriesCreator());
             } else {
@@ -648,7 +648,7 @@ public class DeviceSettingsFragment extends Fragment {
 
     public DeviceSettingsFragment() {
         super();
-        //dataPopper = DevicesManager.getInstance().new AsyncDataPopper(new ParametersListUpdater(), editorContext.devices);
+        //dataPopper = DevicesManager.getInstance().new AsyncDataPuller(new ParametersListUpdater(), editorContext.devices);
         parametersListUpdater = new ParametersListUpdater();
 	// @todo Refactor without signleton usage
         editorContext = CausticController.getInstance().getSettingsEditorContext();

@@ -8,10 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 
-import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
-import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.RCSProtocol;
 
 public class SimpleControlsFragment extends Fragment {
 

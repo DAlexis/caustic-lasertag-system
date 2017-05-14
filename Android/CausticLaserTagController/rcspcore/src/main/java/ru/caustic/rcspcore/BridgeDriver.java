@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by alexey on 18.09.15.
+ * This class contains realization of Android < = > Caustic bridge protocol
+ * It produce bluetooth packages with its header and parse this packages
  */
-public class BridgeConnector {
+public class BridgeDriver {
     public interface IBluetoothListener {
         void receiveBluetoothMessage(byte[] buffer, int size);
     }
@@ -22,92 +23,11 @@ public class BridgeConnector {
 
     }
     public static class Broadcast {
-        public static DeviceAddress anyDevice = new DeviceAddress(255, 255, 255);
-    }
-
-    public static class DeviceAddress extends Object {
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            DeviceAddress that = (DeviceAddress) o;
-
-            return Arrays.equals(address, that.address);
-
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(address);
-        }
-
-        public int[] address = new int[3];
-
-        public DeviceAddress() {
-            address[0] = address[1] = address[2] = 0;
-        }
-
-        public DeviceAddress(int a1, int a2, int a3) {
-            address[0] = a1;
-            address[1] = a2;
-            address[2] = a3;
-        }
-
-        public DeviceAddress(String addressStr) {
-            String[] addressArr = addressStr.split("\\.");
-            address[0] = Integer.parseInt(addressArr[0]);
-            address[1] = Integer.parseInt(addressArr[1]);
-            address[2] = Integer.parseInt(addressArr[2]);
-            normalize();
-        }
-
-        public DeviceAddress(DeviceAddress addr) {
-            address[0] = addr.address[0];
-            address[1] = addr.address[1];
-            address[2] = addr.address[2];
-        }
-
-        public void deserialize(byte[] memory, int position) {
-            address[0] = MemoryUtils.byteToUnsignedByte(memory[position]);
-            address[1] = MemoryUtils.byteToUnsignedByte(memory[position + 1]);
-            address[2] = MemoryUtils.byteToUnsignedByte(memory[position + 2]);
-        }
-
-        public void deserialize(ArrayList<Byte> memory, int position) {
-            address[0] = MemoryUtils.byteToUnsignedByte(memory.get(position));
-            address[1] = MemoryUtils.byteToUnsignedByte(memory.get(position + 1));
-            address[2] = MemoryUtils.byteToUnsignedByte(memory.get(position + 2));
-        }
-
-        public int serialize(byte[] memory, int offset) {
-            memory[offset + 0] = (byte) address[0];
-            memory[offset + 1] = (byte) address[1];
-            memory[offset + 2] = (byte) address[2];
-            return sizeof();
-        }
-
-        public String toString() {
-            return address[0] + "." + address[1] + "." + address[2];
-        }
-
-        public static int sizeof() {
-            return 3;
-        }
-
-        private void normalize() {
-            for (int i = 0; i < 3; i++) {
-                if (address[i] < 0)
-                    address[i] = 0;
-                else if (address[i] > 255)
-                    address[i] = 255;
-            }
-        }
+        public static RCSP.DeviceAddress anyDevice = new RCSP.DeviceAddress(255, 255, 255);
     }
 
     public interface IncomingPackagesListener {
-        void getData(DeviceAddress address, byte[] data, int offset, int size);
+        void getData(RCSP.DeviceAddress address, byte[] data, int offset, int size);
     }
 
     public static final int MESSAGE_LEN_MAX = 250;
@@ -117,7 +37,7 @@ public class BridgeConnector {
         this.packagesReceiver = packagesReceiver;
     }
 
-    public void sendMessage(DeviceAddress addr, byte[] data, int size) {
+    public void sendMessage(RCSP.DeviceAddress addr, byte[] data, int size) {
         BluetoothMessage msg = new BluetoothMessage();
         msg.address = addr;
         msg.setPayload(data, size);
@@ -125,7 +45,7 @@ public class BridgeConnector {
         byte[] serialized = msg.serialize();
         bluetoothManager.sendData(serialized);
 
-        /* int messageSize = size + 1 + DeviceAddress.sizeof();
+        /* int messageSize = size + 1 + RCSP.DeviceAddress.sizeof();
         byte[] message = new byte[messageSize];
 
         // Putting message size
@@ -134,7 +54,7 @@ public class BridgeConnector {
         addr.serialize(message, 1);
         // Then putting message
         for (int i = 0; i < size; i++) {
-            message[1 + DeviceAddress.sizeof() + i] = data[i];
+            message[1 + RCSP.DeviceAddress.sizeof() + i] = data[i];
         }
 
         bluetoothManager.sendData(message);*/
@@ -151,16 +71,16 @@ public class BridgeConnector {
     }
 
     public static class Broadcasts {
-        public static final DeviceAddress any = new DeviceAddress("255.255.255");
-        public static final DeviceAddress anyGameDevice = new DeviceAddress("255.255.254");
-        public static final DeviceAddress headSensors = new DeviceAddress("255.255.4");
-        public static final DeviceAddress headSensorsRed = new DeviceAddress("255.255.0");
-        public static final DeviceAddress headSensorsBlue = new DeviceAddress("255.255.1");
-        public static final DeviceAddress headSensorsYellow = new DeviceAddress("255.255.2");
-        public static final DeviceAddress headSensorsGreen = new DeviceAddress("255.255.3");
+        public static final RCSP.DeviceAddress any = new RCSP.DeviceAddress("255.255.255");
+        public static final RCSP.DeviceAddress anyGameDevice = new RCSP.DeviceAddress("255.255.254");
+        public static final RCSP.DeviceAddress headSensors = new RCSP.DeviceAddress("255.255.4");
+        public static final RCSP.DeviceAddress headSensorsRed = new RCSP.DeviceAddress("255.255.0");
+        public static final RCSP.DeviceAddress headSensorsBlue = new RCSP.DeviceAddress("255.255.1");
+        public static final RCSP.DeviceAddress headSensorsYellow = new RCSP.DeviceAddress("255.255.2");
+        public static final RCSP.DeviceAddress headSensorsGreen = new RCSP.DeviceAddress("255.255.3");
 
 
-        public static boolean isBroadcast(DeviceAddress addr) {
+        public static boolean isBroadcast(RCSP.DeviceAddress addr) {
             return addr == any
                     || addr == anyGameDevice
                     || addr == headSensors
@@ -173,7 +93,7 @@ public class BridgeConnector {
 
     // Private
     private static class BluetoothMessage {
-        BridgeConnector.DeviceAddress address = new BridgeConnector.DeviceAddress();
+        RCSP.DeviceAddress address = new RCSP.DeviceAddress();
         int totalLength = headerSize;
         int checksum = 0;
         byte[] payload;
@@ -242,7 +162,7 @@ public class BridgeConnector {
                 payload[i] = data[i];
         }
 
-        public static int headerSize = 2 + DeviceAddress.sizeof();
+        public static int headerSize = 2 + RCSP.DeviceAddress.sizeof();
     }
 
     // Private functions
@@ -286,7 +206,7 @@ public class BridgeConnector {
 
             if (position == currentMsgLength) {
                 // We have received full message now
-                DeviceAddress addr = new DeviceAddress();
+                RCSP.DeviceAddress addr = new RCSP.DeviceAddress();
 
                 // Creating static array from ArrayList to process it
                 byte receivedData[] = new byte[incoming.size()];
@@ -296,7 +216,7 @@ public class BridgeConnector {
 
                 addr.deserialize(receivedData, 2);
                 if (packagesReceiver != null) {
-                    int headerSize = 2 + DeviceAddress.sizeof();
+                    int headerSize = 2 + RCSP.DeviceAddress.sizeof();
                     int checksum = MemoryUtils.byteToUnsignedByte(incoming.get(2));
                     byte[] toReceiver = Arrays.copyOfRange(receivedData, headerSize, currentMsgLength);
                     packagesReceiver.getData(addr, toReceiver, 0, currentMsgLength - headerSize);
@@ -314,7 +234,7 @@ public class BridgeConnector {
     }
 
     // Private variables
-    private static String TAG = "BridgeConnector";
+    private static String TAG = "BridgeDriver";
     //private byte[] incoming = new byte[MESSAGE_LEN_MAX];
     private ArrayList<Byte> incoming = new ArrayList<>();
     private int position = 0;

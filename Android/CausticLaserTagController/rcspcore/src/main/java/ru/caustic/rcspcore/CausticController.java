@@ -1,17 +1,17 @@
 package ru.caustic.rcspcore;
 
-
 /**
- * Created by dalexies on 13.10.16.
+ * The main entry point to rcspcore. Most of operations with Caustic LTS may be done over that class
  */
 
 public class CausticController {
     // Public methods
     // @todo This class should be the one singleton and all other should be inside it
     public static CausticController getInstance() { return ourInstance; }
-    public void systemInit() {
-        RCSProtocol.Operations.init();
-        bridgeConnector.init(BluetoothManager.getInstance());
+    public void systemInit(BridgeDriver.IBluetoothManager bluetoothManager) {
+        RCSP.Operations.init();
+        bridgeDriver.init(BluetoothManager.getInstance());
+        bridgeDriver.setReceiver(communicator);
     }
     public SettingsEditorContext getSettingsEditorContext() { return settingsEditorContext; }
     public DevicesManager getDevicesManager() { return devicesManager; }
@@ -32,16 +32,16 @@ public class CausticController {
         public void respawn(int team) {
             broadcastCallForTeam(
                     team,
-                    RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                    RCSProtocol.Operations.HeadSensor.Functions.playerRespawn.getId(),
+                    RCSP.Operations.HeadSensor.functionsSerializers,
+                    RCSP.Operations.HeadSensor.Functions.playerRespawn.getId(),
                     ""
             );
         }
         public void kill(int team) {
             broadcastCallForTeam(
                     team,
-                    RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                    RCSProtocol.Operations.HeadSensor.Functions.playerKill.getId(),
+                    RCSP.Operations.HeadSensor.functionsSerializers,
+                    RCSP.Operations.HeadSensor.Functions.playerKill.getId(),
                     ""
             );
         }
@@ -49,8 +49,8 @@ public class CausticController {
         public void resetPlayers(int team) {
             broadcastCallForTeam(
                     team,
-                    RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                    RCSProtocol.Operations.HeadSensor.Functions.playerReset.getId(),
+                    RCSP.Operations.HeadSensor.functionsSerializers,
+                    RCSP.Operations.HeadSensor.Functions.playerReset.getId(),
                     ""
             );
         }
@@ -58,8 +58,8 @@ public class CausticController {
         public void resetStats(int team) {
             broadcastCallForTeam(
                     team,
-                    RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                    RCSProtocol.Operations.HeadSensor.Functions.resetStats.getId(),
+                    RCSP.Operations.HeadSensor.functionsSerializers,
+                    RCSP.Operations.HeadSensor.Functions.resetStats.getId(),
                     ""
             );
         }
@@ -73,10 +73,10 @@ public class CausticController {
 
 
         // Private
-        private void broadcastCallForTeam(int team, RCSProtocol.FunctionsContainer functionsContainer, int operationId, String argument) {
+        private void broadcastCallForTeam(int team, RCSP.FunctionsContainer functionsContainer, int operationId, String argument) {
             if (team == ALL_TEAMS) {
                 devicesManager.remoteCall(
-                        BridgeConnector.Broadcasts.headSensors,
+                        BridgeDriver.Broadcasts.headSensors,
                         functionsContainer,
                         operationId,
                         argument
@@ -85,7 +85,7 @@ public class CausticController {
             }
             if ((team & RED) != 0) {
                 devicesManager.remoteCall(
-                        BridgeConnector.Broadcasts.headSensorsRed,
+                        BridgeDriver.Broadcasts.headSensorsRed,
                         functionsContainer,
                         operationId,
                         argument
@@ -93,7 +93,7 @@ public class CausticController {
             }
             if ((team & BLUE) != 0) {
                 devicesManager.remoteCall(
-                        BridgeConnector.Broadcasts.headSensorsBlue,
+                        BridgeDriver.Broadcasts.headSensorsBlue,
                         functionsContainer,
                         operationId,
                         argument
@@ -101,7 +101,7 @@ public class CausticController {
             }
             if ((team & YELLOW) != 0) {
                 devicesManager.remoteCall(
-                        BridgeConnector.Broadcasts.headSensorsYellow,
+                        BridgeDriver.Broadcasts.headSensorsYellow,
                         functionsContainer,
                         operationId,
                         argument
@@ -109,7 +109,7 @@ public class CausticController {
             }
             if ((team & GREEN) != 0) {
                 devicesManager.remoteCall(
-                        BridgeConnector.Broadcasts.headSensorsGreen,
+                        BridgeDriver.Broadcasts.headSensorsGreen,
                         functionsContainer,
                         operationId,
                         argument
@@ -119,11 +119,11 @@ public class CausticController {
     }
 
     private static CausticController ourInstance = new CausticController();
-    private BridgeConnector bridgeConnector = new BridgeConnector();
-    private DevicesManager devicesManager = new DevicesManager(bridgeConnector);
+    private LTSCommunicator communicator = new LTSCommunicator();
+    private BridgeDriver bridgeDriver = new BridgeDriver();
+    private DevicesManager devicesManager = new DevicesManager(bridgeDriver, communicator);
     private SettingsEditorContext settingsEditorContext = new SettingsEditorContext(devicesManager);
 
-
-    private GameStatistics gameStatistics = new GameStatistics(devicesManager);
+    private GameStatistics gameStatistics = new GameStatistics(devicesManager, communicator);
     private BroadcastCalls broadcastCalls = new BroadcastCalls();
 }

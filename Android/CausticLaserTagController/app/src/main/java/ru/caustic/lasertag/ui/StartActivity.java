@@ -60,7 +60,7 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         // @todo Refactor without signleton usage
-        CausticController.getInstance().systemInit();
+        CausticController.getInstance().systemInit(BluetoothManager.getInstance());
         Log.d(TAG, "Starting main activity");
 
         selectDeviceLayout = (LinearLayout) findViewById(R.id.selectDeviceLayout);

@@ -10,10 +10,11 @@ import android.widget.TextView;
 
 import java.util.Set;
 
-import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.BridgeDriver;
 import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DeviceUtils;
 import ru.caustic.rcspcore.DevicesManager;
+import ru.caustic.rcspcore.RCSP;
 
 public class StressTestActivity extends AppCompatActivity {
     private static int DELAY=500;
@@ -42,7 +43,7 @@ public class StressTestActivity extends AppCompatActivity {
 
     private DevicesManager.SynchronizationEndListener syncListener = new DevicesManager.SynchronizationEndListener() {
         @Override
-        public void onSynchronizationEnd(boolean isSuccess, Set<BridgeConnector.DeviceAddress> notSynchronized) {
+        public void onSynchronizationEnd(boolean isSuccess, Set<RCSP.DeviceAddress> notSynchronized) {
             Log.d(TAG, "Sync completed, result: " + isSuccess + ", not synchronized: " + notSynchronized.size());
             //List population occurs here.
 
@@ -56,8 +57,7 @@ public class StressTestActivity extends AppCompatActivity {
             Log.d(TAG, "Updated devices list");
 
             Log.d(TAG, "Starting parameters sync");
-            devMan.asyncPopParametersFromDevices(syncListener, DeviceUtils.getHeadSensorsMap(devMan.devices).keySet());
-
+            devMan.asyncPullAllParameters(syncListener, DeviceUtils.getHeadSensorsMap(devMan.devices).keySet());
         }
     };
     @Override

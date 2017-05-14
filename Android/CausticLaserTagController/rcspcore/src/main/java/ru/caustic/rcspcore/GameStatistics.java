@@ -24,9 +24,9 @@ public class GameStatistics {
         void onStatsChange(int victimId, int damagerId);
     }
 
-    public GameStatistics(DevicesManager devicesManager) {
+    public GameStatistics(DevicesManager devicesManager, RCSP.OperationDispatcherUser dispatchersUser) {
         this.devicesManager = devicesManager;
-        this.devicesManager.registerRCSPOperationDispatcher(OP_CODE_GET_PVP_RESULTS, new PvPDamageResultsMessageDispatcher());
+        dispatchersUser.addOperationDispatcher(OP_CODE_GET_PVP_RESULTS, new PvPDamageResultsMessageDispatcher());
     }
 
     public void setStatsChangeListener(StatsChangeListener statsChangeListener) {
@@ -41,7 +41,7 @@ public class GameStatistics {
         // Giving some time to update
         Thread.sleep(1000);
         // Loading only one parameter: player id
-        devicesManager.asyncPopPlayerIdsForAllSupportingDevices(new DevicesManager.SynchronizationEndListener() {
+        devicesManager.asyncPullPlayerIdsForAllSupportingDevices(new DevicesManager.SynchronizationEndListener() {
             @Override
             public void onSynchronizationEnd(boolean isSuccess) {
                 devsSyncEnd = true;
@@ -119,13 +119,13 @@ public class GameStatistics {
 
 
     // Private
-    private class PvPDamageResultsMessageDispatcher implements DevicesManager.RCSPOperationDispatcher {
+    private class PvPDamageResultsMessageDispatcher implements RCSP.OperationDispatcher {
         @Override
-        public void dispatchOperation(BridgeConnector.DeviceAddress address, RCSProtocol.RCSPOperation operation)
+        public boolean dispatchOperation(RCSP.DeviceAddress address, RCSP.RCSPOperation operation)
         {
             // To be sure
             if (operation.id != OP_CODE_GET_PVP_RESULTS)
-                return;
+                return false;
 
             PvPRawResults pvpRawResults = new PvPRawResults();
             pvpRawResults.deserialize(operation.argument, 0);
@@ -134,6 +134,7 @@ public class GameStatistics {
             if (statsChangeListener != null) {
                 statsChangeListener.onStatsChange(pvpRawResults.victimId, pvpRawResults.enemyId);
             }
+            return true;
         }
     }
     /**
@@ -179,9 +180,9 @@ public class GameStatistics {
 
     private void sendRequest() {
         devicesManager.remoteCall(
-                BridgeConnector.Broadcasts.headSensors,
-                RCSProtocol.Operations.HeadSensor.functionsSerializers,
-                RCSProtocol.Operations.HeadSensor.Functions.readStats.getId(),
+                BridgeDriver.Broadcasts.headSensors,
+                RCSP.Operations.HeadSensor.functionsSerializers,
+                RCSP.Operations.HeadSensor.Functions.readStats.getId(),
                 ""
         );
     }

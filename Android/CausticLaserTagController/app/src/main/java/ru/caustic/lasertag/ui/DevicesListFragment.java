@@ -16,10 +16,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Map;
 
-import ru.caustic.rcspcore.BridgeConnector;
+import ru.caustic.rcspcore.BridgeDriver;
 import ru.caustic.rcspcore.CausticController;
 import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.RCSP;
 import ru.caustic.rcspcore.SettingsEditorContext;
 
 public class DevicesListFragment extends Fragment {
@@ -78,7 +78,7 @@ public class DevicesListFragment extends Fragment {
             @Override
             public void onDevicesListUpdated() {
                 adapter.clear();
-                for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devicesManager.devices.entrySet()) {
+                for (Map.Entry<RCSP.DeviceAddress, DevicesManager.CausticDevice> entry : devicesManager.devices.entrySet()) {
                     adapter.addItem(new DevicesListElementHolder(entry.getValue()));
                 }
 
@@ -128,10 +128,10 @@ public class DevicesListFragment extends Fragment {
             if (deviceName.isChecked()) {
                 int selectedType = Integer.parseInt(
                         devicesManager.devices.get(device.address).parameters.get(
-                                RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()
+                                RCSP.Operations.AnyDevice.Configuration.deviceType.getId()
                         ).getValue()
                 );
-                if (editorContext.getDeviceType() == RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
+                if (editorContext.getDeviceType() == RCSP.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
                         || editorContext.getDeviceType() == selectedType)
                 {
                     editorContext.selectForEditing(device.address);

@@ -18,12 +18,11 @@ import java.util.concurrent.ConcurrentSkipListMap;
 /**
  * Created by alexey on 18.09.15.
  */
-public class RCSProtocol {
+public class RCSP {
 
     // Public
     // Classes
     public enum OperationCodeType { SET_OBJECT, OBJECT_REQUEST, CALL_REQUEST, RESERVED, UNKNOWN }
-
     public static class RCSPOperation {
         public final static int MIN_SIZE = 3;
         public int id = 0;
@@ -75,7 +74,108 @@ public class RCSProtocol {
             return result;
         }
     }
+    public static class DeviceAddress extends Object {
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            DeviceAddress that = (DeviceAddress) o;
+
+            return Arrays.equals(address, that.address);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(address);
+        }
+
+        public int[] address = new int[3];
+
+        public DeviceAddress() {
+            address[0] = address[1] = address[2] = 0;
+        }
+
+        public DeviceAddress(int a1, int a2, int a3) {
+            address[0] = a1;
+            address[1] = a2;
+            address[2] = a3;
+        }
+
+        public DeviceAddress(String addressStr) {
+            String[] addressArr = addressStr.split("\\.");
+            address[0] = Integer.parseInt(addressArr[0]);
+            address[1] = Integer.parseInt(addressArr[1]);
+            address[2] = Integer.parseInt(addressArr[2]);
+            normalize();
+        }
+
+        public DeviceAddress(DeviceAddress addr) {
+            address[0] = addr.address[0];
+            address[1] = addr.address[1];
+            address[2] = addr.address[2];
+        }
+
+        public void deserialize(byte[] memory, int position) {
+            address[0] = MemoryUtils.byteToUnsignedByte(memory[position]);
+            address[1] = MemoryUtils.byteToUnsignedByte(memory[position + 1]);
+            address[2] = MemoryUtils.byteToUnsignedByte(memory[position + 2]);
+        }
+
+        public void deserialize(ArrayList<Byte> memory, int position) {
+            address[0] = MemoryUtils.byteToUnsignedByte(memory.get(position));
+            address[1] = MemoryUtils.byteToUnsignedByte(memory.get(position + 1));
+            address[2] = MemoryUtils.byteToUnsignedByte(memory.get(position + 2));
+        }
+
+        public int serialize(byte[] memory, int offset) {
+            memory[offset + 0] = (byte) address[0];
+            memory[offset + 1] = (byte) address[1];
+            memory[offset + 2] = (byte) address[2];
+            return sizeof();
+        }
+
+        public String toString() {
+            return address[0] + "." + address[1] + "." + address[2];
+        }
+
+        public static int sizeof() {
+            return 3;
+        }
+
+        private void normalize() {
+            for (int i = 0; i < 3; i++) {
+                if (address[i] < 0)
+                    address[i] = 0;
+                else if (address[i] > 255)
+                    address[i] = 255;
+            }
+        }
+    }
+
+    /**
+     * Interface for any kinds of RCSP operations dispatcher outside from DevicesManager
+     */
+    public interface OperationDispatcher {
+        /**
+         * Dispatch RCSP operation from buffer
+         * @param address Address of message sender
+         * @param operation Operation to dispatch
+         * @return size of block used by dispatcher or 0 if did not dispatch anything
+         */
+        boolean dispatchOperation(DeviceAddress address, RCSP.RCSPOperation operation);
+    }
+
+    /**
+     * Interface for object that stores many operation dispatchers and use them to process
+     * data streams
+     */
+    public interface OperationDispatcherUser {
+        void addOperationDispatcher(int code, RCSP.OperationDispatcher disp);
+        void addOperationDispatcher(RCSP.OperationDispatcher disp);
+    }
     // Descriptions
     public static abstract class AnyDescription implements IDescription {
         protected int id;
@@ -292,8 +392,6 @@ public class RCSProtocol {
             this.maxValue = 0;
         }
     }
-
-
     public static class ColorParameter extends ParameterDescription {
         //This is basically int32
         public final long minValue;
@@ -337,8 +435,6 @@ public class RCSProtocol {
             this.maxValue = 0;
         }
     }
-
-
     public static class BooleanParameter extends ParameterDescription {
 
         public AnyParameterSerializer createSerializer() { return new Serializer(this); }
@@ -783,8 +879,7 @@ public class RCSProtocol {
             return 3;
         }
 
-        public int deserializeOneParamter(RCSPOperation operation)
-        {
+        public int deserializeOneParamter(RCSPOperation operation) {
             if (operation == null) {
                 // @todo use exception there: stream is broken
                 return 0;
@@ -1076,6 +1171,9 @@ public class RCSProtocol {
         int serialize(byte[] memory, int offset);
     }
 
-    private static final String TAG = "CC.RCSProtocol";
+    // Constants
+    private static final String TAG = "CC.RCSP";
     private static final int OperationCodeMask = 0b0011_1111_1111_1111;
+
+    // Variables
 }
