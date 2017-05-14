@@ -28,13 +28,10 @@ public class GameStatistics {
         this.devicesManager = devicesManager;
         dispatchersUser.addOperationDispatcher(OP_CODE_GET_PVP_RESULTS, new PvPDamageResultsMessageDispatcher());
     }
-
     public void setStatsChangeListener(StatsChangeListener statsChangeListener) {
         this.statsChangeListener = statsChangeListener;
     }
-
-    public void updateStats()
-    {
+    public void updateStats() {
         /*
         // Updating devices list @todo Think about regular devices list updating...
         devicesManager.updateDevicesList(null);
@@ -58,11 +55,9 @@ public class GameStatistics {
         // Now we really can wait statistics
         sendRequest();
     }
-
     public void clearStatistics() {
         pvpStatsMap.clear();
     }
-
     public String getStatisticsTableStrStub(int statParType) {
         String result = "";
         for (TreeMap.Entry<Integer, TreeMap<Integer, PvPStats>> playerStats : pvpStatsMap.entrySet())
@@ -82,7 +77,6 @@ public class GameStatistics {
         }
         return result;
     }
-
     public int getStatForPlayerID(int playerID, int statParType) {
         int result = 0;
         TreeMap<Integer, PvPStats> ownRegister = pvpStatsMap.get(playerID);
@@ -116,7 +110,6 @@ public class GameStatistics {
         }
         return result;
     }
-
 
     // Private
     private class PvPDamageResultsMessageDispatcher implements RCSP.OperationDispatcher {
@@ -177,7 +170,6 @@ public class GameStatistics {
         public int hitsCount = 0; //< hits except kills
         public long totalDamage = 0;
     }
-
     private void sendRequest() {
         devicesManager.remoteCall(
                 BridgeDriver.Broadcasts.headSensors,
@@ -186,7 +178,6 @@ public class GameStatistics {
                 ""
         );
     }
-
     private void addPvPRawResult(PvPRawResults pvpRawResults) {
         updateLastDataReceivedTime();
 
@@ -209,7 +200,6 @@ public class GameStatistics {
         pvpStats.hits   = pvpRawResults.hitsCount;
         pvpStats.kills  = pvpRawResults.killsCount;
     }
-
     private boolean isWaitingTimeOver() {
         return System.currentTimeMillis() - lastDataReceivedTime > statsReceiveTimeout;
     }

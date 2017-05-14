@@ -25,242 +25,6 @@ public class DevicesManager {
         void onDevicesListUpdated();
     }
 
-    public class RCSPStream {
-        int requestSize = 23;
-        byte[] request = new byte[requestSize];
-        int cursor = 0;
-
-        public RCSPStream()
-        {
-            MemoryUtils.zerify(request);
-        }
-
-        public boolean addObjectRequest(int id) {
-            int size = RCSP.ParametersContainer.serializeParameterRequest(
-                    id,
-                    request,
-                    cursor,
-                    requestSize
-            );
-
-            if (size != 0) {
-                cursor += size;
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        public boolean addSetObject(CausticDevice dev, int id) {
-            RCSP.ParametersContainer pars = dev.parameters;
-
-            int size = pars.serializeSetObject(
-                    id,
-                    request,
-                    cursor,
-                    requestSize
-            );
-
-            if (size != 0) {
-                cursor += size;
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        public boolean addFunctionCall2(RCSP.FunctionsContainer functionsContainer, int id, String argument) {
-            int size = functionsContainer.serializeCall(
-                    id,
-                    argument,
-                    request,
-                    cursor,
-                    requestSize
-            );
-
-            if (size != 0) {
-                cursor += size;
-                return true;
-            }
-            return false;
-        }
-
-        public void send(RCSP.DeviceAddress addr) {
-            if (cursor != 0)
-                bridgeDriver.sendMessage(addr, request, cursor);
-        }
-    }
-    public class RCSPMultiStream {
-        List<RCSPStream> streams = new ArrayList<>();
-
-        public RCSPMultiStream() {
-            streams.add(new RCSPStream());
-        }
-
-        public void addObjectRequest(int id) {
-            if (!streams.get(streams.size()-1).addObjectRequest(id)) {
-                streams.add(new RCSPStream());
-                streams.get(streams.size()-1).addObjectRequest(id);
-            }
-        }
-
-        public void addSetObject(CausticDevice dev, int id) {
-            if (!streams.get(streams.size()-1).addSetObject(dev, id)) {
-                streams.add(new RCSPStream());
-                streams.get(streams.size()-1).addSetObject(dev, id);
-            }
-        }
-
-
-        public void send(RCSP.DeviceAddress addr) {
-            for (RCSPStream stream : streams) {
-                stream.send(addr);
-            }
-        }
-    }
-    public class CausticDevice {
-        public RCSP.DeviceAddress address = new RCSP.DeviceAddress();
-        public RCSP.ParametersContainer parameters = new RCSP.ParametersContainer();
-
-        public CausticDevice() {
-            // Registering parameters for any devices
-            RCSP.Operations.AnyDevice.parametersDescriptions.addParameters(parameters);
-            touch();
-        }
-
-        /**
-         * Update timestam of last access
-         */
-        public void touch() {
-            lastAccessTime = System.currentTimeMillis();
-        }
-        public boolean isOutdated() {
-            return System.currentTimeMillis() - lastAccessTime > deviceLifetime;
-        }
-        public String getName() {
-            return parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceName.getId()).getValue();
-        }
-        public boolean hasName() {
-            return ( (RCSP.DevNameParameter.Serializer) parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceName.getId()) ).initialized();
-        }
-        public boolean isTypeKnown() {
-            return (
-                    Integer.parseInt(parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceType.getId()).getValue())
-                            != RCSP.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
-            );
-        }
-        public String getType() {
-            return RCSP.Operations.AnyDevice.getDevTypeString(
-                    Integer.parseInt(
-                            parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceType.getId()).getValue()
-                    )
-            );
-        }
-        public boolean areDeviceRelatedParametersAdded() {
-            return parametersAreAdded;
-        }
-        /// Initially add all missing parameters to parameters list according to device type if set
-        public void addDeviceRelatedParameters() {
-            if (parametersAreAdded)
-                return;
-
-            RCSP.AnyParameterSerializer typeParam = parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceType.getId());
-            if (typeParam == null)
-                return;
-            int type = Integer.parseInt(typeParam.getValue());
-            switch (type) {
-                case RCSP.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED:
-                    return;
-                case RCSP.Operations.AnyDevice.Configuration.DEV_TYPE_RIFLE:
-                    RCSP.Operations.Rifle.parametersDescriptions.addParameters(parameters);
-                    break;
-                case RCSP.Operations.AnyDevice.Configuration.DEV_TYPE_HEAD_SENSOR:
-                    RCSP.Operations.HeadSensor.parametersDescriptions.addParameters(parameters);
-                    break;
-                default:
-                    return;
-            }
-
-            parametersAreAdded = true;
-        }
-        public void invalidateParameters() {
-            if (!parametersAreAdded)
-                return;
-            for (RCSP.AnyParameterSerializer param : parameters.allParameters.values())
-            {
-                param.invalidate();
-            }
-
-        }
-        public void invalidateMapParameters() {
-            if (!parametersAreAdded)
-                return;
-            for (RCSP.AnyParameterSerializer param : parameters.allParameters.values())
-            {
-                int id = param.getDescription().getId();
-                if (id == RCSP.Operations.AnyDevice.Configuration.deviceName.getId()) {
-                    param.invalidate();
-                }
-                if (id == RCSP.Operations.HeadSensor.Configuration.teamMT2Id.getId()) {
-                    param.invalidate();
-                }
-                if (id == RCSP.Operations.HeadSensor.Configuration.markerColor.getId()) {
-                    param.invalidate();
-                }
-                if (id == RCSP.Operations.HeadSensor.Configuration.playerLat.getId()) {
-                    param.invalidate();
-                }
-                if (id == RCSP.Operations.HeadSensor.Configuration.playerLon.getId()) {
-                    param.invalidate();
-                }
-                if (id == RCSP.Operations.HeadSensor.Configuration.currentHealth.getId()) {
-                    param.invalidate();
-                }
-                if (id == RCSP.Operations.HeadSensor.Configuration.deathCount.getId()) {
-                    param.invalidate();
-                }
-            }
-
-        }
-        public void pushToDevice() {
-            RCSPMultiStream stream = new RCSPMultiStream();
-            for (Map.Entry<Integer, RCSP.AnyParameterSerializer> entry : parameters.entrySet()) {
-                if (!entry.getValue().isSync())
-                    stream.addSetObject(this, entry.getKey());
-            }
-            stream.send(address);
-        }
-        public void pushToDevice(int parameterToPush) {
-            RCSPMultiStream stream = new RCSPMultiStream();
-            stream.addSetObject(this, parameterToPush);
-            stream.send(address);
-        }
-        public void popFromDevice() {
-            RCSPMultiStream stream = new RCSPMultiStream();
-            for (Map.Entry<Integer, RCSP.AnyParameterSerializer> entry : parameters.entrySet()) {
-                if (!entry.getValue().isSync())
-                    stream.addObjectRequest(entry.getKey());
-            }
-            stream.send(address);
-        }
-        public void popFromDevice(int parameterToPop) {
-            // @todo Optimize: do not request parameters than not exists
-            RCSPMultiStream stream = new RCSPMultiStream();
-            stream.addObjectRequest(parameterToPop);
-            stream.send(address);
-        }
-        public boolean areParametersSync() {
-            for (Map.Entry<Integer, RCSP.AnyParameterSerializer> entry : parameters.entrySet()) {
-                if (!entry.getValue().isSync())
-                    return false;
-            }
-            return true;
-        }
-
-        private final long deviceLifetime = 10000;
-        private boolean parametersAreAdded = false;
-        private long lastAccessTime = 0;
-    }
     /**
      * This object gets all device parameters on
      */
@@ -351,8 +115,8 @@ public class DevicesManager {
 
     // Public methods
     public void remoteCall(RCSP.DeviceAddress target, RCSP.FunctionsContainer functionsContainer, int operationId, String argument) {
-        RCSPStream stream = new RCSPStream();
-        stream.addFunctionCall2(functionsContainer, operationId, argument);
+        RCSPStream stream = new RCSPStream(communicator);
+        stream.addFunctionCall(functionsContainer, operationId, argument);
         stream.send(target);
     }
 
@@ -363,7 +127,7 @@ public class DevicesManager {
      * Update devices list. Handler will be called after every new discovered device
      */
     public void updateDevicesList() {
-        RCSPStream stream = new RCSPStream();
+        RCSPStream stream = new RCSPStream(communicator);
         stream.addObjectRequest(RCSP.Operations.AnyDevice.Configuration.deviceName.getId());
         stream.addObjectRequest(RCSP.Operations.AnyDevice.Configuration.deviceType.getId());
         //removeOutdatedDevices();
@@ -371,6 +135,7 @@ public class DevicesManager {
         devicesListUpdatedWaiter.touch();
         devicesListUpdatedWaiter.enableCallback(true);
     }
+
     public void removeOutdatedDevices() {
         List<RCSP.DeviceAddress> toDelete = new ArrayList<>();
         for (Map.Entry<RCSP.DeviceAddress, CausticDevice> dev : devices.entrySet())
@@ -450,7 +215,7 @@ public class DevicesManager {
 
             CausticDevice dev = devices.get(address);
             if (dev == null) {
-                dev = new CausticDevice();
+                dev = new CausticDevice(communicator);
                 dev.address = new RCSP.DeviceAddress(address);
                 devices.put(address, dev);
                 //newDeviceAdded = true;
@@ -472,9 +237,10 @@ public class DevicesManager {
         }
     }
 
-    public DevicesManager(BridgeDriver bridgeDriver, RCSP.OperationDispatcherUser dispatchersUser) {
+    public DevicesManager(BridgeDriver bridgeDriver, LTSCommunicator communicator) {
         this.bridgeDriver = bridgeDriver;
-        dispatchersUser.addOperationDispatcher(new DevParDispatcher());
+        this.communicator = communicator;
+        communicator.addOperationDispatcher(new DevParDispatcher());
         devicesListUpdatedWaiter = new Utils.SimpleWaiter(1000, 100, new Runnable() {
             @Override
             public void run() {
@@ -490,4 +256,5 @@ public class DevicesManager {
     private AsyncDataPuller dataPopper = null;
     private DeviceListUpdatedListener deviceListUpdatedListener = null;
     private Utils.SimpleWaiter devicesListUpdatedWaiter;
+    private LTSCommunicator communicator;
 }

@@ -18,6 +18,7 @@ import java.util.Map;
 
 import ru.caustic.rcspcore.BridgeDriver;
 import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.CausticDevice;
 import ru.caustic.rcspcore.DevicesManager;
 import ru.caustic.rcspcore.RCSP;
 import ru.caustic.rcspcore.SettingsEditorContext;
@@ -78,7 +79,7 @@ public class DevicesListFragment extends Fragment {
             @Override
             public void onDevicesListUpdated() {
                 adapter.clear();
-                for (Map.Entry<RCSP.DeviceAddress, DevicesManager.CausticDevice> entry : devicesManager.devices.entrySet()) {
+                for (Map.Entry<RCSP.DeviceAddress, CausticDevice> entry : devicesManager.devices.entrySet()) {
                     adapter.addItem(new DevicesListElementHolder(entry.getValue()));
                 }
 
@@ -97,9 +98,9 @@ public class DevicesListFragment extends Fragment {
         public CheckBox deviceName = null;
         public TextView deviceSummary = null;
         View convertView = null;
-        public DevicesManager.CausticDevice device;
+        public CausticDevice device;
 
-        DevicesListElementHolder(DevicesManager.CausticDevice device) {
+        DevicesListElementHolder(CausticDevice device) {
             this.device = device;
         }
 

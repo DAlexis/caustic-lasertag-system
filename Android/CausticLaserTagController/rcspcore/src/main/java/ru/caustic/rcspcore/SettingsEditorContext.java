@@ -224,7 +224,7 @@ public class SettingsEditorContext {
 
         RCSP.DeviceAddress someAddress = getAnyAddress();
 
-        DevicesManager.CausticDevice dev = devicesManager.devices.get(someAddress);
+        CausticDevice dev = devicesManager.devices.get(someAddress);
 
         // We need to output parameters sorted by original order
         for (int id : dev.parameters.orderedIds) {

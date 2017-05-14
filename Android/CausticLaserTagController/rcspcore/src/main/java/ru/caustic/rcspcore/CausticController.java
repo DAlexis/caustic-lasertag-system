@@ -119,8 +119,8 @@ public class CausticController {
     }
 
     private static CausticController ourInstance = new CausticController();
-    private LTSCommunicator communicator = new LTSCommunicator();
     private BridgeDriver bridgeDriver = new BridgeDriver();
+    private LTSCommunicator communicator = new LTSCommunicator(bridgeDriver);
     private DevicesManager devicesManager = new DevicesManager(bridgeDriver, communicator);
     private SettingsEditorContext settingsEditorContext = new SettingsEditorContext(devicesManager);
 
