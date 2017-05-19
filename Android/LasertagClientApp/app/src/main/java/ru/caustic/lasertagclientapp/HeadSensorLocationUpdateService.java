@@ -15,8 +15,9 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.CausticDevice;
 import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.RCSP;
 
 public class HeadSensorLocationUpdateService extends Service {
 
@@ -65,15 +66,15 @@ public class HeadSensorLocationUpdateService extends Service {
         String latString = Double.toString(location.getLatitude());
         String lonString = Double.toString(location.getLongitude());
         DevicesManager devMan = CausticController.getInstance().getDevicesManager();
-        DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
+        CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
         if (headSensor!=null) {
-            headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerLat.getId())
+            headSensor.parameters.get(RCSP.Operations.HeadSensor.Configuration.playerLat.getId())
                     .setValue(latString);
-            headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerLon.getId())
+            headSensor.parameters.get(RCSP.Operations.HeadSensor.Configuration.playerLon.getId())
                     .setValue(lonString);
             //Pushing values to the head sensor
-            headSensor.pushToDevice(RCSProtocol.Operations.HeadSensor.Configuration.playerLat.getId());
-            headSensor.pushToDevice(RCSProtocol.Operations.HeadSensor.Configuration.playerLon.getId());
+            headSensor.pushToDevice(RCSP.Operations.HeadSensor.Configuration.playerLat.getId());
+            headSensor.pushToDevice(RCSP.Operations.HeadSensor.Configuration.playerLon.getId());
             return true;
         }
         else {

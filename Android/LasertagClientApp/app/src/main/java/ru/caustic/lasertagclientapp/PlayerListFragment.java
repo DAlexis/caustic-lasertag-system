@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.CausticDevice;
 import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.RCSP;
 
 import static ru.caustic.rcspcore.DeviceUtils.allDevsSynced;
 import static ru.caustic.rcspcore.DeviceUtils.getDeviceTeam;
@@ -42,7 +42,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     private DevicesManager devMan;
     private PlayerListAdapter adapter;
 
-    private Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> headSensors = new HashMap<>();
+    private Map<RCSP.DeviceAddress, CausticDevice> headSensors = new HashMap<>();
     private ListView playerList;
     private static final String TAG = "PlayerListFragment";
 
@@ -54,7 +54,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
 
     private DevicesManager.SynchronizationEndListener syncListener = new DevicesManager.SynchronizationEndListener() {
         @Override
-        public void onSynchronizationEnd(boolean isSuccess, Set<BridgeConnector.DeviceAddress> notSynchronized) {
+        public void onSynchronizationEnd(boolean isSuccess, Set<RCSP.DeviceAddress> notSynchronized) {
             Log.d(TAG, "Sync completed, result: " + isSuccess + ", not synchronized: " + notSynchronized.size());
             //List population occurs here.
             refreshPlayerListAdapter();
@@ -68,15 +68,15 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
             Log.d(TAG, "Updated devices list");
                 deviceSyncRunning = true;
                 Log.d(TAG, "Starting parameters sync");
-                devMan.asyncPopParametersFromDevices(syncListener, getHeadSensorsMap(devMan.devices).keySet());
+                devMan.asyncPullAllParameters(syncListener, getHeadSensorsMap(devMan.devices).keySet());
 
         }
     };
 
-    private boolean relatedParamsAdded(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> headSensorsMap) {
+    private boolean relatedParamsAdded(Map<RCSP.DeviceAddress, CausticDevice> headSensorsMap) {
         boolean result = true;
-        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : headSensorsMap.entrySet()) {
-            DevicesManager.CausticDevice dev = entry.getValue();
+        for (Map.Entry<RCSP.DeviceAddress, CausticDevice> entry : headSensorsMap.entrySet()) {
+            CausticDevice dev = entry.getValue();
             result = result && dev.areDeviceRelatedParametersAdded();
         }
         return result;
@@ -202,7 +202,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
 
         View convertView = null;
 
-        PlayerListEntryHolder(DevicesManager.CausticDevice device) {
+        PlayerListEntryHolder(CausticDevice device) {
             playerName = device.getName();
             team = getDeviceTeam(device);
         }
@@ -301,18 +301,18 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     }
 
 
-    private ArrayList<PlayerListEntryHolder> populatePlayersArray(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devices) {
+    private ArrayList<PlayerListEntryHolder> populatePlayersArray(Map<RCSP.DeviceAddress, CausticDevice> devices) {
 
         ArrayList<PlayerListEntryHolder> array = new ArrayList<>();
-        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devices.entrySet()) {
+        for (Map.Entry<RCSP.DeviceAddress, CausticDevice> entry : devices.entrySet()) {
 
-            DevicesManager.CausticDevice dev = entry.getValue();
+            CausticDevice dev = entry.getValue();
             int devTypeInt = Integer.parseInt(
-                    dev.parameters.get(RCSProtocol.Operations.AnyDevice.Configuration.deviceType.getId()).getValue()
+                    dev.parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceType.getId()).getValue()
             );
 
             //Add only head sensors to be displayed as players
-            if (devTypeInt == RCSProtocol.Operations.AnyDevice.Configuration.DEV_TYPE_HEAD_SENSOR){
+            if (devTypeInt == RCSP.Operations.AnyDevice.Configuration.DEV_TYPE_HEAD_SENSOR){
                 if (dev.areDeviceRelatedParametersAdded()&&dev.areParametersSync())
                 {
                     PlayerListEntryHolder player = new PlayerListEntryHolder(dev);

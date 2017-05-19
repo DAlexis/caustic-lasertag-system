@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        CausticController.getInstance().systemInit();
+        CausticController.getInstance().systemInit(null);
 
         //Initialize activity members
         drawerList = (ListView) findViewById(R.id.drawer);

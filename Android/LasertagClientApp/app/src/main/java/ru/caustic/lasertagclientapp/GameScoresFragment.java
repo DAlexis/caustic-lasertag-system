@@ -22,12 +22,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.CausticDevice;
 import ru.caustic.rcspcore.DeviceUtils;
 import ru.caustic.rcspcore.DevicesManager;
 import ru.caustic.rcspcore.GameStatistics;
-import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.RCSP;
 
 import static ru.caustic.rcspcore.DeviceUtils.getCurrentHealth;
 import static ru.caustic.rcspcore.DeviceUtils.getDeviceTeam;
@@ -43,7 +43,7 @@ public class GameScoresFragment extends Fragment {
     private static final long SCORE_UPDATE_DELAY_MS = 3000;
     private static DevicesManager devMan = CausticController.getInstance().getDevicesManager();
     private static GameStatistics gameStats = CausticController.getInstance().getGameStatistics();
-    private DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
+    private CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
     private ArrayList<ScoreListEntryHolder> scoreEntries;
     private ListView scoreList;
     private ScoreListAdapter adapter;
@@ -60,14 +60,14 @@ public class GameScoresFragment extends Fragment {
         @Override
         public void run() {
             devMan.invalidateDevsMapParams(DeviceUtils.getHeadSensorsMap(devMan.devices).values());
-            devMan.asyncPopParametersFromDevices(mListener, DeviceUtils.getHeadSensorsMap(devMan.devices).keySet());
+            devMan.asyncPullAllParameters(mListener, DeviceUtils.getHeadSensorsMap(devMan.devices).keySet());
             gameStats.updateStats();
         }
     };
 
     private DevicesManager.SynchronizationEndListener synchronizationEndListener = new DevicesManager.SynchronizationEndListener() {
         @Override
-        public void onSynchronizationEnd(boolean isSuccess, Set<BridgeConnector.DeviceAddress> notSynchronized) {
+        public void onSynchronizationEnd(boolean isSuccess, Set<RCSP.DeviceAddress> notSynchronized) {
 
             Log.d(TAG, "Sync completed, result: " + isSuccess + ", not synchronized: " + notSynchronized.size());
 
@@ -107,10 +107,10 @@ public class GameScoresFragment extends Fragment {
                         int deathCount = 0;
                         int hitCount = 0;
                         if (headSensor!=null) {
-                            int ownId = Integer.parseInt(headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
+                            int ownId = Integer.parseInt(headSensor.parameters.get(RCSP.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
                             killCount = gameStats.getStatForPlayerID(ownId, GameStatistics.ENEMY_KILLS_COUNT);
                             hitCount = gameStats.getStatForPlayerID(ownId, GameStatistics.HITS_COUNT);
-                            deathCount = Integer.parseInt(headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.deathCount.getId()).getValue());
+                            deathCount = Integer.parseInt(headSensor.parameters.get(RCSP.Operations.HeadSensor.Configuration.deathCount.getId()).getValue());
                             friendlyKills = gameStats.getStatForPlayerID(ownId, GameStatistics.FRIENDLY_KILLS_COUNT);
                             scoreCount = 2*killCount + hitCount - deathCount - 2*friendlyKills;
                             if (kills!=null) kills.setText(Integer.toString(killCount));
@@ -225,20 +225,20 @@ public class GameScoresFragment extends Fragment {
 
         View convertView = null;
 
-        ScoreListEntryHolder(DevicesManager.CausticDevice device) {
+        ScoreListEntryHolder(CausticDevice device) {
             playerName = device.getName();
             team = getDeviceTeam(device);
             if (getCurrentHealth(device) == 0) {
                 isAlive = false;
             }
-            int id = Integer.parseInt(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
+            int id = Integer.parseInt(device.parameters.get(RCSP.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
             kills = gameStats.getStatForPlayerID(id, GameStatistics.ENEMY_KILLS_COUNT);
-            deaths = Integer.parseInt(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.deathCount.getId()).getValue());
+            deaths = Integer.parseInt(device.parameters.get(RCSP.Operations.HeadSensor.Configuration.deathCount.getId()).getValue());
             int hits = gameStats.getStatForPlayerID(id, GameStatistics.HITS_COUNT);
             int friendlyKills = gameStats.getStatForPlayerID(id, GameStatistics.FRIENDLY_KILLS_COUNT);
             score = 2*kills + hits - deaths - 2*friendlyKills;
 
-            int ownId = Integer.parseInt(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
+            int ownId = Integer.parseInt(device.parameters.get(RCSP.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
             if (id == ownId)
             {
                 isHighlighted = true;
@@ -333,12 +333,12 @@ public class GameScoresFragment extends Fragment {
         }
     }
 
-    private ArrayList<ScoreListEntryHolder> populateScoresArray(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devices) {
+    private ArrayList<ScoreListEntryHolder> populateScoresArray(Map<RCSP.DeviceAddress, CausticDevice> devices) {
 
         ArrayList<ScoreListEntryHolder> array = new ArrayList<>();
-        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : devices.entrySet()) {
+        for (Map.Entry<RCSP.DeviceAddress, CausticDevice> entry : devices.entrySet()) {
 
-            DevicesManager.CausticDevice dev = entry.getValue();
+            CausticDevice dev = entry.getValue();
             if (dev.areDeviceRelatedParametersAdded()&&dev.areParametersSync())
             {
                 ScoreListEntryHolder player = new ScoreListEntryHolder(dev);

@@ -33,12 +33,12 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import ru.caustic.rcspcore.BridgeConnector;
 import ru.caustic.rcspcore.CausticController;
+import ru.caustic.rcspcore.CausticDevice;
 import ru.caustic.rcspcore.DeviceUtils;
 import ru.caustic.rcspcore.DevicesManager;
 import ru.caustic.rcspcore.GameStatistics;
-import ru.caustic.rcspcore.RCSProtocol;
+import ru.caustic.rcspcore.RCSP;
 
 import static ru.caustic.rcspcore.DeviceUtils.getCurrentHealth;
 import static ru.caustic.rcspcore.DeviceUtils.getDeviceName;
@@ -62,7 +62,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
     private static ArrayList<PlayerOnMap> playerOnMapList = new ArrayList<>();
     private static GoogleMap map;
     private static final String TAG = "HUDFragment";
-    private static DevicesManager.CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
+    private static CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
 
     private static final int MARKER_BORDER_WIDTH_SP = 4;
     private static final int MARKER_RADIUS_SP = 20;
@@ -76,14 +76,14 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         @Override
         public void run() {
             devMan.invalidateDevsMapParams(DeviceUtils.getHeadSensorsMap(devMan.devices).values());
-            devMan.asyncPopParametersFromDevices(mListener, DeviceUtils.getHeadSensorsMap(devMan.devices).keySet());
+            devMan.asyncPullAllParameters(mListener, DeviceUtils.getHeadSensorsMap(devMan.devices).keySet());
             gameStats.updateStats();
         }
     };
 
     private DevicesManager.SynchronizationEndListener synchronizationEndListener = new DevicesManager.SynchronizationEndListener() {
         @Override
-        public void onSynchronizationEnd(boolean isSuccess, Set<BridgeConnector.DeviceAddress> notSynchronized) {
+        public void onSynchronizationEnd(boolean isSuccess, Set<RCSP.DeviceAddress> notSynchronized) {
 
             Log.d(TAG, "Sync completed, result: " + isSuccess + ", not synchronized: " + notSynchronized.size());
 
@@ -123,10 +123,10 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
                         int deathCount = 0;
                         int hitCount = 0;
                         if (headSensor!=null) {
-                            int ownId = Integer.parseInt(headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
+                            int ownId = Integer.parseInt(headSensor.parameters.get(RCSP.Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
                             killCount = gameStats.getStatForPlayerID(ownId, GameStatistics.ENEMY_KILLS_COUNT);
                             hitCount = gameStats.getStatForPlayerID(ownId, GameStatistics.HITS_COUNT);
-                            deathCount = Integer.parseInt(headSensor.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.deathCount.getId()).getValue());
+                            deathCount = Integer.parseInt(headSensor.parameters.get(RCSP.Operations.HeadSensor.Configuration.deathCount.getId()).getValue());
                             friendlyKills = gameStats.getStatForPlayerID(ownId, GameStatistics.FRIENDLY_KILLS_COUNT);
                             scoreCount = 2*killCount + hitCount - deathCount - 2*friendlyKills;
                             if (kills!=null) kills.setText(Integer.toString(killCount));
@@ -161,7 +161,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_map, container, false);
 
-        Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> devsToLocate = DeviceUtils.getHeadSensorsMap(devMan.devices);
+        Map<RCSP.DeviceAddress, CausticDevice> devsToLocate = DeviceUtils.getHeadSensorsMap(devMan.devices);
         playerOnMapList = populatePlayerOnMapList(devsToLocate);
 
         Fragment mMapFragment = SupportMapFragment.newInstance();
@@ -261,13 +261,13 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         int markerColor = 0xFFFFFFFF;
         boolean isVisible = true;
         boolean isAlive = true;
-        public PlayerOnMap(DevicesManager.CausticDevice device)
+        public PlayerOnMap(CausticDevice device)
         {
 
             if (device.areDeviceRelatedParametersAdded()&&device.areParametersSync())
             {
-                lat = Float.parseFloat(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerLat.getId()).getValue());
-                lon = Float.parseFloat(device.parameters.get(RCSProtocol.Operations.HeadSensor.Configuration.playerLon.getId()).getValue());
+                lat = Float.parseFloat(device.parameters.get(RCSP.Operations.HeadSensor.Configuration.playerLat.getId()).getValue());
+                lon = Float.parseFloat(device.parameters.get(RCSP.Operations.HeadSensor.Configuration.playerLon.getId()).getValue());
                 if (lat>90 || lat<-90 || lon>180 || lon<-180) isVisible = false;
                 team = getDeviceTeam(device);
                 name = getDeviceName(device);
@@ -303,11 +303,10 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback {
         devStateUpdaterRunning = false;
     }
 
-    private ArrayList<PlayerOnMap> populatePlayerOnMapList(Map<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> headSensorsMap) {
+    private ArrayList<PlayerOnMap> populatePlayerOnMapList(Map<RCSP.DeviceAddress, CausticDevice> headSensorsMap) {
         ArrayList<PlayerOnMap> returnList = new ArrayList<>();
-        for (Map.Entry<BridgeConnector.DeviceAddress, DevicesManager.CausticDevice> entry : headSensorsMap.entrySet()) {
-
-            DevicesManager.CausticDevice dev = entry.getValue();
+        for (Map.Entry<RCSP.DeviceAddress, CausticDevice> entry : headSensorsMap.entrySet()) {
+            CausticDevice dev = entry.getValue();
             PlayerOnMap newPlayer = new PlayerOnMap(dev);
             returnList.add(newPlayer);
         }
