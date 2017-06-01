@@ -96,6 +96,10 @@ public:
 	void addPoint(IRGBVibroPointPhysical* m_point, bool zoneWide = false, bool systemWide = false);
 	void applyIlluminationSchemeAllPoints(const IllumitationScheme* scheme);
 	void applyIlluminationSchemeAtPoint(const IllumitationScheme* scheme, UintParameter pointId);
+	void applyIlluminationSchemeAtPoints(
+			const IllumitationScheme* scheme,
+			const std::vector<UintParameter>& pointIds,
+			bool useAllIfEmpty = false);
 	void applyIlluminationSchemeAtZoneByPointId(IllumitationScheme* scheme, UintParameter pointId);
 	void interrogate() override;
 

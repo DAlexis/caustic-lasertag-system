@@ -108,6 +108,19 @@ void LedVibroManager::applyIlluminationSchemeAtPoint(const IllumitationScheme* s
 	// If we here, no points were added
 }
 
+void LedVibroManager::applyIlluminationSchemeAtPoints(
+		const IllumitationScheme* scheme,
+		const std::vector<UintParameter>& pointIds,
+		bool useAllIfEmpty
+)
+{
+	if (pointIds.empty() && useAllIfEmpty)
+		applyIlluminationSchemeAllPoints(scheme);
+
+	for (auto p : pointIds)
+		applyIlluminationSchemeAtPoint(scheme, p);
+}
+
 void LedVibroManager::applyIlluminationSchemeAtZoneByPointId(IllumitationScheme* scheme, UintParameter pointId)
 {
 	auto jt = m_killZonesManager.sensorToZone().find(pointId);

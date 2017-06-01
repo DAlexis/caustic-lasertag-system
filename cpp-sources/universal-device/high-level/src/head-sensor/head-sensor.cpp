@@ -249,7 +249,10 @@ void HeadSensor::catchShot(ShotMessage msg)
 				m_statsCounter.registerHit(msg.playerId);
 				m_statsCounter.registerDamage(msg.playerId, msg.damage);
 			}
-			m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.wound()));
+			m_ledVibroMgr.applyIlluminationSchemeAtPoints(
+					&(m_illuminationSchemes.wound()),
+					m_receiverMgr.activeReceivers(),
+					true);
 
 			if (msg.playerId != playerConfig.playerId)
 			{
@@ -266,7 +269,10 @@ void HeadSensor::catchShot(ShotMessage msg)
 			m_statsCounter.registerKill(msg.playerId);
 			m_statsCounter.registerDamage(msg.playerId, healthBeforeDamage);
 
-			m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.death()));
+			m_ledVibroMgr.applyIlluminationSchemeAtPoints(
+								&(m_illuminationSchemes.death()),
+								m_receiverMgr.activeReceivers(),
+								true);
 			/// @todo reenable
 			//Scheduler::instance().addTask(std::bind(&StateSaver::saveState, &StateSaver::instance()), true, 0, 0, 1000000);
 		}

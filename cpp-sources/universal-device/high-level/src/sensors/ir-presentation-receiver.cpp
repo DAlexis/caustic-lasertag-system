@@ -65,8 +65,17 @@ void IRReceiversManager::interrogate()
 	checkTimeout();
 }
 
+const std::vector<UintParameter>& IRReceiversManager::activeReceivers()
+{
+	return m_activeReceivers;
+}
+
 void IRReceiversManager::processReceivedResults(UintParameter receiverId)
 {
+	// Adding receiver to list
+	if (m_parseRusult.type != IRProtocolParseResult::Type::invalid)
+		m_activeReceivers.push_back(receiverId);
+
 	switch(m_state)
 	{
 	case State::empty:
@@ -127,5 +136,6 @@ void IRReceiversManager::checkTimeout()
 			m_rcspAggregator->doOperation(ConfigCodes::HeadSensor::Functions::catchShot, m_currentShotMessage);
 		}
 		m_state = State::empty;
+		m_activeReceivers.clear();
 	}
 }

@@ -41,7 +41,7 @@ struct IRProtocolParseResult
 		shot,
 		invalid
 	};
-	Type type;
+	Type type = Type::invalid;
 	ShotMessage shot;
 	std::function<void(void)> commandCallback = nullptr;
 };
@@ -61,6 +61,7 @@ public:
 	void setParser(IIRProtocolParser* parser);
 	void addPhysicalReceiver(IIRReceiverPhysical* receiver);
 	void interrogate() override;
+	const std::vector<UintParameter>& activeReceivers();
 
 private:
 	constexpr static uint32_t timeout = 10000;
@@ -75,6 +76,9 @@ private:
 	void checkTimeout();
 
 	std::list<IIRReceiverPhysical*> m_receivers;
+
+	/// Receivers that received something during current shot/command
+	std::vector<UintParameter> m_activeReceivers;
 
 	IIRProtocolParser* m_parser = nullptr;
 
