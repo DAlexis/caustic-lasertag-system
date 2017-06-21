@@ -25,7 +25,7 @@
 #include "bluetooth-bridge/bluetooth-bridge.hpp"
 #include "cmsis_os.h"
 #include "core/device-initializer.hpp"
-#include "core/entry-point.h"
+#include "core/low-to-high-interface.h"
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
 #include "fatfs.h"
@@ -177,9 +177,24 @@ bool DeviceInitializer::isSdcardOk() const
 	return m_fatfsSuccess;
 }
 
+void DeviceInitializer::touchSDIO()
+{
+	m_lastSDIO = systemClock->getTime();
+}
+
+Time DeviceInitializer::timeSinceLastSDIO()
+{
+	return systemClock->getTime() - m_lastSDIO;
+}
+
 void highLevelEntryPoint()
 {
     DeviceInitializer::instance().initEnvironment();
     DeviceInitializer::instance().initDevice("device.ini");
     SystemMonitor::instance().run();
+}
+
+void touchSDIO()
+{
+	DeviceInitializer::instance().touchSDIO();
 }

@@ -26,7 +26,7 @@
 #include "rcsp/stream.hpp"
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
-//#include "dev/sdcard-fs.hpp"
+#include "core/device-initializer.hpp"
 #include "fatfs.h"
 
 #include <string.h>
@@ -57,6 +57,11 @@ void MainStateSaver::setFilename(const std::string& filename)
 void MainStateSaver::saveState()
 {
 	info << "Saving state";
+	if (DeviceInitializer::instance().timeSinceLastSDIO() < sdioTimeout)
+	{
+		info << "State saving aborted: sdio timeout is not done";
+		return;
+	}
 #ifdef TWO_FILES_STATE_SAVER
 	trace << "Variant = " << m_current;
 	FRESULT res = FR_OK;

@@ -193,6 +193,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "sdcard.h"
 #include "sdcard-low-level.h"
+#include "core/low-to-high-interface.h"
 //#include "core/os-wrappers.hpp"
 #include <stdio.h>
 /** @addtogroup Utilities
@@ -434,6 +435,7 @@ SD_Error SD_Init(void)
 	//printf("errorstatus = %d!\n", errorstatus);
   }
 
+  touchSDIO();
   return(errorstatus);
 }
 
@@ -517,6 +519,7 @@ uint8_t SD_Detect(void)
   */
 SD_Error SD_PowerON(void)
 {
+  touchSDIO();
   SD_Error errorstatus = SD_OK;
   uint32_t response = 0, count = 0, validvoltage = 0;
   uint32_t SDType = SD_STD_CAPACITY;
@@ -677,6 +680,7 @@ SD_Error SD_PowerOFF(void)
   */
 SD_Error SD_InitializeCards(void)
 {
+  touchSDIO();
   SD_Error errorstatus = SD_OK;
   uint16_t rca = 0x01;
 
@@ -1272,6 +1276,7 @@ SD_Error SD_ReadBlock(uint8_t *readbuff, uint32_t ReadAddr, uint16_t BlockSize)
     SD_LowLevel_DMA_RxConfig((uint32_t *)readbuff, BlockSize);
 #endif
 
+  touchSDIO();
   return(errorstatus);
 }
 
@@ -1349,6 +1354,7 @@ SD_Error SD_ReadMultiBlocks(uint8_t *readbuff, uint32_t ReadAddr, uint16_t Block
   SDIO_DMACmd(ENABLE);
   SD_LowLevel_DMA_RxConfig((uint32_t *)readbuff, (NumberOfBlocks * BlockSize));
 
+  touchSDIO();
   return(errorstatus);
 }
 
@@ -1491,6 +1497,7 @@ SD_Error SD_WriteBlock(uint8_t *writebuff, uint32_t WriteAddr, uint16_t BlockSiz
   SDIO_DMACmd(ENABLE);
 #endif
 
+  touchSDIO();
   return(errorstatus);
 }
 
@@ -1585,6 +1592,7 @@ SD_Error SD_WriteMultiBlocks(uint8_t *writebuff, uint32_t WriteAddr, uint16_t Bl
   SDIO_DMACmd(ENABLE);
   SD_LowLevel_DMA_TxConfig((uint32_t *)writebuff, (NumberOfBlocks * BlockSize));
 
+  touchSDIO();
   return(errorstatus);
 }
 
@@ -1746,6 +1754,7 @@ SD_Error SD_Erase(uint32_t startaddr, uint32_t endaddr)
     errorstatus = IsCardProgramming(&cardstate);
   }
 
+  touchSDIO();
   return(errorstatus);
 }
 

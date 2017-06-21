@@ -48,7 +48,7 @@ struct NotificationSoundCase
 
 struct HSToRifleHeartbeat
 {
-	constexpr static uint8_t enabled = 0x01;
+	constexpr static uint8_t enabledBit = 0x01;
 
 	uint8_t state = 0;
 	TeamGameId team = 0;
@@ -59,14 +59,14 @@ struct HSToRifleHeartbeat
 	void setEnabled(bool enabled)
 	{
 		if (enabled)
-			ADD_BITS(state, enabled);
+			ADD_BITS(state, enabledBit);
 		else
-			REMOVE_BITS(state, enabled);
+			REMOVE_BITS(state, enabledBit);
 	}
 
 	bool isEnabled()
 	{
-		return state & enabled;
+		return state & enabledBit;
 	}
 };
 static_assert(sizeof(HSToRifleHeartbeat) < 21, "HSToRifleHeartbeat size is too big!");

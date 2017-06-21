@@ -57,6 +57,7 @@ public:
     void registerStateSaver(IAnyStateSaver* saver);
 
 private:
+    constexpr static uint32_t sdioTimeout = 100000;
     void saveAll();
     bool tryRestore(uint8_t variant);
     FIL m_fil;

@@ -59,7 +59,7 @@ void DeviceAddress::convertFromString(const char* str)
 			return;
 		}
 
-		if (pos == '\0' && i != size-1)
+		if (*pos == '\0' && i != size-1)
 		{
 			error << "Parsing failed: inconsistent address";
 			return;

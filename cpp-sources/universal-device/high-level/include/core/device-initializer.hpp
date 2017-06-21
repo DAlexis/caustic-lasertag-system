@@ -28,6 +28,7 @@
 #include "core/result-code.hpp"
 #include "fatfs.h"
 #include "core/service-locator.hpp"
+#include "hal/system-clock.hpp"
 
 class DeviceInitializer
 {
@@ -37,6 +38,8 @@ public:
 	void initEnvironment();
 	IAnyDevice* initDevice(const char* filename);
 	bool isSdcardOk() const;
+	void touchSDIO();
+	Time timeSinceLastSDIO();
 
 	SINGLETON_IN_CLASS(DeviceInitializer)
 private:
@@ -51,6 +54,7 @@ private:
 	ServiceLocator m_serviceLocator;
 	bool m_fatfsSuccess = false;
 	IAnyDevice* m_device = nullptr;
+	Time m_lastSDIO = 0;
 };
 
 

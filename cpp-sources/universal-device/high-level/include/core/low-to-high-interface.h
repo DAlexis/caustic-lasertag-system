@@ -9,9 +9,14 @@
 #define NEW_UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_CORE_ENTRY_POINT_H_
 
 #ifdef __cplusplus
-    extern "C"
+    extern "C" {
 #endif
 
 void highLevelEntryPoint();
+void touchSDIO();
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif /* NEW_UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_CORE_ENTRY_POINT_H_ */
