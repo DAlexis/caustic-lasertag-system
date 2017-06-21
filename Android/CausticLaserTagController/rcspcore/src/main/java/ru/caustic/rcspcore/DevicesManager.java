@@ -26,10 +26,16 @@ public class DevicesManager {
     }
 
     /**
-     * This object gets all device parameters on
+     * Thread does this:
+     * for every known device:
+     * {
+     *     pop from device (send parameters requests);
+     *     wait while all parameters are synchronized or timeouted;
+     * }
      */
     public class AsyncDataPuller extends Thread {
         /// @todo Make this class reusable without re-creation
+        /// @todo Add previous operation stopping
         private final SynchronizationEndListener handler;
         public final Set<RCSP.DeviceAddress> devicesToPop;
         public final int parameterToPop;
@@ -47,6 +53,7 @@ public class DevicesManager {
 
         @Override
         public void run() {
+            running = true;
             if (devicesToPop == null)
                 return;
             boolean syncSuccess = true;
@@ -69,6 +76,8 @@ public class DevicesManager {
                         }
                     }
                 }
+                if (needStop)
+                    break;
             }
             if (!syncSuccess) {
                 for (RCSP.DeviceAddress addr : failedToSync) {
@@ -77,12 +86,21 @@ public class DevicesManager {
             }
             if (handler != null)
                 handler.onSynchronizationEnd(syncSuccess, failedToSync);
+            running = false;
         }
 
-        private final int timeout = 10000;
-        private boolean needStop;
+        public boolean isRunning() {
+            return running;
+        }
         public void stopWaiting() {
             needStop = true;
+        }
+        public void stopAndJoin() {
+            stopWaiting();
+            try {
+                join();
+            } catch (InterruptedException ex) {
+            }
         }
 
         private boolean waitForDeviceSync(CausticDevice device) {
@@ -111,6 +129,9 @@ public class DevicesManager {
             }
             return true;
         }
+
+        private boolean needStop;
+        private boolean running = false;
     }
 
     // Public methods
@@ -151,13 +172,12 @@ public class DevicesManager {
     }
 
     public void asyncPullAllParameters(SynchronizationEndListener endHandler, final Set<RCSP.DeviceAddress> devices) {
-        // @todo Remove this line and create AsyncDataPuller only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
-        // @todo What about timeout, if device not respond?
+        stopAsyncPopping();
         dataPopper = new AsyncDataPuller(endHandler, devices);
         dataPopper.start();
     }
     public void asyncPullOneParameter(SynchronizationEndListener endHandler, final Set<RCSP.DeviceAddress> devices, int parameterId) {
-        // @todo Remove this line and create AsyncDataPuller only once. This line prevents crash on second run dataPopper.start() if devs list item checked, unchecked and checked again
+        stopAsyncPopping();
         dataPopper = new AsyncDataPuller(endHandler, devices, parameterId);
         dataPopper.start();
     }
@@ -251,6 +271,10 @@ public class DevicesManager {
         });
     }
 
+    private void stopAsyncPopping() {
+        if (dataPopper != null && dataPopper.isRunning())
+            dataPopper.stopAndJoin();
+    }
     private BridgeDriver bridgeDriver;
     private static final String TAG = "CC.CausticDevManager";
     private AsyncDataPuller dataPopper = null;

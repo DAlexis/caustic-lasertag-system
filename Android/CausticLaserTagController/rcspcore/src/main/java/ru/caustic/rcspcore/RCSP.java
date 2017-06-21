@@ -1,7 +1,5 @@
 package ru.caustic.rcspcore;
 
-import android.content.Context;
-import android.preference.Preference;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -502,10 +500,6 @@ public class RCSP {
 
             public int size() {
                 return 1;
-            }
-
-            public Preference createPreference(Context context) {
-                return null;
             }
         }
 

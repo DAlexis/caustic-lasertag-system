@@ -1,21 +1,17 @@
 package ru.caustic.rcspcore;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class responsible for all communication with devices of Caustic Lasertag System.
- * All received or sended messages are going iver this class
+ * All received or sended messages are going over this class
  */
 
 public class LTSCommunicator implements BridgeDriver.IncomingPackagesListener, RCSP.OperationDispatcherUser {
