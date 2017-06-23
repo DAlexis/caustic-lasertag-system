@@ -9,7 +9,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/ClientApp" />
+            <option value="$PROJECT_DIR$/ControllerApp" />
+            <option value="$PROJECT_DIR$/androidshared" />
             <option value="$PROJECT_DIR$/rcspcore" />
           </set>
         </option>
