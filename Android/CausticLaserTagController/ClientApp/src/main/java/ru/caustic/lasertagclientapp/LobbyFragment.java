@@ -1,17 +1,14 @@
 package ru.caustic.lasertagclientapp;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ru.caustic.rcspcore.BluetoothManager;
+import com.caustic.androidshared.BluetoothManager;
 
 
 /**

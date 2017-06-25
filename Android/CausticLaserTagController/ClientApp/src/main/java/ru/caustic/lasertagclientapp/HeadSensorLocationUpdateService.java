@@ -14,10 +14,10 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import ru.caustic.rcspcore.CausticController;
-import ru.caustic.rcspcore.CausticDevice;
-import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.RCSP;
+import com.caustic.rcspcore.CausticController;
+import com.caustic.rcspcore.CausticDevice;
+import com.caustic.rcspcore.DevicesManager;
+import com.caustic.rcspcore.RCSP;
 
 public class HeadSensorLocationUpdateService extends Service {
 

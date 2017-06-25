@@ -22,10 +22,11 @@ import android.widget.ListView;
 import android.support.v7.widget.ShareActionProvider;
 import android.widget.Toast;
 
-import ru.caustic.rcspcore.BluetoothManager;
-import ru.caustic.rcspcore.CausticController;
-import ru.caustic.rcspcore.DeviceUtils;
-import ru.caustic.rcspcore.DevicesManager;
+import com.caustic.rcspcore.CausticController;
+import com.caustic.rcspcore.DeviceUtils;
+import com.caustic.rcspcore.DevicesManager;
+
+import com.caustic.androidshared.BluetoothManager;
 
 public class MainActivity extends AppCompatActivity implements BluetoothManager.ConnectionDoneListener {
 
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
                         devMan.setDeviceListUpdatedListener(new DevicesManager.DeviceListUpdatedListener() {
                             @Override
                             public void onDevicesListUpdated() {
-                                DeviceUtils.pushLocalSettingsToAssociatedHeadSensor(MainActivity.this);
+                                //DeviceUtils.pushLocalSettingsToAssociatedHeadSensor(MainActivity.this);
                                 //Update fragment view if BT status changed
                                 selectMode(currentMode, false);
                             }
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        CausticController.getInstance().systemInit(null);
+        CausticController.getInstance().systemInit(BluetoothManager.getInstance());
 
         //Initialize activity members
         drawerList = (ListView) findViewById(R.id.drawer);

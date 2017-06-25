@@ -26,7 +26,10 @@ import android.view.MenuItem;
 
 import com.enrico.colorpicker.colorDialog;
 
-import ru.caustic.rcspcore.DeviceUtils;
+import com.caustic.rcspcore.CausticController;
+import com.caustic.rcspcore.CausticDevice;
+import com.caustic.rcspcore.DevicesManager;
+import com.caustic.rcspcore.RCSP;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -131,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
                     preference.setSummary(stringValue);
                 }
 
-                DeviceUtils.pushLocalSettingsToAssociatedHeadSensor(getActivity());
+                pushLocalSettingsToAssociatedHeadSensor(getActivity());
                 return true;
             }
         };
@@ -232,8 +235,29 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         Log.d(TAG, "Color is " + prefs.getInt("marker_color_key", 0));
 
         //Push changes to head sensor
-        DeviceUtils.pushLocalSettingsToAssociatedHeadSensor(SettingsActivity.this);
+        pushLocalSettingsToAssociatedHeadSensor(SettingsActivity.this);
     }
 
+    private static void pushLocalSettingsToAssociatedHeadSensor(Context context) {
+        DevicesManager devMan = CausticController.getInstance().getDevicesManager();
+        CausticDevice headSensor = devMan.devices.get(devMan.associatedHeadSensorAddress);
+        if (headSensor!=null) {
+            if (headSensor.areDeviceRelatedParametersAdded()) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
+                //Setting displayed name
+                //@todo Make separate fields for device name and player name
+                String playerName = sharedPref.getString("display_name_key", "Default Player2");
+                headSensor.parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceName.getId())
+                        .setValue(playerName);
+                headSensor.pushToDevice(RCSP.Operations.AnyDevice.Configuration.deviceName.getId());
+
+                //Setting on-map marker color
+                String markerColor = Integer.toString(sharedPref.getInt("marker_color_key", -1));
+                headSensor.parameters.get(RCSP.Operations.HeadSensor.Configuration.markerColor.getId())
+                        .setValue(markerColor);
+                headSensor.pushToDevice(RCSP.Operations.HeadSensor.Configuration.markerColor.getId());
+            }
+        }
+    }
 }

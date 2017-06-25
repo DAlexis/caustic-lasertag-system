@@ -22,17 +22,17 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import ru.caustic.rcspcore.CausticController;
-import ru.caustic.rcspcore.CausticDevice;
-import ru.caustic.rcspcore.DeviceUtils;
-import ru.caustic.rcspcore.DevicesManager;
-import ru.caustic.rcspcore.GameStatistics;
-import ru.caustic.rcspcore.RCSP;
+import com.caustic.rcspcore.CausticController;
+import com.caustic.rcspcore.CausticDevice;
+import com.caustic.rcspcore.DeviceUtils;
+import com.caustic.rcspcore.DevicesManager;
+import com.caustic.rcspcore.GameStatistics;
+import com.caustic.rcspcore.RCSP;
 
-import static ru.caustic.rcspcore.DeviceUtils.getCurrentHealth;
-import static ru.caustic.rcspcore.DeviceUtils.getDeviceTeam;
-import static ru.caustic.rcspcore.DeviceUtils.getHeadSensorsMap;
-import static ru.caustic.rcspcore.DeviceUtils.getMarkerColor;
+import static com.caustic.rcspcore.DeviceUtils.getCurrentHealth;
+import static com.caustic.rcspcore.DeviceUtils.getDeviceTeam;
+import static com.caustic.rcspcore.DeviceUtils.getHeadSensorsMap;
+import static com.caustic.rcspcore.DeviceUtils.getMarkerColor;
 
 
 /**
