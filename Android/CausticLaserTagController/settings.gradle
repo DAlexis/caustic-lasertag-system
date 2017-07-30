@@ -1,1 +1,1 @@
-include ':ClientApp', ':androidshared', ':rcspcore'
+include ':ClientApp', ':androidshared', ':rcspcore', ':controllerapp'

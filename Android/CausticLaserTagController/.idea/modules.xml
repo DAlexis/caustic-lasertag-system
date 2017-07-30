@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/CausticLaserTagController.iml" filepath="$PROJECT_DIR$/CausticLaserTagController.iml" />
       <module fileurl="file://$PROJECT_DIR$/ClientApp/ClientApp.iml" filepath="$PROJECT_DIR$/ClientApp/ClientApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/androidshared/androidshared.iml" filepath="$PROJECT_DIR$/androidshared/androidshared.iml" />
+      <module fileurl="file://$PROJECT_DIR$/controllerapp/controllerapp.iml" filepath="$PROJECT_DIR$/controllerapp/controllerapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/rcspcore/rcspcore.iml" filepath="$PROJECT_DIR$/rcspcore/rcspcore.iml" />
     </modules>
   </component>

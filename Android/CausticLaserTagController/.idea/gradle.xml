@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/ClientApp" />
             <option value="$PROJECT_DIR$/androidshared" />
+            <option value="$PROJECT_DIR$/controllerapp" />
             <option value="$PROJECT_DIR$/rcspcore" />
           </set>
         </option>

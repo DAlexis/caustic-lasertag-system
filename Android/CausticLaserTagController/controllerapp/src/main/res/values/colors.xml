@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="lasertag_accent">#bf360c</color>
+    <color name="color_default">#33B5E5</color>
+    <color name="drawer_background_color_dark">#303030</color>
+    <color name="lasertagapptheme_color">#bf360c</color>
+</resources>
