@@ -14,14 +14,16 @@ AnyDeviceBase::AnyDeviceBase() :
 
 void AnyDeviceBase::initNetworkClient()
 {
+	createNetworkLayerIfEmpty();
     debug << "Setting address to " << ADDRESS_TO_STREAM(deviceConfig.devAddr);
     m_networkClient.setMyAddress(deviceConfig.devAddr);
     m_networkClient.registerMyBroadcast(broadcast.any);
-    NetworkLayer::instance().connectClient(&m_networkClient);
+    m_networkLayer->connectClient(&m_networkClient);
 }
 
 void AnyDeviceBase::initNetwork()
 {
+	createNetworkLayerIfEmpty();
     NRF24L01Manager *nrf = new NRF24L01Manager();
     auto radioReinit = [](IRadioPhysicalDevice* rf) {
         static_cast<NRF24L01Manager*>(rf)->init(
@@ -34,8 +36,19 @@ void AnyDeviceBase::initNetwork()
             );
     };
     radioReinit(nrf);
-    NetworkLayer::instance().setRadioReinitCallback(radioReinit);
-    NetworkLayer::instance().init(nrf);
+    m_networkLayer->setRadioReinitCallback(radioReinit);
+    m_networkLayer->init(nrf);
+}
+
+void AnyDeviceBase::createNetworkLayerIfEmpty()
+{
+	if (m_networkLayer == nullptr)
+	{
+		m_networkLayer = new NetworkLayer();
+#ifdef DEBUG
+		reinterpret_cast<NetworkLayer*>(m_networkLayer)->enableDebug(true);
+#endif
+	}
 }
 
 void AnyRCSPClientDeviceBase::initNetworkClient()

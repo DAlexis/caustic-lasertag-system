@@ -3,9 +3,15 @@
 #include "rcsp/operation-codes.hpp"
 #include "rcsp/stream.hpp"
 
-WeaponCommunicator::WeaponCommunicator(WeaponsManager2* weaponManager, INetworkClient *networkClient, RCSPAggregator* aggregator) :
+WeaponCommunicator::WeaponCommunicator(
+	WeaponsManager2* weaponManager,
+	INetworkClient *networkClient,
+	INetworkLayer *networkLayer,
+	RCSPAggregator* aggregator
+) :
 	m_weaponManager(weaponManager),
 	m_networkClient(networkClient),
+	m_networkLayer(networkLayer),
 	m_aggregator(aggregator)
 {
 }
@@ -128,7 +134,7 @@ void WeaponCommunicator::declinePackages(std::list<PackageId>& targetList)
 {
 	for (auto &it : targetList)
 	{
-		NetworkLayer::instance().stopSending(it);
+		m_networkLayer->stopSending(it);
 	}
 	targetList.clear();
 }

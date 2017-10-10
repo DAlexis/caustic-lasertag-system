@@ -25,7 +25,6 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_
 
 #include "rcsp/aggregator.hpp"
-#include "network/network-layer.hpp"
 #include "network/network-client.hpp"
 #include "core/result-code.hpp"
 #include "fatfs.h"
@@ -35,7 +34,10 @@
 class RCSPStream
 {
 public:
-	constexpr static uint16_t defaultLength = Package::payloadLength;
+	//constexpr static uint16_t defaultLength = Package::payloadLength; // This is outdated because we have no access to NetworkLayer realization
+
+	// @todo: Fix this hardcode
+	constexpr static uint16_t defaultLength = 23;
 	RCSPStream(RCSPAggregator* aggregator, uint16_t size = defaultLength);
 	~RCSPStream();
 

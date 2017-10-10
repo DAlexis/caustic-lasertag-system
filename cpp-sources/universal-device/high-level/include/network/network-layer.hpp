@@ -25,9 +25,7 @@
 #define LAZERTAG_RIFLE_INCLUDE_LOGIC_PACKAGE_FORMER_HPP_
 
 #include "rcsp/RCSP-base-types.hpp"
-#include "network/network-base-types.hpp"
-#include "network/broadcast.hpp"
-#include "network/radio-physical.hpp"
+#include "network/network-layer-interface.hpp"
 #include "hal/system-clock.hpp"
 #include "utils/macro.hpp"
 #include "core/os-wrappers.hpp"
@@ -75,35 +73,21 @@ struct Package
 static_assert(sizeof(Package) == Package::packageLength, "Network layer package size is bad");
 #pragma pack(pop)
 
-class INetworkClient;
-
-class NetworkLayer
+class NetworkLayer : public INetworkLayer
 {
 public:
-	using RadioReinitCallback = std::function<void(IRadioPhysicalDevice* rfPhysicalDevice)>;
+
 	constexpr static uint32_t defaultTimeout = 20000000;
 	constexpr static uint32_t defaultResendTime = 300000;
 	constexpr static uint32_t defaultResendTimeDelta = 300000;
 
 	NetworkLayer();
 	~NetworkLayer(); //< Only for future purpose
-	void init(IRadioPhysicalDevice* rfPhysicalDevice);
-	void connectClient(INetworkClient* client);
-	void setAddress(const DeviceAddress& address);
+	void init(IRadioPhysicalDevice* rfPhysicalDevice) override;
+	void connectClient(INetworkClient* client) override;
 
-	void setRadioReinitCallback(RadioReinitCallback callback);
+	void setRadioReinitCallback(RadioReinitCallback callback) override;
 
-	/**
-     * Send package and optionaly wait for acknowledgement
-     * @param target Target device address
-     * @param data Payload
-     * @param size Payload's size
-     * @param waitForAck Need waiting for acknoledgement
-     * @param doneCallback Function to call after sending done
-     * @param timings Timings for package
-     * @param doNotReceiveBy Local network client that should not receive this package
-     * @return
-     */
     PackageId send(
         DeviceAddress target,
         DeviceAddress sender,
@@ -113,18 +97,17 @@ public:
         PackageSendingDoneCallback doneCallback = nullptr,
         PackageTimings timings = PackageTimings(),
         INetworkClient* doNotReceiveBy = nullptr
-    );
+    ) override;
 
-	bool stopSending(PackageId packageId);
-	void dropAllForAddress(const DeviceAddress& address);
-	bool updateTimeout(PackageId packageId);
+	bool stopSending(PackageId packageId) override;
+	void dropAllForAddress(const DeviceAddress& address) override;
+	bool updateTimeout(PackageId packageId) override;
 
-	void registerBroadcast(const DeviceAddress& address);
-	void registerBroadcastTester(Broadcast::IBroadcastTester* tester);
+	void registerBroadcast(const DeviceAddress& address) override;
+	void registerBroadcastTester(Broadcast::IBroadcastTester* tester) override;
 
 	void enableDebug(bool debug = true);
 
-	SINGLETON_IN_CLASS(NetworkLayer);
 private:
 
 	struct WaitingPackage

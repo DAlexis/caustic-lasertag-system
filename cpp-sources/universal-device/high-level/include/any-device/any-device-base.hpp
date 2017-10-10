@@ -11,6 +11,7 @@
 #include "any-device/any-device-interface.hpp"
 #include "any-device/device.hpp"
 #include "network/network-client.hpp"
+#include "network/network-layer-interface.hpp"
 #include "rcsp/stream.hpp"
 #include "rcsp/state-saver.hpp"
 
@@ -25,10 +26,14 @@ protected:
     virtual void initNetworkClient();
     void initNetwork();
 
+    INetworkLayer *m_networkLayer = nullptr;
     OrdinaryNetworkClient m_networkClient;
 
     RCSPAggregator* m_aggregator;
     MainStateSaver m_stateSaver;
+
+private:
+    void createNetworkLayerIfEmpty();
 };
 
 class AnyRCSPClientDeviceBase : public AnyDeviceBase

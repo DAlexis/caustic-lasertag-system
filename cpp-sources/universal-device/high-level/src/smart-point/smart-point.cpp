@@ -27,7 +27,6 @@
 #include "dev/nrf24l01.hpp"
 #include "ir/ir-physical-tv.hpp"
 #include "ir/ir-presentation-mt2.hpp"
-#include "network/network-layer.hpp"
 #include "rcsp/state-saver.hpp"
 #include "rcsp/stream.hpp"
 #include "smart-point/smart-point.hpp"

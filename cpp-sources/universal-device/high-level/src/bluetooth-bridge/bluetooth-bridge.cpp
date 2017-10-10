@@ -28,7 +28,6 @@
 #include "core/string-utils.hpp"
 #include "dev/nrf24l01.hpp"
 #include "network/broadcast.hpp"
-#include "network/network-layer.hpp"
 
 #include <string.h>
 

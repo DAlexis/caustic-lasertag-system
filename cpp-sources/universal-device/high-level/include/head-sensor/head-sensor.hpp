@@ -132,7 +132,7 @@ private:
 	Interrogator m_interrogator;
 
 	WeaponsManager2 m_weaponsManager;
-	WeaponCommunicator m_weaponCommunicator{&m_weaponsManager, &m_networkClient, m_aggregator};
+	WeaponCommunicator m_weaponCommunicator{&m_weaponsManager, &m_networkClient, m_networkLayer, m_aggregator};
 
 	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, &m_networkClient};
 	Stager m_taskPoolStager{"HS task pool"};

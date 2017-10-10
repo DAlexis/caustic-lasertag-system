@@ -90,10 +90,6 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	m_networkClient.registerMyBroadcast(broadcast.headSensors);
     m_networkClient.registerMyBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
 
-#ifdef DEBUG
-	NetworkLayer::instance().enableDebug(true);
-#endif
-
 	info << "Other initialization";
 	m_tasksPool.add(
 			[this] { m_taskPoolStager.stage("m_statsCounter.interrogate()"); m_statsCounter.interrogate(); },

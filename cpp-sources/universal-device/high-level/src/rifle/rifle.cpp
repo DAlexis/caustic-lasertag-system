@@ -253,10 +253,6 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
     m_networkClient.registerMyBroadcast(broadcast.anyGameDevice);
     m_networkClient.registerMyBroadcast(broadcast.rifles);
 
-#ifdef DEBUG
-	NetworkLayer::instance().enableDebug(true);
-#endif
-
 	info << "Other initialization";
 	rifleTurnOff();
 

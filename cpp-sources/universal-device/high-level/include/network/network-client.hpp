@@ -14,7 +14,7 @@
 #include <set>
 #include <list>
 
-class NetworkLayer;
+class INetworkLayer;
 
 class INetworkClient;
 
@@ -35,8 +35,8 @@ class INetworkClient
 {
 public:
     virtual ~INetworkClient() {}
-
-    virtual void connectNetworkLayer(NetworkLayer& nl) = 0;
+    /// @todo: Use INetworkLayer instead of NetworkLayer
+    virtual void connectNetworkLayer(INetworkLayer* nl) = 0;
     virtual void connectPackageReceiver(IPackageReceiver* receiver) = 0;
 
     /// Test if device address is acceptable
@@ -45,6 +45,7 @@ public:
     /// Returns address for ack sending from
     virtual const DeviceAddress* mainBackAddress() = 0;
 
+    /// @todo Replace this function with normal receiver
     /// Returns callback that will process given payload of package, accepted by isForMe()
     virtual ReceivePackageCallback getReceiver() = 0;
 
@@ -63,7 +64,7 @@ public:
 class OrdinaryNetworkClient : public INetworkClient
 {
 public:
-    void connectNetworkLayer(NetworkLayer& nl) override;
+    void connectNetworkLayer(INetworkLayer* nl) override;
     bool isForMe(const DeviceAddress& addr) override;
     ReceivePackageCallback getReceiver() override;
     const DeviceAddress* mainBackAddress() override;
@@ -86,7 +87,7 @@ public:
 
 private:
     bool isMyBroadcast(const DeviceAddress& addr);
-    NetworkLayer* m_nl = nullptr;
+    INetworkLayer* m_nl = nullptr;
     IPackageReceiver* m_packageReceiver = nullptr;
     bool m_sendToMyself = false;
 

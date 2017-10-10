@@ -11,7 +11,7 @@
 #include "head-sensor/weapon-manager.hpp"
 #include "head-sensor/player-config.hpp"
 #include "head-sensor/player-state.hpp"
-#include "network/network-layer.hpp"
+#include "network/network-layer-interface.hpp"
 #include "rcsp/aggregator.hpp"
 #include "rcsp/base-types.hpp"
 
@@ -20,7 +20,12 @@
 class WeaponCommunicator
 {
 public:
-	WeaponCommunicator(WeaponsManager2* weaponManager, INetworkClient *networkClient, RCSPAggregator* aggregator);
+	WeaponCommunicator(
+		WeaponsManager2* weaponManager,
+		INetworkClient *networkClient,
+		INetworkLayer *networkLayer,
+		RCSPAggregator* aggregator
+	);
 
 	void sendRespawn();
 	void sendDie();
@@ -36,6 +41,7 @@ private:
 
 	WeaponsManager2* m_weaponManager;
 	INetworkClient *m_networkClient;
+	INetworkLayer *m_networkLayer;
 	RCSPAggregator *m_aggregator;
 
 	std::list<PackageId> m_respawnPackages;

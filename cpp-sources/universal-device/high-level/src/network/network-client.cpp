@@ -6,15 +6,15 @@
  */
 
 #include "network/network-client.hpp"
-#include "network/network-layer.hpp"
+#include "network/network-layer-interface.hpp"
 #include "core/logging.hpp"
 
 ///////////////////////
 //OrdinaryNetworkClient
 
-void OrdinaryNetworkClient::connectNetworkLayer(NetworkLayer& nl)
+void OrdinaryNetworkClient::connectNetworkLayer(INetworkLayer* nl)
 {
-    m_nl = &nl;
+    m_nl = nl;
 }
 
 bool OrdinaryNetworkClient::isForMe(const DeviceAddress& addr)

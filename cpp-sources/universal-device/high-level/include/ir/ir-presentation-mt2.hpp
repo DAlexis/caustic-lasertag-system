@@ -27,6 +27,7 @@
 
 #include "ir/ir-presentation.hpp"
 #include "game/game-base-types.hpp"
+#include "hal/system-clock.hpp"
 
 class PresentationReceiversGroupMT2;
 

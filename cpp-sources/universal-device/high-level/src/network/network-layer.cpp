@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <string.h>
 
-SINGLETON_IN_CPP(NetworkLayer)
 
 ///////////////////////
 // DeviceAddress
@@ -110,7 +109,7 @@ void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
 
 void NetworkLayer::connectClient(INetworkClient* client)
 {
-    client->connectNetworkLayer(*this);
+    client->connectNetworkLayer(this);
     m_clients.push_back(client);
 }
 
