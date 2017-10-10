@@ -46,10 +46,11 @@ struct PackageDetails
 		needAck(ack)
 	{}
 
-	PackageDetails()
+	PackageDetails() :
+		packageId(0),
+		TTL(0),
+		needAck(0)
 	{
-		TTL = 0;
-		needAck = 0;
 	}
 
 	PackageId packageId;
@@ -61,7 +62,6 @@ struct PackageDetails
 #pragma pack(push, 1)
 struct Package
 {
-
 	DeviceAddress sender;
 	DeviceAddress target;
 	PackageDetails details;
@@ -122,7 +122,6 @@ public:
 	void registerBroadcast(const DeviceAddress& address);
 	void registerBroadcastTester(Broadcast::IBroadcastTester* tester);
 
-	void enableRegularNRFReinit(bool enabled = true);
 	void enableDebug(bool debug = true);
 
 	SINGLETON_IN_CLASS(NetworkLayer);
@@ -202,7 +201,6 @@ private:
 
 	TaskCycled m_modemTask{std::bind(&NetworkLayer::interrogate, this)};
 
-	bool m_regularNRFReinit = false;
 	bool m_debug = false;
 	Time m_lastNRFReinitializationTime = 0;
 

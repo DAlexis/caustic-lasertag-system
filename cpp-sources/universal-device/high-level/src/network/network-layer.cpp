@@ -124,11 +124,6 @@ void NetworkLayer::registerBroadcastTester(Broadcast::IBroadcastTester* tester)
 	m_broadcastTesters.push_back(tester);
 }
 
-void NetworkLayer::enableRegularNRFReinit(bool enabled)
-{
-	m_regularNRFReinit = enabled;
-}
-
 void NetworkLayer::enableDebug(bool debug)
 {
 	m_debug = debug;
