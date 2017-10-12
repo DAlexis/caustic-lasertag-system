@@ -1,5 +1,6 @@
 
 #include "any-device/any-device-base.hpp"
+#include "any-device/any-rcsp-device-base.hpp"
 #include "rcsp/aggregator.hpp"
 #include "core/logging.hpp"
 #include "network/network-layer.hpp"
@@ -16,9 +17,9 @@ void AnyDeviceBase::initNetworkClient()
 {
 	createNetworkLayerIfEmpty();
     debug << "Setting address to " << ADDRESS_TO_STREAM(deviceConfig.devAddr);
-    m_networkClient.setMyAddress(deviceConfig.devAddr);
-    m_networkClient.registerMyBroadcast(broadcast.any);
-    m_networkLayer->connectClient(&m_networkClient);
+    static_cast<OrdinaryNetworkClient*>(m_networkClient)->setMyAddress(deviceConfig.devAddr);
+    static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.any);
+    m_networkLayer->connectClient(m_networkClient);
 }
 
 void AnyDeviceBase::initNetwork()
@@ -37,7 +38,7 @@ void AnyDeviceBase::initNetwork()
     };
     radioReinit(nrf);
     m_networkLayer->setRadioReinitCallback(radioReinit);
-    m_networkLayer->init(nrf);
+    m_networkLayer->start(nrf);
 }
 
 void AnyDeviceBase::createNetworkLayerIfEmpty()
@@ -46,13 +47,18 @@ void AnyDeviceBase::createNetworkLayerIfEmpty()
 	{
 		m_networkLayer = new NetworkLayer();
 #ifdef DEBUG
-		reinterpret_cast<NetworkLayer*>(m_networkLayer)->enableDebug(true);
+		static_cast<NetworkLayer*>(m_networkLayer)->enableDebug(true);
 #endif
+	}
+	/// @TODO: Move this initialization to other place: any device may be not ordinary network client
+	if (m_networkClient == nullptr)
+	{
+		m_networkClient = new OrdinaryNetworkClient();
 	}
 }
 
 void AnyRCSPClientDeviceBase::initNetworkClient()
 {
     AnyDeviceBase::initNetworkClient();
-    m_networkClient.connectPackageReceiver(&m_networkPackagesListener);
+    m_networkClient->connectPackageReceiver(&m_networkPackagesListener);
 }

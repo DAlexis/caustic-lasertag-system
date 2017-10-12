@@ -31,6 +31,11 @@
 #include <list>
 #include <memory>
 
+/** @todo: Rewrite stream functionality in such way:
+ * Only one class for stream, and in stores data in vector.
+ * Send function splits data to different packages when needed
+ */
+
 class RCSPStream
 {
 public:
@@ -168,9 +173,7 @@ public:
 	);
 
 	bool empty();
-
 	void dispatch();
-
 	DetailedResult<FRESULT> writeToFile(FIL* file);
 
 private:

@@ -22,7 +22,7 @@
 */
 
 #include <any-device/device.hpp>
-#include "any-device/any-device-base.hpp"
+#include "any-device/any-onc-device-base.hpp"
 #include "bluetooth-bridge/bluetooth-protocol.hpp"
 #include "bluetooth-bridge/hc05-configurator.hpp"
 #include "core/device-initializer.hpp"
@@ -42,7 +42,7 @@ public:
 
 extern BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 
-class BluetoothBridge : public AnyDeviceBase, public IPackageReceiver
+class BluetoothBridge : public AnyONCDeviceBase, public IPackageReceiver
 {
 public:
 	BluetoothBridge();

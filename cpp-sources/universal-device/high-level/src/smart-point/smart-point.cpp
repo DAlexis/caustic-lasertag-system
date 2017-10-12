@@ -85,8 +85,8 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 	info << "Network initialization";
     initNetworkClient();
     initNetwork();
-	m_networkClient.registerMyBroadcast(broadcast.anyGameDevice);
-	m_networkClient.registerMyBroadcast(broadcast.smartPoint);
+    static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
+    static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.smartPoint);
 
 	initSounds();
 

@@ -26,7 +26,7 @@
 
 #include <dev/RC522-wrapper.hpp>
 #include "any-device/device.hpp"
-#include "any-device/any-device-base.hpp"
+#include "any-device/any-rcsp-device-base.hpp"
 #include "rcsp/state-saver.hpp"
 #include "core/device-initializer.hpp"
 #include "dev/RC522.hpp"
@@ -132,9 +132,9 @@ private:
 	Interrogator m_interrogator;
 
 	WeaponsManager2 m_weaponsManager;
-	WeaponCommunicator m_weaponCommunicator{&m_weaponsManager, &m_networkClient, m_networkLayer, m_aggregator};
+	WeaponCommunicator m_weaponCommunicator{&m_weaponsManager, m_networkClient, m_networkLayer, m_aggregator};
 
-	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, &m_networkClient};
+	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, m_networkClient};
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
 	RC552Frontend m_mfrcWrapper;

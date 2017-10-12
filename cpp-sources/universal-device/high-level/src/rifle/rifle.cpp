@@ -250,8 +250,8 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	info << "RCSP modem initialization";
 	initNetworkClient();
     initNetwork();
-    m_networkClient.registerMyBroadcast(broadcast.anyGameDevice);
-    m_networkClient.registerMyBroadcast(broadcast.rifles);
+    static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
+    static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.rifles);
 
 	info << "Other initialization";
 	rifleTurnOff();
@@ -768,7 +768,7 @@ void Rifle::sendHeartbeatToHS()
 	// @todo use RemoteCall
 	stream.addCall(ConfigCodes::HeadSensor::Functions::rifleToHeadSensorHeartbeat);
 	stream.send(
-			&m_networkClient,
+			m_networkClient,
 			config.headSensorAddr,
 			false,
 			nullptr,

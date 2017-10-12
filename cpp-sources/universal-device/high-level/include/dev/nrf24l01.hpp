@@ -24,11 +24,11 @@
 #ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_DEV_NRF24L01_HPP_
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_DEV_NRF24L01_HPP_
 
+#include "network/radio-physical-interface.hpp"
 #include "hal/spi.hpp"
 #include "hal/io-pins.hpp"
 #include "hal/system-clock.hpp"
 #include "core/diagnostic.hpp"
-#include "network/radio-physical.hpp"
 
 #define RADIO_ADDRESS_SIZE  5
 

@@ -86,9 +86,9 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	info << "Network initialization";
 	initNetworkClient();
 	initNetwork();
-	m_networkClient.registerMyBroadcast(broadcast.anyGameDevice);
-	m_networkClient.registerMyBroadcast(broadcast.headSensors);
-    m_networkClient.registerMyBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
+	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
+	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.headSensors);
+	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
 
 	info << "Other initialization";
 	m_tasksPool.add(
@@ -386,7 +386,7 @@ void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_
 	notification.target = playerConfig.playerId;
 	info << "Notifying damager";
 	RCSPStream::remoteCall(
-	        &m_networkClient,
+	        m_networkClient,
 			broadcast.headSensors,
 			ConfigCodes::HeadSensor::Functions::notifyIsDamager,
 			notification,

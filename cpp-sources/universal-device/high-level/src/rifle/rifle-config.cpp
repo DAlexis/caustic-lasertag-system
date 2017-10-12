@@ -5,7 +5,7 @@
 
 PlayerPartialState::PlayerPartialState(
         const DeviceAddress& headSensorAddress,
-        OrdinaryNetworkClient* networkClient,
+		INetworkClient* networkClient,
         RCSPAggregator* aggregator
         ) :
 	m_headSensorAddress(&headSensorAddress),

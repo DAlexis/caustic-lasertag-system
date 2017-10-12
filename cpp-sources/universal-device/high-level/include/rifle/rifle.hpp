@@ -26,7 +26,7 @@
 
 #include <any-device/device.hpp>
 #include <dev/RC522-wrapper.hpp>
-#include "any-device/any-device-base.hpp"
+#include "any-device/any-rcsp-device-base.hpp"
 #include "core/device-initializer.hpp"
 #include "core/os-wrappers.hpp"
 #include "dev/buttons.hpp"
@@ -77,7 +77,7 @@ public:
 	RifleState state{&config};
 	//DeviceParameters device;
 
-	PlayerPartialState playerState{config.headSensorAddr, &m_networkClient, &RCSPAggregator::getActiveAggregator()};
+	PlayerPartialState playerState{config.headSensorAddr, m_networkClient, &RCSPAggregator::getActiveAggregator()};
 
 private:
 

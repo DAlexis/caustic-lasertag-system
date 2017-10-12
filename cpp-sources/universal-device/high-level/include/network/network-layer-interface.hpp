@@ -8,9 +8,9 @@
 #ifndef UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_NETWORK_NETWORK_LAYER_INTERFACE_HPP_
 #define UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_NETWORK_NETWORK_LAYER_INTERFACE_HPP_
 
+#include "network/radio-physical-interface.hpp"
 #include "network/network-base-types.hpp"
 #include "network/broadcast.hpp"
-#include "network/radio-physical.hpp"
 
 class INetworkClient;
 
@@ -19,7 +19,7 @@ class INetworkLayer
 public:
 	using RadioReinitCallback = std::function<void(IRadioPhysicalDevice* rfPhysicalDevice)>;
 	virtual ~INetworkLayer() {}
-	virtual void init(IRadioPhysicalDevice* rfPhysicalDevice) = 0;
+	virtual void start(IRadioPhysicalDevice* rfPhysicalDevice) = 0;
 	virtual void connectClient(INetworkClient* client) = 0;
 
 	virtual void setRadioReinitCallback(RadioReinitCallback callback) = 0;
@@ -53,10 +53,6 @@ public:
 	virtual void registerBroadcast(const DeviceAddress& address) = 0;
 	virtual void registerBroadcastTester(Broadcast::IBroadcastTester* tester) = 0;
 };
-
-
-
-
 
 
 #endif /* UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_NETWORK_NETWORK_LAYER_INTERFACE_HPP_ */

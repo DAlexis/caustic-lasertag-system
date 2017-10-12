@@ -22,11 +22,9 @@ bool OrdinaryNetworkClient::isForMe(const DeviceAddress& addr)
     return addr == *m_address || isMyBroadcast(addr);
 }
 
-ReceivePackageCallback OrdinaryNetworkClient::getReceiver()
+void OrdinaryNetworkClient::receive(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
 {
-   return [this] (DeviceAddress sender, uint8_t* payload, uint16_t payloadLength) {
-            m_packageReceiver->receivePackage(sender, payload, payloadLength);
-   };
+	m_packageReceiver->receivePackage(sender, payload, payloadLength);
 }
 
 const DeviceAddress* OrdinaryNetworkClient::mainBackAddress()

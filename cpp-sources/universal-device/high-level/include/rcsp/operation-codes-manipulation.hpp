@@ -71,10 +71,4 @@ private:
 
 };
 
-
-
-
-
-
-
 #endif /* RTOS_STM32F103RET6_DEVICE_INCLUDE_RCSP_RCSP_CODES_MANIPULATION_HPP_ */

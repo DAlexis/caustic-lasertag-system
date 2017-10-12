@@ -62,7 +62,7 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
     }
 
     initNetworkClient();
-    m_networkClient.connectPackageReceiver(this);
+    m_networkClient->connectPackageReceiver(this);
 
     /*
     m_workerToNetwork.setStackSize(512);
@@ -220,7 +220,7 @@ void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, u
 	if (Broadcast::isBroadcast(addr))
 	{
 		// We need special timings for broadcasts
-	    m_networkClient.send(
+	    m_networkClient->send(
 	    		addr,
                 payload,
 				size,
@@ -230,7 +230,7 @@ void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, u
         );
 	} else {
 	    // Not broadcast packages are with default timings
-	    m_networkClient.send(
+	    m_networkClient->send(
 	    		addr,
 				payload,
 				size,

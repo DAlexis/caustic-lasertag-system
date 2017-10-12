@@ -95,7 +95,7 @@ void NetworkLayer::setRadioReinitCallback(RadioReinitCallback callback)
 	m_radioReinitCallback = callback;
 }
 
-void NetworkLayer::init(IRadioPhysicalDevice* rfPhysicalDevice)
+void NetworkLayer::start(IRadioPhysicalDevice* rfPhysicalDevice)
 {
 	Kernel::instance().assert(m_clients.size() != 0,
 			"Network layer initialisation fail: no clients connected"
@@ -176,8 +176,7 @@ PackageId NetworkLayer::send(
     {
     	if (radio.isEnabled())
     		trace << "Forwarding to local receiver client, target = " << ADDRESS_TO_STREAM(target);
-        localReceiverClient->getReceiver()
-                (sender, data, size);
+        localReceiverClient->receive(sender, data, size);
 
         if (!Broadcast::isBroadcast(target))
         {
@@ -461,8 +460,7 @@ void NetworkLayer::receiveIncoming()
 		{
 		    if (it->isForMe(m_incoming.front().target))
 		    {
-		        it->getReceiver()
-		            (m_incoming.front().sender, m_incoming.front().payload, m_incoming.front().payloadLength);
+		        it->receive(m_incoming.front().sender, m_incoming.front().payload, m_incoming.front().payloadLength);
 		        break;
 		    }
 		}

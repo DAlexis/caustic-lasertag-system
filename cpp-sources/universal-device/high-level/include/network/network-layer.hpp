@@ -83,7 +83,7 @@ public:
 
 	NetworkLayer();
 	~NetworkLayer(); //< Only for future purpose
-	void init(IRadioPhysicalDevice* rfPhysicalDevice) override;
+	void start(IRadioPhysicalDevice* rfPhysicalDevice) override;
 	void connectClient(INetworkClient* client) override;
 
 	void setRadioReinitCallback(RadioReinitCallback callback) override;

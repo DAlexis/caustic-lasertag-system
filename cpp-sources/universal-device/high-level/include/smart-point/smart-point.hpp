@@ -25,7 +25,7 @@
 #define UNIVERSAL_DEVICE_INCLUDE_SMART_POINT_SMART_POINT_HPP_
 
 #include <any-device/device.hpp>
-#include "any-device/any-device-base.hpp"
+#include "any-device/any-rcsp-device-base.hpp"
 #include "smart-point/smart-point-config-and-state.hpp"
 #include "smart-point/smart-point-display.hpp"
 #include "smart-point/smart-point-ui.hpp"

@@ -10,11 +10,24 @@
 
 #include "any-device/any-device-interface.hpp"
 #include "any-device/device.hpp"
-#include "network/network-client.hpp"
+#include "network/network-client-interface.hpp"
 #include "network/network-layer-interface.hpp"
 #include "rcsp/stream.hpp"
 #include "rcsp/state-saver.hpp"
 
+/**
+ * Device classes hierarchy:
+ * AnyDeviceBase <- Repeater
+ * AnyDeviceBase <- AnyONCDeviceBase <- BluetoothBridge
+ * AnyDeviceBase <- AnyONCDeviceBase <- AnyRCSPClientDeviceBase <- Rifle
+ * AnyDeviceBase <- AnyONCDeviceBase <- AnyRCSPClientDeviceBase <- Head Sensor
+ * AnyDeviceBase <- AnyONCDeviceBase <- AnyRCSPClientDeviceBase <- Smart Point
+ * AnyDeviceBase <- AnyONCDeviceBase <- AnyRCSPClientDeviceBase <- ... other playable devices
+ */
+
+/**
+ * Any Caustic Lasertag system device derive this class
+ */
 class AnyDeviceBase : public IAnyDevice
 {
 public:
@@ -27,7 +40,7 @@ protected:
     void initNetwork();
 
     INetworkLayer *m_networkLayer = nullptr;
-    OrdinaryNetworkClient m_networkClient;
+    INetworkClient *m_networkClient = nullptr;
 
     RCSPAggregator* m_aggregator;
     MainStateSaver m_stateSaver;
@@ -35,15 +48,6 @@ protected:
 private:
     void createNetworkLayerIfEmpty();
 };
-
-class AnyRCSPClientDeviceBase : public AnyDeviceBase
-{
-protected:
-    void initNetworkClient() override;
-    RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
-
-};
-
 
 
 #endif /* UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_ANY_DEVICE_ANY_DEVICE_BASE_HPP_ */

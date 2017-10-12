@@ -50,10 +50,4 @@ public:
 	virtual void sendData(uint8_t size, uint8_t* data) = 0;
 };
 
-
-
-
-
-
-
 #endif /* INCLUDE_NETWORK_RADIO_PHYSICAL_HPP_ */
