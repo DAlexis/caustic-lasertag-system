@@ -116,6 +116,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	    info << "Initializing built-in bluetooth bridge device";
 	    RCSPAggregator::setActiveAggregator(new RCSPAggregator);
 	    BluetoothBridge *bb = new BluetoothBridge();
+	    bb->assignExistingNetworkLayer(m_networkLayer);
 	    bb->initAsSecondaryDevice(_pinout, isSdcardOk);
 	    RCSPAggregator::setActiveAggregator(m_aggregator);
 	} else {

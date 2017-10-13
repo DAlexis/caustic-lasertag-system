@@ -34,6 +34,7 @@ class AnyDeviceBase : public IAnyDevice
 {
 public:
     AnyDeviceBase();
+    void assignExistingNetworkLayer(INetworkLayer* existingNetworkLayer);
 
     DeviceConfiguration deviceConfig;
 

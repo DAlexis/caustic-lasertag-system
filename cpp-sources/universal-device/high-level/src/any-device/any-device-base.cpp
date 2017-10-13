@@ -12,12 +12,23 @@ AnyDeviceBase::AnyDeviceBase() :
 
 }
 
+void AnyDeviceBase::assignExistingNetworkLayer(INetworkLayer* existingNetworkLayer)
+{
+	m_networkLayer = existingNetworkLayer;
+}
+
 void AnyDeviceBase::initNetwork()
 {
-	if (m_networkLayer == nullptr)
+	if (m_networkLayer != nullptr)
 	{
-		m_networkLayer = new NetworkLayer();
+		/** In this case somebody already set m_networkLayer pointer
+		 * over assignExistingNetworkLayer() or already called initNetwork()
+		 * so we should do nothing here
+		 */
+		return;
 	}
+
+	m_networkLayer = new NetworkLayer();
     NRF24L01Manager *nrf = new NRF24L01Manager();
     auto radioReinit = [](IRadioPhysicalDevice* rf) {
         static_cast<NRF24L01Manager*>(rf)->init(
