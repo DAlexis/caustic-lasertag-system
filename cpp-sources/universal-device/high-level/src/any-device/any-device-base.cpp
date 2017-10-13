@@ -7,24 +7,17 @@
 #include "dev/nrf24l01.hpp"
 
 AnyDeviceBase::AnyDeviceBase() :
-    m_aggregator(&RCSPAggregator::getActiveAggregator()),
-    m_stateSaver(m_aggregator)
+	m_aggregator(&RCSPAggregator::getActiveAggregator())
 {
 
-}
-
-void AnyDeviceBase::initNetworkClient()
-{
-	createNetworkLayerIfEmpty();
-    debug << "Setting address to " << ADDRESS_TO_STREAM(deviceConfig.devAddr);
-    static_cast<OrdinaryNetworkClient*>(m_networkClient)->setMyAddress(deviceConfig.devAddr);
-    static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.any);
-    m_networkLayer->connectClient(m_networkClient);
 }
 
 void AnyDeviceBase::initNetwork()
 {
-	createNetworkLayerIfEmpty();
+	if (m_networkLayer == nullptr)
+	{
+		m_networkLayer = new NetworkLayer();
+	}
     NRF24L01Manager *nrf = new NRF24L01Manager();
     auto radioReinit = [](IRadioPhysicalDevice* rf) {
         static_cast<NRF24L01Manager*>(rf)->init(
@@ -41,24 +34,31 @@ void AnyDeviceBase::initNetwork()
     m_networkLayer->start(nrf);
 }
 
-void AnyDeviceBase::createNetworkLayerIfEmpty()
+///////////////////////
+// AnyONCDeviceBase
+
+void AnyONCDeviceBase::initNetworkClient()
 {
-	if (m_networkLayer == nullptr)
-	{
-		m_networkLayer = new NetworkLayer();
-#ifdef DEBUG
-		static_cast<NetworkLayer*>(m_networkLayer)->enableDebug(true);
-#endif
-	}
-	/// @TODO: Move this initialization to other place: any device may be not ordinary network client
 	if (m_networkClient == nullptr)
 	{
 		m_networkClient = new OrdinaryNetworkClient();
 	}
+    debug << "Setting address to " << ADDRESS_TO_STREAM(deviceConfig.devAddr);
+    static_cast<OrdinaryNetworkClient*>(m_networkClient)->setMyAddress(deviceConfig.devAddr);
+    static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.any);
+    m_networkLayer->connectClient(m_networkClient);
+}
+
+///////////////////////
+// AnyRCSPClientDeviceBase
+
+AnyRCSPClientDeviceBase::AnyRCSPClientDeviceBase() :
+	m_stateSaver(m_aggregator)
+{
 }
 
 void AnyRCSPClientDeviceBase::initNetworkClient()
 {
-    AnyDeviceBase::initNetworkClient();
+	AnyONCDeviceBase::initNetworkClient();
     m_networkClient->connectPackageReceiver(&m_networkPackagesListener);
 }

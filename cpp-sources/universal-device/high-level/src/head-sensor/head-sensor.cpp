@@ -84,8 +84,8 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	}
 
 	info << "Network initialization";
-	initNetworkClient();
 	initNetwork();
+	initNetworkClient();
 	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
 	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.headSensors);
 	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));

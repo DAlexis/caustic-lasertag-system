@@ -17,12 +17,14 @@
 
 /**
  * Device classes hierarchy:
+ *
  * AnyDeviceBase <- Repeater
  * AnyDeviceBase <- AnyONCDeviceBase <- BluetoothBridge
  * AnyDeviceBase <- AnyONCDeviceBase <- AnyRCSPClientDeviceBase <- Rifle
  * AnyDeviceBase <- AnyONCDeviceBase <- AnyRCSPClientDeviceBase <- Head Sensor
  * AnyDeviceBase <- AnyONCDeviceBase <- AnyRCSPClientDeviceBase <- Smart Point
  * AnyDeviceBase <- AnyONCDeviceBase <- AnyRCSPClientDeviceBase <- ... other playable devices
+ *
  */
 
 /**
@@ -36,17 +38,10 @@ public:
     DeviceConfiguration deviceConfig;
 
 protected:
-    virtual void initNetworkClient();
     void initNetwork();
 
     INetworkLayer *m_networkLayer = nullptr;
-    INetworkClient *m_networkClient = nullptr;
-
     RCSPAggregator* m_aggregator;
-    MainStateSaver m_stateSaver;
-
-private:
-    void createNetworkLayerIfEmpty();
 };
 
 

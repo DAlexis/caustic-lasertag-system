@@ -97,9 +97,6 @@ void NetworkLayer::setRadioReinitCallback(RadioReinitCallback callback)
 
 void NetworkLayer::start(IRadioPhysicalDevice* rfPhysicalDevice)
 {
-	Kernel::instance().assert(m_clients.size() != 0,
-			"Network layer initialisation fail: no clients connected"
-		);
 	m_rfPhysicalDevice = rfPhysicalDevice;
 	m_rfPhysicalDevice->setTXDoneCallback(std::bind(&NetworkLayer::TXDoneCallback, this));
 	m_rfPhysicalDevice->setDataReceiveCallback(std::bind(&NetworkLayer::RXCallback, this, std::placeholders::_1, std::placeholders::_2));
@@ -464,16 +461,7 @@ void NetworkLayer::receiveIncoming()
 		        break;
 		    }
 		}
-/*
-		RCSPMultiStream answerStream;
-		RCSPAggregator::instance().dispatchStream(m_incoming.front().payload, m_incoming.front().payloadLength, &answerStream);
 
-		radio << "|=| Dispatched id " << m_incoming.front().details.packageId;
-		if (!answerStream.empty())
-		{
-			radio << "|=| Answer for " << m_incoming.front().details.packageId << "ready";
-			answerStream.send(m_incoming.front().sender, true);
-		}*/
 		m_incoming.pop_front();
 	}
 }
