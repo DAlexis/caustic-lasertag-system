@@ -31,6 +31,35 @@
 #include <list>
 #include <memory>
 
+class RCSPStreamNew
+{
+public:
+	RCSPStreamNew(RCSPAggregator* aggregator);
+	uint8_t* getStream() const;
+	uint16_t getSize() const;
+	void addPushValue(OperationCode code);
+	void addPullValue(OperationCode code);
+	void addCall(OperationCode code);
+
+	PackageId send(
+		INetworkClient* client,
+		DeviceAddress target,
+		bool waitForAck = false,
+		PackageSendingDoneCallback doneCallback = nullptr,
+		PackageTimings&& timings = PackageTimings()
+	);
+
+	void dispatch();
+
+	bool empty();
+	Result writeToFile(FIL* file);
+private:
+	using SerializationFunc = std::function<RCSPAggregator::ResultType (uint8_t * /*pos*/, OperationCode /*code*/, uint16_t & /*addedSize*/)>;
+	RCSPAggregator::ResultType serializeAnything(OperationCode code, SerializationFunc serializer);
+	std::vector<uint8_t> m_data;
+	RCSPAggregator* m_aggregator;
+};
+
 /** @todo: Rewrite stream functionality in such way:
  * Only one class for stream, and in stores data in vector.
  * Send function splits data to different packages when needed
@@ -107,7 +136,7 @@ public:
 			code,
 			[this, &arg] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
 			{
-				return m_aggregator->serializeCallRequest(pos, code, m_size - m_cursor, addedSize, arg);
+				return m_aggregator->serializeCall(pos, code, m_size - m_cursor, addedSize, arg);
 			}
 		);
 	}
@@ -174,7 +203,7 @@ public:
 
 	bool empty();
 	void dispatch();
-	DetailedResult<FRESULT> writeToFile(FIL* file);
+	Result writeToFile(FIL* file);
 
 private:
 	void pushBackStream();

@@ -23,7 +23,6 @@
 
 
 #include "rcsp/aggregator.hpp"
-#include "rcsp/state-saver.hpp"
 #include "rcsp/stream.hpp"
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
@@ -189,7 +188,7 @@ Result RCSPAggregator::parseSring(const char* key, const char* value)
 	return Result();
 }
 
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializePush(
 		uint8_t* stream,
 		OperationCode code,
 		uint16_t freeSpace,
@@ -228,7 +227,42 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObject(
 	return DetailedResult<AddingResult>(OK);
 }
 
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObjectRequest(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize)
+RCSPAggregator::ResultType RCSPAggregator::serializePush(
+	OperationCode code,
+	Buffer& target,
+	const uint8_t* pCustomValue
+)
+{
+	/// @todo: Not tested code!
+	auto it = m_accessorsByOpCode.find(code);
+	if (it == m_accessorsByOpCode.end())
+	{
+		return DetailedResult<AddingResult>(INVALID_OPCODE, "Opcode not found");
+	}
+	code = RCSPCodeManipulator::makeSetObject(code);
+	if (!it->second->isReadable())
+		return DetailedResult<AddingResult>(NOT_READABLE, "Object not readable");
+
+	ChunkHeader header;
+	header.size = it->second->getSize();
+	header.code = code;
+
+	uint16_t chunkSize = header.size + sizeof(OperationSize) + sizeof(OperationCode);
+	uint16_t currentBufferSize = target.size();
+	target.resize(currentBufferSize + chunkSize);
+	uint8_t *cursor = &target[currentBufferSize];
+	serializeAndInc(cursor, header);
+	if (pCustomValue == nullptr)
+	{
+		it->second->serialize(cursor);
+	} else {
+		memcpy(cursor, pCustomValue, header.size);
+	}
+
+	return DetailedResult<AddingResult>(OK);
+}
+
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializePull(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize)
 {
 	actualSize = 0;
 	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
@@ -244,7 +278,7 @@ DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeObjectRequ
 	return DetailedResult<AddingResult>(OK);
 }
 
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeCallRequest(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize)
+DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeCall(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize)
 {
 	actualSize = 0;
 	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);

@@ -25,6 +25,7 @@
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
 #include "core/diagnostic.hpp"
+#include "core/os-wrappers.hpp"
 #include "newlib-driver.h"
 #include <stdio.h>
 #include <string.h>
@@ -35,8 +36,7 @@ std::list<const char*> Loggers::tags;
 bool Loggers::m_isInitialized = false;
 char* Loggers::m_tmpBuffer = nullptr;
 uint16_t Loggers::m_tmpBufferCurrent = 0;
-
-Mutex Loggers::loggersMutex;
+static Mutex loggersMutex;
 
 Logger error  ("E  ERROR");
 Logger warning(" W warn ");
@@ -178,12 +178,12 @@ extern "C" {
 	void lockOutputPort()
 	{
 		if (Loggers::isInitialized())
-			Loggers::loggersMutex.lock();
+			loggersMutex.lock();
 	}
 
 	void unlockOutputPort()
 	{
 		if (Loggers::isInitialized())
-			Loggers::loggersMutex.unlock();
+			loggersMutex.unlock();
 	}
 }

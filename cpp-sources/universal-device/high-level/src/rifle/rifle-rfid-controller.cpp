@@ -56,7 +56,7 @@ void RifleRFIDController::writeServiceCard()
 	uint16_t size = sizeof(m_RFIDWriteBuffer[0])*RFIDWriteBufferSize;
 	memset(m_RFIDWriteBuffer, 0, size);
 	uint16_t actualSize = 0;
-	RCSPAggregator::serializeCallRequest(
+	RCSPAggregator::serializeCall(
 		m_RFIDWriteBuffer,
 		ConfigCodes::Rifle::Functions::rifleRFIDProgramHSAddr,
 		size,
@@ -81,7 +81,7 @@ void RifleRFIDController::writeHSAddress(DeviceAddress addr)
 	uint16_t size = sizeof(m_RFIDWriteBuffer[0])*RFIDWriteBufferSize;
 	memset(m_RFIDWriteBuffer, 0, size);
 	uint16_t actualSize = 0;
-	RCSPAggregator::serializeCallRequest(
+	RCSPAggregator::serializeCall(
 		m_RFIDWriteBuffer,
 		ConfigCodes::Rifle::Functions::rifleChangeHS,
 		size,

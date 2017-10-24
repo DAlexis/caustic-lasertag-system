@@ -507,6 +507,11 @@ void NetworkLayer::printAndSend(Package& package)
 	m_rfPhysicalDevice->sendData(Package::packageLength, (uint8_t*) &package);
 }
 
+uint16_t NetworkLayer::payloadSize()
+{
+	return m_rfPhysicalDevice->getPayloadSize() - sizeof(PackageHeader);
+}
+
 bool NetworkLayer::stopSending(PackageId packageId)
 {
 	ScopedLock<Mutex> lock(m_packagesQueueMutex);

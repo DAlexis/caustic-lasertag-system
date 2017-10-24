@@ -7,6 +7,7 @@
 
 #include "hw/pwm-hw.hpp"
 #include "core/logging.hpp"
+#include "utils/macro.hpp"
 
 PWMsPool PWMsPool;
 

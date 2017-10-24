@@ -24,8 +24,9 @@
 #ifndef INCLUDE_NETWORK_RADIO_PHYSICAL_HPP_
 #define INCLUDE_NETWORK_RADIO_PHYSICAL_HPP_
 
-#include "core/os-wrappers.hpp"
+#include "utils/interfaces.hpp"
 #include "rcsp/base-types.hpp"
+#include <functional>
 
 class IRadioPhysicalDevice : public IInterrogatable
 {

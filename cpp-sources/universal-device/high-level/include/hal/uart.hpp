@@ -24,8 +24,9 @@
 #ifndef RTOS_STM32F103RET6_DEVICE_INCLUDE_HAL_UART_HPP_
 #define RTOS_STM32F103RET6_DEVICE_INCLUDE_HAL_UART_HPP_
 
-#include "core/os-wrappers.hpp"
 #include <functional>
+
+class Worker;
 
 class IUARTManager
 {

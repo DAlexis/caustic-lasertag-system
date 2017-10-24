@@ -173,6 +173,7 @@ public:
 	constexpr static unsigned int minimalStreamSize = sizeof(OperationSize) + sizeof(OperationCode);
 
 	using ResultType = DetailedResult<AddingResult>;
+	using Buffer = std::vector<uint8_t>;
 
 	RCSPAggregator() {}
 
@@ -211,13 +212,19 @@ public:
 	 * copied to stream from pCustomValue
 	 * @return result of operation
 	 */
-	ResultType serializeObject(
-			uint8_t* stream,
-			OperationCode code,
-			uint16_t freeSpace,
-			uint16_t& actualSize,
-			const uint8_t* pCustomValue = nullptr
-		);
+	ResultType serializePush(
+		uint8_t* stream,
+		OperationCode code,
+		uint16_t freeSpace,
+		uint16_t& actualSize,
+		const uint8_t* pCustomValue = nullptr
+	);
+
+	ResultType serializePush(
+		OperationCode code,
+		Buffer& target,
+		const uint8_t* pCustomValue = nullptr
+	);
 
 	/**
 	 * Put to stream request for variable
@@ -226,7 +233,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	static ResultType serializeObjectRequest(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
+	static ResultType serializePull(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
 
 	/**
 	 * Put to stream request for function call without parameters
@@ -235,7 +242,7 @@ public:
 	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
 	 * @return result of operation
 	 */
-	static ResultType serializeCallRequest(
+	static ResultType serializeCall(
 			uint8_t* stream,
 			OperationCode functionCode,
 			uint16_t freeSpace,
@@ -251,7 +258,7 @@ public:
 	 * @return result of operation
 	 */
 	template<typename Type>
-	static ResultType serializeCallRequest(
+	static ResultType serializeCall(
 			uint8_t* stream,
 			OperationCode functionCode,
 			uint16_t freeSpace,
@@ -315,6 +322,13 @@ public:
 
 	RCSPAggregator(const RCSPAggregator&) = delete;
 private:
+#pragma pack(push, 1)
+	struct ChunkHeader
+	{
+		OperationSize size = 0;
+		OperationCode code = 0;
+	};
+#pragma pack(pop)
 	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits
 
 	bool dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream = nullptr);
@@ -327,7 +341,7 @@ private:
 };
 
 template<typename T>
-inline void serializeAndInc(void*& cursor, const T& data)
+inline void serializeAndInc(uint8_t*& cursor, const T& data)
 {
 	memcpy(cursor, &data, sizeof(T));
 	cursor += sizeof(T);

@@ -24,7 +24,6 @@
 #ifndef INCLUDE_CORE_LOGGING_HPP_
 #define INCLUDE_CORE_LOGGING_HPP_
 
-#include "os-wrappers.hpp"
 #include "hal/uart.hpp"
 #include <string.h>
 #include <list>
@@ -39,7 +38,6 @@ class Loggers
 public:
 	static void initLoggers();
 	static bool isInitialized();
-	static Mutex loggersMutex;
 
 private:
 	static void infoOnOff(const char* arg);
@@ -85,7 +83,10 @@ private:
 		LoggerUnnamed& operator<<(const std::string& str);
 		LoggerUnnamed& operator<<(int d);
 		LoggerUnnamed& operator<<(unsigned int d);
+
+#if __arm__
 		LoggerUnnamed& operator<<(uint32_t d);
+#endif
 		LoggerUnnamed& operator<<(uint64_t d);
 		LoggerUnnamed& operator<<(float f);
 		LoggerUnnamed& operator<<(double f);

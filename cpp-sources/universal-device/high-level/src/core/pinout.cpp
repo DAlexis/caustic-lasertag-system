@@ -25,7 +25,10 @@
 #include "core/pinout.hpp"
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
+#include "utils/macro.hpp"
 #include <functional>
+
+
 ///////////////////
 // Pinout
 Result Pinout::readIni(const char* filename)

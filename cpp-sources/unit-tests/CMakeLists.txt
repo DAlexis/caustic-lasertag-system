@@ -13,10 +13,19 @@ include_directories (
     ../universal-device/high-level/high-level/glcd
     ../universal-device/high-level/high-level/lasertag-ssp/ssp
     ../universal-device/high-level/high-level/lasertag-ssp/ssp/Inc
+    ../universal-device/low-level/Middlewares/Third_Party/FatFs/src
+    ../universal-device/low-level/Middlewares/Third_Party/FatFs/src/drivers
 )
 
 set(EXE_SOURCES
     unit-test-stub.cpp
+    rcsp-aggregator-tests.cpp
+    
+    mock/network-layer-mock.cpp
+    mock/loggers-mock.cpp
+    
+    mock/network-layer-mock.hpp
+    ../universal-device/high-level/src/rscp/RCSP-aggregator.cpp
 )
 
 add_executable(${PROJECT_NAME} ${EXE_SOURCES})

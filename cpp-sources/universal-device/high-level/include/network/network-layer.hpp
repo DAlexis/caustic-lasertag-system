@@ -58,6 +58,15 @@ struct PackageDetails
 #pragma pack(pop)
 
 #pragma pack(push, 1)
+struct PackageHeader
+{
+	DeviceAddress sender;
+	DeviceAddress target;
+	PackageDetails details;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
 struct Package
 {
 	DeviceAddress sender;
@@ -98,6 +107,8 @@ public:
         PackageTimings timings = PackageTimings(),
         INetworkClient* doNotReceiveBy = nullptr
     ) override;
+
+    uint16_t payloadSize() override;
 
 	bool stopSending(PackageId packageId) override;
 	void dropAllForAddress(const DeviceAddress& address) override;

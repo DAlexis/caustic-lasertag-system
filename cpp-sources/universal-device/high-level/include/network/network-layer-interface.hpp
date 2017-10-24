@@ -46,6 +46,8 @@ public:
 		INetworkClient* doNotReceiveBy = nullptr
 	) = 0;
 
+	virtual uint16_t payloadSize() = 0;
+
 	virtual bool stopSending(PackageId packageId) = 0;
 	virtual void dropAllForAddress(const DeviceAddress& address) = 0;
 	virtual bool updateTimeout(PackageId packageId) = 0;

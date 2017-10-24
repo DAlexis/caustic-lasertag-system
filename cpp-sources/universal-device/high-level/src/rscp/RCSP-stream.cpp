@@ -27,6 +27,29 @@
 #include "fatfs.h"
 #include <stdio.h>
 
+RCSPStreamNew::RCSPStreamNew(RCSPAggregator* aggregator) :
+	m_aggregator(aggregator)
+{
+}
+
+RCSPAggregator::ResultType RCSPStreamNew::serializeAnything(OperationCode code, SerializationFunc serializer)
+{/*
+	uint8_t *pos = m_stream + m_cursor;
+	uint16_t addedSize = 0;
+	RCSPAggregator::ResultType result = serializer(pos, code, addedSize);
+	if (result.isSuccess)
+	{
+		m_cursor += addedSize;
+	} else {
+		//printf("Cannot add %u: %s\n", code, result.errorText);
+	}
+	return result;*/
+}
+
+
+///////////////////////////////////
+
+
 RCSPStream::RCSPStream(RCSPAggregator* aggregator, uint16_t size) :
     m_aggregator(aggregator),
 	m_size(size)
@@ -65,7 +88,7 @@ RCSPAggregator::ResultType RCSPStream::addValue(OperationCode code)
 		code,
 		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
 		{
-			return m_aggregator->serializeObject(pos, code, m_size - m_cursor, addedSize);
+			return m_aggregator->serializePush(pos, code, m_size - m_cursor, addedSize);
 		}
 	);
 }
@@ -77,7 +100,7 @@ RCSPAggregator::ResultType RCSPStream::addRequest(OperationCode code)
 		code,
 		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
 		{
-			return RCSPAggregator::serializeObjectRequest(pos, code, m_size - m_cursor, addedSize);
+			return RCSPAggregator::serializePull(pos, code, m_size - m_cursor, addedSize);
 		}
 	);
 }
@@ -89,7 +112,7 @@ RCSPAggregator::ResultType RCSPStream::addCall(OperationCode code)
 		code,
 		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
 		{
-			return RCSPAggregator::serializeCallRequest(pos, code, m_size - m_cursor, addedSize);
+			return RCSPAggregator::serializeCall(pos, code, m_size - m_cursor, addedSize);
 		}
 	);
 }
@@ -219,7 +242,7 @@ void RCSPMultiStream::dispatch()
 	}
 }
 
-DetailedResult<FRESULT> RCSPMultiStream::writeToFile(FIL* file)
+Result RCSPMultiStream::writeToFile(FIL* file)
 {
 	FRESULT res = FR_OK;
 	UINT written = 0;
@@ -235,7 +258,7 @@ DetailedResult<FRESULT> RCSPMultiStream::writeToFile(FIL* file)
 			return DetailedResult<FRESULT>(res, "Invalid written bytes count");
 		}
 	}
-	return DetailedResult<FRESULT>(res);
+	return res == FR_OK ? Result() : Result("Cannot save file");
 }
 
 RCSPNetworkListener::RCSPNetworkListener(RCSPAggregator* aggregator) :
