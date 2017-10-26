@@ -87,15 +87,16 @@ bool WavPlayer::openFile(uint8_t channel)
 	// If we already playing on this channel
 	if (m_contexts[channel].fileIsOpened)
 	{
-		f_close(&m_contexts[channel].file);
+		fclose(m_contexts[channel].file);
 		m_contexts[channel].fileIsOpened = false;
 	}
 	FRESULT res;
 	debug << "Opening file...";
-	res = f_open(&m_contexts[channel].file, m_contexts[channel].filename, FA_OPEN_EXISTING | FA_READ);
-	if (res)
+	//res = f_open(&m_contexts[channel].file, m_contexts[channel].filename, FA_OPEN_EXISTING | FA_READ);
+	m_contexts[channel].file = fopen(m_contexts[channel].filename, "r");
+	if (m_contexts[channel].file)
 	{
-		error << "f_open returned error " << parseFRESULT(res);
+		error << "fopen returned error " << errno;
 		return false;
 	}
 
@@ -104,7 +105,7 @@ bool WavPlayer::openFile(uint8_t channel)
 
 	if (!m_contexts[channel].readHeader())
 	{
-		f_close(&m_contexts[channel].file);
+		fclose(m_contexts[channel].file);
 		error << "Invalid file header";
 		return false;
 	}
@@ -156,9 +157,8 @@ void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 bool WavPlayer::ChannelContext::readHeader()
 {
 	FRESULT res;
-	UINT readed = 0;
-	res = f_read (&file, &header, sizeof(header), &readed);
-	if (res != FR_OK)
+    uint32_t readed = fread(&header, sizeof(header), 1, file);
+	if (ferror(file))
 	{
 		error << "Cannot read header from file";
 		return false;
@@ -217,21 +217,21 @@ bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 			m_contexts[channel].header.subchunk2_size - m_contexts[channel].totalReaded
 	);
 
-	res = f_read_huge(&m_contexts[channel].file, tmpPrt, sizeToRead, &bytesReaded);
-	if (res != FR_OK)
+    bytesReaded = fread(tmpPrt, 1, sizeToRead, m_contexts[channel].file);
+    if (ferror(m_contexts[channel].file))
 	{
 		error << "Cannot read fragment from file: " << parseFRESULT(res);
-		f_close(&m_contexts[channel].file);
+        fclose(m_contexts[channel].file);
 		return false;
 	}
 
 	m_contexts[channel].totalReaded += bytesReaded;
 
-	if (bytesReaded < sizeToRead)
+    if (bytesReaded < sizeToRead || feof(m_contexts[channel].file))
 	{
 		// We readed till file's end, so we can close it
 		//trace << "file's end: " << m_contexts[channel].totalReaded;
-		f_close(&m_contexts[channel].file);
+        fclose(m_contexts[channel].file);
 		m_contexts[channel].fileIsOpened = false;
 	}
 

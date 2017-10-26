@@ -42,6 +42,15 @@ char **environ = __env;
 
 FIL *fils[MAX_FILES_OPEN];
 
+FRESULT f_read_huge(
+		FIL* fp, 		/* Pointer to the file object */
+		void* buff,		/* Pointer to data buffer */
+		UINT btr,		/* Number of bytes to read */
+		UINT* br		/* Pointer to number of bytes read */
+);
+
+// Private functions
+
 static void freeFil(int fil)
 {
 	free(fils[fil]);
@@ -56,6 +65,8 @@ static char isOpened(int fil)
 		return 0;
 	return 1;
 }
+
+// System functions
 
 int _write(int file, char *ptr, int len);
 
@@ -174,38 +185,26 @@ caddr_t _sbrk(int incr)
     return (caddr_t) current_block_address;
 }
 
-#define FLAG_WRITE    0b1
-#define FLAG_WRITE    0b1
-
 int _open(char *name, int flags, int perms)
 {
 	UNUSED(perms);
 	uint8_t fatfsFlags = FA_READ;
 	// Read/write bits
 	if (flags & O_WRONLY)
-	{
 		fatfsFlags |= FA_WRITE;
-	}
+
 	if (flags & O_RDWR)
-	{
 		fatfsFlags |= FA_WRITE | FA_READ;
-	}
 
 	// Open existing / create new bits
 
 	if (flags & O_EXCL)
 	{
 		if (flags & O_CREAT)
-		{
 			fatfsFlags |= FA_CREATE_NEW;
-		}
 		else
-		{
 			fatfsFlags |= FA_OPEN_EXISTING;
-		}
-	}
-	else
-	{
+	} else {
 		fatfsFlags |= FA_OPEN_ALWAYS;
 	}
 
@@ -239,9 +238,12 @@ int _open(char *name, int flags, int perms)
 
 	if (flags & O_APPEND)
 	{
-		/// @todo seek to file end
+		FILINFO fi;
+		if (FR_OK == f_stat(name, &fi))
+		{
+			f_lseek(fils[index], fi.fsize);
+		}
 	}
-	//ENOENT
 	return INDEX_TO_DESCRIPTOR(index);
 }
 
@@ -272,7 +274,11 @@ int _read(int file, char *ptr, int len)
 		return -1;
 	}
 	UINT br = 0;
-	FRESULT r = f_read(fils[index], (void*) ptr, (UINT) len, &br);
+	FRESULT r = FR_OK;
+	if (len >= 400)
+        r = f_read_huge(fils[index], (void*) ptr, (UINT) len, &br);
+	else
+		r = f_read(fils[index], (void*) ptr, (UINT) len, &br);
 	if (r != FR_OK)
 	{
 		errno = EIO;
@@ -316,7 +322,12 @@ int _write(int file, char *ptr, int len)
 
 int _stat(const char *filepath, struct stat *st)
 {
+	//FILINFO fi;
+	//f_stat(filepath, &fi);
+
     st->st_mode = S_IFCHR;
+    //st->st_size = fi.fsize;
+
     return 0;
 }
 
@@ -327,6 +338,10 @@ clock_t _times(struct tms *buf)
 
 int _unlink(char *name)
 {
+	if (FR_OK == f_unlink (name))
+	{
+		return 0;
+	}
     errno = ENOENT;
     return -1;
 }

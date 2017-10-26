@@ -25,12 +25,12 @@
 #define LAZERTAG_RIFLE_INCLUDE_DEV_WAV_PLAYER_HPP_
 
 #include "core/os-wrappers.hpp"
-#include "fatfs.h"
 #include "hal/fragment-player.hpp"
 #include "utils/macro.hpp"
 #include "core/result-code.hpp"
 #include <string>
 #include <vector>
+#include <stdio.h>
 
 class WavPlayer
 {
@@ -67,7 +67,8 @@ private:
 		bool isPlaying = false;
 		bool fileIsOpened = false;
 		const char* filename = nullptr;
-		FIL file;
+		FILE *file;
+		//FIL file;
 		Mutex fileMutex;
 		WavHeader header;
 		uint32_t totalReaded = 0;

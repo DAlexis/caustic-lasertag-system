@@ -35,7 +35,7 @@
  * @return See FRESULT description. Can be converted to string by parseFRESULT()
  */
 
-FRESULT f_read_huge(
+extern "C" FRESULT f_read_huge(
 		FIL* fp, 		/* Pointer to the file object */
 		void* buff,		/* Pointer to data buffer */
 		UINT btr,		/* Number of bytes to read */
