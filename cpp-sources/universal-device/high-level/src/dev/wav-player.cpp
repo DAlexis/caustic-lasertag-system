@@ -94,9 +94,9 @@ bool WavPlayer::openFile(uint8_t channel)
 	debug << "Opening file...";
 	//res = f_open(&m_contexts[channel].file, m_contexts[channel].filename, FA_OPEN_EXISTING | FA_READ);
 	m_contexts[channel].file = fopen(m_contexts[channel].filename, "r");
-	if (m_contexts[channel].file)
+    if (!m_contexts[channel].file)
 	{
-		error << "fopen returned error " << errno;
+        error << "fopen returned error " << errno;
 		return false;
 	}
 
@@ -157,7 +157,7 @@ void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 bool WavPlayer::ChannelContext::readHeader()
 {
 	FRESULT res;
-    uint32_t readed = fread(&header, sizeof(header), 1, file);
+    uint32_t readed = fread(&header, 1, sizeof(header), file);s
 	if (ferror(file))
 	{
 		error << "Cannot read header from file";
@@ -218,12 +218,13 @@ bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 	);
 
     bytesReaded = fread(tmpPrt, 1, sizeToRead, m_contexts[channel].file);
-    if (ferror(m_contexts[channel].file))
+    int err = ferror(m_contexts[channel].file);
+    if (err)
 	{
-		error << "Cannot read fragment from file: " << parseFRESULT(res);
+        error << "Cannot read fragment from file: " << err;
         fclose(m_contexts[channel].file);
 		return false;
-	}
+    }
 
 	m_contexts[channel].totalReaded += bytesReaded;
 
@@ -235,15 +236,12 @@ bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 		m_contexts[channel].fileIsOpened = false;
 	}
 
-
-
 	UINT samplesReaded = bytesReaded / sizeof(int16_t);
 
 	for (unsigned int i=samplesReaded; i<audioBufferSize; i++)
 	{
 		tmpPrt[i] = 0;
 	}
-
 
 	// Now we have array of int16 samples so we need to add it to buffer
 	for (unsigned int i=0; i<audioBufferSize; i++)
