@@ -5,9 +5,11 @@
 #include <sys/time.h>
 #include <sys/fcntl.h>
 #include <usbd_cdc_if.h>
+#include <string.h>
 
 #include "newlib-driver.h"
 #include "fatfs.h"
+#include "fatfs-utils.h"
 
 #if defined STM32F1
 # include <stm32f1xx_hal.h>
@@ -19,10 +21,12 @@
 
 #include "low-level-debug-config.h"
 
-#define MAX_FILES_OPEN      4
+#define MAX_FILES_OPEN      _FS_LOCK
 #define DESCRIPTOR_OFFSET   4
 #define DESCRIPTOR_TO_INDEX(d)  (d - DESCRIPTOR_OFFSET)
 #define INDEX_TO_DESCRIPTOR(d)  (d + DESCRIPTOR_OFFSET)
+
+#define UNUSED_ARG(x)   ((void) (x))
 
 
 //extern uint32_t __get_MSP(void);
@@ -41,13 +45,6 @@ char *__env[1] = { 0 };
 char **environ = __env;
 
 FIL *fils[MAX_FILES_OPEN];
-
-FRESULT f_read_huge(
-		FIL* fp, 		/* Pointer to the file object */
-		void* buff,		/* Pointer to data buffer */
-		UINT btr,		/* Number of bytes to read */
-		UINT* br		/* Pointer to number of bytes read */
-);
 
 // Private functions
 
@@ -72,11 +69,13 @@ int _write(int file, char *ptr, int len);
 
 void _exit(int status)
 {
+    UNUSED_ARG(status);
     while (1);
 }
 
 int _execve(char *name, char **argv, char **env)
 {
+    UNUSED_ARG(name); UNUSED_ARG(argv); UNUSED_ARG(env);
     errno = ENOMEM;
     return -1;
 }
@@ -89,8 +88,22 @@ int _fork()
 
 int _fstat(int file, struct stat *st)
 {
-    st->st_mode = S_IFCHR;
-    return 0;
+	if (file == STDIN_FILENO || file == STDOUT_FILENO || file == STDERR_FILENO)
+	{
+		st->st_mode = S_IFCHR;
+		return 0;
+	}
+
+	int index = DESCRIPTOR_TO_INDEX(file);
+	if (!isOpened(index))
+	{
+		return -1;
+	}
+	st->st_mode = S_IFREG;
+	st->st_size = fils[index]->fsize;
+	st->st_blksize = 512;
+	st->st_nlink = 0;
+	return 0;
 }
 
 int _getpid()
@@ -122,18 +135,21 @@ int _isatty(int file)
 
 int _kill(int pid, int sig)
 {
+    UNUSED_ARG(pid); UNUSED_ARG(sig);
     errno = EINVAL;
     return (-1);
 }
 
 int _link(char *old, char *new)
 {
+    UNUSED_ARG(old); UNUSED_ARG(new);
     errno = EMLINK;
     return -1;
 }
 
 int _lseek(int file, int ptr, int dir)
 {
+    /// @todo: implement here!
     return 0;
 }
 
@@ -322,17 +338,30 @@ int _write(int file, char *ptr, int len)
 
 int _stat(const char *filepath, struct stat *st)
 {
-	//FILINFO fi;
-	//f_stat(filepath, &fi);
+	/// Here we assume that only real files (not stdout/stdin/stderr) may be used here
+	FILINFO inf;
+    memset(&inf, 0, sizeof(inf));
+	if (f_stat(filepath, &inf) != FR_OK)
+	{
+		errno = EFAULT;
+		return -1;
+	}
+    if (st == NULL)
+    {
+        return 0;
+    }
+    memset(st, 0, sizeof(*st));
+    st->st_mode = S_IFREG;
+	st->st_size = inf.fsize;
+	st->st_blksize = 512;
+	st->st_nlink = 0;
 
-    st->st_mode = S_IFCHR;
-    //st->st_size = fi.fsize;
-
-    return 0;
+	return 0;
 }
 
 clock_t _times(struct tms *buf)
 {
+    UNUSED_ARG(buf);
     return -1;
 }
 
@@ -348,6 +377,7 @@ int _unlink(char *name)
 
 int _wait(int *status)
 {
+    UNUSED_ARG(status);
     errno = ECHILD;
     return -1;
 }

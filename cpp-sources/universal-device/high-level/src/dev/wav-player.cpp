@@ -25,9 +25,9 @@
 #include "dev/random.hpp"
 #include "core/logging.hpp"
 #include "core/string-utils.hpp"
-#include "utils/fatfs-utils.hpp"
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 
 SINGLETON_IN_CPP(WavPlayer)
 
@@ -90,7 +90,7 @@ bool WavPlayer::openFile(uint8_t channel)
 		fclose(m_contexts[channel].file);
 		m_contexts[channel].fileIsOpened = false;
 	}
-	FRESULT res;
+
 	debug << "Opening file...";
 	//res = f_open(&m_contexts[channel].file, m_contexts[channel].filename, FA_OPEN_EXISTING | FA_READ);
 	m_contexts[channel].file = fopen(m_contexts[channel].filename, "r");
@@ -156,8 +156,7 @@ void WavPlayer::fragmentDoneCallback(SoundSample* oldBuffer)
 
 bool WavPlayer::ChannelContext::readHeader()
 {
-	FRESULT res;
-    uint32_t readed = fread(&header, 1, sizeof(header), file);s
+    uint32_t readed = fread(&header, 1, sizeof(header), file);
 	if (ferror(file))
 	{
 		error << "Cannot read header from file";
@@ -205,8 +204,7 @@ bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 		return false;
 	}
 
-	FRESULT res;
-	UINT bytesReaded = 0;
+    uint32_t bytesReaded = 0;
 	int16_t *tmpPrt = reinterpret_cast<int16_t *>(m_tempBuffer);
 
 	// For some unknown reason, f_read does not read more about 1k and crashes
@@ -236,7 +234,7 @@ bool WavPlayer::loadFragment(SoundSample* buffer, uint8_t channel)
 		m_contexts[channel].fileIsOpened = false;
 	}
 
-	UINT samplesReaded = bytesReaded / sizeof(int16_t);
+    uint32_t samplesReaded = bytesReaded / sizeof(int16_t);
 
 	for (unsigned int i=samplesReaded; i<audioBufferSize; i++)
 	{
@@ -274,16 +272,17 @@ void SoundPlayer::readVariants(const char* filenamePrefix, const char* filenameS
 	m_channel = channel;
 	unsigned int number = 0;
 	char buff[10];
-	FRESULT res = FR_OK;
+	bool notFound = false;
+    struct stat st;
 	do {
 		sprintf(buff, "%u", ++number);
 		std::string nextFilename = std::string(filenamePrefix) + buff + filenameSuffix;
-		res = f_stat(nextFilename.c_str(), nullptr);
-		if (res == FR_OK)
+        if (stat(nextFilename.c_str(), &st) == 0)
 		{
 			addVariant(nextFilename);
-		}
-	} while (res == FR_OK);
+		} else
+			notFound = true;
+	} while (!notFound);
 	debug << filenamePrefix << "X" << filenameSuffix << " - " << number-1 << " found";
 }
 

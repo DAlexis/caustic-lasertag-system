@@ -30,7 +30,7 @@
 #include "core/result-code.hpp"
 #include <string>
 #include <vector>
-#include <stdio.h>
+#include <cstdio>
 
 class WavPlayer
 {

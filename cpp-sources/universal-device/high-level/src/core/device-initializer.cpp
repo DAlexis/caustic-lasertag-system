@@ -36,7 +36,6 @@
 #include "rifle/rifle.hpp"
 #include "smart-point/smart-point.hpp"
 #include "utils/macro.hpp"
-#include <stdio.h>
 
 SINGLETON_IN_CPP(DeviceInitializer)
 
