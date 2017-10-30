@@ -149,8 +149,31 @@ int _link(char *old, char *new)
 
 int _lseek(int file, int ptr, int dir)
 {
-    /// @todo: implement here!
-    return 0;
+    int index = DESCRIPTOR_TO_INDEX(file);
+    if (!isOpened(index))
+    {
+        errno = EBADF;
+        return -1;
+    }
+    int pos = dir;
+    switch (ptr)
+    {
+    case SEEK_CUR:
+        pos += fils[index]->fptr;
+        break;
+    case SEEK_END:
+        pos += fils[index]->fsize;
+        break;
+    default: break;
+    }
+
+    FRESULT res = f_lseek (fils[index], pos);
+    if (res != FR_OK)
+    {
+        errno = ENXIO; // we suppose
+        return -1;
+    }
+    return pos;
 }
 
 caddr_t _sbrk(int incr)

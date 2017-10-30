@@ -12,6 +12,7 @@
 #endif
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define TEST_BUFFER_SIZE    20
 #define TEST_BLOCK_NUMBER   12582912
