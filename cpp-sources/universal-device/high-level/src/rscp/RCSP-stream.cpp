@@ -24,7 +24,6 @@
 #include "rcsp/stream.hpp"
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
-#include "fatfs.h"
 #include <stdio.h>
 
 RCSPStreamNew::RCSPStreamNew(RCSPAggregator* aggregator) :
@@ -244,7 +243,7 @@ void RCSPMultiStream::dispatch()
 
 Result RCSPMultiStream::writeToFile(FILE* file)
 {
-	UINT written = 0;
+    int written = 0;
 	for (auto it = m_streams.begin(); it != m_streams.end(); it++)
 	{
         written = fwrite((*it)->getStream(), 1, (*it)->getSize(), file);

@@ -13,5 +13,5 @@ TEST(RCSPAggregator, Instantiation)
 	ASSERT_NO_THROW(RCSPAggregator());
 
 	RCSPAggregator a;
-	//RCSPAggregator::setActiveAggregator(&a);
+    RCSPAggregator::setActiveAggregator(&a);
 }
