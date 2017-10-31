@@ -31,6 +31,7 @@ struct Result
 {
 public:
 	Result() {}
+    ~Result() {}
 	Result(const char* str)
 	{
 		fail(str);

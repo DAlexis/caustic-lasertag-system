@@ -26,7 +26,6 @@
 
 #include "any-device/any-device-interface.hpp"
 #include "core/result-code.hpp"
-#include "fatfs.h"
 #include "core/service-locator.hpp"
 #include "hal/system-clock.hpp"
 
@@ -50,7 +49,6 @@ private:
 	void initFatFS();
 	void initClock();
 
-	FATFS m_fatfs;
 	ServiceLocator m_serviceLocator;
 	bool m_fatfsSuccess = false;
 	IAnyDevice* m_device = nullptr;

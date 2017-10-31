@@ -28,7 +28,6 @@
 #include "rcsp/state-saver-interface.hpp"
 #include "core/os-wrappers.hpp"
 #include "utils/macro.hpp"
-#include "fatfs.h"
 
 #include <list>
 #include <string>
@@ -60,7 +59,7 @@ private:
     constexpr static uint32_t sdioTimeout = 100000;
     void saveAll();
     bool tryRestore(uint8_t variant);
-    FIL m_fil;
+    FILE* m_fil;
 
 #ifdef TWO_FILES_STATE_SAVER
     std::string m_file[2];

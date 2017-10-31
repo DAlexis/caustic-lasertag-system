@@ -39,6 +39,9 @@
 
 SINGLETON_IN_CPP(DeviceInitializer)
 
+// Temporary here
+FATFS m_fatfs;
+
 DeviceInitializer::DeviceInitializer()
 {
 }

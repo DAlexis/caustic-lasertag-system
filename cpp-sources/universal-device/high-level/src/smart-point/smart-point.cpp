@@ -39,6 +39,7 @@ SmartPoint::SmartPoint()
 
 void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 {
+    UNUSED_ARG(pinout);
 	if (!isSdcardOk)
 	{
 		error << "Fatal error: smart point cannot operate without sdcard!";
@@ -134,11 +135,12 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 
 void SmartPoint::setDefaultPinout(Pinout& pinout)
 {
-
+    UNUSED_ARG(pinout);
 }
 
 bool SmartPoint::checkPinout(const Pinout& pinout)
 {
+    UNUSED_ARG(pinout);
 	/// @todo Implement here
 	return true;
 }

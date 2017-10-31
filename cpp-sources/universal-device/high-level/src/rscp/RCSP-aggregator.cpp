@@ -26,7 +26,6 @@
 #include "rcsp/stream.hpp"
 #include "core/string-utils.hpp"
 #include "core/logging.hpp"
-#include "fatfs.h"
 #include <stdio.h>
 
 RCSPAggregator* RCSPAggregator::m_activeAggregator = nullptr;

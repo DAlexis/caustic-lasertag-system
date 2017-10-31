@@ -242,23 +242,22 @@ void RCSPMultiStream::dispatch()
 	}
 }
 
-Result RCSPMultiStream::writeToFile(FIL* file)
+Result RCSPMultiStream::writeToFile(FILE* file)
 {
-	FRESULT res = FR_OK;
 	UINT written = 0;
 	for (auto it = m_streams.begin(); it != m_streams.end(); it++)
 	{
-		res = f_write (file, (*it)->getStream(), (*it)->getSize(), &written);
-		if (res != FR_OK)
+        written = fwrite((*it)->getStream(), 1, (*it)->getSize(), file);
+        if (ferror(file) != 0)
 		{
-			return DetailedResult<FRESULT>(res, "Bad file writing result");
+            return Result("Bad file writing result");
 		}
 		if (written != (*it)->getSize())
 		{
-			return DetailedResult<FRESULT>(res, "Invalid written bytes count");
+            return Result("Invalid written bytes count");
 		}
 	}
-	return res == FR_OK ? Result() : Result("Cannot save file");
+    return Result();
 }
 
 RCSPNetworkListener::RCSPNetworkListener(RCSPAggregator* aggregator) :

@@ -27,9 +27,9 @@
 #include "core/os-wrappers.hpp"
 #include "core/logging.hpp"
 #include "core/device-initializer.hpp"
-#include "fatfs.h"
 
 #include <string.h>
+#include <sys/stat.h>
 
 MainStateSaver::MainStateSaver(RCSPAggregator* aggregator) :
     m_aggregator(aggregator)
@@ -64,45 +64,44 @@ void MainStateSaver::saveState()
 	}
 #ifdef TWO_FILES_STATE_SAVER
 	trace << "Variant = " << m_current;
-	FRESULT res = FR_OK;
 	// Creating lock file
-	res = f_open(&m_fil, m_fileLock[m_current].c_str(), FA_CREATE_ALWAYS | FA_WRITE);
-	if (res != FR_OK)
+    m_fil = fopen(m_fileLock[m_current].c_str(), "w");
+    if (m_fil == nullptr)
 	{
-		error << "Cannot create lock file: " << parseFRESULT(res);
+        error << "Cannot create lock file: " << m_fileLock[m_current];
 		return;
 	}
 
-	f_close(&m_fil);
+    fclose(m_fil);
 
 	// Deleting old state file
-	f_unlink(m_file[m_current].c_str());
+    remove(m_file[m_current].c_str());
 	// Creating new state file
-	res = f_open(&m_fil, m_file[m_current].c_str(), FA_CREATE_ALWAYS | FA_WRITE);
-	if (res != FR_OK)
+    m_fil = fopen(m_file[m_current].c_str(), "w");
+    if (m_fil == nullptr)
 	{
-		error << "Cannot create state file: " << parseFRESULT(res);
+        error << "Cannot create state file: " << m_file[m_current];
 		return;
 	}
 	// Putting data to state file
 	RCSPMultiStream stream(m_aggregator);
 	for (OperationCode code : m_aggregator->getRestorableOperationCodes())
 		stream.addValue(code);
-	stream.writeToFile(&m_fil);
-	f_close(&m_fil);
+    stream.writeToFile(m_fil);
+    fclose(m_fil);
 
 	// Removing lock file
-	f_unlink(m_fileLock[m_current].c_str());
+    remove(m_fileLock[m_current].c_str());
 	// Deleting old .current file
-	f_unlink(m_fileCurrent[m_next].c_str());
+    remove(m_fileCurrent[m_next].c_str());
 	// Creating new .current file
-	res = f_open(&m_fil, m_fileCurrent[m_current].c_str(), FA_CREATE_ALWAYS | FA_WRITE);
-	if (res != FR_OK)
+    m_fil = fopen(m_fileCurrent[m_current].c_str(), "w");
+    if (m_fil == nullptr)
 	{
-		error << "Cannot create .current file: " << parseFRESULT(res);
+        error << "Cannot create .current file: " << m_fileCurrent[m_current];
 		return;
 	}
-	f_close(&m_fil);
+    fclose(m_fil);
 
 	std::swap(m_current, m_next);
 #else
@@ -126,48 +125,47 @@ bool MainStateSaver::tryRestore(uint8_t variant)
 {
 #ifdef TWO_FILES_STATE_SAVER
 	// Check if we have not deleted lock file
-	if (f_stat(m_fileLock[variant].c_str(), nullptr) == FR_OK)
+    if (stat(m_fileLock[variant].c_str(), nullptr) == 0)
 	{
 		warning << "Lock file detected, clearing\n";
-		f_unlink(m_fileLock[m_current].c_str());
-		f_unlink(m_file[m_current].c_str());
+        remove(m_fileLock[m_current].c_str());
+        remove(m_file[m_current].c_str());
 		return false;
 	}
 	// Opening file
-	if (!f_stat(m_file[variant].c_str(), nullptr) == FR_OK)
+    if (stat(m_file[variant].c_str(), nullptr) != 0)
 	{
 		warning << m_file[variant].c_str() << " does not exists\n";
 		return false;
 	}
 
-	FRESULT res = FR_OK;
-	res = f_open(&m_fil, m_file[variant].c_str(), FA_READ);
-	if (res != FR_OK)
+
+    m_fil = fopen(m_file[variant].c_str(), "r");
+    if (m_fil == nullptr)
 	{
 		error << "Cannot open state file!\n";
 		return false;
 	}
 	uint8_t* buffer = new uint8_t[RCSPStream::defaultLength];
 	memset(buffer, 0, RCSPStream::defaultLength);
-	UINT readed = 0;
+    int readed = 0;
 
 	for(;;) {
-		res = f_read(&m_fil, buffer, RCSPStream::defaultLength, &readed);
-		if (res != FR_OK)
+        readed = fread(buffer, 1, RCSPStream::defaultLength, m_fil);
+        if (ferror(m_fil) != 0)
 		{
-			error << "Error while reading state file: " << parseFRESULT(res);
+            error << "Error while reading state file: " << m_file[variant];
 			return false;
 		}
 		if (readed != 0)
 		{
-			//trace << "Dispatching restored parameters chunk...";
 			m_aggregator->dispatchStream(buffer, readed);
 		}
 		else
 			break;
 	}
 
-	f_close(&m_fil);
+    fclose(m_fil);
 	return true;
 
 #else
@@ -178,7 +176,7 @@ bool MainStateSaver::tryRestore(uint8_t variant)
 bool MainStateSaver::tryRestore()
 {
 #ifdef TWO_FILES_STATE_SAVER
-	if (f_stat(m_fileCurrent[0].c_str(), nullptr) == FR_OK)
+    if (stat(m_fileCurrent[0].c_str(), nullptr) == 0)
 	{
 		// If .current file points to 0 we first try to restore 0, than 1
 		return tryRestore(0) ? true : tryRestore(1);
@@ -215,12 +213,12 @@ bool MainStateSaver::tryRestore()
 void MainStateSaver::resetSaves()
 {
 #ifdef TWO_FILES_STATE_SAVER
-	f_unlink(m_fileLock[0].c_str());
-	f_unlink(m_file[0].c_str());
-	f_unlink(m_fileLock[1].c_str());
-	f_unlink(m_file[1].c_str());
+    remove(m_fileLock[0].c_str());
+    remove(m_file[0].c_str());
+    remove(m_fileLock[1].c_str());
+    remove(m_file[1].c_str());
 #else
-	f_unlink(m_filename);
+    remove(m_filename);
 #endif
 }
 

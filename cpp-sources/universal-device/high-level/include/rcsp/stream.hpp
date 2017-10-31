@@ -27,7 +27,6 @@
 #include "rcsp/aggregator.hpp"
 #include "network/network-client.hpp"
 #include "core/result-code.hpp"
-#include "fatfs.h"
 #include <list>
 #include <memory>
 
@@ -52,7 +51,7 @@ public:
 	void dispatch();
 
 	bool empty();
-	Result writeToFile(FIL* file);
+    Result writeToFile(FILE* file);
 private:
 	using SerializationFunc = std::function<RCSPAggregator::ResultType (uint8_t * /*pos*/, OperationCode /*code*/, uint16_t & /*addedSize*/)>;
 	RCSPAggregator::ResultType serializeAnything(OperationCode code, SerializationFunc serializer);
@@ -203,7 +202,7 @@ public:
 
 	bool empty();
 	void dispatch();
-	Result writeToFile(FIL* file);
+    Result writeToFile(FILE* file);
 
 private:
 	void pushBackStream();

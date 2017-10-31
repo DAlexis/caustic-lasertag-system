@@ -23,7 +23,6 @@
 
 
 #include "core/string-utils.hpp"
-#include "fatfs.h"
 #include <string.h>
 
 const std::string hexStr(const uint8_t* buffer, size_t size)
@@ -91,7 +90,7 @@ void doubleToString(char* buffer, double value, int bufferSize, int fracDigits)
 }
 
 const char* parseFRESULT(int res)
-{
+{/*
 	switch (res)
 	{
 	case FR_OK:			return "(0) Succeeded";
@@ -116,7 +115,7 @@ const char* parseFRESULT(int res)
 	case FR_INVALID_PARAMETER:	return "(19) Given parameter is invalid ";
 	default:
 		return "Invalid FRESULT value!";
-	}
+    }*/
 }
 
 
@@ -171,10 +170,8 @@ Result IniParser::parseFile(const char* filename)
 
 	group[0] = '\0';
 
-	FIL* m_file = new FIL;
-
-	FRESULT fres = f_open(m_file, filename, FA_OPEN_EXISTING | FA_READ);
-	if (fres != FR_OK)
+    FILE* m_file = fopen(filename, "r");
+    if (m_file == nullptr)
 	{
 		return Result("Cannot open file\n");
 	}
@@ -185,13 +182,13 @@ Result IniParser::parseFile(const char* filename)
 	unsigned int line = 1;
 	bool error = false;
 
-	while (!f_eof(m_file) && !error)
+    while (!feof(m_file) && !error)
 	{
-		UINT readed = 0;
+        int readed = 0;
 		unsigned int cursor = 0;
-		fres = f_read(m_file, buffer, blockSize, &readed);
-		if (fres != FR_OK) {
-			return Result(parseFRESULT(fres));
+        readed = fread(buffer, 1, blockSize, m_file);
+        if (ferror(m_file) != 0) {
+            return Result("Cannot read ini file");
 		}
 		// Skipping spaces
 		while (cursor < readed && !error)
@@ -344,7 +341,6 @@ Result IniParser::parseFile(const char* filename)
 			}
 		}
 	}
-	f_close(m_file);
-	delete m_file;
+    fclose(m_file);
 	return result;
 }
