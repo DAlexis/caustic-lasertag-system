@@ -31,6 +31,7 @@
 #include "utils/macro.hpp"
 #include "core/result-code.hpp"
 #include "core/string-utils.hpp"
+#include "core/buffer.hpp"
 #include <vector>
 #include <map>
 #include <functional>
@@ -173,7 +174,6 @@ public:
 	constexpr static unsigned int minimalStreamSize = sizeof(OperationSize) + sizeof(OperationCode);
 
 	using ResultType = DetailedResult<AddingResult>;
-	using Buffer = std::vector<uint8_t>;
 
 	RCSPAggregator() {}
 
@@ -187,6 +187,10 @@ public:
 	 * @return Count of unsupported operation found on stream
 	 */
 	uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
+
+	uint32_t dispatchStreamNew(uint8_t* stream, uint32_t size, Buffer* answerStream = nullptr);
+
+	//uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
 
 	const uint8_t* extractNextOperation(
 			const uint8_t* stream,
@@ -220,6 +224,7 @@ public:
 		const uint8_t* pCustomValue = nullptr
 	);
 
+	/// @todo: Make a template for custom value
 	ResultType serializePush(
 		OperationCode code,
 		Buffer& target,
@@ -235,6 +240,10 @@ public:
 	 */
 	static ResultType serializePull(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
 
+	static ResultType serializePull(
+		OperationCode code,
+		Buffer& target
+	);
 	/**
 	 * Put to stream request for function call without parameters
 	 * @param stream Array where to put
@@ -243,12 +252,16 @@ public:
 	 * @return result of operation
 	 */
 	static ResultType serializeCall(
-			uint8_t* stream,
-			OperationCode functionCode,
-			uint16_t freeSpace,
-			uint16_t& actualSize
-		);
+		uint8_t* stream,
+		OperationCode functionCode,
+		uint16_t freeSpace,
+		uint16_t& actualSize
+	);
 
+	static ResultType serializeCall(
+		OperationCode code,
+		Buffer& target
+	);
 	/**
 	 * Put to stream request for function call with parameter
 	 * @param stream Array where to put
@@ -272,7 +285,7 @@ public:
 		if (packageSize > freeSpace)
 			return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
 
-		functionCode = RCSPCodeManipulator::makeCallRequest(functionCode);
+		functionCode = RCSPCodeManipulator::makeCall(functionCode);
 		OperationSize size = sizeof(parameter);
 		memcpy(stream, &size, sizeof(OperationSize));
 		stream += sizeof(OperationSize);
@@ -280,6 +293,21 @@ public:
 		stream += sizeof(OperationCode);
 		memcpy(stream, &parameter, sizeof(parameter));
 		actualSize = packageSize;
+		return DetailedResult<AddingResult>(OK);
+	}
+
+	template<typename Type>
+	static ResultType serializeCall(
+		OperationCode code,
+		Buffer& target,
+		const Type& parameter
+	)
+	{
+		ChunkHeader header;
+		header.size = sizeof(parameter);
+		header.code = RCSPCodeManipulator::makeCall(code);
+		uint8_t *cursor = resizeAndWriteHeader(header, target);
+		serializeAndInc(cursor, parameter);
 		return DetailedResult<AddingResult>(OK);
 	}
 
@@ -300,7 +328,7 @@ public:
 	DetailedResult<T> getLocalObject(OperationCode code)
 	{
 		T result;
-		OperationCode objReq = RCSPCodeManipulator::makeSetObject(code);
+		OperationCode objReq = RCSPCodeManipulator::makePush(code);
 		auto it = m_accessorsByOpCode.find(code);
 		if (it == m_accessorsByOpCode.end())
 			return DetailedResult<T>(result, "Opcode not found");
@@ -332,7 +360,13 @@ private:
 	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits
 
 	bool dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream = nullptr);
+	bool dispatchOperation(ChunkHeader* header, uint8_t* arg, Buffer* answerStream);
 	void printWarningUnknownCode(OperationCode code);
+	/**
+	 * Resize buffer to contain package with given header and put header to buffer
+	 * @return pointer to chunk payload if header.size != 0 and pointer to probably unallocated space otherwise
+	 */
+	static uint8_t* resizeAndWriteHeader(const ChunkHeader& header, Buffer& buffer);
 
 	std::map<OperationCode, IOperationAccessor*> m_accessorsByOpCode;
 	std::list<OperationCode> m_restorable;

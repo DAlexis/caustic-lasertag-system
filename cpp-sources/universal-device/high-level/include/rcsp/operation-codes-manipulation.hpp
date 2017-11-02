@@ -28,15 +28,15 @@
 #include "rcsp/RCSP-base-types.hpp"
 
 #define PAR_CODE(type, parameterName, value) \
-    constexpr OperationCode parameterName = RCSPCodeManipulator::makeSetObject(value); \
+    constexpr OperationCode parameterName = RCSPCodeManipulator::makePush(value); \
     using parameterName##Type = type;
 
 
 #define FUNC_CODE_NP(function, value) \
-	constexpr OperationCode function = RCSPCodeManipulator::makeCallRequest(value);
+	constexpr OperationCode function = RCSPCodeManipulator::makeCall(value);
 
 #define FUNC_CODE_1P(function, argType, value) \
-	constexpr OperationCode function = RCSPCodeManipulator::makeCallRequest(value); \
+	constexpr OperationCode function = RCSPCodeManipulator::makeCall(value); \
     using function##Arg1Type = argType;
 
 /**
@@ -46,24 +46,24 @@ class RCSPCodeManipulator
 {
 public:
 	constexpr static OperationCode clearOptionBits(OperationCode operationCode) { return operationCode & OperationCodeMask; }
-	constexpr static OperationCode makeCallRequest(OperationCode operationCode) { return operationCode & OperationCodeMask; }
-	constexpr static OperationCode makeSetObject(OperationCode operationCode)
+	constexpr static OperationCode makeCall(OperationCode operationCode) { return operationCode & OperationCodeMask; }
+	constexpr static OperationCode makePush(OperationCode operationCode)
 			{ return (operationCode & OperationCodeMask) | (1 << 14); }
-	constexpr static OperationCode makeObjectRequestOC(OperationCode operationCode)
+	constexpr static OperationCode makePull(OperationCode operationCode)
 			{ return (operationCode & OperationCodeMask) | (1 << 15); }
 
-	constexpr static inline bool __attribute__((always_inline)) isSetObject(uint16_t operationCode)
-				{ return !getBit(operationCode, 15) && getBit(operationCode, 14); }
+	constexpr static bool isPush(uint16_t operationCode)
+			{ return !getBit(operationCode, 15) && getBit(operationCode, 14); }
 
-	constexpr static inline bool __attribute__((always_inline)) isCallRequest(uint16_t operationCode)
+	constexpr static bool isCall(uint16_t operationCode)
 			{ return !getBit(operationCode, 15) && !getBit(operationCode, 14); }
 
-	constexpr static inline bool __attribute__((always_inline)) isObjectRequest(uint16_t operationCode)
+	constexpr static bool isPull(uint16_t operationCode)
 			{ return getBit(operationCode, 15) && !getBit(operationCode, 14); }
 
 private:
 
-	constexpr static inline bool __attribute__((always_inline)) getBit(OperationCode code, uint8_t bit)
+	constexpr static bool getBit(OperationCode code, uint8_t bit)
 			{ return (code & (1 << bit)) ? true : false; }
 
 

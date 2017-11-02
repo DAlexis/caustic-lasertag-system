@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <functional>
+#include <initializer_list>
 
 using PackageId = uint16_t;
 
@@ -64,6 +65,17 @@ struct DeviceAddress
 				return false;
 		}
 		return false;
+	}
+
+	inline DeviceAddress& operator=(const std::initializer_list<uint8_t>& args)
+	{
+		int i=0;
+		for (auto v: args)
+		{
+			address[i++] = v;
+			if (i == 3) break;
+		}
+		return *this;
 	}
 };
 
