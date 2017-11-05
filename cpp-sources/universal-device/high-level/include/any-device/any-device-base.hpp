@@ -14,6 +14,7 @@
 #include "network/network-layer-interface.hpp"
 #include "rcsp/stream.hpp"
 #include "rcsp/state-saver.hpp"
+#include "core/power-monitor.hpp"
 
 /**
  * Device classes hierarchy:
@@ -36,13 +37,15 @@ public:
     AnyDeviceBase();
     void assignExistingNetworkLayer(INetworkLayer* existingNetworkLayer);
 
-    DeviceConfiguration deviceConfig;
-
 protected:
     void initNetwork();
 
     INetworkLayer *m_networkLayer = nullptr;
     RCSPAggregator* m_aggregator;
+    PowerMonitor m_powerMonitor{*m_aggregator};
+
+public:
+    DeviceConfiguration deviceConfig{*m_aggregator};
 };
 
 

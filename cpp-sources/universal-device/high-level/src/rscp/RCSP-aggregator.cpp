@@ -28,17 +28,6 @@
 #include "core/logging.hpp"
 #include <stdio.h>
 
-RCSPAggregator* RCSPAggregator::m_activeAggregator = nullptr;
-
-RCSPAggregator& RCSPAggregator::getActiveAggregator()
-{
-    return *m_activeAggregator;
-}
-
-void RCSPAggregator::setActiveAggregator(RCSPAggregator* aggregator)
-{
-    m_activeAggregator = aggregator;
-}
 
 void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, IOperationAccessor* accessor, bool restorable)
 {

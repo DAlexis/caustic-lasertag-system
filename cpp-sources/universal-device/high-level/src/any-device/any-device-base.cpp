@@ -7,9 +7,9 @@
 #include "dev/nrf24l01.hpp"
 
 AnyDeviceBase::AnyDeviceBase() :
-	m_aggregator(&RCSPAggregator::getActiveAggregator())
+	m_aggregator(new RCSPAggregator())
 {
-
+	m_powerMonitor.init();
 }
 
 void AnyDeviceBase::assignExistingNetworkLayer(INetworkLayer* existingNetworkLayer)

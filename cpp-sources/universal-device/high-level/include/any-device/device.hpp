@@ -35,10 +35,16 @@
 class DeviceConfiguration
 {
 public:
+	DeviceConfiguration(RCSPAggregator &aggregator);
 
-	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr);
-	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, deviceName);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, deviceType);
+private:
+	RCSPAggregator &m_aggregator;
+
+public:
+
+	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr, m_aggregator);
+	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, deviceName, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, deviceType, m_aggregator);
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_DEVICE_HPP_ */

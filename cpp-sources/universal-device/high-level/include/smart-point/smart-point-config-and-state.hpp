@@ -31,7 +31,11 @@
 class SmartPointConfig
 {
 public:
-	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::Configuration, secondsToWin);
+	SmartPointConfig(RCSPAggregator& aggregator);
+private:
+	RCSPAggregator& m_aggregator;
+public:
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::Configuration, secondsToWin, m_aggregator);
 	void resetToDefault();
 };
 
@@ -41,16 +45,20 @@ public:
 	constexpr static uint8_t gameStateInProcess = 1;
 	constexpr static uint8_t gameStateEnd = 2;
 
-	SmartPointState(const SmartPointConfig& config);
+	SmartPointState(const SmartPointConfig& config, RCSPAggregator &aggregator);
+
+private:
+	RCSPAggregator &m_aggregator;
+public:
 
 	// This variables to be displayed or read remotely, but real calculations are in us
-	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team1TimeLeft);
-	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team2TimeLeft);
-	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team3TimeLeft);
-	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team4TimeLeft);
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team1TimeLeft, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team2TimeLeft, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team3TimeLeft, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, team4TimeLeft, m_aggregator);
 
-	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, currentTeam);
-	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, gameState);
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, currentTeam, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::SmartPoint::State, gameState, m_aggregator);
 
 	void beginGame();
 	void stopGame();

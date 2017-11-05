@@ -46,9 +46,14 @@ public:
 	constexpr static uint8_t fontStandardAscii5x7 = 0;
 	constexpr static uint8_t fontLiberationSans15x21Numbers = 1;
 
-	PAR_ST(RESTORABLE, ConfigCodes::AnyDevice::Configuration, lcdContrast);
+	LCD5110Controller(RCSPAggregator &aggreagetor);
 
-	LCD5110Controller();
+private:
+	RCSPAggregator &m_aggreagetor;
+
+public:
+
+	PAR_ST(RESTORABLE, ConfigCodes::AnyDevice::Configuration, lcdContrast, m_aggreagetor);
 
 	void configureSPI() override;
 

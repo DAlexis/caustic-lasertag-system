@@ -64,7 +64,6 @@ void DeviceInitializer::initEnvironment()
 
 IAnyDevice* DeviceInitializer::initDevice(const char* filename)
 {
-    RCSPAggregator::setActiveAggregator(new RCSPAggregator);
 	if (isSdcardOk())
 	{
 		info << "Detecting device type using " << filename;

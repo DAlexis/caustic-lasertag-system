@@ -27,7 +27,8 @@
 #include "head-sensor/resources.hpp"
 #include "core/logging.hpp"
 
-PlayerConfiguration::PlayerConfiguration()
+PlayerConfiguration::PlayerConfiguration(RCSPAggregator& aggregator) :
+	m_aggregator(aggregator)
 {
 	setDefault();
 }

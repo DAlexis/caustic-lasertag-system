@@ -51,7 +51,7 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	BluetoothBridgeConfiguration config;
+	BluetoothBridgeConfiguration config{*m_aggregator};
 
 private:
 	constexpr static uint16_t queuesSizeMax = 30;

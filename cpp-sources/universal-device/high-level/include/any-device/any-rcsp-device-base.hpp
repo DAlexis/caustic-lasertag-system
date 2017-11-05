@@ -16,7 +16,7 @@ protected:
 	AnyRCSPClientDeviceBase();
 
     void initNetworkClient() override;
-    RCSPNetworkListener m_networkPackagesListener{&RCSPAggregator::getActiveAggregator()};
+    RCSPNetworkListener m_networkPackagesListener{m_aggregator};
 
 	MainStateSaver m_stateSaver;
 };

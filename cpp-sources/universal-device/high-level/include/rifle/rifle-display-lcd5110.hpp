@@ -14,7 +14,7 @@
 class RifleLCD5110Display : public RifleDisplayBase
 {
 public:
-    RifleLCD5110Display();
+    RifleLCD5110Display(RCSPAggregator &aggreagetor);
     bool init() override;
     void update() override;
 

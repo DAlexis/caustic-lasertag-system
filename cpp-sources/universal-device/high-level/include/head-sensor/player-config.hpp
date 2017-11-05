@@ -32,43 +32,48 @@
 class PlayerConfiguration
 {
 public:
-	PlayerConfiguration();
+	PlayerConfiguration(RCSPAggregator& aggregator);
 	void setDefault();
+
+private:
+	RCSPAggregator& m_aggregator;
+
+public:
 	/// @todo [Refactor!] Add this values to another state saver or any other way
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthMax);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorMax);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthMax, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorMax, m_aggregator);
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorStart);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorStart, m_aggregator);
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorCoeffStart);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, damageCoeffStart);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, shotsCoeffStart);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, frendlyFireCoeff);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, selfShotCoeff);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, isHealable);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorCoeffStart, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, damageCoeffStart, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, shotsCoeffStart, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, frendlyFireCoeff, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, selfShotCoeff, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, isHealable, m_aggregator);
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, lifesCount);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, shockDelayImmortal);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, shockDelayInactive);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, preRespawnDelay);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, postRespawnDelay);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, autoRespawn);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, lifesCount, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, shockDelayImmortal, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, shockDelayInactive, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, preRespawnDelay, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, postRespawnDelay, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, autoRespawn, m_aggregator);
 
-	//PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerId);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerId);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, teamId);
+	//PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, plyerId, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerId, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, teamId, m_aggregator);
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot1MaxWeight);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot2MaxWeight);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot3MaxWeight);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot4MaxWeight);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot5MaxWeight);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot1MaxWeight, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot2MaxWeight, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot3MaxWeight, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot4MaxWeight, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, slot5MaxWeight, m_aggregator);
 
 	/// @todo Move to PlayerState
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLat);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLon);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, markerColor);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLat, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerLon, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, markerColor, m_aggregator);
 
 };
 

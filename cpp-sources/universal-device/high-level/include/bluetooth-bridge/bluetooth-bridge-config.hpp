@@ -33,10 +33,14 @@
 class BluetoothBridgeConfiguration
 {
 public:
-	BluetoothBridgeConfiguration();
+	BluetoothBridgeConfiguration(RCSPAggregator& m_aggregator);
 	void setDefault();
 
-	PAR_ST(RESTORABLE, ConfigCodes::BluetoothBridge::Configuration, bluetoothPin);
+private:
+	RCSPAggregator& m_aggregator;
+
+public:
+	PAR_ST(RESTORABLE, ConfigCodes::BluetoothBridge::Configuration, bluetoothPin, m_aggregator);
 };
 
 #endif /* UNIVERSAL_DEVICE_INCLUDE_BLUETOOTH_BRIDGE_BLUETOOTH_BRIDGE_CONFIG_HPP_ */

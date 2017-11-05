@@ -56,28 +56,28 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset);    ///< Make rifle absolutely new
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn);  ///< Do all things than needed on respawn (+play sound)
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie);      ///< Say to rifle that player was killed
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset, *m_aggregator);    ///< Make rifle absolutely new
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn, *m_aggregator);  ///< Do all things than needed on respawn (+play sound)
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie, *m_aggregator);      ///< Say to rifle that player was killed
 
 	/// Heartbeat head sensor -> rifle
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramHSAddr);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramServiceCard);
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramHSAddr, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramServiceCard, *m_aggregator);
 
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged);      ///< Play enemy damaged sound
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock);
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS);
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged, *m_aggregator);      ///< Play enemy damaged sound
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock, *m_aggregator);
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS, *m_aggregator);
 
-	RifleConfiguration config;
-	RifleOwnerConfiguration rifleOwner;
-	RifleState state{&config};
+	RifleConfiguration config{*m_aggregator};
+	RifleOwnerConfiguration rifleOwner{*m_aggregator};
+	RifleState state{&config, *m_aggregator};
 	//DeviceParameters device;
 
-	PlayerPartialState playerState{config.headSensorAddr, m_networkClient, &RCSPAggregator::getActiveAggregator()};
+	PlayerPartialState playerState{config.headSensorAddr, m_networkClient, m_aggregator};
 
 private:
 

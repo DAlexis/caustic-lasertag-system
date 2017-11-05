@@ -23,7 +23,8 @@
 
 #include "bluetooth-bridge/bluetooth-bridge-config.hpp"
 
-BluetoothBridgeConfiguration::BluetoothBridgeConfiguration()
+BluetoothBridgeConfiguration::BluetoothBridgeConfiguration(RCSPAggregator& aggregator) :
+	m_aggregator(aggregator)
 {
 	setDefault();
 }

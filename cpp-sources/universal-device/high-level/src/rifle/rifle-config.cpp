@@ -66,7 +66,8 @@ bool PlayerPartialState::isAlive()
 	return healthCurrent > 0;
 }
 
-RifleConfiguration::RifleConfiguration()
+RifleConfiguration::RifleConfiguration(RCSPAggregator& aggregator) :
+		m_aggregator(aggregator)
 {
 	setDefault();
 }
@@ -125,7 +126,8 @@ void RifleConfiguration::setDefault()
 	outputPower = 100;
 }
 
-RifleState::RifleState(RifleConfiguration* config) :
+RifleState::RifleState(RifleConfiguration* config, RCSPAggregator& aggregator) :
+	m_aggregator(aggregator),
 	m_config(config)
 {
 	if (config)

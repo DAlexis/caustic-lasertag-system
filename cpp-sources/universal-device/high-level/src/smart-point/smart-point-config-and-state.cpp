@@ -26,14 +26,28 @@
 
 ///////////////////////
 //
+
+SmartPointConfig::SmartPointConfig(RCSPAggregator& aggregator) :
+	m_aggregator(aggregator)
+{
+	resetToDefault();
+}
+
 void SmartPointConfig::resetToDefault()
 {
 	secondsToWin = 1*60;
 }
 
-SmartPointState::SmartPointState(const SmartPointConfig& config) :
+SmartPointState::SmartPointState(const SmartPointConfig& config, RCSPAggregator &aggregator) :
+	m_aggregator(aggregator),
 	m_config(config)
 {
+	gameState = gameStateEnd;
+	team1TimeLeft = 0;
+	team2TimeLeft = 0;
+	team3TimeLeft = 0;
+	team4TimeLeft = 0;
+	currentTeam = 0;
 }
 
 void SmartPointState::beginGame()

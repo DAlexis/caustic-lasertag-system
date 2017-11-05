@@ -77,16 +77,13 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 {
     UNUSED_ARG(pinout);
 
-    // Power monitor should be initialized before configuration reading
-    PowerMonitor::instance().init();
-
     initNetwork();
     initAsSecondaryDevice(pinout, isSdcardOk);
 
     //NetworkLayer::instance().enableRegularNRFReinit();
 
 	m_tasksPool.add(
-			[this] { PowerMonitor::instance().interrogate(); },
+			[this] { m_powerMonitor.interrogate(); },
 			100000
 	);
 

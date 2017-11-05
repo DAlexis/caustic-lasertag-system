@@ -25,7 +25,8 @@
 #include "core/pinout.hpp"
 #include "core/logging.hpp"
 
-SmartPointLCD5110Display::SmartPointLCD5110Display()
+SmartPointLCD5110Display::SmartPointLCD5110Display(RCSPAggregator& aggregator) :
+	m_lcd(aggregator)
 {
 
 }

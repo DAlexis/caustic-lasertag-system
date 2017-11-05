@@ -105,7 +105,8 @@ extern "C"
 	}
 }
 
-LCD5110Controller::LCD5110Controller()
+LCD5110Controller::LCD5110Controller(RCSPAggregator &aggreagetor) :
+		m_aggreagetor(aggreagetor)
 {
 	lcdContrast = 72; // This worked for one module...
 }

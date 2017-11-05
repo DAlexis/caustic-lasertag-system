@@ -13,22 +13,28 @@
 class PlayerState
 {
 public:
-	PlayerState(PlayerConfiguration* configuration) :
+	PlayerState(PlayerConfiguration* configuration, RCSPAggregator &aggregator) :
+		m_aggregator(aggregator),
 		m_configuration(configuration)
 	{
 		if (m_configuration)
 			reset();
 	}
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, healthCurrent);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, armorCurrent);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, armorCoeffCurrent);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, damageCoeffCurrent);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, shotsCoeffCurrent);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, killsCount);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount);
+private:
+	RCSPAggregator &m_aggregator;
+
+public:
+
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, healthCurrent, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, armorCurrent, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, armorCoeffCurrent, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, damageCoeffCurrent, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, shotsCoeffCurrent, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, killsCount, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount, m_aggregator);
 
 
 

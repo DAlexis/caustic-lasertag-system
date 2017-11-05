@@ -26,11 +26,17 @@ struct RFIDProgrammingState
 class RifleState
 {
 public:
-	RifleState(RifleConfiguration* config);
+	RifleState(RifleConfiguration* config, RCSPAggregator& aggregator);
 	void reset();
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, bulletsInMagazineCurrent);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, magazinesCountCurrent);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, heatnessCurrent);
+
+private:
+	RCSPAggregator& m_aggregator;
+
+public:
+
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, bulletsInMagazineCurrent, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, magazinesCountCurrent, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::State, heatnessCurrent, m_aggregator);
 
 	//RFIDProgrammingState rfidProgrammingState;
 
@@ -64,22 +70,25 @@ public:
 	void syncAll();
 	void print();
 	bool isAlive();
+private:
+	RCSPAggregator* m_aggregator;
 
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthMax);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorMax);
+public:
 
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, healthCurrent);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, armorCurrent);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthMax, *m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::Configuration, armorMax, *m_aggregator);
 
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, killsCount);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, healthCurrent, *m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, armorCurrent, *m_aggregator);
+
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent, *m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount, *m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, killsCount, *m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount, *m_aggregator);
 
 private:
 	const DeviceAddress* m_headSensorAddress;
 	INetworkClient* m_networkClient;
-	RCSPAggregator* m_aggregator;
 };
 
 #endif /* UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_RIFLE_RIFLE_STATE_HPP_ */

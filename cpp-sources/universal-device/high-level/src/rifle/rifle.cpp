@@ -102,9 +102,6 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
 
-	// Power monitor should be initialized before configuration reading
-	PowerMonitor::instance().init();
-
 	info << "Loading default config";
 	m_aggregator->readIni("config.ini");
 
@@ -128,7 +125,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	);*/
 
 	m_tasksPool.add(
-			[this] { PowerMonitor::instance().interrogate(); },
+			[this] { m_powerMonitor.interrogate(); },
 			100000
 	);
 
@@ -287,7 +284,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
         if (pinoutRes.details == "lcd5110")
         {
             info << "Creating lcd 5110 display controller";
-            m_display = new RifleLCD5110Display;
+            m_display = new RifleLCD5110Display{*m_aggregator};
         } else if (pinoutRes.details == "ssd1306")
         {
             info << "Creating ssd1306 display controller";

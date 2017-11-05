@@ -56,13 +56,6 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	}
 	//debug.enable();
 
-	info << "Configuring power monitor";
-	PowerMonitor::instance().interrogate();
-
-
-	// Power monitor should be initialized before configuration reading
-	PowerMonitor::instance().init();
-
 	info << "Parsing config file";
 	if (!m_aggregator->readIni("config.ini"))
 	{
@@ -97,7 +90,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	);
 
 	m_tasksPool.add(
-			[this] { m_taskPoolStager.stage("PowerMonitor::interrogate()"); PowerMonitor::instance().interrogate(); },
+			[this] { m_taskPoolStager.stage("PowerMonitor::interrogate()"); m_powerMonitor.interrogate(); },
 			100000
 	);
 
@@ -114,11 +107,9 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	if (hasBtModule)
 	{
 	    info << "Initializing built-in bluetooth bridge device";
-	    RCSPAggregator::setActiveAggregator(new RCSPAggregator);
 	    BluetoothBridge *bb = new BluetoothBridge();
 	    bb->assignExistingNetworkLayer(m_networkLayer);
 	    bb->initAsSecondaryDevice(_pinout, isSdcardOk);
-	    RCSPAggregator::setActiveAggregator(m_aggregator);
 	} else {
 	    info << "Bluetooth module not installed, running without it";
 	}

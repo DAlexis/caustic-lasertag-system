@@ -26,7 +26,8 @@
 #include "core/pinout.hpp"
 #include <stdio.h>
 
-RifleLCD5110Display::RifleLCD5110Display()
+RifleLCD5110Display::RifleLCD5110Display(RCSPAggregator &aggreagetor) :
+	m_lcd(aggreagetor)
 {
 }
 

@@ -128,9 +128,10 @@ void SystemMonitor::printTime() const
 }
 
 void SystemMonitor::printVoltage() const
-{
+{/*
 	debug << "VCC = " << PowerMonitor::instance().supplyVoltage
 			<< ", " << PowerMonitor::instance().chargePercent << "%";
+			*/
 }
 
 void SystemMonitor::printStagers() const

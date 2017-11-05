@@ -33,59 +33,67 @@
 class RifleOwnerConfiguration
 {
 public:
-	RifleOwnerConfiguration() : playerId(1), teamId(0)
+	RifleOwnerConfiguration(RCSPAggregator& aggregator) : m_aggregator(aggregator), playerId(1), teamId(0)
 	{}
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerId);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, teamId);
+private:
+	RCSPAggregator& m_aggregator;
+
+public:
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, playerId, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, teamId, m_aggregator);
 };
 
 class RifleConfiguration
 {
 public:
-	RifleConfiguration();
+	RifleConfiguration(RCSPAggregator& aggregator);
 
 	void setDefault();
 	bool isAutoReloading();
 	bool isReloadingByDistortingTheBolt();
 
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, slot);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, weightInSlot);
+private:
+	RCSPAggregator& m_aggregator;
 
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, damageMin);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, damageMax);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, firePeriod);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, shotDelay);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, jamProb);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalProb);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalCoeff);
+public:
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, slot, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, weightInSlot, m_aggregator);
 
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, semiAutomaticAllowed);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, automaticAllowed);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, damageMin, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, damageMax, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, firePeriod, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, shotDelay, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, jamProb, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalProb, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, criticalCoeff, m_aggregator);
+
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, semiAutomaticAllowed, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, automaticAllowed, m_aggregator);
 	
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadIsMagazineSmart);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedMagDisconnect);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedMagChange);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedBolt);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadPlaySound);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadIsMagazineSmart, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedMagDisconnect, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedMagChange, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadNeedBolt, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadPlaySound, m_aggregator);
 
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, magazinesCountStart);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, magazinesCountMax);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, magazinesCountStart, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, magazinesCountMax, m_aggregator);
 
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, bulletsInMagazineStart);
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, bulletsInMagazineMax);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, bulletsInMagazineStart, m_aggregator);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, bulletsInMagazineMax, m_aggregator);
 
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadingTime);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, reloadingTime, m_aggregator);
 
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, heatPerShot);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, heatLossPerSec);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, heatPerShot, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, heatLossPerSec, m_aggregator);
 
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, fireFlashPeriod);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, fireVibroPeriod);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, fireFlashPeriod, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::Rifle::Configuration, fireVibroPeriod, m_aggregator);
 
-	PAR_CL(RESTORABLE, ConfigCodes::Rifle::Configuration, headSensorAddr);
+	PAR_CL(RESTORABLE, ConfigCodes::Rifle::Configuration, headSensorAddr, m_aggregator);
 
-	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, outputPower);
+	PAR_ST(RESTORABLE, ConfigCodes::Rifle::Configuration, outputPower, m_aggregator);
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_CONFIG_AND_STATE_HPP_ */

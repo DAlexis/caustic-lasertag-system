@@ -75,7 +75,7 @@ public:
 class SmartPointUI
 {
 public:
-	SmartPointUI(SmartPointState& sps);
+	SmartPointUI(SmartPointState& sps, RCSPAggregator& aggregator);
 	void init();
 	void doIteration();
 

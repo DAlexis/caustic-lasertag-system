@@ -56,27 +56,27 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	PlayerConfiguration playerConfig;
-	PlayerState playerState{&playerConfig};
+	PlayerConfiguration playerConfig{*m_aggregator};
+	PlayerState playerState{&playerConfig, *m_aggregator};
 	//DeviceParameters device;
 
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats);
-	FUNCTION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, rifleToHeadSensorHeartbeat);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, rifleToHeadSensorHeartbeat, *m_aggregator);
 
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam, *m_aggregator);
 
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth, *m_aggregator);
 
 	/// Feedback when player was damaged or killed
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager, *m_aggregator);
 
 	/// Replacement for receive shot callback
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, catchShot);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, catchShot, *m_aggregator);
 
 private:
 

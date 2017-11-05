@@ -24,7 +24,6 @@ TEST(RCSPAggregator, Instantiation)
 	ASSERT_NO_THROW(RCSPAggregator());
 
 	RCSPAggregator a;
-	ASSERT_NO_THROW(RCSPAggregator::setActiveAggregator(&a));
 
 	Buffer buf;
 	ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size()));
@@ -36,8 +35,7 @@ TEST(RCSPAggregator, Instantiation)
 TEST(RCSPAggregator, PushVariableBinaryStream)
 {
 	RCSPAggregator a;
-	RCSPAggregator::setActiveAggregator(&a);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart, a);
 	healthStart = 0xffff;
 	Buffer buf;
 	ASSERT_NO_THROW(a.serializePush(ConfigCodes::HeadSensor::Configuration::healthStart, buf));
@@ -59,11 +57,10 @@ TEST(RCSPAggregator, PushVariableBinaryStream)
 TEST(RCSPAggregator, PushVariableTwoSides)
 {
 	RCSPAggregator a;
-	RCSPAggregator::setActiveAggregator(&a);
 
-    PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart);
-    PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, frendlyFireCoeff);
-    PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr);
+    PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart, a);
+    PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, frendlyFireCoeff, a);
+    PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr, a);
     devAddr = {1, 2, 3};
     auto origAddr = devAddr;
     healthStart = 25;
@@ -92,11 +89,10 @@ TEST(RCSPAggregator, CallTwoSides)
 {
 	constexpr uint16_t code = 123;
 	RCSPAggregator a;
-	RCSPAggregator::setActiveAggregator(&a);
 
 	bool isSet = false;
 	auto f = [&isSet] () { isSet = true; };
-	DefaultFunctionAccessor<> testAccessor {code, "test function", f};
+	DefaultFunctionAccessor<> testAccessor {code, "test function", f, a};
 
     Buffer buf;
     ASSERT_NO_THROW(a.serializeCall(code, buf));
@@ -112,9 +108,8 @@ TEST(RCSPAggregator, CallTwoSides)
 TEST(RCSPAggregator, PullTwoSides)
 {
 	RCSPAggregator a;
-	RCSPAggregator::setActiveAggregator(&a);
 
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart, a);
 	healthStart = 123;
 
     Buffer buf;

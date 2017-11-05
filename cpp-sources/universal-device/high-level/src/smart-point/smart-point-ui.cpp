@@ -33,8 +33,9 @@ UIStateBase::UIStateBase(SmartPointUI& ui) :
 }
 
 
-SmartPointUI::SmartPointUI(SmartPointState& sps) :
+SmartPointUI::SmartPointUI(SmartPointState& sps, RCSPAggregator& aggregator) :
 	smartPointState(sps),
+	lcd(aggregator),
 	leds(smartPointState.currentTeam)
 {
 

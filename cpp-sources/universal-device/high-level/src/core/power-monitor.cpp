@@ -26,9 +26,8 @@
 #include "hal/adc.hpp"
 #include "core/logging.hpp"
 
-SINGLETON_IN_CPP(PowerMonitor)
-
-PowerMonitor::PowerMonitor()
+PowerMonitor::PowerMonitor(RCSPAggregator& aggregator) :
+	m_aggregator(aggregator)
 {
 	supplyVoltageMin = 3.7;
 	supplyVoltageMax = 4.2;

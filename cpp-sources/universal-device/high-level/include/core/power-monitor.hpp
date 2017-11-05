@@ -34,19 +34,22 @@
 class PowerMonitor : public IInterrogatable
 {
 public:
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::State, supplyVoltage);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, supplyVoltageMin);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, supplyVoltageMax);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, adcCalibrationCoeff);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::State, chargePercent);
+	PowerMonitor(RCSPAggregator& aggregator);
+
+private:
+	RCSPAggregator& m_aggregator;
+public:
+
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::State, supplyVoltage, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, supplyVoltageMin, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, supplyVoltageMax, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, adcCalibrationCoeff, m_aggregator);
+	PAR_ST(NOT_RESTORABLE, ConfigCodes::AnyDevice::State, chargePercent, m_aggregator);
 
 	void init();
 	void interrogate() override;
 
-	SINGLETON_IN_CLASS(PowerMonitor)
-
 private:
-	PowerMonitor();
 
 	IADC *m_adc = nullptr;
 	float m_internalCalibrationCoeff = 1.1954;

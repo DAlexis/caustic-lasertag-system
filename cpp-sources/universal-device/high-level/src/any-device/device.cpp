@@ -25,6 +25,11 @@
 #include "any-device/device.hpp"
 #include <string.h>
 
+DeviceConfiguration::DeviceConfiguration(RCSPAggregator &aggregator) :
+	m_aggregator(aggregator)
+{
+}
+
 void DeviceName::convertFromString(const char* str)
 {
 	strlcpy(name, str, nameLength);

@@ -30,7 +30,7 @@
 class SmartPointLCD5110Display
 {
 public:
-	SmartPointLCD5110Display();
+	SmartPointLCD5110Display(RCSPAggregator& aggregator);
 	void update();
 	void init();
 

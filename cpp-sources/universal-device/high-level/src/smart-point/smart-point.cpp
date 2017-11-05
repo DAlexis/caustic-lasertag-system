@@ -45,9 +45,6 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 		error << "Fatal error: smart point cannot operate without sdcard!";
 	}
 
-	// Power monitor should be initialized before configuration reading
-	PowerMonitor::instance().init();
-
 	info << "Loading default config";
 	if (!m_aggregator->readIni("config.ini"))
 	{
@@ -121,7 +118,7 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 	);
 
 	m_tasksPool.add(
-			[this] { PowerMonitor::instance().interrogate(); },
+			[this] { m_powerMonitor.interrogate(); },
 			100000
 	);
 /*
