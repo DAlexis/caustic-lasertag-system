@@ -343,6 +343,19 @@ public:
 		return DetailedResult<T>(result);
 	}
 
+	using SplitBufferCallback = std::function<void(const uint8_t* begin, uint16_t size)>;
+
+	/**
+	 * Split buffer to blocks of size < maxSize. It is guaranteed that RCSP chunks will not be broken
+	 * @param buf      Buffer object
+	 * @param maxSize  Max chunk size
+	 * @param callback Will be called for every block
+	 * @return true if all is OK and false if stream is inconsistent
+	 */
+	static bool splitBuffer(const Buffer& buf, uint16_t maxSize, SplitBufferCallback callback);
+
+	static bool verifyBuffer(const Buffer& buf);
+
 	const std::list<OperationCode>& getRestorableOperationCodes() { return m_restorable; }
 
 	RCSPAggregator(const RCSPAggregator&) = delete;

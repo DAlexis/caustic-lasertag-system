@@ -374,6 +374,78 @@ RCSPAggregator::ResultType RCSPAggregator::serializeCall(
 	return DetailedResult<AddingResult>(OK);
 }
 
+bool RCSPAggregator::splitBuffer(const Buffer& buf, uint16_t maxSize, SplitBufferCallback callback)
+{
+	const uint8_t *cursor = buf.data();
+	const uint8_t *end = cursor + buf.size();
+	const uint8_t *blockBegin = cursor;
+	const uint8_t *blockEnd = cursor;
+
+	while (cursor < end)
+	{
+		if (cursor + sizeof(ChunkHeader) > end)
+		{
+			// Header canot be placed in buffer
+			// Zeros in the end is OK
+			while (cursor < end && *cursor == 0)
+				cursor++;
+			if (cursor == end)
+				return true;
+			// We cannot parse header, buffer is corrupted
+			return false;
+		}
+		const ChunkHeader* h = reinterpret_cast<const ChunkHeader*>(cursor);
+		cursor += h->size + sizeof(ChunkHeader);
+		if (cursor > end)
+		{
+			// We have overrun, buffer is corrupted
+			return false;
+		}
+		if (cursor - blockBegin > maxSize)
+		{
+			// We reached block end. Call callback from blockBegin to latest valid blockEnd
+			callback(blockBegin, blockEnd - blockBegin);
+			blockBegin = blockEnd;
+		}
+		else if (cursor == end)
+		{
+			// We did not reached block end, but buffer is out. Last block may be much shorter than maxSize
+			callback(blockBegin, end - blockBegin);
+			return true;
+		}
+		// We are in block, all is normal
+		blockEnd = cursor;
+	}
+	return true; // For compiler
+}
+
+bool RCSPAggregator::verifyBuffer(const Buffer& buf)
+{
+	const uint8_t *cursor = buf.data();
+	const uint8_t *end = cursor + buf.size();
+	while (cursor != end)
+	{
+		if (cursor + sizeof(ChunkHeader) > end)
+		{
+			// Zeros in the end is OK
+			while (cursor < end && *cursor == 0)
+				cursor++;
+			if (cursor == end)
+				return true;
+			// We cannot parse header, buffer is corrupted
+			return false;
+		}
+		const ChunkHeader* h = reinterpret_cast<const ChunkHeader*>(cursor);
+		cursor += h->size + sizeof(ChunkHeader);
+		if (cursor > end)
+		{
+			// we have overrun, buffer is corrupted
+			return false;
+		}
+	}
+	return true;
+}
+
 Result RCSPAggregator::readIni(const char* filename)
 {
 	IniParser* parcer = new IniParser;
