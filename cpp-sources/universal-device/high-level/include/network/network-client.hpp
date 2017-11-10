@@ -18,7 +18,7 @@ class OrdinaryNetworkClient : public INetworkClient
 public:
     void connectNetworkLayer(INetworkLayer* nl) override;
     bool isForMe(const DeviceAddress& addr) override;
-    void receive(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength) override;
+    void receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) override;
     const DeviceAddress* mainBackAddress() override;
     void connectPackageReceiver(IPackageReceiver* receiver) override;
 
@@ -30,12 +30,14 @@ public:
 
     virtual PackageId send(
         DeviceAddress target,
-        uint8_t* data,
+        const uint8_t* data,
         uint16_t size,
         bool waitForAck = false,
         PackageSendingDoneCallback doneCallback = nullptr,
         PackageTimings timings = PackageTimings()
     ) override;
+
+    uint16_t payloadSize() override;
 
 private:
     bool isMyBroadcast(const DeviceAddress& addr);

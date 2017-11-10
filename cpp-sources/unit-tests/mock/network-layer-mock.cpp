@@ -25,7 +25,7 @@ void NetworkLayerMock::setRadioReinitCallback(RadioReinitCallback callback)
 PackageId NetworkLayerMock::send(
 	DeviceAddress target,
 	DeviceAddress sender,
-	uint8_t* data,
+	const uint8_t* data,
 	uint16_t size,
 	bool waitForAck,
 	PackageSendingDoneCallback doneCallback,

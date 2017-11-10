@@ -41,12 +41,12 @@ void IRPresentationTransmitterMT2::init()
 {
 }
 
-void IRPresentationTransmitterMT2::sendMessage(const RCSPStream& stream)
+void IRPresentationTransmitterMT2::sendMessage(const RCSPStreamNew& stream)
 {
 	RCSPAggregator::Operation op;
 	bool success = true;
-	m_rcspAggregator.extractNextOperation(stream.getStream(), op, stream.getSize(), success);
-	switch(op.code)
+	m_rcspAggregator.extractNextOperation(stream.buffer().data(), op, stream.buffer().size(), success);
+	switch(op.header.code)
 	{
 		case ConfigCodes::HeadSensor::Functions::catchShot: {
 			const ShotMessage* shot = reinterpret_cast<const ShotMessage*>(op.argument);
@@ -72,16 +72,16 @@ void IRPresentationTransmitterMT2::sendMessage(const RCSPStream& stream)
 
 }
 
-void IRPresentationTransmitterMT2::sendGenericRCSPMessageDefault(const RCSPStream& stream)
+void IRPresentationTransmitterMT2::sendGenericRCSPMessageDefault(const RCSPStreamNew& stream)
 {
 	m_data[0] = MT2Extended::Byte1::RCSPMessage;
-	if (stream.getSize() > maxMessageSize - 1)
+	if (stream.buffer().size() > maxMessageSize - 1)
 	{
 		error << "Too long message for MT2 transmission";
 		return;
 	}
-	memcpy(&(m_data[1]), stream.getStream(), stream.getSize());
-	m_physicalTransmitter->send(m_data, stream.getSize()*8);
+	memcpy(&(m_data[1]), stream.buffer().data(), stream.buffer().size());
+	m_physicalTransmitter->send(m_data, stream.buffer().size()*8);
 }
 
 
@@ -340,7 +340,7 @@ void IRPresentationReceiverMT2::parseRCSP(const uint8_t* data, uint16_t size)
 	}
 	memcpy(m_group->m_bufferForArgument, stream, streamSize);
 	updateOperationCallback([this, streamSize]() mutable {
-		m_rcspAggregator.dispatchStream(m_group->m_bufferForArgument, streamSize);
+		m_rcspAggregator.dispatchStreamNew(m_group->m_bufferForArgument, streamSize);
 	});
 }
 

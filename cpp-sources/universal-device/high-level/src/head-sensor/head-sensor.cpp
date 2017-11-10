@@ -377,7 +377,7 @@ void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_
 	notification.state = state;
 	notification.target = playerConfig.playerId;
 	info << "Notifying damager";
-	RCSPStream::remoteCall(
+	RCSPStreamNew::remoteCall(
 	        m_networkClient,
 			broadcast.headSensors,
 			ConfigCodes::HeadSensor::Functions::notifyIsDamager,

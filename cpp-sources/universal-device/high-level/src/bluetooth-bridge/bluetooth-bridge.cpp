@@ -133,7 +133,7 @@ void BluetoothBridge::configureBluetooth()
 	m_bluetoothPort->init(HC05Configurator::uartTargetSpeed);
 }
 
-void BluetoothBridge::receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+void BluetoothBridge::receivePackage(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
 {
 	m_bbStager.stage("receivePackage");
     debug << "Processing incoming network package";

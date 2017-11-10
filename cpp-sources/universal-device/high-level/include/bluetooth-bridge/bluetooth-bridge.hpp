@@ -56,7 +56,7 @@ public:
 private:
 	constexpr static uint16_t queuesSizeMax = 30;
 
-	void receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength) override;
+	void receivePackage(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) override;
     void connectClient(INetworkClient* client) override;
 
 	void configureBluetooth();

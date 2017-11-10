@@ -84,9 +84,9 @@ void MainStateSaver::saveState()
 		return;
 	}
 	// Putting data to state file
-	RCSPMultiStream stream(m_aggregator);
+    RCSPStreamNew stream(m_aggregator);
 	for (OperationCode code : m_aggregator->getRestorableOperationCodes())
-		stream.addValue(code);
+		stream.addPush(code);
     stream.writeToFile(m_fil);
     fclose(m_fil);
 
@@ -146,26 +146,29 @@ bool MainStateSaver::tryRestore(uint8_t variant)
 		error << "Cannot open state file!\n";
 		return false;
 	}
-	uint8_t* buffer = new uint8_t[RCSPStream::defaultLength];
-	memset(buffer, 0, RCSPStream::defaultLength);
-    int readed = 0;
 
-	for(;;) {
-        readed = fread(buffer, 1, RCSPStream::defaultLength, m_fil);
+    Buffer buf;
+    const int chunkSize = 100;
+
+    int readed = 0;
+    int totalReaded = 0;
+
+	do {
+		// resize for next chunk
+		buf.resize(buf.size() + chunkSize, 0);
+        readed = fread(buf.data()+totalReaded, 1, chunkSize, m_fil);
         if (ferror(m_fil) != 0)
 		{
             error << "Error while reading state file: " << m_file[variant];
+            fclose(m_fil);
 			return false;
 		}
-		if (readed != 0)
-		{
-			m_aggregator->dispatchStream(buffer, readed);
-		}
-		else
-			break;
-	}
+        // Reading is good
+        totalReaded += readed;
+	} while (readed == chunkSize);
 
     fclose(m_fil);
+    m_aggregator->dispatchStreamNew(buf.data(), totalReaded);
 	return true;
 
 #else

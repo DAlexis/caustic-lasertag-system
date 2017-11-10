@@ -22,7 +22,7 @@ bool OrdinaryNetworkClient::isForMe(const DeviceAddress& addr)
     return addr == *m_address || isMyBroadcast(addr);
 }
 
-void OrdinaryNetworkClient::receive(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+void OrdinaryNetworkClient::receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
 {
 	m_packageReceiver->receivePackage(sender, payload, payloadLength);
 }
@@ -60,7 +60,7 @@ void OrdinaryNetworkClient::setSendingToMyself(bool sendToMyself)
 
 PackageId OrdinaryNetworkClient::send(
     DeviceAddress target,
-    uint8_t* data,
+    const uint8_t* data,
     uint16_t size,
     bool waitForAck,
     PackageSendingDoneCallback doneCallback,
@@ -76,6 +76,11 @@ PackageId OrdinaryNetworkClient::send(
         return m_nl->send(target, *m_address, data, size, waitForAck, doneCallback, timings);
     else
         return m_nl->send(target, *m_address, data, size, waitForAck, doneCallback, timings, this);
+}
+
+uint16_t OrdinaryNetworkClient::payloadSize()
+{
+	return m_nl->payloadSize();
 }
 
 bool OrdinaryNetworkClient::isMyBroadcast(const DeviceAddress& addr)

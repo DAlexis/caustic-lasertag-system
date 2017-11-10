@@ -44,9 +44,9 @@ void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, 
 	}
 }
 
-uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream)
+uint32_t RCSPAggregator::dispatchStreamNew(const uint8_t* stream, uint32_t size, Buffer* answerStream)
 {
-	uint8_t* position = stream;
+	const uint8_t* position = stream;
 	uint32_t unsupported = 0;
 	constexpr uint32_t minimalSize = sizeof(OperationSize)+sizeof(OperationCode);
 	if (size < minimalSize)
@@ -57,33 +57,9 @@ uint32_t RCSPAggregator::dispatchStream(uint8_t* stream, uint32_t size, RCSPMult
 	}
 	while ( (uint32_t) (position - stream) <= size - minimalSize)
 	{
-		OperationSize *pOperationSize = reinterpret_cast<OperationSize*> (position);
-		position += sizeof(OperationSize);
-		OperationCode *pOperationCode = reinterpret_cast<OperationCode*> (position);
-		position += sizeof(OperationCode);
-		if (!dispatchOperation(pOperationSize, pOperationCode, position, answerStream))
-			unsupported++;
-		position += *pOperationSize;
-	}
-	return unsupported;
-}
-
-uint32_t RCSPAggregator::dispatchStreamNew(uint8_t* stream, uint32_t size, Buffer* answerStream)
-{
-	uint8_t* position = stream;
-	uint32_t unsupported = 0;
-	constexpr uint32_t minimalSize = sizeof(OperationSize)+sizeof(OperationCode);
-	if (size < minimalSize)
-	{
-		warning << "Cannot dispatch stream of with size " << size
-				<< "(minimal non-trivial size is " << minimalSize << ")";
-		return 0;
-	}
-	while ( (uint32_t) (position - stream) <= size - minimalSize)
-	{
-		ChunkHeader *h = reinterpret_cast<ChunkHeader*> (position);
+		const ChunkHeader *h = reinterpret_cast<const ChunkHeader*> (position);
 		position += sizeof(ChunkHeader);
-		if (!dispatchOperation(h,position, answerStream))
+		if (!dispatchOperation(h, position, answerStream))
 			unsupported++;
 		position += h->size;
 	}
@@ -106,56 +82,15 @@ const uint8_t* RCSPAggregator::extractNextOperation(
 	}
 	OperationCode code;
 	deserializeAndInc(stream, code);
-	commad.argumentSize = size;
-	commad.code = code;
+	commad.header.size = size;
+	commad.header.code = code;
 	commad.argument = stream;
 	stream += size;
 	success = true;
 	return stream;
 }
 
-bool RCSPAggregator::dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream)
-{
-	if (RCSPCodeManipulator::isPull(*code))
-	{
-		if (answerStream)
-		{
-			// Adding parameter to answer stream
-			OperationCode parameterCode = RCSPCodeManipulator::makePush(*code);
-			//printf("Parameter request: %u\n", parameterCode);
-			auto it = m_accessorsByOpCode.find(parameterCode);
-			if (it != m_accessorsByOpCode.end())
-			{
-				answerStream->addValue(parameterCode);
-				return true;
-			} else {
-				printWarningUnknownCode(*code);
-				return false;
-			}
-		} else {
-			debug << "No answer stream, skipping request";
-			return false;
-		}
-	} else {
-		auto it = m_accessorsByOpCode.find(*code);
-		if (it != m_accessorsByOpCode.end())
-		{
-			trace << "Dispatched opcode: " << *code ;
-			if (*size == 0)
-				it->second->deserialize(nullptr, 0);
-			else
-				it->second->deserialize(arg, *size);
-			return true;
-		}
-		else
-		{
-			printWarningUnknownCode(*code);
-			return false;
-		}
-	}
-}
-
-bool RCSPAggregator::dispatchOperation(ChunkHeader* header, uint8_t* arg, Buffer* answerStream)
+bool RCSPAggregator::dispatchOperation(const ChunkHeader* header, const uint8_t* arg, Buffer* answerStream)
 {
 	if (RCSPCodeManipulator::isPull(header->code))
 	{

@@ -128,7 +128,7 @@ public:
 	virtual ~IOperationAccessor() {}
 
 	/// Get data from stream and set parameter, call function etc.
-	virtual void deserialize(void* source, OperationSize size) = 0;
+	virtual void deserialize(const void* source, OperationSize size) = 0;
 
 	/// Put parameter, function return value etc. to stream
 	virtual void serialize(void* destination) = 0;
@@ -146,8 +146,36 @@ public:
 	virtual uint32_t getSize() = 0;
 };
 
-class RCSPStream;
+class RCSPStreamNew;
 class RCSPMultiStream;
+
+template<typename T>
+inline void serializeAndInc(uint8_t*& cursor, const T& data)
+{
+	memcpy(cursor, &data, sizeof(T));
+	cursor += sizeof(T);
+}
+
+template<typename T>
+inline void deserializeAndInc(const void*& cursor, T& target)
+{
+	memcpy(&target, cursor, sizeof(T));
+	cursor += sizeof(T);
+}
+
+template<typename T>
+inline void deserializeAndInc(const uint8_t*& cursor, T& target)
+{
+	memcpy(&target, cursor, sizeof(T));
+	cursor += sizeof(T);
+}
+
+template<typename T>
+inline void deserializeAndInc(void*& cursor, T& target)
+{
+	memcpy(&target, cursor, sizeof(T));
+	reinterpret_cast<uint8_t*&>(cursor) += sizeof(T);
+}
 
 /**
  * Remote Control and Synchronization Protocol Aggregator
@@ -164,10 +192,17 @@ public:
 		AGGREGATOR_IS_NULLPTR
 	};
 
+#pragma pack(push, 1)
+	struct ChunkHeader
+	{
+		OperationSize size = 0;
+		OperationCode code = 0;
+	};
+#pragma pack(pop)
+
 	struct Operation
 	{
-		OperationCode code;
-		OperationSize argumentSize;
+		ChunkHeader header;
 		const uint8_t* argument = nullptr;
 	};
 
@@ -186,9 +221,7 @@ public:
 	 * @param answerStream stream to put answer for object requests
 	 * @return Count of unsupported operation found on stream
 	 */
-	uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
-
-	uint32_t dispatchStreamNew(uint8_t* stream, uint32_t size, Buffer* answerStream = nullptr);
+	uint32_t dispatchStreamNew(const uint8_t* stream, uint32_t size, Buffer* answerStream = nullptr);
 
 	//uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
 
@@ -313,15 +346,18 @@ public:
 
 	bool doOperation(OperationCode code)
 	{
-		OperationSize size = 0;
-		return dispatchOperation(&size, &code, nullptr);
+		ChunkHeader h;
+		h.code = code;
+		return dispatchOperation(&h, nullptr, nullptr);
 	}
 
 	template <typename Type>
 	bool doOperation(OperationCode code, Type& arg)
 	{
-		OperationSize size = sizeof(arg);
-		return dispatchOperation(&size, &code, reinterpret_cast<uint8_t*>(&arg));
+		ChunkHeader h;
+		h.code = code;
+		h.size = sizeof(arg);
+		return dispatchOperation(&h, reinterpret_cast<uint8_t*>(&arg), nullptr);
 	}
 
 	template <typename T>
@@ -360,17 +396,9 @@ public:
 
 	RCSPAggregator(const RCSPAggregator&) = delete;
 private:
-#pragma pack(push, 1)
-	struct ChunkHeader
-	{
-		OperationSize size = 0;
-		OperationCode code = 0;
-	};
-#pragma pack(pop)
 	constexpr static OperationCode OperationCodeMask =  (OperationCode) ~( (1<<15) | (1<<14) ); ///< All bits =1 except two upper bits
 
-	bool dispatchOperation(OperationSize* size, OperationCode* code, uint8_t* arg, RCSPMultiStream* answerStream = nullptr);
-	bool dispatchOperation(ChunkHeader* header, uint8_t* arg, Buffer* answerStream);
+	bool dispatchOperation(const ChunkHeader* header, const uint8_t* arg, Buffer* answerStream);
 	void printWarningUnknownCode(OperationCode code);
 	/**
 	 * Resize buffer to contain package with given header and put header to buffer
@@ -382,34 +410,6 @@ private:
 	std::list<OperationCode> m_restorable;
 	std::map<std::string, IOperationAccessor*> m_accessorsByOpText;
 };
-
-template<typename T>
-inline void serializeAndInc(uint8_t*& cursor, const T& data)
-{
-	memcpy(cursor, &data, sizeof(T));
-	cursor += sizeof(T);
-}
-
-template<typename T>
-inline void deserializeAndInc(const void*& cursor, T& target)
-{
-	memcpy(&target, cursor, sizeof(T));
-	cursor += sizeof(T);
-}
-
-template<typename T>
-inline void deserializeAndInc(const uint8_t*& cursor, T& target)
-{
-	memcpy(&target, cursor, sizeof(T));
-	cursor += sizeof(T);
-}
-
-template<typename T>
-inline void deserializeAndInc(void*& cursor, T& target)
-{
-	memcpy(&target, cursor, sizeof(T));
-	reinterpret_cast<uint8_t*&>(cursor) += sizeof(T);
-}
 
 /// Realization of IOperationAccessor for function
 template<typename... Type>
@@ -432,7 +432,7 @@ public:
 		aggregator.registerAccessor(code, textName, this);
 	}
 
-	void deserialize(void*, OperationSize size)
+	void deserialize(const void*, OperationSize size)
 	{
 		if (size != 0)
 			printf("Warning: argument provided for function without args\n");
@@ -466,7 +466,7 @@ public:
 		aggregator.registerAccessor(code, textName, this);
 	}
 
-	void deserialize(void* source, OperationSize size)
+	void deserialize(const void* source, OperationSize size)
 	{
 		if (sizeof(ArgType) != size)
 		{
@@ -503,7 +503,7 @@ public:
 		aggregator.registerAccessor(code, textName, this, restorable);
 	}
 
-	void deserialize(void* source, OperationSize size)
+	void deserialize(const void* source, OperationSize size)
 	{
 		parameter->deserialize(source, size);
 	}
@@ -541,7 +541,7 @@ public:
 		aggregator.registerAccessor(code, textName, this, restorable);
 	}
 
-	void deserialize(void* source, OperationSize size)
+	void deserialize(const void* source, OperationSize size)
 	{
 		if (size != sizeof(Type))
 		{

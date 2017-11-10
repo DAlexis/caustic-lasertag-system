@@ -38,11 +38,11 @@ class IRPresentationTransmitterMT2 : public IRPresentationTransmitterBase
 public:
 	IRPresentationTransmitterMT2(RCSPAggregator& rcspAggregator);
 	void init();
-	void sendMessage(const RCSPStream& stream);
+	void sendMessage(const RCSPStreamNew& stream);
 
 private:
 	constexpr static uint32_t maxMessageSize = 100;
-	void sendGenericRCSPMessageDefault(const RCSPStream& stream);
+	void sendGenericRCSPMessageDefault(const RCSPStreamNew& stream);
 
 	void sendCommand(uint8_t commandCode);
 	uint8_t encodeDamage(uint8_t damage);

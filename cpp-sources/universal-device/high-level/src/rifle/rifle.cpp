@@ -456,7 +456,7 @@ void Rifle::makeShot(bool isFirst)
 
 void Rifle::prepareAndSendShotMsg()
 {
-	RCSPStream stream(m_aggregator);
+	RCSPStreamNew stream(m_aggregator);
 	ShotMessage msg;
 	msg.damage = config.damageMin;
 	msg.playerId = rifleOwner.playerId;
@@ -760,7 +760,7 @@ void Rifle::cardOperationDoneCallback(RifleRFIDController::Mode mode)
 
 void Rifle::sendHeartbeatToHS()
 {
-	RCSPStream stream(m_aggregator);
+	RCSPStreamNew stream(m_aggregator);
 
 	// @todo use RemoteCall
 	stream.addCall(ConfigCodes::HeadSensor::Functions::rifleToHeadSensorHeartbeat);

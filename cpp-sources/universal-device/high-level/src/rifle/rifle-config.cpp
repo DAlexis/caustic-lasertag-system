@@ -8,9 +8,9 @@ PlayerPartialState::PlayerPartialState(
 		INetworkClient* networkClient,
         RCSPAggregator* aggregator
         ) :
+	m_aggregator(aggregator),
 	m_headSensorAddress(&headSensorAddress),
-	m_networkClient(networkClient),
-	m_aggregator(aggregator)
+	m_networkClient(networkClient)
 {
 	healthMax = 0;
 	armorMax = 0;
@@ -26,15 +26,15 @@ PlayerPartialState::PlayerPartialState(
 
 void PlayerPartialState::syncAll()
 {
-	RCSPMultiStream stream(m_aggregator);
-	stream.addRequest(ConfigCodes::HeadSensor::Configuration::healthMax);
-	stream.addRequest(ConfigCodes::HeadSensor::Configuration::armorMax);
-	stream.addRequest(ConfigCodes::HeadSensor::State::healthCurrent);
-	stream.addRequest(ConfigCodes::HeadSensor::State::armorCurrent);
-	stream.addRequest(ConfigCodes::HeadSensor::State::lifesCountCurrent);
-	stream.addRequest(ConfigCodes::HeadSensor::State::pointsCount);
-	stream.addRequest(ConfigCodes::HeadSensor::State::killsCount);
-	stream.addRequest(ConfigCodes::HeadSensor::State::deathsCount);
+	RCSPStreamNew stream(m_aggregator);
+	stream.addPull(ConfigCodes::HeadSensor::Configuration::healthMax);
+	stream.addPull(ConfigCodes::HeadSensor::Configuration::armorMax);
+	stream.addPull(ConfigCodes::HeadSensor::State::healthCurrent);
+	stream.addPull(ConfigCodes::HeadSensor::State::armorCurrent);
+	stream.addPull(ConfigCodes::HeadSensor::State::lifesCountCurrent);
+	stream.addPull(ConfigCodes::HeadSensor::State::pointsCount);
+	stream.addPull(ConfigCodes::HeadSensor::State::killsCount);
+	stream.addPull(ConfigCodes::HeadSensor::State::deathsCount);
 
 	stream.send(m_networkClient, *m_headSensorAddress, false);
 }

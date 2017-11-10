@@ -29,7 +29,7 @@ TEST(RCSPAggregator, Instantiation)
 	RCSPAggregator a;
 
 	Buffer buf;
-	ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size()));
+	ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
 }
 
 /**
@@ -79,7 +79,7 @@ TEST(RCSPAggregator, PushVariableTwoSides)
     frendlyFireCoeff = 0.11;
     devAddr = {5, 6, 7};
 
-    ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size()));
+    ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
     ASSERT_EQ(healthStart, 25);
     ASSERT_EQ(frendlyFireCoeff, initialFF);
     ASSERT_EQ(devAddr, origAddr);
@@ -101,7 +101,7 @@ TEST(RCSPAggregator, CallTwoSides)
     ASSERT_NO_THROW(a.serializeCall(code, buf));
 
     ASSERT_FALSE(isSet);
-    ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size()));
+    ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
     ASSERT_TRUE(isSet);
 }
 

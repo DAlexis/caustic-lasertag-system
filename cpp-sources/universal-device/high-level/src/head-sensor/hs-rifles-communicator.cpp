@@ -25,7 +25,7 @@ void WeaponCommunicator::sendRespawn()
 		[this](DeviceAddress addr)
 		{
 			m_respawnPackages.push_back(
-				RCSPStream::remoteCall(
+				RCSPStreamNew::remoteCall(
 					m_networkClient,
 					addr,
 					ConfigCodes::Rifle::Functions::rifleRespawn
@@ -44,7 +44,7 @@ void WeaponCommunicator::sendDie()
 		[this](DeviceAddress addr)
 		{
 			m_diePackages.push_back(
-				RCSPStream::remoteCall(
+				RCSPStreamNew::remoteCall(
 					m_networkClient,
 					addr,
 					ConfigCodes::Rifle::Functions::rifleDie,
@@ -70,13 +70,13 @@ void WeaponCommunicator::sendWeaponAndShock(TimeInterval shockDelay)
 	m_weaponManager->applyToAny(
 		[this, shockDelay](DeviceAddress addr)
 		{
-			RCSPMultiStream stream(m_aggregator);
+			RCSPStreamNew stream(m_aggregator);
 			// We have 23 bytes free in one stream (and should try to use only one)
 			stream.addCall(ConfigCodes::Rifle::Functions::rifleShock, shockDelay); // 3b + 4b (16 free)
 			stream.addCall(ConfigCodes::Rifle::Functions::rifleWound); // 3b (13 free)
-			stream.addValue(ConfigCodes::HeadSensor::State::healthCurrent); // 3b + 2b (8 free)
-			stream.addValue(ConfigCodes::HeadSensor::State::armorCurrent); // 3b + 2b (3 free)
-			stream.send(m_networkClient, addr, true, std::move(headSensorPackageTimings.woundPlayer));
+			stream.addPush(ConfigCodes::HeadSensor::State::healthCurrent); // 3b + 2b (8 free)
+			stream.addPush(ConfigCodes::HeadSensor::State::armorCurrent); // 3b + 2b (3 free)
+			stream.send(m_networkClient, addr, true, nullptr, std::move(headSensorPackageTimings.woundPlayer));
 		}
 	);
 }
@@ -86,7 +86,7 @@ void WeaponCommunicator::sendSetTeam()
 	m_weaponManager->applyToAny(
 		[this](DeviceAddress addr)
 		{
-			RCSPStream::remotePushValue(
+			RCSPStreamNew::remotePush(
 					m_aggregator,
 					m_networkClient,
 					addr,
@@ -101,7 +101,7 @@ void WeaponCommunicator::sendPlayEnemyDamaged(uint8_t sound)
 	m_weaponManager->applyToAny(
 		[this, sound](DeviceAddress addr)
 		{
-			RCSPStream::remoteCall(
+			RCSPStreamNew::remoteCall(
 					m_networkClient,
 					addr,
 					ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged,
@@ -113,7 +113,7 @@ void WeaponCommunicator::sendPlayEnemyDamaged(uint8_t sound)
 
 void WeaponCommunicator::sendHeartbeat(DeviceAddress target, PlayerConfiguration* config, PlayerState* state)
 {
-	RCSPStream stream(m_aggregator);
+	RCSPStreamNew stream(m_aggregator);
 	HSToRifleHeartbeat hb;
 	hb.setEnabled(state->isAlive());
 	hb.team = config->teamId;

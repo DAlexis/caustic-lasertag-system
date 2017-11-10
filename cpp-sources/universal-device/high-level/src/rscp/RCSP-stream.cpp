@@ -31,233 +31,69 @@ RCSPStreamNew::RCSPStreamNew(RCSPAggregator* aggregator) :
 {
 }
 
-RCSPAggregator::ResultType RCSPStreamNew::serializeAnything(OperationCode code, SerializationFunc serializer)
-{/*
-	uint8_t *pos = m_stream + m_cursor;
-	uint16_t addedSize = 0;
-	RCSPAggregator::ResultType result = serializer(pos, code, addedSize);
-	if (result.isSuccess)
-	{
-		m_cursor += addedSize;
-	} else {
-		//printf("Cannot add %u: %s\n", code, result.errorText);
-	}
-	return result;*/
-}
-
-
-///////////////////////////////////
-
-
-RCSPStream::RCSPStream(RCSPAggregator* aggregator, uint16_t size) :
-    m_aggregator(aggregator),
-	m_size(size)
+void RCSPStreamNew::addPush(OperationCode code, const uint8_t* customValue)
 {
-    m_stream = new uint8_t[m_size];
-    m_freeSpace = m_size;
-    memset(m_stream, 0, size*sizeof(uint8_t));
+	m_aggregator->serializePush(code, m_buffer, customValue);
 }
 
-RCSPStream::~RCSPStream()
+void RCSPStreamNew::addPull(OperationCode code)
 {
-	if (m_stream)
-		delete[] m_stream;
+	RCSPAggregator::serializePull(code, m_buffer);
 }
 
-uint8_t* RCSPStream::getStream() const
+void RCSPStreamNew::addCall(OperationCode code)
 {
-	return m_stream;
+	RCSPAggregator::serializeCall(code, m_buffer);
 }
 
-uint16_t RCSPStream::getSize() const
-{
-	return m_size;
-}
-
-RCSPAggregator::ResultType RCSPStream::addValue(OperationCode code)
-{
-    if (m_aggregator == nullptr)
-    {
-        static const char msg[] = "RCSPStream: Cannot add value to stream when m_aggregator == nullptr";
-        error << msg;
-        return RCSPAggregator::ResultType(RCSPAggregator::AGGREGATOR_IS_NULLPTR, msg);
-    }
-	//printf("Adding value, code %u\n", code);
-	return serializeAnything(
-		code,
-		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
-		{
-			return m_aggregator->serializePush(pos, code, m_size - m_cursor, addedSize);
-		}
-	);
-}
-
-RCSPAggregator::ResultType RCSPStream::addRequest(OperationCode code)
-{
-	//printf("Adding value, code %u\n", code);
-	return serializeAnything(
-		code,
-		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
-		{
-			return RCSPAggregator::serializePull(pos, code, m_size - m_cursor, addedSize);
-		}
-	);
-}
-
-RCSPAggregator::ResultType RCSPStream::addCall(OperationCode code)
-{
-	//printf("Adding value, code %u\n", code);
-	return serializeAnything(
-		code,
-		[this] (uint8_t *pos, OperationCode code, uint16_t &addedSize) -> RCSPAggregator::ResultType
-		{
-			return RCSPAggregator::serializeCall(pos, code, m_size - m_cursor, addedSize);
-		}
-	);
-}
-
-RCSPAggregator::ResultType RCSPStream::serializeAnything(OperationCode code, SerializationFunc serializer)
-{
-	uint8_t *pos = m_stream + m_cursor;
-	uint16_t addedSize = 0;
-	RCSPAggregator::ResultType result = serializer(pos, code, addedSize);
-	if (result.isSuccess)
-	{
-		m_cursor += addedSize;
-	} else {
-		//printf("Cannot add %u: %s\n", code, result.errorText);
-	}
-	return result;
-}
-
-PackageId RCSPStream::send(
-    INetworkClient* client,
-	DeviceAddress target,
-	bool waitForAck,
-	PackageSendingDoneCallback doneCallback,
-	PackageTimings&& timings
-)
-{
-	return client->send(
-		target,
-		m_stream,
-		m_size,
-		waitForAck,
-		doneCallback,
-		timings
-	);
-}
-
-void RCSPStream::dispatch()
-{
-    if (m_aggregator == nullptr)
-    {
-        error << "RCSPStream: Cannot dispatch stream when m_aggregator == nullptr";
-        return;
-    }
-
-	if (!empty())
-	{
-		m_aggregator->dispatchStream(m_stream, m_cursor);
-	}
-}
-
-
-bool RCSPStream::empty()
-{
-	return (m_cursor == 0);
-}
-
-//////////////////////////
-// RCSPMultiStream
-
-RCSPMultiStream::RCSPMultiStream(RCSPAggregator* aggregator) :
-        m_aggregator(aggregator)
-{
-	pushBackStream();
-}
-
-void RCSPMultiStream::pushBackStream()
-{
-	m_streams.push_back(std::shared_ptr<RCSPStream> (new RCSPStream(m_aggregator)));
-}
-
-RCSPAggregator::ResultType RCSPMultiStream::addValue(OperationCode code)
-{
-	RCSPAggregator::ResultType result = m_streams.back()->addValue(code);
-	if (!result.isSuccess && result.details == RCSPAggregator::NOT_ENOUGH_SPACE)
-	{
-		pushBackStream();
-		result = m_streams.back()->addValue(code);
-	}
-	return result;
-}
-
-RCSPAggregator::ResultType RCSPMultiStream::addRequest(OperationCode code)
-{
-	RCSPAggregator::ResultType result = m_streams.back()->addRequest(code);
-	if (!result.isSuccess && result.details == RCSPAggregator::NOT_ENOUGH_SPACE)
-	{
-		pushBackStream();
-		result = m_streams.back()->addRequest(code);
-	}
-	return result;
-}
-
-RCSPAggregator::ResultType RCSPMultiStream::addCall(OperationCode code)
-{
-	RCSPAggregator::ResultType result = m_streams.back()->addCall(code);
-	if (!result.isSuccess && result.details == RCSPAggregator::NOT_ENOUGH_SPACE)
-	{
-		pushBackStream();
-		result = m_streams.back()->addCall(code);
-	}
-	return result;
-}
-
-void RCSPMultiStream::send(
-        INetworkClient* client,
+PackageId RCSPStreamNew::send(
+		INetworkClient* client,
 		DeviceAddress target,
 		bool waitForAck,
+		PackageSendingDoneCallback doneCallback,
 		PackageTimings&& timings
 	)
 {
-	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
+	PackageId lastId = 0;
+	auto sender = [&lastId, client, &target, waitForAck, doneCallback, timings](const uint8_t* begin, uint16_t size)
 	{
-		(*it)->send(client, target, waitForAck, nullptr, std::forward<PackageTimings>(timings));
-	}
+		lastId = client->send(target, begin, size, waitForAck, doneCallback, timings);
+	};
+	RCSPAggregator::splitBuffer(m_buffer, client->payloadSize(), sender);
+	return lastId;
 }
 
-bool RCSPMultiStream::empty()
+void RCSPStreamNew::dispatch()
 {
-	return m_streams.front()->empty();
+	m_aggregator->dispatchStreamNew(m_buffer.data(), m_buffer.size());
 }
 
-void RCSPMultiStream::dispatch()
+const Buffer& RCSPStreamNew::buffer() const
 {
-	for (auto it=m_streams.begin(); it != m_streams.end(); it++)
-	{
-		(*it)->dispatch();
-	}
+	return m_buffer;
 }
 
-Result RCSPMultiStream::writeToFile(FILE* file)
+Buffer& RCSPStreamNew::buffer()
 {
-    int written = 0;
-	for (auto it = m_streams.begin(); it != m_streams.end(); it++)
-	{
-        written = fwrite((*it)->getStream(), 1, (*it)->getSize(), file);
-        if (ferror(file) != 0)
-		{
-            return Result("Bad file writing result");
-		}
-		if (written != (*it)->getSize())
-		{
-            return Result("Invalid written bytes count");
-		}
-	}
-    return Result();
+	return m_buffer;
 }
+
+Result RCSPStreamNew::writeToFile(FILE* file)
+{
+	int written = fwrite(m_buffer.data(), 1, m_buffer.size(), file);
+	if (ferror(file) != 0)
+	{
+		return Result("Bad file writing result");
+	}
+	if (written != m_buffer.size())
+	{
+		return Result("Invalid written bytes count");
+	}
+	return Result();
+}
+
+//////////////////////////////
+// RCSPNetworkListener
 
 RCSPNetworkListener::RCSPNetworkListener(RCSPAggregator* aggregator) :
         m_aggregator(aggregator)
@@ -275,19 +111,19 @@ DeviceAddress RCSPNetworkListener::sender()
 	return m_currentDeviceAddress;
 }
 
-void RCSPNetworkListener::receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength)
+void RCSPNetworkListener::receivePackage(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
 {
     if (m_networkClient == nullptr)
     {
         error << "Network client was not connected to package receiver! Cannot dispatch stream now";
         return;
     }
-    RCSPMultiStream answerStream(m_aggregator);
+    RCSPStreamNew answerStream(m_aggregator);
     m_currentDeviceAddress = sender;
     m_hasDeviceAddress = true;
-    m_aggregator->dispatchStream(payload, payloadLength, &answerStream);
+    m_aggregator->dispatchStreamNew(payload, payloadLength, &(answerStream.buffer()));
     m_hasDeviceAddress = false;
-    if (!answerStream.empty())
+    if (!answerStream.buffer().empty())
     {
         answerStream.send(m_networkClient, sender, true);
     }
@@ -297,3 +133,4 @@ void RCSPNetworkListener::connectClient(INetworkClient* client)
 {
     m_networkClient = client;
 }
+

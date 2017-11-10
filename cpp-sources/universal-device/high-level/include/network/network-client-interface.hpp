@@ -28,7 +28,7 @@ class IPackageReceiver
 {
 public:
     virtual ~IPackageReceiver() {}
-    virtual void receivePackage(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength) = 0;
+    virtual void receivePackage(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) = 0;
     virtual void connectClient(INetworkClient* client) = 0;
 };
 
@@ -52,17 +52,19 @@ public:
     virtual const DeviceAddress* mainBackAddress() = 0;
 
     /// Returns callback that will process given payload of package, accepted by isForMe()
-    virtual void receive(DeviceAddress sender, uint8_t* payload, uint16_t payloadLength) = 0;
+    virtual void receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) = 0;
 
     /// Send package using connected network layer
     virtual PackageId send(
         DeviceAddress target,
-        uint8_t* data,
+        const uint8_t* data,
         uint16_t size,
         bool waitForAck = false,
         PackageSendingDoneCallback doneCallback = nullptr,
         PackageTimings timings = PackageTimings()
     ) = 0;
+
+    virtual uint16_t payloadSize() = 0;
 };
 
 

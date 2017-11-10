@@ -115,5 +115,5 @@ void RifleRFIDController::onCardReaded(uint8_t* buffer, uint16_t size)
 	debug << "data: " << hexStr(buffer, size);
 
 	m_callback(m_mode);
-	m_aggregator.dispatchStream(buffer, size);
+	m_aggregator.dispatchStreamNew(buffer, size);
 }

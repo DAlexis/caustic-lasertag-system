@@ -180,7 +180,7 @@ void BaseStatsCounter::sendNextPackage()
 	lock.unlock();
 	debug << "Sending from " << target.enemyId;
 	m_sendingState = S_WAITING_FOR_TRANSMISSIO_RESULT;
-	RCSPStream::remoteCall(
+	RCSPStreamNew::remoteCall(
         m_networkClient,
 		m_statsReceiver,
 		ConfigCodes::Base::Functions::getPvPResults,
