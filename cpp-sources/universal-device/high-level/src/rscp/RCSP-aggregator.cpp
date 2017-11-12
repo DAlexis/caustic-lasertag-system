@@ -66,6 +66,11 @@ uint32_t RCSPAggregator::dispatchStreamNew(const uint8_t* stream, uint32_t size,
 	return unsupported;
 }
 
+uint32_t RCSPAggregator::dispatchStreamNew(const Buffer& stream, Buffer* answerStream)
+{
+	return dispatchStreamNew(stream.data(), stream.size(), answerStream);
+}
+
 const uint8_t* RCSPAggregator::extractNextOperation(
 			const uint8_t* stream,
 			RCSPAggregator::Operation& commad,

@@ -17,7 +17,7 @@
 class AnyONCDeviceBase : public AnyDeviceBase
 {
 protected:
-	virtual void initNetworkClient();
+	AnyONCDeviceBase(INetworkLayer *existingNetworkLayer = nullptr);
 
 	INetworkClient *m_networkClient = nullptr;
 };

@@ -41,7 +41,8 @@
 #include <stdio.h>
 #include <math.h>
 
-HeadSensor::HeadSensor()
+HeadSensor::HeadSensor() :
+	AnyRCSPClientDeviceBase(nullptr)
 {
 	deviceConfig.deviceType = DeviceTypes::headSensor;
 	m_tasksPool.setStackSize(512);
@@ -77,7 +78,6 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	}
 
 	info << "Network initialization";
-	initNetwork();
 	initNetworkClient();
 	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
 	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.headSensors);
@@ -107,7 +107,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	if (hasBtModule)
 	{
 	    info << "Initializing built-in bluetooth bridge device";
-	    BluetoothBridge *bb = new BluetoothBridge();
+	    BluetoothBridge *bb = new BluetoothBridge(m_networkLayer);
 	    bb->assignExistingNetworkLayer(m_networkLayer);
 	    bb->initAsSecondaryDevice(_pinout, isSdcardOk);
 	} else {
@@ -377,7 +377,7 @@ void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_
 	notification.state = state;
 	notification.target = playerConfig.playerId;
 	info << "Notifying damager";
-	RCSPStreamNew::remoteCall(
+	RCSPStream::remoteCall(
 	        m_networkClient,
 			broadcast.headSensors,
 			ConfigCodes::HeadSensor::Functions::notifyIsDamager,

@@ -2,6 +2,7 @@
 #include "head-sensor/resources.hpp"
 #include "rcsp/operation-codes.hpp"
 #include "rcsp/stream.hpp"
+#include "core/logging.hpp"
 
 WeaponCommunicator::WeaponCommunicator(
 	WeaponsManager2* weaponManager,
@@ -25,7 +26,7 @@ void WeaponCommunicator::sendRespawn()
 		[this](DeviceAddress addr)
 		{
 			m_respawnPackages.push_back(
-				RCSPStreamNew::remoteCall(
+				RCSPStream::remoteCall(
 					m_networkClient,
 					addr,
 					ConfigCodes::Rifle::Functions::rifleRespawn
@@ -44,7 +45,7 @@ void WeaponCommunicator::sendDie()
 		[this](DeviceAddress addr)
 		{
 			m_diePackages.push_back(
-				RCSPStreamNew::remoteCall(
+				RCSPStream::remoteCall(
 					m_networkClient,
 					addr,
 					ConfigCodes::Rifle::Functions::rifleDie,
@@ -70,7 +71,7 @@ void WeaponCommunicator::sendWeaponAndShock(TimeInterval shockDelay)
 	m_weaponManager->applyToAny(
 		[this, shockDelay](DeviceAddress addr)
 		{
-			RCSPStreamNew stream(m_aggregator);
+			RCSPStream stream(m_aggregator);
 			// We have 23 bytes free in one stream (and should try to use only one)
 			stream.addCall(ConfigCodes::Rifle::Functions::rifleShock, shockDelay); // 3b + 4b (16 free)
 			stream.addCall(ConfigCodes::Rifle::Functions::rifleWound); // 3b (13 free)
@@ -86,7 +87,7 @@ void WeaponCommunicator::sendSetTeam()
 	m_weaponManager->applyToAny(
 		[this](DeviceAddress addr)
 		{
-			RCSPStreamNew::remotePush(
+			RCSPStream::remotePush(
 					m_aggregator,
 					m_networkClient,
 					addr,
@@ -101,7 +102,7 @@ void WeaponCommunicator::sendPlayEnemyDamaged(uint8_t sound)
 	m_weaponManager->applyToAny(
 		[this, sound](DeviceAddress addr)
 		{
-			RCSPStreamNew::remoteCall(
+			RCSPStream::remoteCall(
 					m_networkClient,
 					addr,
 					ConfigCodes::Rifle::Functions::riflePlayEnemyDamaged,
@@ -113,7 +114,7 @@ void WeaponCommunicator::sendPlayEnemyDamaged(uint8_t sound)
 
 void WeaponCommunicator::sendHeartbeat(DeviceAddress target, PlayerConfiguration* config, PlayerState* state)
 {
-	RCSPStreamNew stream(m_aggregator);
+	RCSPStream stream(m_aggregator);
 	HSToRifleHeartbeat hb;
 	hb.setEnabled(state->isAlive());
 	hb.team = config->teamId;

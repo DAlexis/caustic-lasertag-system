@@ -41,7 +41,7 @@ void IRPresentationTransmitterMT2::init()
 {
 }
 
-void IRPresentationTransmitterMT2::sendMessage(const RCSPStreamNew& stream)
+void IRPresentationTransmitterMT2::sendMessage(const RCSPStream& stream)
 {
 	RCSPAggregator::Operation op;
 	bool success = true;
@@ -72,7 +72,7 @@ void IRPresentationTransmitterMT2::sendMessage(const RCSPStreamNew& stream)
 
 }
 
-void IRPresentationTransmitterMT2::sendGenericRCSPMessageDefault(const RCSPStreamNew& stream)
+void IRPresentationTransmitterMT2::sendGenericRCSPMessageDefault(const RCSPStream& stream)
 {
 	m_data[0] = MT2Extended::Byte1::RCSPMessage;
 	if (stream.buffer().size() > maxMessageSize - 1)

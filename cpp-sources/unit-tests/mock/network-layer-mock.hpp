@@ -9,6 +9,7 @@
 #define UNIT_TESTS_NETWORK_LAYER_MOCK_HPP_
 
 #include "network/network-layer-interface.hpp"
+#include "core/buffer.hpp"
 #include <vector>
 
 class NetworkLayerMock : public INetworkLayer
@@ -39,8 +40,10 @@ public:
 	void registerBroadcast(const DeviceAddress& address) override;
 	void registerBroadcastTester(Broadcast::IBroadcastTester* tester) override;
 
+	const Buffer& buffer();
+
 private:
-	std::vector<uint8_t> m_sendedBuffer;
+	Buffer m_sendedBuffer;
 };
 
 

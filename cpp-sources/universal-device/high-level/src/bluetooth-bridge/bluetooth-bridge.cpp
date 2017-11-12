@@ -35,7 +35,8 @@ using namespace Bluetooth;
 
 BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 
-BluetoothBridge::BluetoothBridge()
+BluetoothBridge::BluetoothBridge(INetworkLayer *existingNetworkLayer) :
+		AnyONCDeviceBase(existingNetworkLayer)
 {
 }
 
@@ -61,7 +62,6 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
         warning << "Bluetooth bridge operate without sd-card, it will use default settings";
     }
 
-    initNetworkClient();
     m_networkClient->connectPackageReceiver(this);
 
     /*
@@ -77,7 +77,6 @@ void BluetoothBridge::init(const Pinout& pinout, bool isSdcardOk)
 {
     UNUSED_ARG(pinout);
 
-    initNetwork();
     initAsSecondaryDevice(pinout, isSdcardOk);
 
     //NetworkLayer::instance().enableRegularNRFReinit();

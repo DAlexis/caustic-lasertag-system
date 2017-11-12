@@ -81,6 +81,13 @@ Logger::LoggerUnnamed&  Logger::LoggerUnnamed::operator<<(const std::string& str
 	return *this;
 }
 
+Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(void* p)
+{
+	char buffer[numbersBufferSize];
+	sprintf(buffer, "%x", p);
+	return *this << buffer;
+}
+
 Logger::LoggerUnnamed& Logger::LoggerUnnamed::operator<<(int d)
 {
 	char buffer[numbersBufferSize];

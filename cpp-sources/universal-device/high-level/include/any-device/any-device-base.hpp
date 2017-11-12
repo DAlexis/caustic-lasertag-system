@@ -34,11 +34,10 @@
 class AnyDeviceBase : public IAnyDevice
 {
 public:
-    AnyDeviceBase();
+    AnyDeviceBase(INetworkLayer *existingNetworkLayer = nullptr);
     void assignExistingNetworkLayer(INetworkLayer* existingNetworkLayer);
 
 protected:
-    void initNetwork();
 
     INetworkLayer *m_networkLayer = nullptr;
     RCSPAggregator* m_aggregator;

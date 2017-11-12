@@ -26,7 +26,7 @@ PlayerPartialState::PlayerPartialState(
 
 void PlayerPartialState::syncAll()
 {
-	RCSPStreamNew stream(m_aggregator);
+	RCSPStream stream(m_aggregator);
 	stream.addPull(ConfigCodes::HeadSensor::Configuration::healthMax);
 	stream.addPull(ConfigCodes::HeadSensor::Configuration::armorMax);
 	stream.addPull(ConfigCodes::HeadSensor::State::healthCurrent);

@@ -146,7 +146,7 @@ public:
 	virtual uint32_t getSize() = 0;
 };
 
-class RCSPStreamNew;
+class RCSPStream;
 class RCSPMultiStream;
 
 template<typename T>
@@ -222,6 +222,7 @@ public:
 	 * @return Count of unsupported operation found on stream
 	 */
 	uint32_t dispatchStreamNew(const uint8_t* stream, uint32_t size, Buffer* answerStream = nullptr);
+	uint32_t dispatchStreamNew(const Buffer& stream, Buffer* answerStream = nullptr);
 
 	//uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
 
@@ -425,9 +426,9 @@ public:
 	DefaultFunctionAccessor(
 	        OperationCode code,
 	        const char* textName,
-	        FunctionAccessorCallback _callback,
+	        FunctionAccessorCallback callback,
 			RCSPAggregator& aggregator) :
-		callback(_callback)
+		callback(callback)
 	{
 		aggregator.registerAccessor(code, textName, this);
 	}
@@ -459,9 +460,9 @@ public:
 	DefaultFunctionAccessor(
 	        OperationCode code,
 	        const char* textName,
-	        FunctionAccessorCallback _callback,
+	        FunctionAccessorCallback callback,
 			RCSPAggregator& aggregator) :
-		callback(_callback)
+		callback(callback)
 	{
 		aggregator.registerAccessor(code, textName, this);
 	}

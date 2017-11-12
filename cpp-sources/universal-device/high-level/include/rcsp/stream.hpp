@@ -30,10 +30,10 @@
 #include <list>
 #include <memory>
 
-class RCSPStreamNew
+class RCSPStream
 {
 public:
-	RCSPStreamNew(RCSPAggregator* aggregator);
+	RCSPStream(RCSPAggregator* aggregator);
 	void addPush(OperationCode code, const uint8_t* customValue = nullptr);
 	void addPull(OperationCode code);
 	void addCall(OperationCode code);
@@ -60,7 +60,7 @@ public:
 			PackageTimings&& timings = PackageTimings()
 			)
 	{
-		RCSPStreamNew stream(nullptr);
+		RCSPStream stream(nullptr);
 		stream.addCall(code);
 		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
@@ -76,7 +76,7 @@ public:
 			PackageTimings&& timings = PackageTimings()
 			)
 	{
-		RCSPStreamNew stream(nullptr);
+		RCSPStream stream(nullptr);
 		stream.addCall(code, argument);
 		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
@@ -91,7 +91,7 @@ public:
 			PackageTimings&& timings = PackageTimings()
 			)
 	{
-		RCSPStreamNew stream(aggregator);
+		RCSPStream stream(aggregator);
 		stream.addPush(code);
 		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}

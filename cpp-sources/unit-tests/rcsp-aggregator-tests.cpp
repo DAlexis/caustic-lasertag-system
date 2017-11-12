@@ -7,6 +7,8 @@
 
 #include "rcsp/aggregator.hpp"
 #include "rcsp/operation-codes.hpp"
+#include "rcsp/stream.hpp"
+#include "mock/network-layer-mock.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
 
@@ -88,7 +90,7 @@ TEST(RCSPAggregator, PushVariableTwoSides)
 /**
  * Test of `call` operation: sending and receiving it
  */
-TEST(RCSPAggregator, CallTwoSides)
+TEST(RCSPAggregator, CallTwoSidesNoArg)
 {
 	constexpr uint16_t code = 123;
 	RCSPAggregator a;
@@ -103,6 +105,39 @@ TEST(RCSPAggregator, CallTwoSides)
     ASSERT_FALSE(isSet);
     ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
     ASSERT_TRUE(isSet);
+}
+
+/**
+ * Test of `call` operation: sending and receiving it
+ */
+TEST(RCSPAggregator, CallTwoSidesOneArg)
+{
+	constexpr uint16_t code = 123;
+	RCSPAggregator a;
+	struct ArgType
+	{
+		int a=0;
+		int b=0;
+	};
+
+	bool isSet = false;
+	bool argumentCorrect = false;
+	auto f = [&isSet, &argumentCorrect] (ArgType argument) {
+
+		isSet = true;
+		argumentCorrect = (argument.a == 12 && argument.b == 34);
+	};
+	DefaultFunctionAccessor<ArgType> testAccessor {code, "test function", f, a};
+
+	ArgType argument = {12, 34};
+    Buffer buf;
+    ASSERT_NO_THROW(a.serializeCall(code, buf, argument));
+
+    ASSERT_FALSE(isSet);
+    ASSERT_FALSE(argumentCorrect);
+    ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
+    ASSERT_TRUE(isSet) << "Callback was not called";
+    ASSERT_TRUE(argumentCorrect) << "Callback argument not correct";
 }
 
 /**
@@ -149,9 +184,15 @@ public:
 		shockDelayInactive = 0;
 		shockDelayImmortal = 0;
 	}
-	void serialize()
+
+	void serializeShort()
 	{
 		a.serializePush(ConfigCodes::HeadSensor::Configuration::healthStart, buf);
+	}
+
+	void serialize()
+	{
+		serializeShort();
 		a.serializePush(ConfigCodes::HeadSensor::Configuration::frendlyFireCoeff, buf);
 		a.serializePush(ConfigCodes::HeadSensor::Configuration::postRespawnDelay, buf);
 		a.serializePush(ConfigCodes::HeadSensor::Configuration::preRespawnDelay, buf);
@@ -175,6 +216,9 @@ public:
 	Buffer buf;
 };
 
+/**
+ * Test for buffer validation function with valid buffer
+ */
 TEST_F(RCSPAggregatorBufferUtils, VerifyValid)
 {
 	bool res = false;
@@ -212,6 +256,9 @@ TEST_F(RCSPAggregatorBufferUtils, VerifyValid)
 	ASSERT_TRUE(RCSPAggregator::verifyBuffer(buf));
 }
 
+/**
+ * Test for buffer validation function with invalid buffer
+ */
 TEST_F(RCSPAggregatorBufferUtils, VerifyInvalid)
 {
 	buf.push_back(3);
@@ -228,6 +275,9 @@ TEST_F(RCSPAggregatorBufferUtils, VerifyInvalid)
 	ASSERT_FALSE(RCSPAggregator::verifyBuffer(buf));
 }
 
+/**
+ * Test for buffer splitting function with valid buffer
+ */
 TEST_F(RCSPAggregatorBufferUtils, SplittingValid)
 {
 	setPars();
@@ -249,6 +299,36 @@ TEST_F(RCSPAggregatorBufferUtils, SplittingValid)
 	ASSERT_TRUE(RCSPAggregator::splitBuffer(buf, blockSize, testBlock));
 }
 
+/**
+ * Test for buffer splitting function with valid buffer
+ */
+TEST_F(RCSPAggregatorBufferUtils, SplittingValidShort)
+{
+	setPars();
+	serializeShort();
+
+	int blockSize = 30;
+	bool failed = false;
+	int count = 0;
+	auto testBlock = [this, blockSize, &failed, &count](const uint8_t* begin, uint16_t size)
+	{
+		failed = failed || (begin < buf.data()) || (begin > buf.data() + buf.size()) || (size > blockSize);
+		count++;
+	};
+	bool res = false;
+	ASSERT_NO_THROW(res = RCSPAggregator::splitBuffer(buf, blockSize, testBlock));
+	ASSERT_FALSE(failed) << "Some condition failed in test callback";
+	ASSERT_TRUE(res);
+	ASSERT_EQ(count, 1) << "Too many callback calls";
+	buf.push_back(0);
+	buf.push_back(0);
+	buf.push_back(0);
+	ASSERT_TRUE(RCSPAggregator::splitBuffer(buf, blockSize, testBlock));
+}
+
+/**
+ * Test for buffer splitting function with valid buffer
+ */
 TEST_F(RCSPAggregatorBufferUtils, SplittingInvalid)
 {
 	setPars();
@@ -268,3 +348,65 @@ TEST_F(RCSPAggregatorBufferUtils, SplittingInvalid)
 	ASSERT_FALSE(failed) << "Callback was called for invalid block";
 }
 
+TEST(RCSPStream, Operating)
+{
+	RCSPAggregator a;
+	NetworkLayerMock nl;
+	OrdinaryNetworkClient onc;
+	onc.connectNetworkLayer(&nl);
+	onc.setMyAddress(DeviceAddress(1, 1, 1));
+
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, healthStart, a);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, frendlyFireCoeff, a);
+	PAR_CL(NOT_RESTORABLE, ConfigCodes::AnyDevice::Configuration, devAddr, a);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, postRespawnDelay, a);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, preRespawnDelay, a);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, autoRespawn, a);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, shockDelayInactive, a);
+	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::Configuration, shockDelayImmortal, a);
+	devAddr = {1, 2, 3};
+	auto origAddr = devAddr;
+	healthStart = 25;
+	frendlyFireCoeff = 0.25;
+	postRespawnDelay = 1000;
+	preRespawnDelay = 2000;
+	autoRespawn = false;
+	shockDelayInactive = 3000;
+	shockDelayImmortal = 4000;
+
+	RCSPStream stream(&a);
+	ASSERT_NO_THROW(stream.addPush(ConfigCodes::HeadSensor::Configuration::healthStart));
+	ASSERT_NO_THROW(stream.addPush(ConfigCodes::HeadSensor::Configuration::frendlyFireCoeff));
+	ASSERT_NO_THROW(stream.addPush(ConfigCodes::AnyDevice::Configuration::devAddr));
+	ASSERT_NO_THROW(stream.addPush(ConfigCodes::HeadSensor::Configuration::postRespawnDelay));
+	ASSERT_NO_THROW(stream.addPush(ConfigCodes::HeadSensor::Configuration::preRespawnDelay));
+	ASSERT_NO_THROW(stream.addPush(ConfigCodes::HeadSensor::Configuration::autoRespawn));
+	ASSERT_NO_THROW(stream.addPush(ConfigCodes::HeadSensor::Configuration::shockDelayInactive));
+	ASSERT_NO_THROW(stream.addPush(ConfigCodes::HeadSensor::Configuration::shockDelayImmortal));
+
+	//cout << "stream = " << hexStr(stream.buffer().data(), stream.buffer().size()) << endl;
+	ASSERT_NO_THROW(stream.send(&onc, DeviceAddress(1, 1, 2)));
+
+
+	// Changing all variables to another values
+	devAddr = {3, 5, 9};
+	healthStart = 4;
+	frendlyFireCoeff = 0.89;
+	postRespawnDelay = 12;
+	preRespawnDelay = 32;
+	autoRespawn = true;
+	shockDelayInactive = 43;
+	shockDelayImmortal = 87;
+
+	ASSERT_NO_THROW(a.dispatchStreamNew(nl.buffer()));
+	//cout << "buf = " << hexStr(nl.buffer().data(), nl.buffer().size()) << endl;
+
+	ASSERT_EQ(healthStart, 25);
+	ASSERT_EQ(frendlyFireCoeff, 0.25);
+	ASSERT_EQ(devAddr, origAddr);
+	ASSERT_EQ(postRespawnDelay, 1000);
+	ASSERT_EQ(preRespawnDelay, 2000);
+	ASSERT_EQ(autoRespawn, false);
+	ASSERT_EQ(shockDelayInactive, 3000);
+	ASSERT_EQ(shockDelayImmortal, 4000);
+}

@@ -84,7 +84,7 @@ void MainStateSaver::saveState()
 		return;
 	}
 	// Putting data to state file
-    RCSPStreamNew stream(m_aggregator);
+    RCSPStream stream(m_aggregator);
 	for (OperationCode code : m_aggregator->getRestorableOperationCodes())
 		stream.addPush(code);
     stream.writeToFile(m_fil);

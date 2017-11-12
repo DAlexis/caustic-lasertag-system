@@ -33,8 +33,7 @@ PackageId NetworkLayerMock::send(
 	INetworkClient* doNotReceiveBy
 )
 {
-	m_sendedBuffer.resize(size);
-	memcpy(m_sendedBuffer.data(), data, size);
+	m_sendedBuffer.insert(m_sendedBuffer.end(), data, data+size);
 	return 1;
 }
 
@@ -74,3 +73,7 @@ void NetworkLayerMock::registerBroadcastTester(Broadcast::IBroadcastTester* test
 {
 }
 
+const Buffer& NetworkLayerMock::buffer()
+{
+	return m_sendedBuffer;
+}

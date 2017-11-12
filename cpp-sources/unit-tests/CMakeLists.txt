@@ -19,6 +19,7 @@ include_directories (
 
 set(EXE_SOURCES
     rcsp-aggregator-tests.cpp
+    network-tests.cpp
     
     mock/network-layer-mock.cpp
     mock/loggers-mock.cpp
@@ -29,6 +30,7 @@ set(EXE_SOURCES
     ../universal-device/high-level/src/rscp/RCSP-aggregator.cpp
     ../universal-device/high-level/src/rscp/RCSP-stream.cpp
     ../universal-device/high-level/src/network/device-address.cpp
+    ../universal-device/high-level/src/network/network-client.cpp
 )
 
 add_executable(${PROJECT_NAME} ${EXE_SOURCES})

@@ -45,7 +45,7 @@ extern BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 class BluetoothBridge : public AnyONCDeviceBase, public IPackageReceiver
 {
 public:
-	BluetoothBridge();
+	BluetoothBridge(INetworkLayer *existingNetworkLayer = nullptr);
 	void initAsSecondaryDevice(const Pinout& pinout, bool isSdcardOk);
 	void init(const Pinout& pinout, bool isSdcardOk) override;
 	void setDefaultPinout(Pinout& pinout) override;

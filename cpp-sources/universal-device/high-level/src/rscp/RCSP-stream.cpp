@@ -26,27 +26,27 @@
 #include "core/logging.hpp"
 #include <stdio.h>
 
-RCSPStreamNew::RCSPStreamNew(RCSPAggregator* aggregator) :
+RCSPStream::RCSPStream(RCSPAggregator* aggregator) :
 	m_aggregator(aggregator)
 {
 }
 
-void RCSPStreamNew::addPush(OperationCode code, const uint8_t* customValue)
+void RCSPStream::addPush(OperationCode code, const uint8_t* customValue)
 {
 	m_aggregator->serializePush(code, m_buffer, customValue);
 }
 
-void RCSPStreamNew::addPull(OperationCode code)
+void RCSPStream::addPull(OperationCode code)
 {
 	RCSPAggregator::serializePull(code, m_buffer);
 }
 
-void RCSPStreamNew::addCall(OperationCode code)
+void RCSPStream::addCall(OperationCode code)
 {
 	RCSPAggregator::serializeCall(code, m_buffer);
 }
 
-PackageId RCSPStreamNew::send(
+PackageId RCSPStream::send(
 		INetworkClient* client,
 		DeviceAddress target,
 		bool waitForAck,
@@ -63,22 +63,22 @@ PackageId RCSPStreamNew::send(
 	return lastId;
 }
 
-void RCSPStreamNew::dispatch()
+void RCSPStream::dispatch()
 {
 	m_aggregator->dispatchStreamNew(m_buffer.data(), m_buffer.size());
 }
 
-const Buffer& RCSPStreamNew::buffer() const
+const Buffer& RCSPStream::buffer() const
 {
 	return m_buffer;
 }
 
-Buffer& RCSPStreamNew::buffer()
+Buffer& RCSPStream::buffer()
 {
 	return m_buffer;
 }
 
-Result RCSPStreamNew::writeToFile(FILE* file)
+Result RCSPStream::writeToFile(FILE* file)
 {
 	int written = fwrite(m_buffer.data(), 1, m_buffer.size(), file);
 	if (ferror(file) != 0)
@@ -118,7 +118,7 @@ void RCSPNetworkListener::receivePackage(DeviceAddress sender, const uint8_t* pa
         error << "Network client was not connected to package receiver! Cannot dispatch stream now";
         return;
     }
-    RCSPStreamNew answerStream(m_aggregator);
+    RCSPStream answerStream(m_aggregator);
     m_currentDeviceAddress = sender;
     m_hasDeviceAddress = true;
     m_aggregator->dispatchStreamNew(payload, payloadLength, &(answerStream.buffer()));

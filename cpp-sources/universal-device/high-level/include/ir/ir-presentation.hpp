@@ -60,7 +60,7 @@ class IIRPresentationTransmitter
 public:
 	virtual ~IIRPresentationTransmitter() {}
 	virtual void init() = 0;
-	virtual void sendMessage(const RCSPStreamNew& stream) = 0;
+	virtual void sendMessage(const RCSPStream& stream) = 0;
 	virtual void setPhysicalTransmitter(IIRTransmitter* transmitter) = 0;
 };
 

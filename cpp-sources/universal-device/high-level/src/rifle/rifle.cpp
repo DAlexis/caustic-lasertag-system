@@ -245,7 +245,6 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	initSounds();
 
 	info << "Network and RCSP initialization";
-	initNetwork();
 	initNetworkClient();
     static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
     static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.rifles);
@@ -456,7 +455,7 @@ void Rifle::makeShot(bool isFirst)
 
 void Rifle::prepareAndSendShotMsg()
 {
-	RCSPStreamNew stream(m_aggregator);
+	RCSPStream stream(m_aggregator);
 	ShotMessage msg;
 	msg.damage = config.damageMin;
 	msg.playerId = rifleOwner.playerId;
@@ -760,7 +759,7 @@ void Rifle::cardOperationDoneCallback(RifleRFIDController::Mode mode)
 
 void Rifle::sendHeartbeatToHS()
 {
-	RCSPStreamNew stream(m_aggregator);
+	RCSPStream stream(m_aggregator);
 
 	// @todo use RemoteCall
 	stream.addCall(ConfigCodes::HeadSensor::Functions::rifleToHeadSensorHeartbeat);
