@@ -55,9 +55,5 @@ AnyRCSPClientDeviceBase::AnyRCSPClientDeviceBase(INetworkLayer *existingNetworkL
 	AnyONCDeviceBase(existingNetworkLayer),
 	m_stateSaver(m_aggregator)
 {
-}
-
-void AnyRCSPClientDeviceBase::initNetworkClient()
-{
-    m_networkClient->connectPackageReceiver(&m_networkPackagesListener);
+	m_networkClient->connectPackageReceiver(&m_networkPackagesListener);
 }

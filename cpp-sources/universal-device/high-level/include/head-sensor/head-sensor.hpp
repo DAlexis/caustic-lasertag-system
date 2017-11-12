@@ -139,8 +139,6 @@ private:
 	Stager m_callbackStager{"HS callbacks"};
 	RC552Frontend m_mfrcWrapper;
 
-	uint8_t m_RFIDWriteBuffer[RFIDWriteBufferSize];
-
 	IAnyDevice* m_bluetoothBridge = nullptr;
 };
 

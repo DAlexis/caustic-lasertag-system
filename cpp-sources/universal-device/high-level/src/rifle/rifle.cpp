@@ -245,7 +245,6 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	initSounds();
 
 	info << "Network and RCSP initialization";
-	initNetworkClient();
     static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
     static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.rifles);
 

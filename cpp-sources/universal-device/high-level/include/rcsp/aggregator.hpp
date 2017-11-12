@@ -241,24 +241,15 @@ public:
 
 	/**
 	 * Serialize variable or other object with accessor and put it to stream
-	 * @param stream       Array where to put
 	 * @param code         Code of variable/accessible object
-	 * @param freeSpace    Max available space in stream. Will be decremented after successful adding
-	 * @param actualSize   Resulting size of added data
+	 * @param target       Array where to put
 	 * @param pCustomValue Pointer to custom value of parameter that should be put into stream. Using
-	 * this parameter means that serialization is trivial, so data of size = arctual parameter size will be
+	 * this parameter means that serialization is trivial, so data of size = actual parameter size will be
 	 * copied to stream from pCustomValue
 	 * @return result of operation
+	 *
+	 * @todo: Make a template for custom value
 	 */
-	ResultType serializePush(
-		uint8_t* stream,
-		OperationCode code,
-		uint16_t freeSpace,
-		uint16_t& actualSize,
-		const uint8_t* pCustomValue = nullptr
-	);
-
-	/// @todo: Make a template for custom value
 	ResultType serializePush(
 		OperationCode code,
 		Buffer& target,
@@ -267,69 +258,33 @@ public:
 
 	/**
 	 * Put to stream request for variable
-	 * @param stream Array where to put
 	 * @param code Code of variable
-	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
+	 * @param target Array where to put
 	 * @return result of operation
 	 */
-	static ResultType serializePull(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize);
-
 	static ResultType serializePull(
 		OperationCode code,
 		Buffer& target
 	);
+
 	/**
 	 * Put to stream request for function call without parameters
-	 * @param stream Array where to put
-	 * @param variableCode Code of variable
-	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
+	 * @param code Code of variable
+	 * @param target Array where to put
 	 * @return result of operation
 	 */
-	static ResultType serializeCall(
-		uint8_t* stream,
-		OperationCode functionCode,
-		uint16_t freeSpace,
-		uint16_t& actualSize
-	);
-
 	static ResultType serializeCall(
 		OperationCode code,
 		Buffer& target
 	);
+
 	/**
 	 * Put to stream request for function call with parameter
-	 * @param stream Array where to put
-	 * @param variableCode Code of variable
-	 * @param freeSpace Max available space in stream. Will be decremented after successful adding
+	 * @param code Code of variable
+	 * @param target Array where to put
 	 * @param parameter Parameter value
 	 * @return result of operation
 	 */
-	template<typename Type>
-	static ResultType serializeCall(
-			uint8_t* stream,
-			OperationCode functionCode,
-			uint16_t freeSpace,
-			uint16_t& actualSize,
-			const Type& parameter
-		)
-	{
-		/// @todo [refactor] Remove code duplication with functionCallwithout parameters
-		actualSize = 0;
-		uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode)+sizeof(parameter);
-		if (packageSize > freeSpace)
-			return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
-
-		functionCode = RCSPCodeManipulator::makeCall(functionCode);
-		OperationSize size = sizeof(parameter);
-		memcpy(stream, &size, sizeof(OperationSize));
-		stream += sizeof(OperationSize);
-		memcpy(stream, &functionCode, sizeof(OperationCode));
-		stream += sizeof(OperationCode);
-		memcpy(stream, &parameter, sizeof(parameter));
-		actualSize = packageSize;
-		return DetailedResult<AddingResult>(OK);
-	}
-
 	template<typename Type>
 	static ResultType serializeCall(
 		OperationCode code,
@@ -391,6 +346,12 @@ public:
 	 */
 	static bool splitBuffer(const Buffer& buf, uint16_t maxSize, SplitBufferCallback callback);
 
+	/**
+	 * Verify if block contains correct RCSP commands stream. It does not check opcodes existance,
+	 * only chunk and stream size validation
+	 * @param buf      Buffer object
+	 * @return true if all is OK and false if stream is inconsistent
+	 */
 	static bool verifyBuffer(const Buffer& buf);
 
 	const std::list<OperationCode>& getRestorableOperationCodes() { return m_restorable; }

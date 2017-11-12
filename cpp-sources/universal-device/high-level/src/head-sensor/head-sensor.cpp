@@ -78,7 +78,6 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	}
 
 	info << "Network initialization";
-	initNetworkClient();
 	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
 	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.headSensors);
 	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcastTester(new TeamBroadcastTester(playerConfig.teamId));
@@ -406,25 +405,22 @@ void HeadSensor::notifyIsDamager(DamageNotification notification)
 
 void HeadSensor::setFRIDToWriteAddr()
 {
-	uint16_t size = sizeof(m_RFIDWriteBuffer[0])*RFIDWriteBufferSize;
-	memset(m_RFIDWriteBuffer, 0, size);
-	uint16_t actualSize = 0;
+	Buffer buf(RFIDWriteBufferSize, 0);
+
 	RCSPAggregator::serializeCall(
-			m_RFIDWriteBuffer,
 			ConfigCodes::Rifle::Functions::rifleChangeHS,
-			size,
-			actualSize,
+			buf,
 			deviceConfig.devAddr
 		);
 	m_mfrcWrapper.writeBlock(
-			m_RFIDWriteBuffer,
-			RFIDWriteBufferSize,
-			[this](uint8_t* data, uint16_t size)
-			{
-				UNUSED_ARG(data); UNUSED_ARG(size);
-				m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.anyCommand()));
-			}
-		);
+		buf.data(),
+		buf.size(),
+		[this](uint8_t* data, uint16_t size)
+		{
+			UNUSED_ARG(data); UNUSED_ARG(size);
+			m_ledVibroMgr.applyIlluminationSchemeAllPoints(&(m_illuminationSchemes.anyCommand()));
+		}
+	);
 }
 
 void HeadSensor::setDefaultPinout(Pinout& pinout)

@@ -188,45 +188,6 @@ Result RCSPAggregator::parseSring(const char* key, const char* value)
 	return Result();
 }
 
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializePush(
-		uint8_t* stream,
-		OperationCode code,
-		uint16_t freeSpace,
-		uint16_t& actualSize,
-		const uint8_t* pCustomValue)
-{
-	actualSize = 0;
-	auto it = m_accessorsByOpCode.find(code);
-	if (it == m_accessorsByOpCode.end())
-	{
-		return DetailedResult<AddingResult>(INVALID_OPCODE, "Opcode not found");
-	}
-	code = RCSPCodeManipulator::makePush(code);
-	OperationSize size = 0;
-	if (!it->second->isReadable())
-		return DetailedResult<AddingResult>(NOT_READABLE, "Object not readable");
-
-	size = it->second->getSize();
-	uint16_t packageSize = size + sizeof(OperationSize) + sizeof(OperationCode);
-	if (freeSpace < packageSize)
-	{
-		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
-	}
-	memcpy(stream, &size, sizeof(OperationSize));
-	stream += sizeof(OperationSize);
-	memcpy(stream, &code, sizeof(OperationCode));
-	stream += sizeof(OperationCode);
-	if (pCustomValue == nullptr)
-	{
-		it->second->serialize(stream);
-	} else {
-		memcpy(stream, pCustomValue, size);
-	}
-
-	actualSize = sizeof(OperationSize) + sizeof(OperationCode) + size;
-	return DetailedResult<AddingResult>(OK);
-}
-
 RCSPAggregator::ResultType RCSPAggregator::serializePush(
 	OperationCode code,
 	Buffer& target,
@@ -258,22 +219,6 @@ RCSPAggregator::ResultType RCSPAggregator::serializePush(
 	return DetailedResult<AddingResult>(OK);
 }
 
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializePull(uint8_t* stream, OperationCode variableCode, uint16_t freeSpace, uint16_t& actualSize)
-{
-	actualSize = 0;
-	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
-	if (packageSize > freeSpace)
-		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
-
-	variableCode = RCSPCodeManipulator::makePull(variableCode);
-	OperationSize size = 0;
-	memcpy(stream, &size, sizeof(OperationSize));
-	stream += sizeof(OperationSize);
-	memcpy(stream, &variableCode, sizeof(OperationCode));
-	actualSize = packageSize;
-	return DetailedResult<AddingResult>(OK);
-}
-
 RCSPAggregator::ResultType RCSPAggregator::serializePull(
 	OperationCode code,
 	Buffer& target
@@ -283,22 +228,6 @@ RCSPAggregator::ResultType RCSPAggregator::serializePull(
 	header.size = 0;
 	header.code = RCSPCodeManipulator::makePull(code);
 	resizeAndWriteHeader(header, target);
-	return DetailedResult<AddingResult>(OK);
-}
-
-DetailedResult<RCSPAggregator::AddingResult> RCSPAggregator::serializeCall(uint8_t* stream, OperationCode functionCode, uint16_t freeSpace, uint16_t& actualSize)
-{
-	actualSize = 0;
-	uint16_t packageSize = sizeof(OperationSize) + sizeof(OperationCode);
-	if (packageSize > freeSpace)
-		return DetailedResult<AddingResult>(NOT_ENOUGH_SPACE, "Not enough space in stream");
-
-	functionCode = RCSPCodeManipulator::makeCall(functionCode);
-	OperationSize size = 0;
-	memcpy(stream, &size, sizeof(OperationSize));
-	stream += sizeof(OperationSize);
-	memcpy(stream, &functionCode, sizeof(OperationCode));
-	actualSize = packageSize;
 	return DetailedResult<AddingResult>(OK);
 }
 

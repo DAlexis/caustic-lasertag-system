@@ -79,9 +79,7 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 	info << "Wav player initialization";
 	WavPlayer::instance().init();
 
-
 	info << "Network initialization";
-	initNetworkClient();
     static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.anyGameDevice);
     static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.smartPoint);
 

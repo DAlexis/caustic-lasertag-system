@@ -15,7 +15,6 @@ class AnyRCSPClientDeviceBase : public AnyONCDeviceBase
 protected:
 	AnyRCSPClientDeviceBase(INetworkLayer *existingNetworkLayer = nullptr);
 
-    void initNetworkClient();
     RCSPNetworkListener m_networkPackagesListener{m_aggregator};
 
 	MainStateSaver m_stateSaver;
