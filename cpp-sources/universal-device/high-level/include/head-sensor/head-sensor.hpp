@@ -56,39 +56,35 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	PlayerConfiguration playerConfig{*m_aggregator};
-	PlayerState playerState{&playerConfig, *m_aggregator};
+	PlayerConfiguration playerConfig{m_aggregator};
+	PlayerState playerState{&playerConfig, m_aggregator};
 	//DeviceParameters device;
 
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, rifleToHeadSensorHeartbeat, *m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerRespawn, m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerReset, m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, playerKill, m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, resetStats, m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, readStats, m_aggregator);
+	FUNCTION_NP(ConfigCodes::AnyDevice::Functions, HeadSensor, resetToDefaults, m_aggregator);
+	FUNCTION_NP(ConfigCodes::HeadSensor::Functions, HeadSensor, rifleToHeadSensorHeartbeat, m_aggregator);
 
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam, *m_aggregator);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, setTeam, m_aggregator);
 
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth, *m_aggregator);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, addMaxHealth, m_aggregator);
 
 	/// Feedback when player was damaged or killed
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager, *m_aggregator);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, notifyIsDamager, m_aggregator);
 
 	/// Replacement for receive shot callback
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, catchShot, *m_aggregator);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, HeadSensor, catchShot, m_aggregator);
 
 private:
 
 	constexpr static uint32_t heartbeatPeriod = 2000000;
-	//constexpr static uint32_t heartbeatPeriod = 200000;
 	constexpr static uint8_t killZonesCount = 6;
 	constexpr static uint16_t RFIDWriteBufferSize = 16;
 
 	void initSmartZones(const Pinout &pinout);
-
-	// Test functions
-	void testDie(const char*);
 
 	void dieWeapons();
 	void respawnWeapons();
@@ -98,43 +94,39 @@ private:
 
 	void sendHeartbeat(DeviceAddress target);
 
-
-	//RGBLeds m_leds{playerConfig.teamId};
-
-
 	Time m_shockDelayBegin = 0;
 	TasksPool m_tasksPool{"HStpool"};
 
 	class TeamBroadcastTester : public Broadcast::IBroadcastTester
 	{
 	public:
-		TeamBroadcastTester(const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)& pId) :
-			m_pId(&pId)
+		TeamBroadcastTester(const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)& teamId) :
+			m_teamId(teamId)
 		{}
 
 		bool isAcceptableBroadcast(const DeviceAddress& addr);
 	private:
 
-		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)* m_pId;
+		const TYPE_OF(ConfigCodes::HeadSensor::Configuration, playerId)& m_teamId;
 	};
 
+	// Work with sensors
 	std::list<IIRReceiverPhysical*> m_receiversPhysical;
 	IIRProtocolParser *m_irProtocolParser = nullptr;
 	KillZonesManager m_killZonesManager;
 	IRReceiversManager m_receiverMgr{m_killZonesManager};
 	LedVibroManager m_ledVibroMgr{m_killZonesManager};
 	IlluminationSchemesManager m_illuminationSchemes{playerConfig.teamId};
-
 	SmartSensorsManager m_smartSensorsManager{m_ledVibroMgr, m_receiverMgr};
-
 	SensorsInitializer m_sensorsInitializer{m_receiverMgr, m_ledVibroMgr, m_killZonesManager};
 
 	Interrogator m_interrogator;
 
-	WeaponsManager2 m_weaponsManager;
-	WeaponCommunicator m_weaponCommunicator{&m_weaponsManager, m_networkClient, m_networkLayer, m_aggregator};
+	// Work with weapons
+	WeaponsManager m_weaponsManager;
+	WeaponCommunicator m_weaponCommunicator{m_weaponsManager, *m_networkClientSender, m_networkLayer, m_aggregator};
 
-	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, m_networkClient};
+	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, *m_networkClientSender};
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
 	RC552Frontend m_mfrcWrapper;

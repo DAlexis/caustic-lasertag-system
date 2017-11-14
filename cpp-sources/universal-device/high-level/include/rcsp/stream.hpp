@@ -33,7 +33,7 @@
 class RCSPStream
 {
 public:
-	RCSPStream(RCSPAggregator* aggregator);
+	RCSPStream(RCSPAggregator* aggregator = nullptr);
 	void addPush(OperationCode code, const uint8_t* customValue = nullptr);
 	void addPull(OperationCode code);
 	void addCall(OperationCode code);
@@ -44,21 +44,21 @@ public:
 	}
 
 	PackageId send(
-		INetworkClient* client,
+		INetworkClientSender* client,
 		DeviceAddress target,
 		bool waitForAck = false,
 		PackageSendingDoneCallback doneCallback = nullptr,
 		PackageTimings&& timings = PackageTimings()
 	);
 
-	static PackageId remoteCall(
-			INetworkClient* client,
-			DeviceAddress target,
-			OperationCode code,
-			bool waitForAck = true,
-			PackageSendingDoneCallback callback = nullptr,
-			PackageTimings&& timings = PackageTimings()
-			)
+	static PackageId call(
+		INetworkClientSender* client,
+		DeviceAddress target,
+		OperationCode code,
+		bool waitForAck = true,
+		PackageSendingDoneCallback callback = nullptr,
+		PackageTimings&& timings = PackageTimings()
+		)
 	{
 		RCSPStream stream(nullptr);
 		stream.addCall(code);
@@ -66,30 +66,30 @@ public:
 	}
 
 	template <typename Type>
-	static PackageId remoteCall(
-			INetworkClient* client,
-			DeviceAddress target,
-			OperationCode code,
-			Type& argument,
-			bool waitForAck = true,
-			PackageSendingDoneCallback callback = nullptr,
-			PackageTimings&& timings = PackageTimings()
-			)
+	static PackageId call(
+		INetworkClientSender* client,
+		DeviceAddress target,
+		OperationCode code,
+		Type& argument,
+		bool waitForAck = true,
+		PackageSendingDoneCallback callback = nullptr,
+		PackageTimings&& timings = PackageTimings()
+		)
 	{
 		RCSPStream stream(nullptr);
 		stream.addCall(code, argument);
 		return stream.send(client, target, waitForAck, callback, std::forward<PackageTimings>(timings));
 	}
 
-	static PackageId remotePush(
-			RCSPAggregator* aggregator,
-			INetworkClient* client,
-			DeviceAddress target,
-			OperationCode code,
-			bool waitForAck = true,
-			PackageSendingDoneCallback callback = nullptr,
-			PackageTimings&& timings = PackageTimings()
-			)
+	static PackageId push(
+		RCSPAggregator* aggregator,
+		INetworkClientSender* client,
+		DeviceAddress target,
+		OperationCode code,
+		bool waitForAck = true,
+		PackageSendingDoneCallback callback = nullptr,
+		PackageTimings&& timings = PackageTimings()
+		)
 	{
 		RCSPStream stream(aggregator);
 		stream.addPush(code);
@@ -107,22 +107,21 @@ private:
 	RCSPAggregator* m_aggregator;
 };
 
-class RCSPNetworkListener : public IPackageReceiver
+class RCSPNetworkListener : public IPayloadReceiver
 {
 public:
-    RCSPNetworkListener(RCSPAggregator* aggregator = nullptr);
+    RCSPNetworkListener(RCSPAggregator& aggregator, INetworkClientSender& networkClientSender);
 
 	bool hasSender();
 	DeviceAddress sender();
 
-	void receivePackage(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) override;
-    void connectClient(INetworkClient* client) override;
+	void receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) override;
 
 private:
 	bool m_hasDeviceAddress = false;
 	DeviceAddress m_currentDeviceAddress;
-	INetworkClient* m_networkClient = nullptr;
-	RCSPAggregator* m_aggregator = nullptr;
+	INetworkClientSender& m_networkClientSender;
+	RCSPAggregator& m_aggregator;
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RCSP_STREAM_HPP_ */

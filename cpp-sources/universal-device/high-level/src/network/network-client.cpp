@@ -24,7 +24,7 @@ bool OrdinaryNetworkClient::isForMe(const DeviceAddress& addr)
 
 void OrdinaryNetworkClient::receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
 {
-	m_packageReceiver->receivePackage(sender, payload, payloadLength);
+	m_packageReceiver->receive(sender, payload, payloadLength);
 }
 
 const DeviceAddress* OrdinaryNetworkClient::mainBackAddress()
@@ -47,10 +47,9 @@ void OrdinaryNetworkClient::registerMyBroadcastTester(Broadcast::IBroadcastTeste
     m_broadcastTesters.push_back(tester);
 }
 
-void OrdinaryNetworkClient::connectPackageReceiver(IPackageReceiver* receiver)
+void OrdinaryNetworkClient::connectPayloadReceiver(IPayloadReceiver* receiver)
 {
     m_packageReceiver = receiver;
-    m_packageReceiver->connectClient(this);
 }
 
 void OrdinaryNetworkClient::setSendingToMyself(bool sendToMyself)

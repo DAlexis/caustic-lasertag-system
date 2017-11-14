@@ -7,8 +7,7 @@
 #include "dev/nrf24l01.hpp"
 
 AnyDeviceBase::AnyDeviceBase(INetworkLayer *existingNetworkLayer) :
-	m_networkLayer(existingNetworkLayer),
-	m_aggregator(new RCSPAggregator())
+	m_networkLayer(existingNetworkLayer)
 {
 	m_powerMonitor.init();
 	if (m_networkLayer == nullptr)
@@ -42,10 +41,9 @@ void AnyDeviceBase::assignExistingNetworkLayer(INetworkLayer* existingNetworkLay
 AnyONCDeviceBase::AnyONCDeviceBase(INetworkLayer *existingNetworkLayer) :
 		AnyDeviceBase(existingNetworkLayer)
 {
-	m_networkClient = new OrdinaryNetworkClient();
-	static_cast<OrdinaryNetworkClient*>(m_networkClient)->setMyAddress(deviceConfig.devAddr);
-	static_cast<OrdinaryNetworkClient*>(m_networkClient)->registerMyBroadcast(broadcast.any);
-	m_networkLayer->connectClient(m_networkClient);
+	m_onc.setMyAddress(deviceConfig.devAddr);
+	m_onc.registerMyBroadcast(broadcast.any);
+	m_networkLayer->connectClient(&m_onc);
 }
 
 ///////////////////////
@@ -53,7 +51,7 @@ AnyONCDeviceBase::AnyONCDeviceBase(INetworkLayer *existingNetworkLayer) :
 
 AnyRCSPClientDeviceBase::AnyRCSPClientDeviceBase(INetworkLayer *existingNetworkLayer) :
 	AnyONCDeviceBase(existingNetworkLayer),
-	m_stateSaver(m_aggregator)
+	m_stateSaver(&m_aggregator)
 {
-	m_networkClient->connectPackageReceiver(&m_networkPackagesListener);
+	m_networkClient->connectPayloadReceiver(&m_networkPackagesListener);
 }

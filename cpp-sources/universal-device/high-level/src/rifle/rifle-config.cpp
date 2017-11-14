@@ -5,12 +5,12 @@
 
 PlayerPartialState::PlayerPartialState(
         const DeviceAddress& headSensorAddress,
-		INetworkClient* networkClient,
+		INetworkClientSender& networkClient,
         RCSPAggregator* aggregator
         ) :
 	m_aggregator(aggregator),
 	m_headSensorAddress(&headSensorAddress),
-	m_networkClient(networkClient)
+	m_networkClientSender(networkClient)
 {
 	healthMax = 0;
 	armorMax = 0;
@@ -36,7 +36,7 @@ void PlayerPartialState::syncAll()
 	stream.addPull(ConfigCodes::HeadSensor::State::killsCount);
 	stream.addPull(ConfigCodes::HeadSensor::State::deathsCount);
 
-	stream.send(m_networkClient, *m_headSensorAddress, false);
+	stream.send(&m_networkClientSender, *m_headSensorAddress, false);
 }
 
 void PlayerPartialState::print()

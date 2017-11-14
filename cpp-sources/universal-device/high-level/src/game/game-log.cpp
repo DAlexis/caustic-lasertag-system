@@ -31,9 +31,9 @@ using namespace GameLog;
 
 const char* BaseStatsCounter::filename = "base-stat.bin";
 
-BaseStatsCounter::BaseStatsCounter(const PlayerGameId& hostPlayerId, INetworkClient* networkClient) :
+BaseStatsCounter::BaseStatsCounter(const PlayerGameId& hostPlayerId, INetworkClientSender& networkClientSender) :
 		m_hostPlayerId(hostPlayerId),
-		m_networkClient(networkClient)
+		m_networkClientSender(networkClientSender)
 {
 
 }
@@ -180,8 +180,8 @@ void BaseStatsCounter::sendNextPackage()
 	lock.unlock();
 	debug << "Sending from " << target.enemyId;
 	m_sendingState = S_WAITING_FOR_TRANSMISSIO_RESULT;
-	RCSPStream::remoteCall(
-        m_networkClient,
+	RCSPStream::call(
+        &m_networkClientSender,
 		m_statsReceiver,
 		ConfigCodes::Base::Functions::getPvPResults,
 		target,

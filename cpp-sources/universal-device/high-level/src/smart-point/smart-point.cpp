@@ -46,7 +46,7 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 	}
 
 	info << "Loading default config";
-	if (!m_aggregator->readIni("config.ini"))
+	if (!m_aggregator.readIni("config.ini"))
 	{
 		error << "Cannot read config file, so setting default values";
 		samrtPointConfig.resetToDefault();
@@ -68,7 +68,7 @@ void SmartPoint::init(const Pinout& pinout, bool isSdcardOk)
 	m_irPhysicalReceiver->init();
 	m_irPhysicalReceiver->setEnabled(true);
 
-	m_irPresentationReceiver = new IRPresentationReceiverMT2(*m_aggregator);
+	m_irPresentationReceiver = new IRPresentationReceiverMT2(m_aggregator);
 	m_irPresentationReceiver->setPhysicalReceiver(m_irPhysicalReceiver);
 	m_irPresentationReceiver->init();
 

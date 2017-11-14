@@ -23,7 +23,7 @@ const DeviceAddress* NetworkClientMock::mainBackAddress()
 {
 }
 
-void NetworkClientMock::connectPackageReceiver(IPackageReceiver* receiver)
+void NetworkClientMock::connectPayloadReceiver(IPayloadReceiver* receiver)
 {
 }
 

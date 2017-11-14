@@ -93,7 +93,7 @@ public:
 	NetworkLayer();
 	~NetworkLayer(); //< Only for future purpose
 	void start(IRadioPhysicalDevice* rfPhysicalDevice) override;
-	void connectClient(INetworkClient* client) override;
+	void connectClient(INetworkClientReceiver* client) override;
 
 	void setRadioReinitCallback(RadioReinitCallback callback) override;
 
@@ -105,7 +105,7 @@ public:
         bool waitForAck = false,
         PackageSendingDoneCallback doneCallback = nullptr,
         PackageTimings timings = PackageTimings(),
-        INetworkClient* doNotReceiveBy = nullptr
+        INetworkClientReceiver* doNotReceiveBy = nullptr
     ) override;
 
     uint16_t payloadSize() override;
@@ -155,7 +155,7 @@ private:
 
 	void interrogate();
 	uint16_t generatePackageId();
-	INetworkClient* findClient(const DeviceAddress& target);
+	INetworkClientReceiver* findClient(const DeviceAddress& target);
 	void TXDoneCallback();
 	void RXCallback(uint8_t channel, uint8_t* data);
 	void sendNext();
@@ -191,7 +191,7 @@ private:
 	std::set<DeviceAddress> m_broadcasts;
 	std::list<Broadcast::IBroadcastTester*> m_broadcastTesters;
 
-	std::list<INetworkClient*> m_clients;
+	std::list<INetworkClientReceiver*> m_clients;
 
 	TaskCycled m_modemTask{std::bind(&NetworkLayer::interrogate, this)};
 

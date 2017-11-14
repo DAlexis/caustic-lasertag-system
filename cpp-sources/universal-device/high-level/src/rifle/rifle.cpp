@@ -103,7 +103,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	WavPlayer::instance().init();
 
 	info << "Loading default config";
-	m_aggregator->readIni("config.ini");
+	m_aggregator.readIni("config.ini");
 
 	info << "Restoring state";
 	m_stateSaver.setFilename("state-save");
@@ -237,7 +237,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
 	m_irPhysicalTransmitter->setPower(config.outputPower);
 	m_irPhysicalTransmitter->init(pinout);
 
-	m_irPresentationTransmitter = new IRPresentationTransmitterMT2(*m_aggregator);
+	m_irPresentationTransmitter = new IRPresentationTransmitterMT2(m_aggregator);
 	m_irPresentationTransmitter->setPhysicalTransmitter(m_irPhysicalTransmitter);
 	m_irPresentationTransmitter->init();
 
@@ -282,7 +282,7 @@ void Rifle::init(const Pinout& pinout, bool isSdcardOk)
         if (pinoutRes.details == "lcd5110")
         {
             info << "Creating lcd 5110 display controller";
-            m_display = new RifleLCD5110Display{*m_aggregator};
+            m_display = new RifleLCD5110Display(m_aggregator);
         } else if (pinoutRes.details == "ssd1306")
         {
             info << "Creating ssd1306 display controller";
@@ -454,7 +454,7 @@ void Rifle::makeShot(bool isFirst)
 
 void Rifle::prepareAndSendShotMsg()
 {
-	RCSPStream stream(m_aggregator);
+	RCSPStream stream(&m_aggregator);
 	ShotMessage msg;
 	msg.damage = config.damageMin;
 	msg.playerId = rifleOwner.playerId;
@@ -758,13 +758,9 @@ void Rifle::cardOperationDoneCallback(RifleRFIDController::Mode mode)
 
 void Rifle::sendHeartbeatToHS()
 {
-	RCSPStream stream(m_aggregator);
-
-	// @todo use RemoteCall
-	stream.addCall(ConfigCodes::HeadSensor::Functions::rifleToHeadSensorHeartbeat);
-	stream.send(
-			m_networkClient,
+	RCSPStream::call(m_networkClientSender,
 			config.headSensorAddr,
+			ConfigCodes::HeadSensor::Functions::rifleToHeadSensorHeartbeat,
 			false,
 			nullptr,
 			std::forward<PackageTimings>(riflePackageTimings.heartbeat)

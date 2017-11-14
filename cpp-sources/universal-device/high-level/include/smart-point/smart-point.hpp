@@ -46,18 +46,18 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	SmartPointConfig samrtPointConfig{*m_aggregator};
-	SmartPointState state{samrtPointConfig, *m_aggregator};
-	SmartPointUI ui{state, *m_aggregator};
+	SmartPointConfig samrtPointConfig{m_aggregator};
+	SmartPointState state{samrtPointConfig, m_aggregator};
+	SmartPointUI ui{state, m_aggregator};
 
-	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, SmartPoint, catchShot, *m_aggregator);
+	FUNCTION_1P(ConfigCodes::HeadSensor::Functions, SmartPoint, catchShot, m_aggregator);
 
 private:
 	void initSounds();
 
 	TasksPool m_tasksPool{"SmPntPl"};
 	SoundPlayer m_systemReadySound;
-	SmartPointUI m_ui{state, *m_aggregator}; /// @todo: WTF, two SmartPointUIs in class?
+	SmartPointUI m_ui{state, m_aggregator}; /// @todo: WTF, two SmartPointUIs in class?
 
 	IIRPhysicalReceiver* m_irPhysicalReceiver = nullptr;
 	IIRPresentationReceiver* m_irPresentationReceiver = nullptr;

@@ -42,7 +42,7 @@ public:
 
 extern BluetoothBridgePackageTimings bluetoothBridgePackageTimings;
 
-class BluetoothBridge : public AnyONCDeviceBase, public IPackageReceiver
+class BluetoothBridge : public AnyONCDeviceBase, public IPayloadReceiver
 {
 public:
 	BluetoothBridge(INetworkLayer *existingNetworkLayer = nullptr);
@@ -51,13 +51,12 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	BluetoothBridgeConfiguration config{*m_aggregator};
+	BluetoothBridgeConfiguration config{m_aggregator};
 
 private:
 	constexpr static uint16_t queuesSizeMax = 30;
 
-	void receivePackage(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) override;
-    void connectClient(INetworkClient* client) override;
+	void receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) override;
 
 	void configureBluetooth();
 	void receiveNetworkPackage(const DeviceAddress sender, uint8_t* payload, uint16_t payloadLength);

@@ -16,7 +16,7 @@ class NetworkLayerMock : public INetworkLayer
 {
 public:
 	void start(IRadioPhysicalDevice* rfPhysicalDevice) override;
-	void connectClient(INetworkClient* client) override;
+	void connectClient(INetworkClientReceiver* client) override;
 
 	void setRadioReinitCallback(RadioReinitCallback callback) override;
 
@@ -28,7 +28,7 @@ public:
 		bool waitForAck = false,
 		PackageSendingDoneCallback doneCallback = nullptr,
 		PackageTimings timings = PackageTimings(),
-		INetworkClient* doNotReceiveBy = nullptr
+		INetworkClientReceiver* doNotReceiveBy = nullptr
 	) override;
 
 	uint16_t payloadSize() override;

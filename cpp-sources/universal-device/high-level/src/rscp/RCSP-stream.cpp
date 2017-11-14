@@ -33,6 +33,11 @@ RCSPStream::RCSPStream(RCSPAggregator* aggregator) :
 
 void RCSPStream::addPush(OperationCode code, const uint8_t* customValue)
 {
+	if (m_aggregator == nullptr)
+	{
+		error << "RCSPStream cannot push with m_aggregator == nullptr";
+		return;
+	}
 	m_aggregator->serializePush(code, m_buffer, customValue);
 }
 
@@ -47,7 +52,7 @@ void RCSPStream::addCall(OperationCode code)
 }
 
 PackageId RCSPStream::send(
-		INetworkClient* client,
+		INetworkClientSender* client,
 		DeviceAddress target,
 		bool waitForAck,
 		PackageSendingDoneCallback doneCallback,
@@ -95,8 +100,9 @@ Result RCSPStream::writeToFile(FILE* file)
 //////////////////////////////
 // RCSPNetworkListener
 
-RCSPNetworkListener::RCSPNetworkListener(RCSPAggregator* aggregator) :
-        m_aggregator(aggregator)
+RCSPNetworkListener::RCSPNetworkListener(RCSPAggregator& aggregator, INetworkClientSender& networkClientSender) :
+        m_aggregator(aggregator),
+		m_networkClientSender(networkClientSender)
 {
 
 }
@@ -111,26 +117,15 @@ DeviceAddress RCSPNetworkListener::sender()
 	return m_currentDeviceAddress;
 }
 
-void RCSPNetworkListener::receivePackage(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
+void RCSPNetworkListener::receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
 {
-    if (m_networkClient == nullptr)
-    {
-        error << "Network client was not connected to package receiver! Cannot dispatch stream now";
-        return;
-    }
-    RCSPStream answerStream(m_aggregator);
+    RCSPStream answerStream(&m_aggregator);
     m_currentDeviceAddress = sender;
     m_hasDeviceAddress = true;
-    m_aggregator->dispatchStreamNew(payload, payloadLength, &(answerStream.buffer()));
+    m_aggregator.dispatchStreamNew(payload, payloadLength, &(answerStream.buffer()));
     m_hasDeviceAddress = false;
     if (!answerStream.buffer().empty())
     {
-        answerStream.send(m_networkClient, sender, true);
+        answerStream.send(&m_networkClientSender, sender, true);
     }
 }
-
-void RCSPNetworkListener::connectClient(INetworkClient* client)
-{
-    m_networkClient = client;
-}
-

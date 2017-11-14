@@ -12,7 +12,7 @@ void NetworkLayerMock::start(IRadioPhysicalDevice* rfPhysicalDevice)
 {
 }
 
-void NetworkLayerMock::connectClient(INetworkClient* client)
+void NetworkLayerMock::connectClient(INetworkClientReceiver* client)
 {
 }
 
@@ -30,7 +30,7 @@ PackageId NetworkLayerMock::send(
 	bool waitForAck,
 	PackageSendingDoneCallback doneCallback,
 	PackageTimings timings,
-	INetworkClient* doNotReceiveBy
+	INetworkClientReceiver* doNotReceiveBy
 )
 {
 	m_sendedBuffer.insert(m_sendedBuffer.end(), data, data+size);

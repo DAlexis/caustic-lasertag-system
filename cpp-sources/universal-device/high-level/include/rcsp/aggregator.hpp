@@ -98,13 +98,6 @@
     SelfSerializingParameterAccessor<NameSpace::name##Type> name##Accessor \
         {NameSpace::name, STRINGIFICATE(name), &name, restorable, aggregator}
 
-
-/*
-/// Create variable in class and connect in to configs aggregator with custom test name
-#define PARAMETER_S(NameSpace, Type, name, textName) \
-    Type name; \
-    DefaultParameterAccessor<Type> name##Accessor {NameSpace::name, textName, &name}
-*/
 /// Create function in class with 1 parameter and connect it to configs aggregator
 #define FUNCTION_1P(NameSpace, ClassName, functionName, aggregator) \
     void functionName(NameSpace::functionName##Arg1Type argument); \
@@ -117,9 +110,6 @@
     void functionName(); \
     DefaultFunctionAccessor<> functionName##Accessor {NameSpace::functionName, STRINGIFICATE(functionName), \
         std::bind(&ClassName::functionName, this), aggregator}
-
-
-
 
 /// Any kind of object that can read data from stream and write data to stream
 class IOperationAccessor

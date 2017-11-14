@@ -40,11 +40,11 @@ public:
 protected:
 
     INetworkLayer *m_networkLayer = nullptr;
-    RCSPAggregator* m_aggregator;
-    PowerMonitor m_powerMonitor{*m_aggregator};
+    RCSPAggregator m_aggregator;
+    PowerMonitor m_powerMonitor{m_aggregator};
 
 public:
-    DeviceConfiguration deviceConfig{*m_aggregator};
+    DeviceConfiguration deviceConfig{m_aggregator};
 };
 
 

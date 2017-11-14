@@ -56,28 +56,28 @@ public:
 	void setDefaultPinout(Pinout& pinout) override;
 	bool checkPinout(const Pinout& pinout) override;
 
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset, *m_aggregator);    ///< Make rifle absolutely new
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn, *m_aggregator);  ///< Do all things than needed on respawn (+play sound)
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie, *m_aggregator);      ///< Say to rifle that player was killed
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOn, m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleTurnOff, m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleReset, m_aggregator);    ///< Make rifle absolutely new
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRespawn, m_aggregator);  ///< Do all things than needed on respawn (+play sound)
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleDie, m_aggregator);      ///< Say to rifle that player was killed
 
 	/// Heartbeat head sensor -> rifle
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramHSAddr, *m_aggregator);
-	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramServiceCard, *m_aggregator);
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, headSensorToRifleHeartbeat, m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleWound, m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramHSAddr, m_aggregator);
+	FUNCTION_NP(ConfigCodes::Rifle::Functions, Rifle, rifleRFIDProgramServiceCard, m_aggregator);
 
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged, *m_aggregator);      ///< Play enemy damaged sound
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock, *m_aggregator);
-	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS, *m_aggregator);
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, riflePlayEnemyDamaged, m_aggregator);      ///< Play enemy damaged sound
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleShock, m_aggregator);
+	FUNCTION_1P(ConfigCodes::Rifle::Functions, Rifle, rifleChangeHS, m_aggregator);
 
-	RifleConfiguration config{*m_aggregator};
-	RifleOwnerConfiguration rifleOwner{*m_aggregator};
-	RifleState state{&config, *m_aggregator};
+	RifleConfiguration config{m_aggregator};
+	RifleOwnerConfiguration rifleOwner{m_aggregator};
+	RifleState state{&config, m_aggregator};
 	//DeviceParameters device;
 
-	PlayerPartialState playerState{config.headSensorAddr, m_networkClient, m_aggregator};
+	PlayerPartialState playerState{config.headSensorAddr, *m_networkClientSender, &m_aggregator};
 
 private:
 
@@ -191,7 +191,7 @@ private:
 	RifleDisplayBase* m_display = nullptr;
 
 	RC552Frontend m_mfrcWrapper;
-	RifleRFIDController m_rfidController{m_mfrcWrapper, *m_aggregator};
+	RifleRFIDController m_rfidController{m_mfrcWrapper, m_aggregator};
 };
 
 #endif /* LAZERTAG_RIFLE_INCLUDE_LOGIC_RIFLE_HPP_ */

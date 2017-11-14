@@ -41,7 +41,7 @@ namespace GameLog
 	class BaseStatsCounter : public IAnyStateSaver
 	{
 	public:
-		BaseStatsCounter(const PlayerGameId& hostPlayerId, INetworkClient* networkClient);
+		BaseStatsCounter(const PlayerGameId& hostPlayerId, INetworkClientSender& networkClientSender);
 		void registerDamage(PlayerGameId player, uint16_t damage);
 		void registerHit(PlayerGameId player);
 		void registerKill(PlayerGameId player);
@@ -85,7 +85,7 @@ namespace GameLog
 		Time m_waitingBeginned = 0;
 
 		const PlayerGameId& m_hostPlayerId;
-        INetworkClient* m_networkClient = nullptr;
+        INetworkClientSender& m_networkClientSender;
 	};
 
 	struct Event

@@ -11,14 +11,14 @@
 #include "network/network-client-interface.hpp"
 #include "core/buffer.hpp"
 
-class NetworkClientMock : public INetworkClient
+class NetworkClientMock : public INetworkClientReceiver
 {
 public:
     void connectNetworkLayer(INetworkLayer* nl) override;
     bool isForMe(const DeviceAddress& addr) override;
     void receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) override;
     const DeviceAddress* mainBackAddress() override;
-    void connectPackageReceiver(IPackageReceiver* receiver) override;
+    void connectPayloadReceiver(IPayloadReceiver* receiver) override;
 
     PackageId send(
         DeviceAddress target,
@@ -34,7 +34,7 @@ public:
 private:
     bool isMyBroadcast(const DeviceAddress& addr);
     INetworkLayer* m_nl = nullptr;
-    IPackageReceiver* m_packageReceiver = nullptr;
+    IPayloadReceiver* m_packageReceiver = nullptr;
     bool m_sendToMyself = false;
 
     const DeviceAddress* m_address = nullptr;

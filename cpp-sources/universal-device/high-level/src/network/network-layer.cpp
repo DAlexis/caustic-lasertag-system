@@ -67,7 +67,7 @@ void NetworkLayer::start(IRadioPhysicalDevice* rfPhysicalDevice)
 	m_modemTask.run(0, 0, 0);
 }
 
-void NetworkLayer::connectClient(INetworkClient* client)
+void NetworkLayer::connectClient(INetworkClientReceiver* client)
 {
     client->connectNetworkLayer(this);
     m_clients.push_back(client);
@@ -88,7 +88,7 @@ void NetworkLayer::enableDebug(bool debug)
 	m_debug = debug;
 }
 
-INetworkClient* NetworkLayer::findClient(const DeviceAddress& target)
+INetworkClientReceiver* NetworkLayer::findClient(const DeviceAddress& target)
 {
     for (auto &it : m_clients)
     {
@@ -116,7 +116,7 @@ PackageId NetworkLayer::send(
         bool waitForAck,
         PackageSendingDoneCallback doneCallback,
         PackageTimings timings,
-        INetworkClient* doNotReceiveBy
+        INetworkClientReceiver* doNotReceiveBy
     )
 {
     m_stager.stage("send()");
@@ -131,7 +131,7 @@ PackageId NetworkLayer::send(
         return 0;
     }
     // Looking for receiver on local host
-    INetworkClient* localReceiverClient = findClient(target);
+    INetworkClientReceiver* localReceiverClient = findClient(target);
     if (localReceiverClient && localReceiverClient != doNotReceiveBy)
     {
     	if (radio.isEnabled())
@@ -220,7 +220,7 @@ void NetworkLayer::RXCallback(uint8_t channel, uint8_t* data)
 	// Skipping packages for other devices
 
 	// New approach
-	INetworkClient* receiverClient = findClient(received.target);
+	INetworkClientReceiver* receiverClient = findClient(received.target);
 	if (receiverClient == nullptr)
 	    return; // Not for me.
 

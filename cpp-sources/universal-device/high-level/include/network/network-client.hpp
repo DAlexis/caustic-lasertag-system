@@ -13,14 +13,14 @@
 #include <set>
 #include <list>
 
-class OrdinaryNetworkClient : public INetworkClient
+class OrdinaryNetworkClient : public INetworkClientReceiver, public INetworkClientSender
 {
 public:
     void connectNetworkLayer(INetworkLayer* nl) override;
     bool isForMe(const DeviceAddress& addr) override;
     void receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength) override;
     const DeviceAddress* mainBackAddress() override;
-    void connectPackageReceiver(IPackageReceiver* receiver) override;
+    void connectPayloadReceiver(IPayloadReceiver* receiver) override;
 
     void setMyAddress(const DeviceAddress& address);
     void registerMyBroadcast(const DeviceAddress& address);
@@ -42,7 +42,7 @@ public:
 private:
     bool isMyBroadcast(const DeviceAddress& addr);
     INetworkLayer* m_nl = nullptr;
-    IPackageReceiver* m_packageReceiver = nullptr;
+    IPayloadReceiver* m_packageReceiver = nullptr;
     bool m_sendToMyself = false;
 
     const DeviceAddress* m_address = nullptr;

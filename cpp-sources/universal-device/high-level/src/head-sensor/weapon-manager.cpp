@@ -24,7 +24,7 @@
 
 #include "head-sensor/weapon-manager.hpp"
 
-void WeaponsManager2::updateWeapon(DeviceAddress addr)
+void WeaponsManager::updateWeapon(DeviceAddress addr)
 {
 	Time now = systemClock->getTime();
 	auto it = m_weapons.find(addr);
@@ -39,7 +39,7 @@ void WeaponsManager2::updateWeapon(DeviceAddress addr)
 	}
 }
 
-void WeaponsManager2::applyToAny(WeaponVisitor visitor) const
+void WeaponsManager::applyToAny(WeaponVisitor visitor) const
 {
 	for (auto it=m_weapons.begin(); it!=m_weapons.end(); ++it)
 	{
@@ -47,13 +47,13 @@ void WeaponsManager2::applyToAny(WeaponVisitor visitor) const
 	}
 }
 
-void WeaponsManager2::applyToOne(WeaponVisitor visitor) const
+void WeaponsManager::applyToOne(WeaponVisitor visitor) const
 {
 	if (!m_weapons.empty())
 		visitor(m_weapons.begin()->first);
 }
 
-void WeaponsManager2::interrogate()
+void WeaponsManager::interrogate()
 {
 	Time now = systemClock->getTime();
 	for (auto it=m_weapons.begin(); it!=m_weapons.end(); ++it)

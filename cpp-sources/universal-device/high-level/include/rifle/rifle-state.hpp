@@ -64,7 +64,7 @@ class PlayerPartialState
 public:
 	PlayerPartialState(
 	        const DeviceAddress& headSensorAddress,
-	        INetworkClient* networkClient,
+	        INetworkClientSender& networkClient,
 	        RCSPAggregator* aggregator
 	        );
 	void syncAll();
@@ -88,7 +88,7 @@ public:
 
 private:
 	const DeviceAddress* m_headSensorAddress;
-	INetworkClient* m_networkClient;
+	INetworkClientSender& m_networkClientSender;
 };
 
 #endif /* UNIVERSAL_DEVICE_HIGH_LEVEL_INCLUDE_RIFLE_RIFLE_STATE_HPP_ */

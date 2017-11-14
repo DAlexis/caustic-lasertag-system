@@ -53,7 +53,7 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
 
     if (isSdcardOk)
     {
-        if (!m_aggregator->readIni("bb-config.ini"))
+        if (!m_aggregator.readIni("bb-config.ini"))
         {
             error << "Cannot read config file, so setting default values";
             config.setDefault();
@@ -62,7 +62,7 @@ void BluetoothBridge::initAsSecondaryDevice(const Pinout& pinout, bool isSdcardO
         warning << "Bluetooth bridge operate without sd-card, it will use default settings";
     }
 
-    m_networkClient->connectPackageReceiver(this);
+    m_networkClient->connectPayloadReceiver(this);
 
     /*
     m_workerToNetwork.setStackSize(512);
@@ -132,7 +132,7 @@ void BluetoothBridge::configureBluetooth()
 	m_bluetoothPort->init(HC05Configurator::uartTargetSpeed);
 }
 
-void BluetoothBridge::receivePackage(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
+void BluetoothBridge::receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
 {
 	m_bbStager.stage("receivePackage");
     debug << "Processing incoming network package";
@@ -155,11 +155,6 @@ void BluetoothBridge::receivePackage(DeviceAddress sender, const uint8_t* payloa
 	//delete msg;
 
 
-}
-
-void BluetoothBridge::connectClient(INetworkClient* client)
-{
-    UNUSED_ARG(client);
 }
 
 void BluetoothBridge::receiveBluetoothOneByteISR(uint8_t byte)
@@ -217,7 +212,7 @@ void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, u
 	if (Broadcast::isBroadcast(addr))
 	{
 		// We need special timings for broadcasts
-	    m_networkClient->send(
+	    m_networkClientSender->send(
 	    		addr,
                 payload,
 				size,
@@ -227,7 +222,7 @@ void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, u
         );
 	} else {
 	    // Not broadcast packages are with default timings
-	    m_networkClient->send(
+		m_networkClientSender->send(
 	    		addr,
 				payload,
 				size,

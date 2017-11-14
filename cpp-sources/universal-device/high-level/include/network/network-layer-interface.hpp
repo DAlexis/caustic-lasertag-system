@@ -12,7 +12,7 @@
 #include "network/network-base-types.hpp"
 #include "network/broadcast.hpp"
 
-class INetworkClient;
+class INetworkClientReceiver;
 
 class INetworkLayer
 {
@@ -20,7 +20,7 @@ public:
 	using RadioReinitCallback = std::function<void(IRadioPhysicalDevice* rfPhysicalDevice)>;
 	virtual ~INetworkLayer() {}
 	virtual void start(IRadioPhysicalDevice* rfPhysicalDevice) = 0;
-	virtual void connectClient(INetworkClient* client) = 0;
+	virtual void connectClient(INetworkClientReceiver* client) = 0;
 
 	virtual void setRadioReinitCallback(RadioReinitCallback callback) = 0;
 
@@ -43,7 +43,7 @@ public:
 		bool waitForAck = false,
 		PackageSendingDoneCallback doneCallback = nullptr,
 		PackageTimings timings = PackageTimings(),
-		INetworkClient* doNotReceiveBy = nullptr
+		INetworkClientReceiver* doNotReceiveBy = nullptr
 	) = 0;
 
 	virtual uint16_t payloadSize() = 0;

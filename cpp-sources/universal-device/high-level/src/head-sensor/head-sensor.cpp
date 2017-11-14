@@ -58,7 +58,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	//debug.enable();
 
 	info << "Parsing config file";
-	if (!m_aggregator->readIni("config.ini"))
+	if (!m_aggregator.readIni("config.ini"))
 	{
 		error << "Cannot read config file, so setting default values";
 		playerConfig.setDefault();
@@ -114,8 +114,8 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	}
 
 	info << "Configuring sensors";
-	m_receiverMgr.connectRCSPAggregator(*m_aggregator);
-	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(*m_aggregator, m_illuminationSchemes);
+	m_receiverMgr.connectRCSPAggregator(m_aggregator);
+	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(m_aggregator, m_illuminationSchemes);
 	m_receiverMgr.setParser(m_irProtocolParser);
 
 	m_sensorsInitializer.read("sensors.ini");
@@ -376,8 +376,8 @@ void HeadSensor::notifyDamager(PlayerGameId damager, uint8_t damagerTeam, uint8_
 	notification.state = state;
 	notification.target = playerConfig.playerId;
 	info << "Notifying damager";
-	RCSPStream::remoteCall(
-	        m_networkClient,
+	RCSPStream::call(
+	        m_networkClientSender,
 			broadcast.headSensors,
 			ConfigCodes::HeadSensor::Functions::notifyIsDamager,
 			notification,
@@ -440,24 +440,14 @@ bool HeadSensor::checkPinout(const Pinout& pinout)
 // HeadSensor::TeamBroadcastTester
 bool HeadSensor::TeamBroadcastTester::isAcceptableBroadcast(const DeviceAddress& addr)
 {
-	if (addr == broadcast.headSensorsRed && *m_pId == 0)
+	if (addr == broadcast.headSensorsRed && m_teamId == 0)
 		return true;
-	if (addr == broadcast.headSensorsBlue && *m_pId == 1)
+	if (addr == broadcast.headSensorsBlue && m_teamId == 1)
 		return true;
-	if (addr == broadcast.headSensorsYellow && *m_pId == 2)
+	if (addr == broadcast.headSensorsYellow && m_teamId == 2)
 		return true;
-	if (addr == broadcast.headSensorsGreen && *m_pId == 3)
+	if (addr == broadcast.headSensorsGreen && m_teamId == 3)
 		return true;
 	return false;
 }
-
-
-/////////////////////
-// Test functions
-void HeadSensor::testDie(const char*)
-{
-	playerState.healthCurrent = 0;
-	catchShot(ShotMessage());
-}
-
 

@@ -32,7 +32,7 @@
 
 #include <functional>
 
-class WeaponsManager2 : public IInterrogatable
+class WeaponsManager : public IInterrogatable
 {
 public:
 	using WeaponVisitor = std::function<void(DeviceAddress)>;
