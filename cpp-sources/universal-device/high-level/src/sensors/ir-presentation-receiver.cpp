@@ -25,14 +25,10 @@
 #include "rcsp/operation-codes.hpp"
 #include "core/logging.hpp"
 
-IRReceiversManager::IRReceiversManager(KillZonesManager& mgr) :
+IRReceiversManager::IRReceiversManager(KillZonesManager& mgr, RCSPAggregator& aggregator) :
+	m_rcspAggregator(aggregator),
 	m_killZonesManager(mgr)
 {
-}
-
-void IRReceiversManager::connectRCSPAggregator(RCSPAggregator& aggregator)
-{
-	m_rcspAggregator = &aggregator;
 }
 
 void IRReceiversManager::setParser(IIRProtocolParser* parser)
@@ -133,7 +129,7 @@ void IRReceiversManager::checkTimeout()
 				m_currentCommand();
 		} else if (m_state == State::hasShot)
 		{
-			m_rcspAggregator->doOperation(ConfigCodes::HeadSensor::Functions::catchShot, m_currentShotMessage);
+			m_rcspAggregator.doOperation(ConfigCodes::HeadSensor::Functions::catchShot, m_currentShotMessage);
 		}
 		m_state = State::empty;
 		m_activeReceivers.clear();

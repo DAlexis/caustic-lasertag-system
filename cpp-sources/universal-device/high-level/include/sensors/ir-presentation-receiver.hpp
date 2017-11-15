@@ -56,8 +56,7 @@ public:
 class IRReceiversManager : public IInterrogatable
 {
 public:
-	IRReceiversManager(KillZonesManager& mgr);
-	void connectRCSPAggregator(RCSPAggregator& aggregator);
+	IRReceiversManager(KillZonesManager& mgr, RCSPAggregator& aggregator);
 	void setParser(IIRProtocolParser* parser);
 	void addPhysicalReceiver(IIRReceiverPhysical* receiver);
 	void interrogate() override;
@@ -90,7 +89,7 @@ private:
 
 	IRProtocolParseResult m_parseRusult;
 
-	RCSPAggregator* m_rcspAggregator = nullptr;
+	RCSPAggregator& m_rcspAggregator;
 
 	KillZonesManager &m_killZonesManager;
 };

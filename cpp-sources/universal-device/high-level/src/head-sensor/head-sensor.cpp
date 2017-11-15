@@ -94,7 +94,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	);
 
 	m_tasksPool.add(
-			[this] { m_mfrcWrapper.interrogate(); },
+			[this] { m_mfrcCard.interrogate(); },
 			10000
 	);
 
@@ -114,7 +114,6 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	}
 
 	info << "Configuring sensors";
-	m_receiverMgr.connectRCSPAggregator(m_aggregator);
 	m_irProtocolParser = new IRProtocolParserMilesTag2Ex(m_aggregator, m_illuminationSchemes);
 	m_receiverMgr.setParser(m_irProtocolParser);
 
@@ -137,7 +136,7 @@ void HeadSensor::init(const Pinout &_pinout, bool isSdcardOk)
 	info << "Head sensor ready to use";
 
 
-	m_mfrcWrapper.init();
+	m_mfrcCard.init();
 	setFRIDToWriteAddr();
 
 	// Statistics dubug
@@ -412,7 +411,7 @@ void HeadSensor::setFRIDToWriteAddr()
 			buf,
 			deviceConfig.devAddr
 		);
-	m_mfrcWrapper.writeBlock(
+	m_mfrcCard.writeBlock(
 		buf.data(),
 		buf.size(),
 		[this](uint8_t* data, uint16_t size)

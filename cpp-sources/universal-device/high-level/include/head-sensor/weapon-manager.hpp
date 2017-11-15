@@ -38,6 +38,9 @@ public:
 	using WeaponVisitor = std::function<void(DeviceAddress)>;
 	constexpr static uint32_t timeout = 2000000;
 
+	/**
+	 * Update last seen time for weapon by address
+	 */
 	void updateWeapon(DeviceAddress addr);
 	void applyToAny(WeaponVisitor visitor) const;
 	void applyToOne(WeaponVisitor visitor) const;

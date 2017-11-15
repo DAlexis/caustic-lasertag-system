@@ -97,6 +97,9 @@ private:
 	Time m_shockDelayBegin = 0;
 	TasksPool m_tasksPool{"HStpool"};
 
+	/**
+	 * Checks broadcast address if it is for players team
+	 */
 	class TeamBroadcastTester : public Broadcast::IBroadcastTester
 	{
 	public:
@@ -112,24 +115,42 @@ private:
 
 	// Work with sensors
 	std::list<IIRReceiverPhysical*> m_receiversPhysical;
+
+	/// Object that only parse IR protocol
 	IIRProtocolParser *m_irProtocolParser = nullptr;
+
+	/// Manage kill zones ids and damage coefficients, no direct work with sensors
 	KillZonesManager m_killZonesManager;
-	IRReceiversManager m_receiverMgr{m_killZonesManager};
+
+	/// Manage physical receivers, accumulate commands and damage and uses protocol parser to parse message
+	IRReceiversManager m_receiverMgr{m_killZonesManager, m_aggregator};
+
+	/// Manage all illumination points
 	LedVibroManager m_ledVibroMgr{m_killZonesManager};
+
+	/// Generates illumination schemes for illumination points
 	IlluminationSchemesManager m_illuminationSchemes{playerConfig.teamId};
+
+	/// Works with smart sensors: discovers it, registers in m_ledVibroMgr and m_receiverMgr
 	SmartSensorsManager m_smartSensorsManager{m_ledVibroMgr, m_receiverMgr};
+
+	/// Reads configuration from file and set up zones, built-in sensors and illumination
 	SensorsInitializer m_sensorsInitializer{m_receiverMgr, m_ledVibroMgr, m_killZonesManager};
 
 	Interrogator m_interrogator;
 
-	// Work with weapons
+	/// Stores list of weapon and operates wit it
 	WeaponsManager m_weaponsManager;
+
+	/// Manage communications with weapon
 	WeaponCommunicator m_weaponCommunicator{m_weaponsManager, *m_networkClientSender, m_networkLayer, m_aggregator};
 
+	/// Stores stats for this player and answer to stats requests
 	GameLog::BaseStatsCounter m_statsCounter{playerConfig.playerId, *m_networkClientSender};
 	Stager m_taskPoolStager{"HS task pool"};
 	Stager m_callbackStager{"HS callbacks"};
-	RC552Frontend m_mfrcWrapper;
+
+	RC552Frontend m_mfrcCard;
 
 	IAnyDevice* m_bluetoothBridge = nullptr;
 };
