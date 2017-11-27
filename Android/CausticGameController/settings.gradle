@@ -1,0 +1,1 @@
+include ':app', ':playerapp', ':rcspcore', ':rcspandroid'
