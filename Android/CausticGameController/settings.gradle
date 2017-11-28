@@ -1,1 +1,1 @@
-include ':app', ':playerapp', ':rcspcore', ':rcspandroid'
+include ':controllerapp', ':playerapp', ':rcspcore', ':rcspandroid'

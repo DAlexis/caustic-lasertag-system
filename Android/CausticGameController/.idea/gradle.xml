@@ -8,7 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/controllerapp" />
             <option value="$PROJECT_DIR$/playerapp" />
             <option value="$PROJECT_DIR$/rcspandroid" />
             <option value="$PROJECT_DIR$/rcspcore" />

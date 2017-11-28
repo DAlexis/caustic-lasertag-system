@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">rcspandroid</string>
+    <string name="not_equal_values">≠</string>
 </resources>
