@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_game_controls"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Game controls" />
+        <item
+            android:id="@+id/nav_statistics"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Statistics" />
+        <item
+            android:id="@+id/nav_config_device"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Configure game devices" />
+    </group>
+
+    <item android:title="Settings">
+        <menu>
+            <item
+                android:id="@+id/nav_bluetooth_device"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Select bluetooth device" />
+            <item
+                android:id="@+id/nav_other_settings"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="Other settings" />
+        </menu>
+    </item>
+
+</menu>

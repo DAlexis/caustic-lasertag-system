@@ -1,6 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.ltcaustic.rcspandroid">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <application>
+        <activity
+            android:label="Select bluetooth device"
+            android:name=".ActivitySelectBluetoothDevice">
+
+        </activity>
+    </application>
+
 </manifest>

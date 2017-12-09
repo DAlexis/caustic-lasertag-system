@@ -6,9 +6,7 @@ package org.ltcaustic.rcspcore;
 
 public class CausticController {
     // Public methods
-    // @todo This class should be the one singleton and all other should be inside it
-    public static CausticController getInstance() { return ourInstance; }
-    public void systemInit(BridgeDriver.IBluetoothManager bluetoothManager) {
+    public CausticController(BridgeDriver.IBluetoothManager bluetoothManager) {
         RCSP.Operations.init();
         bridgeDriver.init(bluetoothManager);
         bridgeDriver.setReceiver(communicator);
@@ -118,7 +116,6 @@ public class CausticController {
         }
     }
 
-    private static CausticController ourInstance = new CausticController();
     private BridgeDriver bridgeDriver = new BridgeDriver();
     private LTSCommunicator communicator = new LTSCommunicator(bridgeDriver);
     private DevicesManager devicesManager = new DevicesManager(bridgeDriver, communicator);

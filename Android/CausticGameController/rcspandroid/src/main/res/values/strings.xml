@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">rcspandroid</string>
     <string name="not_equal_values">≠</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

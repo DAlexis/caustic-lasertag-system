@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CausticGameController.iml" filepath="$PROJECT_DIR$/CausticGameController.iml" />
-      <module fileurl="file://$PROJECT_DIR$/controllerapp/app.iml" filepath="$PROJECT_DIR$/controllerapp/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/controllerapp/controllerapp.iml" filepath="$PROJECT_DIR$/controllerapp/controllerapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/playerapp/playerapp.iml" filepath="$PROJECT_DIR$/playerapp/playerapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/rcspandroid/rcspandroid.iml" filepath="$PROJECT_DIR$/rcspandroid/rcspandroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/rcspcore/rcspcore.iml" filepath="$PROJECT_DIR$/rcspcore/rcspcore.iml" />

@@ -1,9 +1,11 @@
 package org.ltcaustic.rcspandroid;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.ltcaustic.rcspcore.BridgeDriver;
@@ -14,11 +16,16 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
+import static android.content.Context.MODE_PRIVATE;
+
 
 /**
  * Created by alexey on 15.09.15.
  */
 public class BluetoothManager implements BridgeDriver.IBluetoothManager {
+
+    public static final String PREFERENCE_AUTOCONNECT = "bluetooth_autoconnect";
+    public static final String PREFERENCE_DEFAULT_ADDRESS = "bluetooth_default_address";
 
     public static final int BLUETOOTH_ENABLED = 0;
     public static final int BLUETOOTH_DISABLED = 1;
@@ -31,10 +38,6 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
     public static final int BT_NOT_CONNECTED = 0;
     public static final int BT_ESTABLISHING  = 1;
     public static final int BT_CONNECTED     = 2;
-
-    public static BluetoothManager getInstance() {
-        return ourInstance;
-    }
 
     public int getStatus() {
         return this.status;
@@ -63,11 +66,42 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
         return btAdapter.getBondedDevices();
     }
 
+    /**
+     * This function will proceed connection to bluetooth device if:
+     * - shared preferences tells we need it,
+     * - we are not connected yet
+     *
+     * @param activity
+     * @param connectionProcessListener New listener. Previous listener will not be restored!
+     */
+    public void doAutoconnectIfNeeded(Activity activity, ConnectionProcessListener connectionProcessListener)
+    {
+        if (CausticInitializer.getInstance().bluetooth().isConnected())
+            return;
+        SharedPreferences sharedPref = activity.getPreferences(MODE_PRIVATE);
+        boolean autoconnect = sharedPref.getBoolean(BluetoothManager.PREFERENCE_AUTOCONNECT, false);
+        String defaultDeviceAddress = sharedPref.getString(BluetoothManager.PREFERENCE_DEFAULT_ADDRESS, "");
+        if (!autoconnect || defaultDeviceAddress == "")
+            return;
+
+        // Finding name
+        String name = "";
+
+        for(BluetoothDevice device: getPairedDevicesSet()) {
+            if (device.getAddress().equals(defaultDeviceAddress))
+                name = device.getName();
+        }
+        setConnectionProcessListener(connectionProcessListener);
+        connect(defaultDeviceAddress, name);
+    }
+
     public boolean isConnected() {
         return address != "";
     }
-
-    public boolean connect(String address, String deviceName, ConnectionDoneListener listener) {
+    public void setConnectionProcessListener(ConnectionProcessListener listener) {
+        this.listener = listener;
+    }
+    public boolean connect(String address, String deviceName) {
         if (address == "")
             return false;
         if (status == BT_ESTABLISHING)
@@ -75,7 +109,8 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
         if (status == BT_CONNECTED) {
             // Check if connection is already done
             if (this.address == address) {
-                listener.onConnectionDone(true);
+                if (listener != null)
+                    listener.onConnectionDone(true);
                 return true;
             }
             disconnect();
@@ -85,11 +120,10 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
         this.deviceName = deviceName;
         this.address = address;
 
-        Thread asyncConnect = new AsyncConnect(listener);
+        Thread asyncConnect = new AsyncConnect();
         asyncConnect.start();
         return true;
     }
-
     public boolean disconnect() {
         if (!isConnected())
             return false;
@@ -124,41 +158,33 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
 
     /* Call this from the main activity to shutdown the connection */
     public void cancel() {
+        if (btSocket == null)
+            return;
         try {
             btSocket.close();
         } catch (IOException e) { }
     }
 
-    public String getDeviceName() {
+    public String getConnectedDeviceName() {
         return deviceName;
     }
+    public String getConnectedAddress() { return address; }
 
-    public interface ConnectionDoneListener {
+    public interface ConnectionProcessListener {
+        void onConnecting(final String deviceName);
         void onConnectionDone(boolean result);
     }
 
     // Private
     private class AsyncConnect extends Thread {
 
-        private final ConnectionDoneListener listener;
-
-        private class DefaultListener implements ConnectionDoneListener {
-            @Override
-            public void onConnectionDone(boolean result) {
-
-            }
-        }
-
-        public AsyncConnect(ConnectionDoneListener listener) {
-            if (listener != null)
-                this.listener = listener;
-            else
-                this.listener = new DefaultListener();
+        public AsyncConnect() {
         }
 
         @Override
         public void run() {
-
+            if (listener != null)
+                listener.onConnecting(deviceName);
             BluetoothDevice device = btAdapter.getRemoteDevice(address);
 
             // Two things are needed to make a connection:
@@ -187,12 +213,14 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
             } catch (IOException e) {
                 onConnectionClosed();
                 Log.e(TAG, "Fatal: socket creation failed: " + e.getMessage() + ".");
-                listener.onConnectionDone(false);
+                if (listener != null)
+                    listener.onConnectionDone(false);
                 return;
             } catch (Exception e1) {
                 onConnectionClosed();
                 Log.e(TAG, "Reset Failed", e1);
-                listener.onConnectionDone(false);
+                if (listener != null)
+                    listener.onConnectionDone(false);
                 return;
             }
 
@@ -210,11 +238,13 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
                 Log.e(TAG, "Error during btSocket.connect(): " + e.getMessage());
                 try {
                     btSocket.close();
-                    listener.onConnectionDone(false);
+                    if (listener != null)
+                        listener.onConnectionDone(false);
                     return;
                 } catch (IOException e2) {
                     Log.e(TAG, "Fatal: unable to close socket during connection failure" + e2.getMessage() + ".");
-                    listener.onConnectionDone(false);
+                    if (listener != null)
+                        listener.onConnectionDone(false);
                     return;
                 }
             }
@@ -222,10 +252,11 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
             // Create a data stream so we can talk to server.
             Log.d(TAG, "Creating data stream...");
 
-            mConnectedThread = new ConnectedThread(btSocket, listener);
+            mConnectedThread = new ConnectedThread(btSocket);
             mConnectedThread.start();
             status = BT_CONNECTED;
-            listener.onConnectionDone(true);
+            if (listener != null)
+                listener.onConnectionDone(true);
         }
     }
 
@@ -233,13 +264,11 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
-        private final ConnectionDoneListener listener;
 
-        public ConnectedThread(BluetoothSocket socket, ConnectionDoneListener listener) {
+        public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
-            this.listener = listener;
 
             // Get the input and output streams, using temp objects because
             // member streams are final
@@ -276,7 +305,8 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
                 } catch (IOException e) {
                     Log.d(TAG, "run died due to exception!");
                     onConnectionClosed();
-                    listener.onConnectionDone(false);
+                    if (listener != null)
+                        listener.onConnectionDone(false);
                     break;
                 }
             }
@@ -301,13 +331,12 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
         }
     }
 
-    private BluetoothManager() {
+    public BluetoothManager() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         onConnectionClosed();
     }
 
-    private void onConnectionClosed()
-    {
+    private void onConnectionClosed() {
         address = "";
         deviceName = "Bridge not connected";
         status = BT_NOT_CONNECTED;
@@ -325,6 +354,7 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
     private ConnectedThread mConnectedThread;
 
     private BridgeDriver.IBluetoothListener incomingMsgListener = null;
+    private ConnectionProcessListener listener = null;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 

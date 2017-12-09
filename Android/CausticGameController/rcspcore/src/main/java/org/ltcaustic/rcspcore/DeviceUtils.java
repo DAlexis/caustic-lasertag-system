@@ -72,6 +72,7 @@ public class DeviceUtils {
         }
     }*/
     public static boolean onSameTeam(int id1, int id2) {
+        /*
         String team1="-1";
         String team2="-2";
         Map<RCSP.DeviceAddress, CausticDevice> headSensors = getHeadSensorsMap(CausticController.getInstance().getDevicesManager().devices);
@@ -95,7 +96,7 @@ public class DeviceUtils {
         if (team1.equals(team2))
         {
             return true;
-        }
+        }*/
         return false;
     }
 }
