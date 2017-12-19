@@ -7,10 +7,12 @@
 
     <application>
         <activity
-            android:label="Select bluetooth device"
-            android:name=".ActivitySelectBluetoothDevice">
+            android:name=".ActivitySelectBluetoothDevice"
+            android:label="Select bluetooth device"></activity>
 
-        </activity>
+        <service
+            android:name=".RCSPService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

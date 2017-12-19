@@ -96,7 +96,7 @@ public class BluetoothManager implements BridgeDriver.IBluetoothManager {
     }
 
     public boolean isConnected() {
-        return address != "";
+        return status == BT_CONNECTED;
     }
     public void setConnectionProcessListener(ConnectionProcessListener listener) {
         this.listener = listener;

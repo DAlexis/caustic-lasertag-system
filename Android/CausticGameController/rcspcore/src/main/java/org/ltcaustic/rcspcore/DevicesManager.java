@@ -146,8 +146,8 @@ public class DevicesManager {
         stream.send(target);
     }
 
-    public void setDeviceListUpdatedListener(DeviceListUpdatedListener deviceListUpdatedListener) {
-        this.deviceListUpdatedListener = deviceListUpdatedListener;
+    public void subscribeDevicesListUpdated(DeviceListUpdatedListener deviceListUpdatedListener) {
+        this.deviceListUpdatedListeners.add(deviceListUpdatedListener);
     }
     /**
      * Update devices list. Handler will be called after every new discovered device
@@ -156,7 +156,7 @@ public class DevicesManager {
         RCSPStream stream = new RCSPStream(communicator);
         stream.addObjectRequest(RCSP.Operations.AnyDevice.Configuration.deviceName.getId());
         stream.addObjectRequest(RCSP.Operations.AnyDevice.Configuration.deviceType.getId());
-        //removeOutdatedDevices();
+        removeOutdatedDevices();
         stream.send(BridgeDriver.Broadcasts.anyGameDevice);
         devicesListUpdatedWaiter.touch();
         devicesListUpdatedWaiter.enableCallback(true);
@@ -169,7 +169,8 @@ public class DevicesManager {
             if (dev.getValue().isOutdated())
                 toDelete.add(dev.getKey());
         }
-        devices.remove(toDelete);
+        for (RCSP.DeviceAddress key : toDelete)
+            devices.remove(key);
     }
 
     public void devicesWatchingTaskTick() {
@@ -225,6 +226,9 @@ public class DevicesManager {
         }*/
         return false;
     }
+    public int devicesCount() {
+        return devices.size();
+    }
 
     // Public fields
     public static final int DEVICES_LIST_UPDATED = 1;
@@ -271,8 +275,8 @@ public class DevicesManager {
             @Override
             public void run() {
                 devicesListUpdatedWaiter.enableCallback(false);
-                if (deviceListUpdatedListener != null)
-                    deviceListUpdatedListener.onDevicesListUpdated();
+                for (DeviceListUpdatedListener listener : deviceListUpdatedListeners)
+                    listener.onDevicesListUpdated();
             }
         });
     }
@@ -284,7 +288,7 @@ public class DevicesManager {
     private BridgeDriver bridgeDriver;
     private static final String TAG = "CC.CausticDevManager";
     private AsyncDataPuller dataPopper = null;
-    private DeviceListUpdatedListener deviceListUpdatedListener = null;
+    private List<DeviceListUpdatedListener> deviceListUpdatedListeners = new ArrayList<>();
     private Utils.SimpleWaiter devicesListUpdatedWaiter;
     private LTSCommunicator communicator;
 }

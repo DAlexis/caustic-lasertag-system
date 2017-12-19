@@ -13,6 +13,12 @@ public class CausticController {
     }
     public SettingsEditorContext getSettingsEditorContext() { return settingsEditorContext; }
     public DevicesManager getDevicesManager() { return devicesManager; }
+
+    public DevicesListUpdater getDevicesListUpdater() {
+        if (devicesListUpdater == null)
+            devicesListUpdater = new DevicesListUpdater(devicesManager);
+        return devicesListUpdater;
+    }
     public BroadcastCalls getBroadcastCalls() { return broadcastCalls; }
     public GameStatistics getGameStatistics() { return gameStatistics; }
 
@@ -120,6 +126,7 @@ public class CausticController {
     private LTSCommunicator communicator = new LTSCommunicator(bridgeDriver);
     private DevicesManager devicesManager = new DevicesManager(bridgeDriver, communicator);
     private SettingsEditorContext settingsEditorContext = new SettingsEditorContext(devicesManager);
+    private DevicesListUpdater devicesListUpdater = null;
 
     private GameStatistics gameStatistics = new GameStatistics(devicesManager, communicator);
     private BroadcastCalls broadcastCalls = new BroadcastCalls();

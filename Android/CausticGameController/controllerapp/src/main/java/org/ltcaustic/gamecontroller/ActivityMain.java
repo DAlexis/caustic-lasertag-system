@@ -15,11 +15,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.ltcaustic.rcspandroid.BluetoothManager;
 import org.ltcaustic.rcspandroid.CausticInitializer;
 import org.ltcaustic.rcspandroid.FragmentSelectBluetoothDevice;
+import org.ltcaustic.rcspcore.DevicesManager;
 
 public class ActivityMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -29,8 +31,10 @@ public class ActivityMain extends AppCompatActivity
     FragmentGameControls fragmentGameControls;
     FragmentSelectBluetoothDevice selectBluetoothFragment;
     BtConnectingInformer btConnectingInformer = new BtConnectingInformer();
+    TextView textViewDevicesCount;
 
     Toolbar toolbar;
+    boolean isActive = false;
 
     public class SnackbarInformer
     {
@@ -125,6 +129,7 @@ public class ActivityMain extends AppCompatActivity
         si.show("Hello");*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        textViewDevicesCount = findViewById(R.id.textViewDevicesCount);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -144,6 +149,19 @@ public class ActivityMain extends AppCompatActivity
         // We use FragmentSelectBluetoothDevice's proxy to allow him redraw elements according new connection state
         selectBluetoothFragment.setConnectionProcessListener(btConnectingInformer);
         CausticInitializer.getInstance().bluetooth().doAutoconnectIfNeeded(this, btConnectingInformer);
+        CausticInitializer.getInstance().controller().getDevicesListUpdater().subscribe(new DevicesCountUpdater());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActive = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActive = false;
     }
 
     @Override
@@ -212,5 +230,16 @@ public class ActivityMain extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
+    private class DevicesCountUpdater implements DevicesManager.DeviceListUpdatedListener {
+        @Override
+        public void onDevicesListUpdated() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textViewDevicesCount.setText(Integer.toString(CausticInitializer.getInstance().controller().getDevicesManager().devicesCount()));
+                }
+            });
+        }
+    }
 
 }

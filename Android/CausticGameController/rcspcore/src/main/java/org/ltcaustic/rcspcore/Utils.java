@@ -72,4 +72,48 @@ public class Utils {
         private boolean needStopThread = false;
         private boolean callbackEnabled = false;
     }
+
+    public static class PeriodicRunner
+    {
+        PeriodicRunner(long period, Runnable runnable) {
+            this.runnable = runnable;
+            this.period = period;
+            waitingThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    threadBody();
+                }
+            });
+            waitingThread.start();
+        }
+
+        public void stopThread() {
+            needStopThread = true;
+            try {
+                waitingThread.join();
+            } catch (Exception e1) {
+            }
+        }
+
+        private void threadBody() {
+            while(true) {
+                try {
+                    Thread.sleep(period);
+                } catch (Exception e1) {
+                    return;
+                }
+
+                runnable.run();
+
+                if (needStopThread) {
+                    return;
+                }
+            }
+        }
+
+        private Runnable runnable = null;
+        private long period;
+        private Thread waitingThread = null;
+        private boolean needStopThread = false;
+    }
 }

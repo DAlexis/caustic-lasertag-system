@@ -7,7 +7,7 @@
         <item
             android:id="@+id/nav_game_controls"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Game controls" />
+            android:title="Quick game controls" />
         <item
             android:id="@+id/nav_statistics"
             android:icon="@drawable/ic_menu_gallery"
@@ -16,14 +16,14 @@
             android:id="@+id/nav_config_device"
             android:icon="@drawable/ic_menu_manage"
             android:title="Configure game devices" />
+        <item
+            android:id="@+id/nav_bluetooth_device"
+            android:icon="@drawable/ic_menu_share"
+            android:title="Select bluetooth device" />
     </group>
 
     <item android:title="Settings">
         <menu>
-            <item
-                android:id="@+id/nav_bluetooth_device"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Select bluetooth device" />
             <item
                 android:id="@+id/nav_other_settings"
                 android:icon="@drawable/ic_menu_manage"
