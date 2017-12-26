@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 import org.ltcaustic.rcspcore.CausticDevice;
 import org.ltcaustic.rcspcore.DevicesManager;
@@ -36,14 +38,5 @@ public class FragSetConfigureGameDevices {
         fragmentConfigureGameDevicesSettings = new FragmentConfigureGameDevicesSettings();
         fragmentConfigureGameDevicesSettings.setMode(mode);
 
-    }
-
-    public static class UIDevicesListElement {
-        public View convertView = null;
-        public CausticDevice dev = null;
-        UIDevicesListElement(LayoutInflater inflater, CausticDevice dev) {
-            this.convertView = inflater.inflate(org.ltcaustic.rcspandroid.R.layout.devices_list_selectable_item, null);
-            this.dev = dev;
-        }
     }
 }

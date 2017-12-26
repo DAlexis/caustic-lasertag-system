@@ -229,7 +229,7 @@ public class ActivityMain extends AppCompatActivity
         } else if (id == R.id.nav_config_players) {
             commitFragment(configPlayers.fragmentConfigureGameDevicesList, fm);
         } else if (id == R.id.nav_config_rifles) {
-            commitFragment(configPlayers.fragmentConfigureGameDevicesList, fm);
+            commitFragment(configRifles.fragmentConfigureGameDevicesList, fm);
         } else if (id == R.id.nav_bluetooth_device) {
             commitFragment(selectBluetoothFragment, fm);
         } else if (id == R.id.nav_other_settings) {
