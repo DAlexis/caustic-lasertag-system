@@ -186,7 +186,7 @@ void IRProtocolParserMilesTag2Ex::parseRCSP(IRProtocolParseResult& result, const
 	memcpy(m_bufferForArgument, stream, streamSize);
 	result.type = IRProtocolParseResult::Type::command;
 	result.commandCallback = [this, streamSize]() mutable {
-		m_rcspAggregator.dispatchStreamNew(m_bufferForArgument, streamSize);
+		m_rcspAggregator.dispatchStream(m_bufferForArgument, streamSize);
 	};
 }
 

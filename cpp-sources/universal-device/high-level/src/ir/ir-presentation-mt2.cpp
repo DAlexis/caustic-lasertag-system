@@ -340,7 +340,7 @@ void IRPresentationReceiverMT2::parseRCSP(const uint8_t* data, uint16_t size)
 	}
 	memcpy(m_group->m_bufferForArgument, stream, streamSize);
 	updateOperationCallback([this, streamSize]() mutable {
-		m_rcspAggregator.dispatchStreamNew(m_group->m_bufferForArgument, streamSize);
+		m_rcspAggregator.dispatchStream(m_group->m_bufferForArgument, streamSize);
 	});
 }
 

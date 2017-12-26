@@ -211,10 +211,8 @@ public:
 	 * @param answerStream stream to put answer for object requests
 	 * @return Count of unsupported operation found on stream
 	 */
-	uint32_t dispatchStreamNew(const uint8_t* stream, uint32_t size, Buffer* answerStream = nullptr);
-	uint32_t dispatchStreamNew(const Buffer& stream, Buffer* answerStream = nullptr);
-
-	//uint32_t dispatchStream(uint8_t* stream, uint32_t size, RCSPMultiStream* answerStream = nullptr);
+	uint32_t dispatchStream(const uint8_t* stream, uint32_t size, Buffer* answerStream = nullptr);
+	uint32_t dispatchStream(const Buffer& stream, Buffer* answerStream = nullptr);
 
 	const uint8_t* extractNextOperation(
 			const uint8_t* stream,
@@ -352,6 +350,7 @@ private:
 
 	bool dispatchOperation(const ChunkHeader* header, const uint8_t* arg, Buffer* answerStream);
 	void printWarningUnknownCode(OperationCode code);
+	void printDispatched(OperationCode code, bool putToAnswer = false);
 	/**
 	 * Resize buffer to contain package with given header and put header to buffer
 	 * @return pointer to chunk payload if header.size != 0 and pointer to probably unallocated space otherwise

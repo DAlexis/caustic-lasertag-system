@@ -2,14 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.ltcaustic.gamecontroller.FragmentConfigureGameDevices">
+    tools:context="org.ltcaustic.gamecontroller.FragmentConfigureGameDevicesSettings">
 
-    <FrameLayout
-        android:id="@+id/fragmentConfigureGameDevices"
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="100">
-
-    </FrameLayout>
+        android:text="@string/hello_blank_fragment" />
 
 </FrameLayout>

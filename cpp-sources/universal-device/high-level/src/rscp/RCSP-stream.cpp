@@ -70,7 +70,7 @@ PackageId RCSPStream::send(
 
 void RCSPStream::dispatch()
 {
-	m_aggregator->dispatchStreamNew(m_buffer.data(), m_buffer.size());
+	m_aggregator->dispatchStream(m_buffer.data(), m_buffer.size());
 }
 
 const Buffer& RCSPStream::buffer() const
@@ -122,7 +122,7 @@ void RCSPNetworkListener::receive(DeviceAddress sender, const uint8_t* payload, 
     RCSPStream answerStream(&m_aggregator);
     m_currentDeviceAddress = sender;
     m_hasDeviceAddress = true;
-    m_aggregator.dispatchStreamNew(payload, payloadLength, &(answerStream.buffer()));
+    m_aggregator.dispatchStream(payload, payloadLength, &(answerStream.buffer()));
     m_hasDeviceAddress = false;
     if (!answerStream.buffer().empty())
     {

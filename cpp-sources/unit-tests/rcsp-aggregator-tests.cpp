@@ -31,7 +31,7 @@ TEST(RCSPAggregator, Instantiation)
 	RCSPAggregator a;
 
 	Buffer buf;
-	ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
+	ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size()));
 }
 
 /**
@@ -81,7 +81,7 @@ TEST(RCSPAggregator, PushVariableTwoSides)
     frendlyFireCoeff = 0.11;
     devAddr = {5, 6, 7};
 
-    ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
+    ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size()));
     ASSERT_EQ(healthStart, 25);
     ASSERT_EQ(frendlyFireCoeff, initialFF);
     ASSERT_EQ(devAddr, origAddr);
@@ -103,7 +103,7 @@ TEST(RCSPAggregator, CallTwoSidesNoArg)
     ASSERT_NO_THROW(a.serializeCall(code, buf));
 
     ASSERT_FALSE(isSet);
-    ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
+    ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size()));
     ASSERT_TRUE(isSet);
 }
 
@@ -135,7 +135,7 @@ TEST(RCSPAggregator, CallTwoSidesOneArg)
 
     ASSERT_FALSE(isSet);
     ASSERT_FALSE(argumentCorrect);
-    ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size()));
+    ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size()));
     ASSERT_TRUE(isSet) << "Callback was not called";
     ASSERT_TRUE(argumentCorrect) << "Callback argument not correct";
 }
@@ -156,12 +156,12 @@ TEST(RCSPAggregator, PullTwoSides)
     // Now nothing changed in a and buf stores "pull" for healthStart
     healthStart = 321;
 
-    ASSERT_NO_THROW(a.dispatchStreamNew(buf.data(), buf.size(), &ansBuf));
+    ASSERT_NO_THROW(a.dispatchStream(buf.data(), buf.size(), &ansBuf));
     // Now a generated "push" for healthStart with value 321
     ASSERT_EQ(healthStart, 321);
 
     healthStart = 987;
-    ASSERT_NO_THROW(a.dispatchStreamNew(ansBuf.data(), ansBuf.size()));
+    ASSERT_NO_THROW(a.dispatchStream(ansBuf.data(), ansBuf.size()));
     // Now a dispatched ansBuf that contained push with 321 value
     // And this should be fine:
     ASSERT_EQ(healthStart, 321);
@@ -299,6 +299,37 @@ TEST_F(RCSPAggregatorBufferUtils, SplittingValid)
 	ASSERT_TRUE(RCSPAggregator::splitBuffer(buf, blockSize, testBlock));
 }
 
+TEST_F(RCSPAggregatorBufferUtils, HardcodedValid)
+{
+	// Example from real life: device name and type. Name ends with zeros
+	uint8_t hardcode[] = {
+			// First block
+			0x14, 0xd1, 0x47, 0x48, 0x65, 0x61, 0x64, 0x20, 0x73, 0x65,
+			0x6e, 0x73, 0x6f, 0x72, 0x20, 0x38, 0x37,  0x0,  0x0,  0x0,
+			 0x0,  0x0,  0x0,
+			// Second block
+			 0x2, 0xd2, 0x47,  0x2,  0x0
+	};
+	buf.resize(sizeof(hardcode));
+	memcpy(buf.data(), hardcode, sizeof(hardcode));
+
+	EXPECT_TRUE(RCSPAggregator::verifyBuffer(buf));
+
+	int blockSize = 23;
+	bool failed = false;
+	int count = 0;
+	auto testBlock = [this, blockSize, &failed, &count](const uint8_t* begin, uint16_t size)
+	{
+		failed = failed || (begin < buf.data()) || (begin > buf.data() + buf.size()) || (size > blockSize);
+		count++;
+	};
+	bool res = false;
+	ASSERT_NO_THROW(res = RCSPAggregator::splitBuffer(buf, blockSize, testBlock));
+	ASSERT_FALSE(failed) << "Some condition failed in test callback";
+	EXPECT_TRUE(res);
+	EXPECT_EQ(count, 2) << "Blocks count is incorrect";
+}
+
 /**
  * Test for buffer splitting function with valid buffer
  */
@@ -398,7 +429,7 @@ TEST(RCSPStream, Operating)
 	shockDelayInactive = 43;
 	shockDelayImmortal = 87;
 
-	ASSERT_NO_THROW(a.dispatchStreamNew(nl.buffer()));
+	ASSERT_NO_THROW(a.dispatchStream(nl.buffer()));
 	//cout << "buf = " << hexStr(nl.buffer().data(), nl.buffer().size()) << endl;
 
 	ASSERT_EQ(healthStart, 25);

@@ -44,7 +44,7 @@ void RCSPAggregator::registerAccessor(OperationCode code, const char* textName, 
 	}
 }
 
-uint32_t RCSPAggregator::dispatchStreamNew(const uint8_t* stream, uint32_t size, Buffer* answerStream)
+uint32_t RCSPAggregator::dispatchStream(const uint8_t* stream, uint32_t size, Buffer* answerStream)
 {
 	const uint8_t* position = stream;
 	uint32_t unsupported = 0;
@@ -66,9 +66,9 @@ uint32_t RCSPAggregator::dispatchStreamNew(const uint8_t* stream, uint32_t size,
 	return unsupported;
 }
 
-uint32_t RCSPAggregator::dispatchStreamNew(const Buffer& stream, Buffer* answerStream)
+uint32_t RCSPAggregator::dispatchStream(const Buffer& stream, Buffer* answerStream)
 {
-	return dispatchStreamNew(stream.data(), stream.size(), answerStream);
+	return dispatchStream(stream.data(), stream.size(), answerStream);
 }
 
 const uint8_t* RCSPAggregator::extractNextOperation(
@@ -107,6 +107,7 @@ bool RCSPAggregator::dispatchOperation(const ChunkHeader* header, const uint8_t*
 			auto it = m_accessorsByOpCode.find(parameterCode);
 			if (it != m_accessorsByOpCode.end())
 			{
+				printDispatched(header->code, true);
 				serializePush(parameterCode, *answerStream);
 				return true;
 			} else {
@@ -121,7 +122,7 @@ bool RCSPAggregator::dispatchOperation(const ChunkHeader* header, const uint8_t*
 		auto it = m_accessorsByOpCode.find(header->code);
 		if (it != m_accessorsByOpCode.end())
 		{
-			trace << "Dispatched opcode: " << header->code;
+			printDispatched(header->code);
 			if (header->size == 0)
 				it->second->deserialize(nullptr, 0);
 			else
@@ -141,6 +142,11 @@ void RCSPAggregator::printWarningUnknownCode(OperationCode code)
 	//if (code != ConfigCodes::noOperation)
 	if (code != 0)
 		warning << "Unknown request code: " << code;
+}
+
+void RCSPAggregator::printDispatched(OperationCode code, bool putToAnswer)
+{
+	debug << "Dispatched opcode: " << code << " with answer: " << putToAnswer;
 }
 
 uint8_t* RCSPAggregator::resizeAndWriteHeader(const ChunkHeader& header, Buffer& buffer)
@@ -254,7 +260,7 @@ bool RCSPAggregator::splitBuffer(const Buffer& buf, uint16_t maxSize, SplitBuffe
 	{
 		if (cursor + sizeof(ChunkHeader) > end)
 		{
-			// Header canot be placed in buffer
+			// Header cannot be placed in buffer
 			// Zeros in the end is OK
 			while (cursor < end && *cursor == 0)
 				cursor++;
@@ -276,7 +282,7 @@ bool RCSPAggregator::splitBuffer(const Buffer& buf, uint16_t maxSize, SplitBuffe
 			callback(blockBegin, blockEnd - blockBegin);
 			blockBegin = blockEnd;
 		}
-		else if (cursor == end)
+		if (cursor == end)
 		{
 			// We did not reached block end, but buffer is out. Last block may be much shorter than maxSize
 			callback(blockBegin, end - blockBegin);

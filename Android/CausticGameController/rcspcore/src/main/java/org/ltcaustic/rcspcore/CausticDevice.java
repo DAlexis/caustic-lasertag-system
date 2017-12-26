@@ -2,6 +2,8 @@ package org.ltcaustic.rcspcore;
 
 import java.util.Map;
 
+import static org.ltcaustic.rcspcore.RCSP.Operations;
+
 /**
  * Created by dalexies on 14.05.17.
  */
@@ -35,13 +37,22 @@ public class CausticDevice {
                         != RCSP.Operations.AnyDevice.Configuration.DEV_TYPE_UNDEFINED
         );
     }
-    public String getType() {
-        return RCSP.Operations.AnyDevice.getDevTypeString(
-                Integer.parseInt(
-                        parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceType.getId()).getValue()
-                )
+    public int getType() {
+        int result = Integer.parseInt(
+                parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceType.getId()).getValue()
         );
+        return result;
     }
+    public String getTypeString() {
+        return RCSP.Operations.AnyDevice.getDevTypeString(getType());
+    }
+    public boolean isRifle() {
+        return getType() == Operations.AnyDevice.Configuration.DEV_TYPE_RIFLE;
+    }
+    public boolean isHeadSensor() {
+        return getType() == Operations.AnyDevice.Configuration.DEV_TYPE_HEAD_SENSOR;
+    }
+
     public boolean areDeviceRelatedParametersAdded() {
         return parametersAreAdded;
     }

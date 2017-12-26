@@ -1,5 +1,6 @@
 package org.ltcaustic.gamecontroller;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -26,12 +27,23 @@ import org.ltcaustic.rcspcore.DevicesManager;
 public class ActivityMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String PREFERENCE_LAST_FRAGMENT = "last_active_fragment";
+    private static final String PREFERENCE_LAST_FRAGMENT_QUICK_CONTROLS = "quick_controls";
+    private static final String PREFERENCE_LAST_FRAGMENT_STATISTICS = "statistics";
+    private static final String PREFERENCE_LAST_FRAGMENT_CONFIGURE_PLAYERS = "configure_players";
+    private static final String PREFERENCE_LAST_FRAGMENT_CONFIGURE_RIFLES = "configure_rifles";
+    private static final String PREFERENCE_LAST_FRAGMENT_SELECT_BLUETOOTH_DEVICE = "select_bluetooth_device";
+
     FragmentStatistics fragmentStatistics;
-    FragmentConfigureGameDevices fragmentConfigureGameDevices;
+    FragSetConfigureGameDevices configPlayers;
+    FragSetConfigureGameDevices configRifles;
+
     FragmentGameControls fragmentGameControls;
     FragmentSelectBluetoothDevice selectBluetoothFragment;
     BtConnectingInformer btConnectingInformer = new BtConnectingInformer();
     TextView textViewDevicesCount;
+
+    SharedPreferences sharedPref = null;
 
     Toolbar toolbar;
     boolean isActive = false;
@@ -101,6 +113,7 @@ public class ActivityMain extends AppCompatActivity
                     public void run() {
                         hide();
                         show("Connection error", true, false);
+                        commitFragment(selectBluetoothFragment, getSupportFragmentManager());
                     }
                 });
             }
@@ -138,9 +151,12 @@ public class ActivityMain extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        sharedPref = getPreferences(MODE_PRIVATE);
+
         fragmentStatistics = new FragmentStatistics();
         fragmentGameControls = new FragmentGameControls();
-        fragmentConfigureGameDevices = new FragmentConfigureGameDevices();
+        configPlayers = new FragSetConfigureGameDevices(FragSetConfigureGameDevices.CONFIG_PLAYERS);
+        configRifles = new FragSetConfigureGameDevices(FragSetConfigureGameDevices.CONFIG_RIFLES);
         selectBluetoothFragment = new FragmentSelectBluetoothDevice();
 
         testBluetoothEnabled();
@@ -150,6 +166,7 @@ public class ActivityMain extends AppCompatActivity
         selectBluetoothFragment.setConnectionProcessListener(btConnectingInformer);
         CausticInitializer.getInstance().bluetooth().doAutoconnectIfNeeded(this, btConnectingInformer);
         CausticInitializer.getInstance().controller().getDevicesListUpdater().subscribe(new DevicesCountUpdater());
+        commitFragment(getLastFragment(), getSupportFragmentManager());
     }
 
     @Override
@@ -209,8 +226,10 @@ public class ActivityMain extends AppCompatActivity
             commitFragment(fragmentGameControls, fm);
         } else if (id == R.id.nav_statistics) {
             commitFragment(fragmentStatistics, fm);
-        } else if (id == R.id.nav_config_device) {
-            commitFragment(fragmentConfigureGameDevices, fm);
+        } else if (id == R.id.nav_config_players) {
+            commitFragment(configPlayers.fragmentConfigureGameDevicesList, fm);
+        } else if (id == R.id.nav_config_rifles) {
+            commitFragment(configPlayers.fragmentConfigureGameDevicesList, fm);
         } else if (id == R.id.nav_bluetooth_device) {
             commitFragment(selectBluetoothFragment, fm);
         } else if (id == R.id.nav_other_settings) {
@@ -222,12 +241,13 @@ public class ActivityMain extends AppCompatActivity
         return true;
     }
 
-    public static void commitFragment(Fragment fragment, FragmentManager fragmentManager) {
+    public void commitFragment(Fragment fragment, FragmentManager fragmentManager) {
         fragmentManager.popBackStack();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE); //добавляет fade
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.replace(R.id.fragment, fragment);
         fragmentTransaction.commit();
+        saveLastFragment(fragment);
     }
 
     private class DevicesCountUpdater implements DevicesManager.DeviceListUpdatedListener {
@@ -242,4 +262,33 @@ public class ActivityMain extends AppCompatActivity
         }
     }
 
+    void saveLastFragment(Fragment fragment) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        if (fragment == fragmentGameControls)
+            editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_QUICK_CONTROLS);
+        else if (fragment == fragmentStatistics)
+            editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_STATISTICS);
+        else if (fragment == configPlayers.fragmentConfigureGameDevicesList)
+            editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_CONFIGURE_PLAYERS);
+        else if (fragment == configRifles.fragmentConfigureGameDevicesList)
+            editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_CONFIGURE_RIFLES);
+        else if (fragment == selectBluetoothFragment)
+            editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_SELECT_BLUETOOTH_DEVICE);
+        editor.commit();
+    }
+
+    Fragment getLastFragment() {
+        String f = sharedPref.getString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_SELECT_BLUETOOTH_DEVICE);
+        if (f.equals(PREFERENCE_LAST_FRAGMENT_QUICK_CONTROLS))
+            return fragmentGameControls;
+        else if (f.equals(PREFERENCE_LAST_FRAGMENT_STATISTICS))
+            return fragmentStatistics;
+        else if (f.equals(PREFERENCE_LAST_FRAGMENT_CONFIGURE_PLAYERS))
+            return configPlayers.fragmentConfigureGameDevicesList;
+        else if (f.equals(PREFERENCE_LAST_FRAGMENT_CONFIGURE_RIFLES))
+            return configRifles.fragmentConfigureGameDevicesList;
+        else if (f.equals(PREFERENCE_LAST_FRAGMENT_SELECT_BLUETOOTH_DEVICE))
+            return selectBluetoothFragment;
+        return selectBluetoothFragment;
+    }
 }

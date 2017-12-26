@@ -195,7 +195,7 @@ void BluetoothBridge::receiveBluetoothPackageISR(Bluetooth::Message* msg)
 void BluetoothBridge::sendBluetoothMessage(Bluetooth::Message* msg)
 {
 	m_bbStager.stage("sendBluetoothMessage");
-	debug << "Sending bluetooth message";
+	debug << "Sending to bluetooth";
 	msg->print();
 	// Transmitting to bluetooth module and waiting while transmit is done
 	m_bluetoothPort->transmit(reinterpret_cast<uint8_t*>(msg), msg->length);

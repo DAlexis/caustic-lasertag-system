@@ -168,7 +168,7 @@ bool MainStateSaver::tryRestore(uint8_t variant)
 	} while (readed == chunkSize);
 
     fclose(m_fil);
-    m_aggregator->dispatchStreamNew(buf.data(), totalReaded);
+    m_aggregator->dispatchStream(buf.data(), totalReaded);
 	return true;
 
 #else

@@ -13,9 +13,13 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Statistics" />
         <item
-            android:id="@+id/nav_config_device"
+            android:id="@+id/nav_config_players"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Configure game devices" />
+            android:title="Configure players" />
+        <item
+            android:id="@+id/nav_config_rifles"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Configure rifles" />
         <item
             android:id="@+id/nav_bluetooth_device"
             android:icon="@drawable/ic_menu_share"
