@@ -510,7 +510,7 @@ public class DeviceSettingsList {
      * Adapter adopts List<SettingsEditorContext.ParameterEntry> that should be get from
      * SettingsEditorContext.parameters
      */
-    public class ParametersListAdapter extends BaseAdapter {
+    public static class ParametersListAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
         private List<SettingsEditorContext.ParameterEntry> parametersList;
 

@@ -60,7 +60,7 @@
             android:ems="5"
             android:id="@+id/editTextParameterValue"
             android:text="0"
-            android:inputType="numberDecimal" />
+            android:inputType="numberDecimal|textNoSuggestions" />
 
         <ImageButton
             android:layout_width="wrap_content"

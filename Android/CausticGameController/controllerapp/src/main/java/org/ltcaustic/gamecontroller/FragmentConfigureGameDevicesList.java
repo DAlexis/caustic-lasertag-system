@@ -2,23 +2,28 @@ package org.ltcaustic.gamecontroller;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.ltcaustic.rcspandroid.CausticInitializer;
+import org.ltcaustic.rcspandroid.DeviceSettingsList;
 import org.ltcaustic.rcspcore.CausticDevice;
 import org.ltcaustic.rcspcore.DevicesManager;
+import org.ltcaustic.rcspcore.RCSP;
+import org.ltcaustic.rcspcore.SettingsEditorContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -28,9 +33,27 @@ import java.util.List;
 public class FragmentConfigureGameDevicesList extends Fragment {
 
     private int mode = FragmentConfigureGameDevices.CONFIG_RIFLES;
-    DevicesListAdapter adapter = null;
+    DevicesListAdapter devicesListAdapter = null;
+    DeviceSettingsList.ParametersListAdapter parametersListAdapter = null;
+
+    View layoutSelectDevice = null;
     ListView listViewDevicesToEdit = null;
     TextView textViewSelectDevice = null;
+    Button buttonDoConfigure = null;
+    Button buttonUpdateDevicesList = null;
+
+    View layoutParameters = null;
+    ListView listViewParameters = null;
+    Button buttonParametersOk = null;
+    Button buttonParametersCancel = null;
+
+    View layoutParametersLoading = null;
+
+    SettingsEditorContext editorContext = null;
+
+    ParametersListUpdater parametersListUpdater = new ParametersListUpdater();
+
+    boolean isActive = false;
 
     public FragmentConfigureGameDevicesList() {
         // Required empty public constructor
@@ -44,22 +67,80 @@ public class FragmentConfigureGameDevicesList extends Fragment {
         this.mode = mode;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        isActive = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isActive = false;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        editorContext = CausticInitializer.getInstance().controller().getSettingsEditorContext();
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_configure_game_devices_list, container, false);
+        layoutSelectDevice = v.findViewById(R.id.layoutSelectDevice);
         listViewDevicesToEdit = v.findViewById(R.id.listViewDevicesToEdit);
         textViewSelectDevice = v.findViewById(R.id.textViewSelectDevice);
+        buttonDoConfigure = v.findViewById(R.id.buttonDoConfigure);
+        buttonUpdateDevicesList = v.findViewById(R.id.buttonUpdateDevicesList);
+
+        layoutParameters = v.findViewById(R.id.layoutParameters);
+        listViewParameters = v.findViewById(R.id.listViewParameters);
+        buttonParametersOk = v.findViewById(R.id.buttonParametersOk);
+        buttonParametersCancel = v.findViewById(R.id.buttonParametersCancel);
+
+        layoutParametersLoading = v.findViewById(R.id.layoutParametersLoading);
+
+        parametersListAdapter = new DeviceSettingsList.ParametersListAdapter(editorContext.parameters, getActivity());
+        listViewParameters.setAdapter(parametersListAdapter);
+
+        buttonDoConfigure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editSelectedDevices();
+            }
+        });
+
+        buttonUpdateDevicesList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateDevicesList();
+            }
+        });
+
+        buttonParametersOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveSettingsAndCloseEditing();
+                //switchToSelectDevice();
+            }
+        });
+
+        buttonParametersCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //saveSettingsAndCloseEditing();
+                switchToSelectDevice();
+            }
+        });
+
+        switchToSelectDevice();
+
         if (mode == FragmentConfigureGameDevices.CONFIG_RIFLES) {
             textViewSelectDevice.setText("Select rifle to configure:");
         } else {
             textViewSelectDevice.setText("Select player to configure:");
         }
 
-        adapter = new DevicesListAdapter(CausticInitializer.getInstance().controller().getDevicesManager(), getActivity());
-        listViewDevicesToEdit.setAdapter(adapter);
+        devicesListAdapter = new DevicesListAdapter(CausticInitializer.getInstance().controller().getDevicesManager(), getActivity());
+        listViewDevicesToEdit.setAdapter(devicesListAdapter);
         return v;
     }
 
@@ -67,13 +148,25 @@ public class FragmentConfigureGameDevicesList extends Fragment {
         public View convertView = null;
         CheckBox checkBoxDeviceName = null;
         TextView textViewDeviceComment = null;
-        public CausticDevice dev = null;
+        public final CausticDevice dev;
 
         UIDevicesListElement(LayoutInflater inflater, CausticDevice dev) {
-            convertView = inflater.inflate(org.ltcaustic.rcspandroid.R.layout.devices_list_selectable_item, null);
             this.dev = dev;
+            convertView = inflater.inflate(org.ltcaustic.rcspandroid.R.layout.devices_list_selectable_item, null);
+
             checkBoxDeviceName = convertView.findViewById(R.id.checkBoxDeviceName);
             textViewDeviceComment = convertView.findViewById(R.id.textViewDeviceComment);
+            checkBoxDeviceName.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    RCSP.DeviceAddress addr = UIDevicesListElement.this.dev.address;
+                    if (isChecked) {
+                        CausticInitializer.getInstance().controller().getSettingsEditorContext().selectForEditing(addr);
+                    } else {
+                        CausticInitializer.getInstance().controller().getSettingsEditorContext().deselectForEditing(addr);
+                    }
+                }
+            });
             update();
         }
 
@@ -87,18 +180,104 @@ public class FragmentConfigureGameDevicesList extends Fragment {
         }
     }
 
+    void switchToEditParameters() {
+        /*
+        layoutSelectDevice.animate().translationYBy(-1000).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                layoutSelectDevice.setVisibility(View.GONE);
+                layoutParameters.setVisibility(View.VISIBLE);
+            }
+        }).start();*/
+
+        layoutParametersLoading.setVisibility(View.GONE);
+        layoutSelectDevice.setVisibility(View.GONE);
+        layoutParameters.setVisibility(View.VISIBLE);
+
+    }
+
+    void switchToSelectDevice() {
+        layoutParameters.setVisibility(View.GONE);
+        layoutParametersLoading.setVisibility(View.GONE);
+        layoutSelectDevice.setVisibility(View.VISIBLE);
+        updateDevicesList();
+/*
+        layoutSelectDevice.animate().translationYBy(1000).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+            }
+        }).start();*/
+    }
+
+    void switchToLoading() {
+        layoutParameters.setVisibility(View.GONE);
+        layoutSelectDevice.setVisibility(View.GONE);
+        layoutParametersLoading.setVisibility(View.VISIBLE);
+    }
+
+    void updateDevicesList() {
+        if (!isActive)
+            return;
+        if (devicesListAdapter != null) {
+            devicesListAdapter.updateUIList();
+            listViewDevicesToEdit.invalidateViews();
+            devicesListAdapter.notifyDataSetChanged();
+        }
+    }
+
+    void editSelectedDevices() {
+        if (!editorContext.isSomethingSelectedToEdit())
+            return;
+        switchToLoading();
+        editorContext.asyncPopParametersFromSelectedDevices(parametersListUpdater);
+    }
+
+    void saveSettingsAndCloseEditing() {
+        editorContext.pushValues();
+        switchToSelectDevice();
+    }
+
+    /**
+     * Hold message when all settings are loaded from devices and entries ready to be created
+     */
+    private class ParametersListUpdater implements DevicesManager.SynchronizationEndListener {
+        @Override
+        public void onSynchronizationEnd(boolean isSuccess, Set<RCSP.DeviceAddress> notSynchronized) {
+            if (isSuccess) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        switchToEditParameters();
+                        editorContext.createEntries(new DeviceSettingsList.UIDataPickerFactory());
+                        parametersListAdapter.notifyDataSetChanged();
+                    }
+                });
+            } else {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        switchToSelectDevice();
+                    }
+                });
+            }
+        }
+    }
+
     public class DevicesListAdapter extends BaseAdapter {
         private LayoutInflater inflater;
         private List<UIDevicesListElement> uiDevices = new ArrayList<>();
+        DevicesManager devicesManager;
 
         public DevicesListAdapter(DevicesManager mgr, Activity activity) {
+            devicesManager = mgr;
             inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            updateUIList(mgr);
+            updateUIList();
 
         }
 
-        public void updateUIList(DevicesManager mgr) {
-            for (CausticDevice dev: mgr.devices.values()) {
+        public void updateUIList() {
+            uiDevices.clear();
+            for (CausticDevice dev: devicesManager.devices.values()) {
                 if (
                         (mode == FragmentConfigureGameDevices.CONFIG_RIFLES && dev.isRifle())
                                 || (mode == FragmentConfigureGameDevices.CONFIG_PLAYERS && dev.isHeadSensor())

@@ -5,22 +5,120 @@
     android:orientation="vertical"
     tools:context="org.ltcaustic.gamecontroller.FragmentConfigureGameDevicesList">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/textViewSelectDevice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select devices to configure:" />
+    <!-- Devices list block -->
 
-    <ListView
-        android:id="@+id/listViewDevicesToEdit"
+    <LinearLayout
+        android:id="@+id/layoutSelectDevice"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/buttonDoConfigure"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit configuration" />
+        android:orientation="vertical"
+        android:visibility="gone">
+        <!--android:visibility="gone"-->
+
+        <TextView
+            android:id="@+id/textViewSelectDevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select devices to configure:" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonDoConfigure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Edit configuration" />
+
+            <Button
+                android:id="@+id/buttonUpdateDevicesList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Update" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listViewDevicesToEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <!-- Parameters list block -->
+
+    <LinearLayout
+        android:id="@+id/layoutParametersLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:id="@+id/textViewLoadingParameters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading parameters..."
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutParameters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/textViewSelectedDevices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Here list of selected devices" />
+
+        <TextView
+            android:id="@+id/textViewSetParameters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set parameters here:" />
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonParametersOk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Apply" />
+
+            <Button
+                android:id="@+id/buttonParametersCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancel" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listViewParameters"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </LinearLayout>
 
 </LinearLayout>
