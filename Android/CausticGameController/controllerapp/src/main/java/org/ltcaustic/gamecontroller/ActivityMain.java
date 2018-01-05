@@ -35,8 +35,8 @@ public class ActivityMain extends AppCompatActivity
     private static final String PREFERENCE_LAST_FRAGMENT_SELECT_BLUETOOTH_DEVICE = "select_bluetooth_device";
 
     FragmentStatistics fragmentStatistics;
-    FragSetConfigureGameDevices configPlayers;
-    FragSetConfigureGameDevices configRifles;
+    FragmentConfigureGameDevicesList configPlayers;
+    FragmentConfigureGameDevicesList configRifles;
 
     FragmentGameControls fragmentGameControls;
     FragmentSelectBluetoothDevice selectBluetoothFragment;
@@ -155,8 +155,8 @@ public class ActivityMain extends AppCompatActivity
 
         fragmentStatistics = new FragmentStatistics();
         fragmentGameControls = new FragmentGameControls();
-        configPlayers = new FragSetConfigureGameDevices(FragSetConfigureGameDevices.CONFIG_PLAYERS);
-        configRifles = new FragSetConfigureGameDevices(FragSetConfigureGameDevices.CONFIG_RIFLES);
+        configPlayers = FragmentConfigureGameDevicesList.create(FragmentConfigureGameDevicesList.CONFIG_PLAYERS);
+        configRifles = FragmentConfigureGameDevicesList.create(FragmentConfigureGameDevicesList.CONFIG_RIFLES);
         selectBluetoothFragment = new FragmentSelectBluetoothDevice();
 
         testBluetoothEnabled();
@@ -227,9 +227,9 @@ public class ActivityMain extends AppCompatActivity
         } else if (id == R.id.nav_statistics) {
             commitFragment(fragmentStatistics, fm);
         } else if (id == R.id.nav_config_players) {
-            commitFragment(configPlayers.fragmentConfigureGameDevicesList, fm);
+            commitFragment(configPlayers, fm);
         } else if (id == R.id.nav_config_rifles) {
-            commitFragment(configRifles.fragmentConfigureGameDevicesList, fm);
+            commitFragment(configRifles, fm);
         } else if (id == R.id.nav_bluetooth_device) {
             commitFragment(selectBluetoothFragment, fm);
         } else if (id == R.id.nav_other_settings) {
@@ -268,9 +268,9 @@ public class ActivityMain extends AppCompatActivity
             editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_QUICK_CONTROLS);
         else if (fragment == fragmentStatistics)
             editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_STATISTICS);
-        else if (fragment == configPlayers.fragmentConfigureGameDevicesList)
+        else if (fragment == configPlayers)
             editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_CONFIGURE_PLAYERS);
-        else if (fragment == configRifles.fragmentConfigureGameDevicesList)
+        else if (fragment == configRifles)
             editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_CONFIGURE_RIFLES);
         else if (fragment == selectBluetoothFragment)
             editor.putString(PREFERENCE_LAST_FRAGMENT, PREFERENCE_LAST_FRAGMENT_SELECT_BLUETOOTH_DEVICE);
@@ -284,9 +284,9 @@ public class ActivityMain extends AppCompatActivity
         else if (f.equals(PREFERENCE_LAST_FRAGMENT_STATISTICS))
             return fragmentStatistics;
         else if (f.equals(PREFERENCE_LAST_FRAGMENT_CONFIGURE_PLAYERS))
-            return configPlayers.fragmentConfigureGameDevicesList;
+            return configPlayers;
         else if (f.equals(PREFERENCE_LAST_FRAGMENT_CONFIGURE_RIFLES))
-            return configRifles.fragmentConfigureGameDevicesList;
+            return configRifles;
         else if (f.equals(PREFERENCE_LAST_FRAGMENT_SELECT_BLUETOOTH_DEVICE))
             return selectBluetoothFragment;
         return selectBluetoothFragment;

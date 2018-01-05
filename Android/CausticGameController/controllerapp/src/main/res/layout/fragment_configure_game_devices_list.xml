@@ -44,7 +44,9 @@
         <ListView
             android:id="@+id/listViewDevicesToEdit"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:descendantFocusability="beforeDescendants"
+            />
 
     </LinearLayout>
 
@@ -116,7 +118,8 @@
         <ListView
             android:id="@+id/listViewParameters"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:descendantFocusability="beforeDescendants"/>
 
 
     </LinearLayout>

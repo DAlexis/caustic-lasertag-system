@@ -32,7 +32,11 @@ import java.util.Set;
  */
 public class FragmentConfigureGameDevicesList extends Fragment {
 
-    private int mode = FragmentConfigureGameDevices.CONFIG_RIFLES;
+    public static final int CONFIG_RIFLES = 1;
+    public static final int CONFIG_PLAYERS = 2;
+
+
+    private int mode = CONFIG_RIFLES;
     DevicesListAdapter devicesListAdapter = null;
     DeviceSettingsList.ParametersListAdapter parametersListAdapter = null;
 
@@ -57,6 +61,12 @@ public class FragmentConfigureGameDevicesList extends Fragment {
 
     public FragmentConfigureGameDevicesList() {
         // Required empty public constructor
+    }
+
+    public static FragmentConfigureGameDevicesList create(int mode) {
+        FragmentConfigureGameDevicesList f = new FragmentConfigureGameDevicesList();
+        f.setMode(mode);
+        return f;
     }
 
     /**
@@ -133,7 +143,7 @@ public class FragmentConfigureGameDevicesList extends Fragment {
 
         switchToSelectDevice();
 
-        if (mode == FragmentConfigureGameDevices.CONFIG_RIFLES) {
+        if (mode == CONFIG_RIFLES) {
             textViewSelectDevice.setText("Select rifle to configure:");
         } else {
             textViewSelectDevice.setText("Select player to configure:");
@@ -219,8 +229,8 @@ public class FragmentConfigureGameDevicesList extends Fragment {
         if (!isActive)
             return;
         if (devicesListAdapter != null) {
+            //listViewDevicesToEdit.invalidateViews();
             devicesListAdapter.updateUIList();
-            listViewDevicesToEdit.invalidateViews();
             devicesListAdapter.notifyDataSetChanged();
         }
     }
@@ -279,8 +289,8 @@ public class FragmentConfigureGameDevicesList extends Fragment {
             uiDevices.clear();
             for (CausticDevice dev: devicesManager.devices.values()) {
                 if (
-                        (mode == FragmentConfigureGameDevices.CONFIG_RIFLES && dev.isRifle())
-                                || (mode == FragmentConfigureGameDevices.CONFIG_PLAYERS && dev.isHeadSensor())
+                        (mode == CONFIG_RIFLES && dev.isRifle())
+                                || (mode == CONFIG_PLAYERS && dev.isHeadSensor())
                         ) {
                     uiDevices.add(new UIDevicesListElement(inflater, dev));
                 }
