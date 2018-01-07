@@ -1,6 +1,7 @@
 package org.ltcaustic.rcspcore;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -110,6 +111,9 @@ public class GameStatistics {
             }
         }
         return result;
+    }
+    public Set<Integer> getPlayerIds() {
+        return pvpStatsMap.keySet();
     }
 
     // Private

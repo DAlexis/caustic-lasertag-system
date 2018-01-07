@@ -28,6 +28,16 @@ public class CausticDevice {
     public String getName() {
         return parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceName.getId()).getValue();
     }
+    public int getMT2Id() {
+        if (!areDeviceRelatedParametersAdded() || !isHeadSensor())
+            return -1;
+        return Integer.parseInt(parameters.get(Operations.HeadSensor.Configuration.playerGameId.getId()).getValue());
+    }
+    public int getLives() {
+        if (!areDeviceRelatedParametersAdded() || !isHeadSensor())
+            return -1;
+        return Integer.parseInt(parameters.get(Operations.HeadSensor.Configuration.lifesCount.getId()).getValue());
+    }
     public boolean hasName() {
         return ( (RCSP.DevNameParameter.Serializer) parameters.get(RCSP.Operations.AnyDevice.Configuration.deviceName.getId()) ).initialized();
     }

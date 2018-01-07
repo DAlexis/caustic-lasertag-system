@@ -212,6 +212,21 @@ public class DevicesManager {
         int playerGameId = Integer.parseInt(dev.parameters.get(parameterId).getValue());
         return playerGameId;
     }
+    public RCSP.DeviceAddress getAddressByGameId(int mt2id) {
+        for (Map.Entry<RCSP.DeviceAddress, CausticDevice> entry : devices.entrySet()) {
+            if (entry.getValue().getMT2Id() == mt2id)
+                return entry.getKey();
+        }
+        return new RCSP.DeviceAddress();
+    }
+    public CausticDevice getDeviceById(int mt2id) {
+        for (Map.Entry<RCSP.DeviceAddress, CausticDevice> entry : devices.entrySet()) {
+            if (entry.getValue().getMT2Id() == mt2id)
+                return entry.getValue();
+        }
+        return null;
+    }
+
     public boolean associateWithHeadSensor() {
         ///@todo Add proper head sensor association
         /*

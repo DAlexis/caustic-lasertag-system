@@ -113,7 +113,7 @@
                         android:id="@+id/textView3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Set lifes to max and respawn" />
+                        android:text="Set lifes to max, clear stats and respawn" />
                 </TableRow>
 
             </TableLayout>

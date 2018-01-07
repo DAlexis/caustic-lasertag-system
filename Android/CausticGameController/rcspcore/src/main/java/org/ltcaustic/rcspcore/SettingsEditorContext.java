@@ -128,6 +128,10 @@ public class SettingsEditorContext {
     }
 
 
+    public Set<RCSP.DeviceAddress> getDevices() {
+        return devices;
+    }
+
     /**
      * Set of devices selected to editing
      */

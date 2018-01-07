@@ -22,6 +22,14 @@ public class RCSPTest {
     }
 
     @Test
+    public void testDeviceAddressValidInvalid() {
+        RCSP.DeviceAddress da = new RCSP.DeviceAddress();
+        Assert.assertFalse(da.isValid());
+        da.address[0] = 1;
+        Assert.assertTrue(da.isValid());
+    }
+
+    @Test
     public void testOperationCodesManipulation()
     {
         int code = 2005;

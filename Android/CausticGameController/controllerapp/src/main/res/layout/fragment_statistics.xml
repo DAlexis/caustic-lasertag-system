@@ -5,9 +5,72 @@
     tools:context="org.ltcaustic.gamecontroller.FragmentStatistics">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Game statistics fragment" />
+        android:layout_height="match_parent">
+
+        <TableLayout
+            android:id="@+id/tableLayoutStats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5px">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/textViewStatPlayer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5px"
+                    android:text="Player"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textViewStatLifes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5px"
+                    android:text="Lifes"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textViewStatKills"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5px"
+                    android:text="Kills"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textViewStatDamage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5px"
+                    android:text="Damage"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textViewStatHits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5px"
+                    android:text="Hits"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textViewFriendly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5px"
+                    android:text="Friendly fire"
+                    android:textStyle="bold" />
+            </TableRow>
+
+        </TableLayout>
+
+    </ScrollView>
 
 </FrameLayout>

@@ -43,6 +43,7 @@ public class FragmentConfigureGameDevicesList extends Fragment {
     View layoutSelectDevice = null;
     ListView listViewDevicesToEdit = null;
     TextView textViewSelectDevice = null;
+    TextView textViewSelectedDevices = null;
     Button buttonDoConfigure = null;
     Button buttonUpdateDevicesList = null;
 
@@ -54,6 +55,7 @@ public class FragmentConfigureGameDevicesList extends Fragment {
     View layoutParametersLoading = null;
 
     SettingsEditorContext editorContext = null;
+    DevicesManager devicesManager = null;
 
     ParametersListUpdater parametersListUpdater = new ParametersListUpdater();
 
@@ -93,11 +95,13 @@ public class FragmentConfigureGameDevicesList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         editorContext = CausticInitializer.getInstance().controller().getSettingsEditorContext();
+        devicesManager = CausticInitializer.getInstance().controller().getDevicesManager();
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_configure_game_devices_list, container, false);
         layoutSelectDevice = v.findViewById(R.id.layoutSelectDevice);
         listViewDevicesToEdit = v.findViewById(R.id.listViewDevicesToEdit);
         textViewSelectDevice = v.findViewById(R.id.textViewSelectDevice);
+        textViewSelectedDevices = v.findViewById(R.id.textViewSelectedDevices);
         buttonDoConfigure = v.findViewById(R.id.buttonDoConfigure);
         buttonUpdateDevicesList = v.findViewById(R.id.buttonUpdateDevicesList);
 
@@ -204,6 +208,14 @@ public class FragmentConfigureGameDevicesList extends Fragment {
         layoutSelectDevice.setVisibility(View.GONE);
         layoutParameters.setVisibility(View.VISIBLE);
 
+        String allDevices = "";
+        for (RCSP.DeviceAddress devAddr : editorContext.getDevices()) {
+            if (!allDevices.equals(""))
+                allDevices += ", ";
+            CausticDevice dev = devicesManager.devices.get(devAddr);
+            allDevices = allDevices + dev.getName();
+        }
+        textViewSelectedDevices.setText(allDevices);
     }
 
     void switchToSelectDevice() {
@@ -226,13 +238,12 @@ public class FragmentConfigureGameDevicesList extends Fragment {
     }
 
     void updateDevicesList() {
-        if (!isActive)
+        if (!isActive || devicesListAdapter == null)
             return;
-        if (devicesListAdapter != null) {
-            //listViewDevicesToEdit.invalidateViews();
-            devicesListAdapter.updateUIList();
-            devicesListAdapter.notifyDataSetChanged();
-        }
+
+        //listViewDevicesToEdit.invalidateViews();
+        devicesListAdapter.updateUIList();
+        devicesListAdapter.notifyDataSetChanged();
     }
 
     void editSelectedDevices() {

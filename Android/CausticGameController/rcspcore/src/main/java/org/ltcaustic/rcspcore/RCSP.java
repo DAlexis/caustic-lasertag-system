@@ -90,16 +90,17 @@ public class RCSP {
 
         public int[] address = new int[3];
 
+        /**
+         * Constructor makes invalid (0.0.0) address
+         */
         public DeviceAddress() {
             address[0] = address[1] = address[2] = 0;
         }
-
         public DeviceAddress(int a1, int a2, int a3) {
             address[0] = a1;
             address[1] = a2;
             address[2] = a3;
         }
-
         public DeviceAddress(String addressStr) {
             String[] addressArr = addressStr.split("\\.");
             address[0] = Integer.parseInt(addressArr[0]);
@@ -107,40 +108,41 @@ public class RCSP {
             address[2] = Integer.parseInt(addressArr[2]);
             normalize();
         }
-
         public DeviceAddress(DeviceAddress addr) {
             address[0] = addr.address[0];
             address[1] = addr.address[1];
             address[2] = addr.address[2];
         }
-
         public void deserialize(byte[] memory, int position) {
             address[0] = MemoryUtils.byteToUnsignedByte(memory[position]);
             address[1] = MemoryUtils.byteToUnsignedByte(memory[position + 1]);
             address[2] = MemoryUtils.byteToUnsignedByte(memory[position + 2]);
         }
-
         public void deserialize(ArrayList<Byte> memory, int position) {
             address[0] = MemoryUtils.byteToUnsignedByte(memory.get(position));
             address[1] = MemoryUtils.byteToUnsignedByte(memory.get(position + 1));
             address[2] = MemoryUtils.byteToUnsignedByte(memory.get(position + 2));
         }
-
         public int serialize(byte[] memory, int offset) {
             memory[offset + 0] = (byte) address[0];
             memory[offset + 1] = (byte) address[1];
             memory[offset + 2] = (byte) address[2];
             return sizeof();
         }
-
         public String toString() {
             return address[0] + "." + address[1] + "." + address[2];
         }
-
         public static int sizeof() {
             return 3;
         }
 
+        /**
+         * Check if address valid. Only ane invalid address is 0.0.0
+         * @return is valid
+         */
+        public boolean isValid() {
+            return !(address[0] == 0 && address[1] == 0 && address[2] == 0);
+        }
         private void normalize() {
             for (int i = 0; i < 3; i++) {
                 if (address[i] < 0)
