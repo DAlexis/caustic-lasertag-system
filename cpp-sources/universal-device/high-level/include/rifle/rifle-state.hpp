@@ -82,8 +82,6 @@ public:
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, armorCurrent, *m_aggregator);
 
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent, *m_aggregator);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount, *m_aggregator);
-	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, killsCount, *m_aggregator);
 	PAR_ST(NOT_RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount, *m_aggregator);
 
 private:

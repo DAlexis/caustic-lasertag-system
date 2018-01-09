@@ -5,12 +5,30 @@ package org.ltcaustic.rcspcore;
  */
 
 public class Utils {
-    public static class SimpleWaiter
-    {
+    /**
+     * This class waits while it is regularly touched. When it was not touched during timeout,
+     * in calls runnable. It is not time-precision tool to call runnable, you must set thread period
+     */
+    public static class SimpleWaiter {
+        /**
+         * Construct @{@link SimpleWaiter} WITHOUT runnable.
+         * If there is more than timeout milliseconds since last touch,
+         * IsTimeout() returns true
+         * @param timeout Timeout in milliseconds
+         */
         SimpleWaiter(long timeout) {
             this.timeout = timeout;
         }
 
+        /**
+         * Construct @{@link SimpleWaiter} WITH runnable.
+         * If there is more than timeout milliseconds since last touch,
+         * @{@link SimpleWaiter} automatically calls runnable from its own thread
+         * and IsTimeout() returns true returns true
+         * @param timeout Timeout in milliseconds
+         * @param period Thread sleeping time before timeout was checked
+         * @param runnable
+         */
         SimpleWaiter(long timeout, long period, Runnable runnable) {
             this.timeout = timeout;
             this.runnable = runnable;
@@ -24,19 +42,34 @@ public class Utils {
             waitingThread.start();
         }
 
+        /**
+         * Check if last touch() called more than timeout milliseconds ago
+         * @return true if timeout
+         */
         public boolean isTimeout() {
             return System.currentTimeMillis() - lastTouchTime >= timeout;
         }
 
+        /**
+         * Prevent runnable calling and true value for isTimeout() function
+         * for next timeout milliseconds
+         */
         public void touch() {
             lastTouchTime = System.currentTimeMillis();
             CallFromThreadDone = false;
         }
 
+        /**
+         * Enable or disable next callback in case of timeout
+         * @param isEnabled true if enabled
+         */
         public void enableCallback(boolean isEnabled) {
             callbackEnabled = isEnabled;
         }
 
+        /**
+         * Stop waiting thread and join it
+         */
         public void stopThread() {
             needStopThread = true;
             try {
@@ -45,6 +78,9 @@ public class Utils {
             }
         }
 
+        /**
+         * Function that is running in own thread
+         */
         private void threadBody() {
             while(true) {
                 try {

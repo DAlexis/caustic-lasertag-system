@@ -165,7 +165,11 @@ public class ActivityMain extends AppCompatActivity
         // We use FragmentSelectBluetoothDevice's proxy to allow him redraw elements according new connection state
         selectBluetoothFragment.setConnectionProcessListener(btConnectingInformer);
         CausticInitializer.getInstance().bluetooth().doAutoconnectIfNeeded(this, btConnectingInformer);
-        CausticInitializer.getInstance().controller().getDevicesListUpdater().subscribe(new DevicesCountUpdater());
+        CausticInitializer.getInstance().controller().getDevicesManager().subscribeDevicesListUpdated(new DevicesCountUpdater());
+        CausticInitializer.getInstance().controller().getGameStatistics().runPeriodic(3000);
+
+        // To instatiate class
+        CausticInitializer.getInstance().controller().getDevicesListUpdater();
         commitFragment(getLastFragment(), getSupportFragmentManager());
     }
 

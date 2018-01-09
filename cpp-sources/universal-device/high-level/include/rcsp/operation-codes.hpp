@@ -207,11 +207,7 @@ namespace ConfigCodes
 			PAR_CODE(FloatParameter, armorCoeffCurrent,  1102)
 			PAR_CODE(FloatParameter, damageCoeffCurrent, 1103)
 			PAR_CODE(FloatParameter, shotsCoeffCurrent,  1104)
-
 			PAR_CODE(UintParameter, lifesCountCurrent,  1005)
-
-			PAR_CODE(UintParameter, pointsCount, 1110)
-			PAR_CODE(UintParameter, killsCount,  1111)
 			PAR_CODE(UintParameter, deathsCount, 1112)
 		}
 

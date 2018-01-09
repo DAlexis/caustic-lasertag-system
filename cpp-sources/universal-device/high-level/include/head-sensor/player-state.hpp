@@ -32,8 +32,6 @@ public:
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, damageCoeffCurrent, m_aggregator);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, shotsCoeffCurrent, m_aggregator);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, lifesCountCurrent, m_aggregator);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, pointsCount, m_aggregator);
-	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, killsCount, m_aggregator);
 	PAR_ST(RESTORABLE, ConfigCodes::HeadSensor::State, deathsCount, m_aggregator);
 
 

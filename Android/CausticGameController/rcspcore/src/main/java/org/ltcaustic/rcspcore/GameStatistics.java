@@ -1,5 +1,7 @@
 package org.ltcaustic.rcspcore;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -26,13 +28,44 @@ public class GameStatistics {
         void onStatsChange(int victimId, int damagerId);
     }
 
+    public interface StatsUpdatedSubscriber {
+        void onStatsUpdated();
+    }
+
     public GameStatistics(DevicesManager devicesManager, RCSP.OperationDispatcherUser dispatchersUser) {
         this.devicesManager = devicesManager;
         dispatchersUser.addOperationDispatcher(OP_CODE_GET_PVP_RESULTS, new PvPDamageResultsMessageDispatcher());
+        statsUpdatedWaiter = new Utils.SimpleWaiter(300, 100, new Runnable() {
+            @Override
+            public void run() {
+                for (StatsUpdatedSubscriber s: updatedSubscribers)
+                    s.onStatsUpdated();
+            }
+        });
+        statsUpdatedWaiter.enableCallback(true);
     }
+
+    public void runPeriodic(long period) {
+        if (updateRunner != null)
+            return;
+
+        updateRunner = new Utils.PeriodicRunner(period, new Runnable() {
+            @Override
+            public void run() {
+                updateStats();
+            }
+        });
+    }
+
+    /*
     public void setStatsChangeListener(StatsChangeListener statsChangeListener) {
         this.statsChangeListener = statsChangeListener;
+    }*/
+
+    public void subscribeStatsUpdated(StatsUpdatedSubscriber subscriber) {
+        updatedSubscribers.add(subscriber);
     }
+
     public void updateStats() {
         /*
         // Updating devices list @todo Think about regular devices list updating...
@@ -184,7 +217,7 @@ public class GameStatistics {
         );
     }
     private void addPvPRawResult(PvPRawResults pvpRawResults) {
-        updateLastDataReceivedTime();
+        statsUpdatedWaiter.touch();
 
         int victimId = pvpRawResults.victimId;
         int enemyId = pvpRawResults.enemyId;
@@ -205,13 +238,6 @@ public class GameStatistics {
         pvpStats.hits   = pvpRawResults.hitsCount;
         pvpStats.kills  = pvpRawResults.killsCount;
     }
-    private boolean isWaitingTimeOver() {
-        return System.currentTimeMillis() - lastDataReceivedTime > statsReceiveTimeout;
-    }
-    private void updateLastDataReceivedTime()
-    {
-        lastDataReceivedTime = System.currentTimeMillis();
-    }
 
     private static final long statsReceiveTimeout = 5000;
     private static final String TAG = "CC.GameStatistics";
@@ -222,4 +248,7 @@ public class GameStatistics {
      * Map: pvpStatsMap[Player whose stats][his enemy]
      */
     private Map<Integer, TreeMap<Integer, PvPStats>> pvpStatsMap = new TreeMap<>();
+    private List<StatsUpdatedSubscriber> updatedSubscribers = new ArrayList<>();
+    Utils.SimpleWaiter statsUpdatedWaiter;
+    Utils.PeriodicRunner updateRunner;
 }

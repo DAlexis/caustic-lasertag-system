@@ -21,6 +21,63 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonRed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ToggleButton"
+                    android:textColor="@color/toggleButtonRed"
+                    android:textOff="Red"
+                    android:textOn="Red" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonBlue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:text="ToggleButton"
+                    android:textColor="@color/toggleButtonBlue"
+                    android:textOff="Blue"
+                    android:textOn="Blue" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonYellow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:text="ToggleButton"
+                    android:textColor="@color/toggleButtonYellow"
+                    android:textOff="Yell"
+                    android:textOn="Yell" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonGreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ToggleButton"
+                    android:textColor="@color/toggleButtonGreen"
+                    android:textOff="Green"
+                    android:textOn="Green" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ToggleButton"
+                    android:textOff="All"
+                    android:textOn="All" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
@@ -29,35 +86,44 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="R" />
+                    android:text="R"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/toggleButtonRed" />
 
                 <Switch
                     android:id="@+id/switchBlue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="B" />
+                    android:text="B"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/toggleButtonBlue" />
 
                 <Switch
                     android:id="@+id/switchYellow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Y" />
+                    android:text="Y"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/toggleButtonYellow" />
 
                 <Switch
                     android:id="@+id/switchGreen"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="G" />
+                    android:text="G"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/toggleButtonGreen" />
 
                 <Switch
                     android:id="@+id/switchAllTeams"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="All" />
+                    android:text="All"
+                    android:textAlignment="textEnd" />
 
             </LinearLayout>
 
@@ -115,6 +181,38 @@
                         android:layout_height="wrap_content"
                         android:text="Set lifes to max, clear stats and respawn" />
                 </TableRow>
+
+            </TableLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Global actions" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <Button
+                        android:id="@+id/buttonResetStats"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reset stats" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reset all statistics for all players" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
             </TableLayout>
 

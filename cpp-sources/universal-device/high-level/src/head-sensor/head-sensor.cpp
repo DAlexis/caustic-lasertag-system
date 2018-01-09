@@ -285,8 +285,8 @@ void HeadSensor::playerRespawn()
 void HeadSensor::playerReset()
 {
 	playerState.reset();
-	respawnWeapons();
-	info << "Player reseted";
+    m_statsCounter.clear();
+	playerRespawn();
 }
 
 void HeadSensor::playerKill()

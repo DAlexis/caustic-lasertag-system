@@ -102,8 +102,6 @@ void PlayerState::reset()
 	shotsCoeffCurrent = m_configuration->shotsCoeffStart;
 	lifesCountCurrent = m_configuration->lifesCount;
 
-	pointsCount = 0;
-	killsCount = 0;
 	deathsCount = 0;
 }
 

@@ -52,7 +52,20 @@ public class FragmentStatistics extends Fragment {
 
         statistics.updateStats();
         updateStatistics();
+        subscribe();
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isActive = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isActive = false;
     }
 
     @Override
@@ -103,4 +116,26 @@ public class FragmentStatistics extends Fragment {
             tableLayoutStats.addView(row);
         }
     }
+
+    void subscribe() {
+        if (updatedSubscriber != null)
+            return;
+        updatedSubscriber = new GameStatistics.StatsUpdatedSubscriber() {
+            @Override
+            public void onStatsUpdated() {
+                if (isActive) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateStatistics();
+                        }
+                    });
+                }
+            }
+        };
+        statistics.subscribeStatsUpdated(updatedSubscriber);
+    }
+
+    GameStatistics.StatsUpdatedSubscriber updatedSubscriber = null;
+    boolean isActive = false;
 }

@@ -19,8 +19,6 @@ PlayerPartialState::PlayerPartialState(
 	armorCurrent = 0;
 
 	lifesCountCurrent = 0;
-	pointsCount = 0;
-	killsCount = 0;
 	deathsCount = 0;
 }
 
@@ -32,9 +30,7 @@ void PlayerPartialState::syncAll()
 	stream.addPull(ConfigCodes::HeadSensor::State::healthCurrent);
 	stream.addPull(ConfigCodes::HeadSensor::State::armorCurrent);
 	stream.addPull(ConfigCodes::HeadSensor::State::lifesCountCurrent);
-	stream.addPull(ConfigCodes::HeadSensor::State::pointsCount);
-	stream.addPull(ConfigCodes::HeadSensor::State::killsCount);
-	stream.addPull(ConfigCodes::HeadSensor::State::deathsCount);
+    stream.addPull(ConfigCodes::HeadSensor::State::deathsCount);
 
 	stream.send(&m_networkClientSender, *m_headSensorAddress, false);
 }
@@ -56,8 +52,6 @@ void PlayerPartialState::print()
 		printf(" %u/%u\n", armorCurrent, armorMax);
 	}
 	printf("Lifes:  %u\n", lifesCountCurrent);
-	printf("Points: %u\n", pointsCount);
-	printf("Kills:  %u\n", killsCount);
 	printf("Deaths: %u\n", deathsCount);
 }
 
