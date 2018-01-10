@@ -152,6 +152,7 @@ void BaseStatsCounter::interrogate()
 
 void BaseStatsCounter::sendStats(DeviceAddress target)
 {
+    /// @todo: Add here broadcast for all devices (it does not work now via self-hosted bluetooth!)
 	m_statsReceiver = target;
 	prepareTransmission();
 }
@@ -159,7 +160,6 @@ void BaseStatsCounter::sendStats(DeviceAddress target)
 
 void BaseStatsCounter::sendNextPackage()
 {
-	debug << "BaseStatsCounter::sendNextPackage()";
 	ScopedLock<CritialSection> lock(m_iteratorCheck);
 		if (m_iteratorCorrupted)
 		{
@@ -178,20 +178,15 @@ void BaseStatsCounter::sendNextPackage()
 		m_sendingIterator++;
 		// Now we have valid object and we can send it
 	lock.unlock();
-	debug << "Sending from " << target.enemyId;
-	m_sendingState = S_WAITING_FOR_TRANSMISSIO_RESULT;
+	stateToDelayAfterChunk();
 	RCSPStream::call(
         &m_networkClientSender,
 		m_statsReceiver,
 		ConfigCodes::Base::Functions::getPvPResults,
 		target,
-		true,
-		[this](PackageId, bool isSuccess) {
-			if (isSuccess)
-				onTransmissionSucceeded();
-			else
-				onTransmissionBroken();
-		}
+		false,
+		nullptr,
+		PackageTimings(false, 2000000)
 	);
 
 }
@@ -205,22 +200,14 @@ void BaseStatsCounter::prepareTransmission()
 
 void BaseStatsCounter::waitDelay()
 {
-	debug << "BaseStatsCounter::waitDelay()";
 	if (systemClock->getTime() - m_waitingBeginned >= delayAfterChunk)
 	{
 		m_sendingState = S_READY_TO_TRANSMIT;
 	}
 }
 
-void BaseStatsCounter::onTransmissionBroken()
+void BaseStatsCounter::stateToDelayAfterChunk()
 {
-	debug << "BaseStatsCounter::onTransmissionBroken()";
-	m_sendingState = S_NOTHING;
-}
-
-void BaseStatsCounter::onTransmissionSucceeded()
-{
-	debug << "BaseStatsCounter::onTransmissionSucceeded()";
 	m_waitingBeginned = systemClock->getTime();
 	m_sendingState = S_WAIT_DELAY_AFTER_CHUNK;
 }

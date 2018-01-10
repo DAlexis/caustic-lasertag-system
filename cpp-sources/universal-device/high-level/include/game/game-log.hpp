@@ -60,15 +60,14 @@ namespace GameLog
 		enum StatsSendingState {
 			S_NOTHING = 0,
 			S_READY_TO_TRANSMIT,
-			S_WAITING_FOR_TRANSMISSIO_RESULT,
+			S_WAITING_FOR_TRANSMISSION_RESULT,
 			S_WAIT_DELAY_AFTER_CHUNK
 		};
 
 		void sendNextPackage();
 		void prepareTransmission();
 		void waitDelay();
-		void onTransmissionBroken();
-		void onTransmissionSucceeded();
+		void stateToDelayAfterChunk();
 
 		void checkAndCreate(PlayerGameId enemy);
 

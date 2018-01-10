@@ -92,7 +92,7 @@ public class FragmentStatistics extends Fragment {
             String name;
             String lives;
             if (dev == null) {
-                name = "Unknown player";
+                name = "Unknown player " + Integer.toString(id);
                 lives = "-";
             } else {
                 name = dev.getName();
