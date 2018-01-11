@@ -150,10 +150,9 @@ void BaseStatsCounter::interrogate()
 	}
 }
 
-void BaseStatsCounter::sendStats(DeviceAddress target)
+void BaseStatsCounter::sendStats()
 {
-    /// @todo: Add here broadcast for all devices (it does not work now via self-hosted bluetooth!)
-	m_statsReceiver = target;
+	m_statsReceiver = broadcast.any;
 	prepareTransmission();
 }
 

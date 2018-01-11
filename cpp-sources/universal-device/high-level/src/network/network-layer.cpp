@@ -130,20 +130,29 @@ PackageId NetworkLayer::send(
         error << "Error: too long payload!";
         return 0;
     }
-    // Looking for receiver on local host
-    INetworkClientReceiver* localReceiverClient = findClient(target);
-    if (localReceiverClient && localReceiverClient != doNotReceiveBy)
-    {
-    	if (radio.isEnabled())
-    		trace << "Forwarding to local receiver client, target = " << ADDRESS_TO_STREAM(target);
-        localReceiverClient->receive(sender, data, size);
 
-        if (!Broadcast::isBroadcast(target))
-        {
-            // Package is not broadcast and target is found so it was successfuly delivered
-            return 1;
-        }
-    }
+    // Looking for receiver on local host. It may be many receivers at one device
+
+    for (auto &it : m_clients)
+	{
+		if (it->isForMe(target))
+		{
+			INetworkClientReceiver* localReceiverClient = it;
+			if (localReceiverClient != doNotReceiveBy)
+			{
+				if (radio.isEnabled())
+					trace << "[net layer] Forwarding to local receiver package with target = " << ADDRESS_TO_STREAM(target);
+				localReceiverClient->receive(sender, data, size);
+
+				if (!Broadcast::isBroadcast(target))
+				{
+					// Package is not broadcast and target is found so it was successfuly delivered
+					return 1;
+				}
+			}
+		}
+	}
+
 
     if (!hasFreeSpaceInQueues())
 	{

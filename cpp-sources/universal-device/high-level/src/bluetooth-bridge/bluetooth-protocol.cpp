@@ -42,7 +42,7 @@ uint8_t Message::payloadLength()
 void Message::print()
 {
 	trace << "+- Bluetooth message:";
-	trace << "|- target: " << ADDRESS_TO_STREAM(address);
+	trace << "|- address: " << ADDRESS_TO_STREAM(address);
 	trace << "|- length: " << length;
 	trace << "|- checksum: " << checksum;
 	trace << "`- payload: ";

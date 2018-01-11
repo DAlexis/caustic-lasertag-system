@@ -65,8 +65,10 @@ private:
 
 	void sendBluetoothMessage(Bluetooth::Message* msg);
 	void sendNetworkPackage(DeviceAddress addr, uint8_t* payload, uint16_t size);
-	void toBluetoothTask();
-	void toNetworkTask();
+    /**
+     * Main loop function that works with queues
+     */
+	void mainLoop();
 	bool hasFreeSpaceInQueues();
 
 	Bluetooth::MessageCreator m_bluetoothMsgCreator;
@@ -77,7 +79,7 @@ private:
 	Mutex m_messagesToBluetoothMutex;
 	std::queue<Bluetooth::Message*> m_messagesToBluetooth;
 	std::queue<Bluetooth::Message*> m_messagesToNetwork;
-	TaskOnce m_toBluetoothTask{ [this](){ toBluetoothTask(); }, 512 };
+	TaskOnce m_toBluetoothTask{ [this](){ mainLoop(); }, 512 };
 	//TaskOnce m_toNetworkTask{ [this](){ toNetworkTask(); }, 512 };
 
 	/// @todo Queues should be as large as possible, so need to increase its size

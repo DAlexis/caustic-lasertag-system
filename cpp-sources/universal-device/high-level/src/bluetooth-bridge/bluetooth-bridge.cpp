@@ -135,7 +135,10 @@ void BluetoothBridge::configureBluetooth()
 void BluetoothBridge::receive(DeviceAddress sender, const uint8_t* payload, uint16_t payloadLength)
 {
 	m_bbStager.stage("receivePackage");
-    debug << "Processing incoming network package";
+    debug << "[net=>bt out queue] Package from "
+    		<< ADDRESS_TO_STREAM(sender)
+			<< ", payload size = " << payloadLength
+			<< ", bt queue size = " << m_messagesToBluetooth.size();
     m_bluetoothMsgCreator.clear();
     m_bluetoothMsgCreator.setSender(std::move(sender));
     m_bluetoothMsgCreator.addData(payloadLength, payload);
@@ -146,7 +149,6 @@ void BluetoothBridge::receive(DeviceAddress sender, const uint8_t* payload, uint
 
     if (hasFreeSpaceInQueues())
     {
-    	trace << "To bluetooth queue size = " << m_messagesToBluetooth.size();
     	ScopedLock<Mutex> lck(m_messagesToBluetoothMutex);
     	m_messagesToBluetooth.push(msg);
     	//debug << "To bluetooth queue size = " << m_messagesToBluetooth.size();
@@ -205,9 +207,8 @@ void BluetoothBridge::sendBluetoothMessage(Bluetooth::Message* msg)
 void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, uint16_t size)
 {
 	m_bbStager.stage("sendNetworkPackage");
-	debug << "Sending package to network";
-	debug << "target: " << ADDRESS_TO_STREAM(addr);
-	debug << "payload size: " << size;
+	debug << "[bt in queue=>net] Sending, target: " << ADDRESS_TO_STREAM(addr) << "payload size: " << size;
+
 	// Sending message body as is
 	if (Broadcast::isBroadcast(addr))
 	{
@@ -231,7 +232,7 @@ void BluetoothBridge::sendNetworkPackage(DeviceAddress addr, uint8_t* payload, u
 	}
 }
 
-void BluetoothBridge::toBluetoothTask()
+void BluetoothBridge::mainLoop()
 {
 	for (;;)
 	{
@@ -268,11 +269,6 @@ void BluetoothBridge::toBluetoothTask()
 			delete msg;
 		}
 	}
-}
-
-void BluetoothBridge::toNetworkTask()
-{
-
 }
 
 bool BluetoothBridge::hasFreeSpaceInQueues()

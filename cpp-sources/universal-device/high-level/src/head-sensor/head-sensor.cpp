@@ -312,7 +312,7 @@ void HeadSensor::readStats()
 	{
 		warning << "Stats reading request not over network!";
 	}
-	m_statsCounter.sendStats(m_networkPackagesListener.sender());
+	m_statsCounter.sendStats();
 }
 
 void HeadSensor::dieWeapons()

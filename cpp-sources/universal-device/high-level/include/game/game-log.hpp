@@ -51,7 +51,11 @@ namespace GameLog
 		void restoreFromFile();
 
 		void interrogate();
-		void sendStats(DeviceAddress target);
+
+		/**
+		 * Send stats to everybody with delay between packages
+		 */
+		void sendStats();
 
 	private:
 		static const char* filename;
