@@ -89,6 +89,8 @@ namespace GameLog
 
 		const PlayerGameId& m_hostPlayerId;
         INetworkClientSender& m_networkClientSender;
+
+        int m_sendPerPackage = 1;
 	};
 
 	struct Event

@@ -35,7 +35,8 @@ BaseStatsCounter::BaseStatsCounter(const PlayerGameId& hostPlayerId, INetworkCli
 		m_hostPlayerId(hostPlayerId),
 		m_networkClientSender(networkClientSender)
 {
-
+	// This is =1 for nrf24l01
+	m_sendPerPackage = m_networkClientSender.payloadSize() / RCSPAggregator::callSize(PvPDamageResults());
 }
 
 void BaseStatsCounter::checkAndCreate(PlayerGameId enemy)
@@ -160,11 +161,13 @@ void BaseStatsCounter::sendStats()
 void BaseStatsCounter::sendNextPackage()
 {
 	ScopedLock<CritialSection> lock(m_iteratorCheck);
+
 		if (m_iteratorCorrupted)
 		{
 			prepareTransmission();
 			return;
 		}
+
 		// Iterator is fine here
 		if (m_sendingIterator == m_results.end())
 		{
@@ -173,21 +176,17 @@ void BaseStatsCounter::sendNextPackage()
 			return;
 		}
 
-		PvPDamageResults target = m_sendingIterator->second;
-		m_sendingIterator++;
-		// Now we have valid object and we can send it
-	lock.unlock();
-	stateToDelayAfterChunk();
-	RCSPStream::call(
-        &m_networkClientSender,
-		m_statsReceiver,
-		ConfigCodes::Base::Functions::getPvPResults,
-		target,
-		false,
-		nullptr,
-		PackageTimings(false, 2000000)
-	);
+		// Sending one package with some records
+		RCSPStream stream;
+		for (int i=0; i<m_sendPerPackage && m_sendingIterator != m_results.end(); i++, m_sendingIterator++)
+		{
+			stream.addCall(ConfigCodes::Base::Functions::getPvPResults, m_sendingIterator->second);
+		}
 
+	lock.unlock();
+
+	stream.send(&m_networkClientSender, m_statsReceiver, false, nullptr, PackageTimings(false, 2000000));
+	stateToDelayAfterChunk();
 }
 
 void BaseStatsCounter::prepareTransmission()

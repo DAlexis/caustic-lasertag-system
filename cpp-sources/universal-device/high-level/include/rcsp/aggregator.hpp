@@ -342,6 +342,9 @@ public:
 	 */
 	static bool verifyBuffer(const Buffer& buf);
 
+	template <typename T>
+	static int callSize(const T&) { return sizeof(ChunkHeader) + sizeof(T); }
+
 	const std::list<OperationCode>& getRestorableOperationCodes() { return m_restorable; }
 
 	RCSPAggregator(const RCSPAggregator&) = delete;
