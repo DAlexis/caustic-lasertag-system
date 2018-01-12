@@ -262,7 +262,7 @@ int _open(char *name, int flags, int perms)
 	fils[index] = malloc(sizeof(FIL));
 	memset(fils[index], 0, sizeof(FIL));
 
-	FRESULT result = f_open(fils[index], name, FA_OPEN_EXISTING | FA_READ);
+	FRESULT result = f_open(fils[index], name, fatfsFlags);
 
 	if (result != FR_OK)
 	{
