@@ -1,5 +1,7 @@
 package org.ltcaustic.rcspcore;
 
+import java.util.Set;
+
 /**
  * The main entry point to rcspcore. Most of operations with Caustic LTS may be done over that class
  */
@@ -20,6 +22,7 @@ public class CausticController {
         return devicesListUpdater;
     }
     public BroadcastCalls getBroadcastCalls() { return broadcastCalls; }
+    public Calls getCalls() { return calls; }
     public GameStatistics getGameStatistics() { return gameStatistics; }
 
     public class BroadcastCalls {
@@ -122,6 +125,54 @@ public class CausticController {
         }
     }
 
+    public class Calls {
+        public void respawn(Set<RCSP.DeviceAddress> addrs) {
+            playerMassCall(addrs, RCSP.Operations.HeadSensor.Functions.playerRespawn.getId());
+        }
+
+        public void kill(Set<RCSP.DeviceAddress> addrs) {
+            playerMassCall(addrs, RCSP.Operations.HeadSensor.Functions.playerKill.getId());
+        }
+
+        public void reset(Set<RCSP.DeviceAddress> addrs) {
+            playerMassCall(addrs, RCSP.Operations.HeadSensor.Functions.playerReset.getId());
+        }
+
+        public void fullAmmo(Set<RCSP.DeviceAddress> addrs) {
+            //playerMassCall(addrs, RCSP.Operations.HeadSensor.Functions.playerRespawn.getId());
+        }
+
+        private void playerCall(RCSP.DeviceAddress addr, int id) {
+            devicesManager.remoteCall(
+                    addr,
+                    RCSP.Operations.HeadSensor.functionsSerializers,
+                    id,
+                    ""
+            );
+        }
+
+        private void playerMassCall(Set<RCSP.DeviceAddress> addrs, int id) {
+            for (RCSP.DeviceAddress addr : addrs) {
+                playerCall(addr, id);
+            }
+        }
+
+        private void rifleCall(RCSP.DeviceAddress addr, int id) {
+            devicesManager.remoteCall(
+                    addr,
+                    RCSP.Operations.HeadSensor.functionsSerializers,
+                    id,
+                    ""
+            );
+        }
+
+        private void rifleMassCall(Set<RCSP.DeviceAddress> addrs, int id) {
+            for (RCSP.DeviceAddress addr : addrs) {
+                rifleCall(addr, id);
+            }
+        }
+    }
+
     private BridgeDriver bridgeDriver = new BridgeDriver();
     private LTSCommunicator communicator = new LTSCommunicator(bridgeDriver);
     private DevicesManager devicesManager = new DevicesManager(bridgeDriver, communicator);
@@ -130,4 +181,5 @@ public class CausticController {
 
     private GameStatistics gameStatistics = new GameStatistics(devicesManager, communicator);
     private BroadcastCalls broadcastCalls = new BroadcastCalls();
+    private Calls calls = new Calls();
 }

@@ -7,12 +7,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.ltcaustic.rcspandroid.CausticInitializer;
 import org.ltcaustic.rcspandroid.DeviceSettingsList;
@@ -46,6 +49,8 @@ public class FragmentConfigureGameDevicesList extends Fragment {
     TextView textViewSelectedDevices = null;
     Button buttonDoConfigure = null;
     Button buttonUpdateDevicesList = null;
+    Spinner spinnerSelectAction = null;
+    Button buttonApplyAction = null;
 
     View layoutParameters = null;
     ListView listViewParameters = null;
@@ -104,6 +109,8 @@ public class FragmentConfigureGameDevicesList extends Fragment {
         textViewSelectedDevices = v.findViewById(R.id.textViewSelectedDevices);
         buttonDoConfigure = v.findViewById(R.id.buttonDoConfigure);
         buttonUpdateDevicesList = v.findViewById(R.id.buttonUpdateDevicesList);
+        spinnerSelectAction = v.findViewById(R.id.spinnerSelectAction);
+        buttonApplyAction = v.findViewById(R.id.buttonApplyAction);
 
         layoutParameters = v.findViewById(R.id.layoutParameters);
         listViewParameters = v.findViewById(R.id.listViewParameters);
@@ -155,6 +162,7 @@ public class FragmentConfigureGameDevicesList extends Fragment {
 
         devicesListAdapter = new DevicesListAdapter(CausticInitializer.getInstance().controller().getDevicesManager(), getActivity());
         listViewDevicesToEdit.setAdapter(devicesListAdapter);
+        initCustomActions();
         return v;
     }
 
@@ -191,6 +199,41 @@ public class FragmentConfigureGameDevicesList extends Fragment {
 
         public boolean isSelected() {
             return checkBoxDeviceName.isSelected();
+        }
+    }
+
+    void initCustomActions() {
+        if (mode == CONFIG_PLAYERS) {
+            String[] variants = {"Respawn", "Kill", "Remove life"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, variants);
+            spinnerSelectAction.setAdapter(adapter);
+            spinnerSelectAction.setPrompt("Actions for players");
+            buttonApplyAction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos=spinnerSelectAction.getSelectedItemPosition();
+                    Toast toast = null;
+                    switch (pos) {
+                        case 0:
+                            // Respawn
+                            toast = Toast.makeText(getActivity(), "Respawn", Toast.LENGTH_SHORT);
+                            CausticInitializer.getInstance().controller().getCalls().respawn(editorContext.getDevices());
+                            break;
+                        case 1:
+                            // Kill
+                            toast = Toast.makeText(getActivity(), "kill", Toast.LENGTH_SHORT);
+                            CausticInitializer.getInstance().controller().getCalls().kill(editorContext.getDevices());
+                            break;
+                        case 2:
+                            // Kill
+                            toast = Toast.makeText(getActivity(), "Remove life", Toast.LENGTH_SHORT);
+                            CausticInitializer.getInstance().controller().getCalls().reset(editorContext.getDevices());
+                            break;
+                    }
+                    if (toast != null)
+                        toast.show();
+                }
+            });
         }
     }
 
@@ -244,6 +287,7 @@ public class FragmentConfigureGameDevicesList extends Fragment {
         //listViewDevicesToEdit.invalidateViews();
         devicesListAdapter.updateUIList();
         devicesListAdapter.notifyDataSetChanged();
+        editorContext.clearSelectedToEdit();
     }
 
     void editSelectedDevices() {

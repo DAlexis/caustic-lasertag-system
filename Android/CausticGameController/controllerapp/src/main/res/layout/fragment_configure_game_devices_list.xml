@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
         <!--android:visibility="gone"-->
 
         <TextView
@@ -22,31 +22,56 @@
             android:text="Select devices to configure:" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/buttonUpdateDevicesList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Update list" />
+
+            <Button
                 android:id="@+id/buttonDoConfigure"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Edit configuration" />
 
-            <Button
-                android:id="@+id/buttonUpdateDevicesList"
-                android:layout_width="match_parent"
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Update" />
+                android:text="Apply action:" />
+
+            <Spinner
+                android:id="@+id/spinnerSelectAction"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/buttonApplyAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Do!" />
         </LinearLayout>
 
         <ListView
             android:id="@+id/listViewDevicesToEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:descendantFocusability="beforeDescendants"
-            />
+            android:descendantFocusability="beforeDescendants" />
 
     </LinearLayout>
 
@@ -80,7 +105,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/textViewSelectedDevices"
@@ -119,7 +144,7 @@
             android:id="@+id/listViewParameters"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:descendantFocusability="beforeDescendants"/>
+            android:descendantFocusability="beforeDescendants" />
 
 
     </LinearLayout>

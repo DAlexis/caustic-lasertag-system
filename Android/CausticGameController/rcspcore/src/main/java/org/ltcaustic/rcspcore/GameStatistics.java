@@ -66,6 +66,10 @@ public class GameStatistics {
         updatedSubscribers.add(subscriber);
     }
 
+    public void clear() {
+        pvpStatsMap.clear();
+    }
+
     public void updateStats() {
         /*
         // Updating devices list @todo Think about regular devices list updating...
